@@ -109,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
         pInput = new PlayerInput();
         if (pCamera)
         {
-            pCamera.GetComponent<cameraScript>().enabled = true;
+            //pCamera.GetComponent<cameraScript>().enabled = true;
         }
     }
 
