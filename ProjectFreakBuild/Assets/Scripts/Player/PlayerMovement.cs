@@ -30,6 +30,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(0f, 25f), Tooltip("Speed at which the player turns")]
     float lookSpeed = 10f;
 
+    [SerializeField, Range(0f,1f), Tooltip("How far the sticks must move to not hit a dead zone")] 
+    private float stickDeadzone = 0.2f;
+
     /////////////////////////////////////////////////
     [Header("Rotation Code")]
     /////////////////////////////////////////////////
@@ -77,6 +80,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 placerTargetLocation;
     private bool lockPlacer;
     private Rigidbody rb;
+    private float currentPlanarSpeed;            // optional, if you prefer speed smoothing instead of velocity move-towards
+    private bool rightStickActive;               // tracks aim activity for idle logic
 
 
     [Header("_______Temp Variables_______")]
@@ -120,15 +125,70 @@ public class PlayerMovement : MonoBehaviour
 
     #region Movement
     //MOVEMENT CODE
-
     private void FixedUpdate()
     {
-        if (OnDebugLines) drawlines(); //debug Delete Later
+        if (!rb) return;
 
-        if (moveVector == Vector3.zero) { print("stopped"); return; }
-        Vector3 newHorizontal = Vector3.MoveTowards(transform.position, transform.position + moveVector, (acceleration * Vector2.Distance(Vector2.zero, lStickInput)) * Time.fixedDeltaTime);
-        rb.velocity = newHorizontal;
+        // 1) Build moveVector from left stick (world space top-down: XZ)
+        moveVector = new Vector3(lStickInput.x, 0f, lStickInput.y);
+        if (moveVector.sqrMagnitude > 0.0001f)
+            moveVector.Normalize();
+
+        // 2) Movement via Rigidbody velocity (accelerate/decelerate)
+        Vector3 targetPlanarVel = moveVector * Speed;
+
+        Vector3 currentVel = rb.velocity;
+        Vector3 currentPlanarVel = new Vector3(currentVel.x, 0f, currentVel.z);
+
+        // Choose accel or decel depending on whether we have input
+        float rate = (moveVector.sqrMagnitude > 0.0001f) ? acceleration : deceleration;
+
+        Vector3 newPlanarVel = Vector3.MoveTowards(
+            currentPlanarVel,
+            targetPlanarVel,
+            rate * Time.fixedDeltaTime
+        );
+
+        rb.velocity = new Vector3(newPlanarVel.x, currentVel.y, newPlanarVel.z);
+
+        // 3) Facing logic:
+        // - If right stick is active (outside deadzone), face that
+        // - Else if idle aim (or after timer), face move direction (left stick)
+        Vector3 rightDir = new Vector3(rStickInput.x, 0f, rStickInput.y);
+        bool aimHasInput = rightDir.sqrMagnitude >= stickDeadzone * stickDeadzone;
+
+        if (aimHasInput)
+        {
+            // Right stick facing
+            lookVector = rightDir.normalized;
+            isIdleAim = false; // keep consistent even if callback timing varies
+        }
+        else
+        {
+            // Right stick idle -> default facing to movement when allowed
+            if (isIdleAim && moveVector.sqrMagnitude > 0.0001f)
+            {
+                lookVector = moveVector;
+            }
+            // else: keep last lookVector (don’t snap)
+        }
+
+        // 4) Apply rotation (turn speed)
+        if (lookVector.sqrMagnitude > 0.0001f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(lookVector, Vector3.up);
+
+            // Your lookSpeed is currently 0-25, so treat it like degrees/sec multiplier
+            Quaternion newRot = Quaternion.RotateTowards(
+                rb.rotation,
+                targetRot,
+                (lookSpeed * 90f) * Time.fixedDeltaTime
+            );
+
+            rb.MoveRotation(newRot);
+        }
     }
+
 
 
 
@@ -136,63 +196,56 @@ public class PlayerMovement : MonoBehaviour
 
     #region Input
     //INPUT CODE
-    public void MoveInput(InputAction.CallbackContext context)
+    private void MoveInput(InputAction.CallbackContext context)
     {
         lStickInput = context.ReadValue<Vector2>();
-        float lStickDistance = Vector2.Distance(Vector2.zero, lStickInput); //grab 2d vector of the sticks/keyboard
 
-        
-        if (lStickDistance <= stickSensitivity) { moveVector = Vector3.zero; return; }
-
-        if (lStickDistance >= lookSensitivity)
-        {
-            moveVector = new Vector3(lStickInput.x, 0f, lStickInput.y);
-        }
-        else moveVector = Vector3.zero;
-
-        if (isIdleAim && moveVector != Vector3.zero) lookVector = moveVector;
-
+        // Apply stick sensitivity / deadzone for movement
+        if (lStickInput.sqrMagnitude < stickSensitivity * stickSensitivity)
+            lStickInput = Vector2.zero;
     }
-    public void LookInput(InputAction.CallbackContext context)
+
+    private void LookInput(InputAction.CallbackContext context)
     {
         rStickInput = context.ReadValue<Vector2>();
-        float rStickDistance = Vector2.Distance(Vector2.zero, rStickInput); //grab 2d vector of the sticks/keyboard
-        if (rStickDistance <= stickSensitivity) { return; }
-        if (lookIdleCoroutine != null) { StopCoroutine(lookIdleCoroutine); lookIdleCoroutine = null; } //handles interupting the the idle timer for aiming
-        lookVector = new Vector3(rStickInput.x, 0f, rStickInput.y);
-        isIdleAim = false;
+
+        // Determine if the right stick is "active"
+        rightStickActive = rStickInput.sqrMagnitude >= stickDeadzone * stickDeadzone;
+
+        if (rightStickActive)
+        {
+            // Right stick takes control of facing immediately
+            isIdleAim = false;
+
+            // If you were waiting to return to move-facing, cancel that
+            if (lookIdleCoroutine != null)
+            {
+                StopCoroutine(lookIdleCoroutine);
+                lookIdleCoroutine = null;
+            }
+        }
+
+        // Apply look sensitivity / deadzone
+        if (rStickInput.sqrMagnitude < lookSensitivity * lookSensitivity)
+            rStickInput = Vector2.zero;
     }
 
-    public void LookIdle(InputAction.CallbackContext context)
+    private void LookIdle(InputAction.CallbackContext context)
     {
-        lookIdleCoroutine = StartCoroutine(AimIdleTimer());
+        // Called when Look is canceled (you already hooked this up)
+        // Start a timer to return to movement-facing (prevents snap-back)
+        if (lookIdleCoroutine != null)
+            StopCoroutine(lookIdleCoroutine);
+
+        lookIdleCoroutine = StartCoroutine(LookIdleCountdown());
     }
 
-    private bool IsGamepadScheme()
-    {
-        // Handles custom scheme names like "Keyboard&Mouse" / "Gamepad"
-        // If you used different names, adjust these strings.
-        //return pInput != null && pInput.currentControlScheme == "Gamepad";
-        return false;
-    }
-    #endregion
-
-    #region Timers
-    IEnumerator AimIdleTimer()
+    private IEnumerator LookIdleCountdown()
     {
         yield return new WaitForSeconds(lookIdleTimer);
         isIdleAim = true;
+        lookIdleCoroutine = null;
     }
-    #endregion
-
-    #region Debug
-
-    void drawlines()
-    {
-        Debug.DrawLine(transform.position + moveVector, transform.position + moveVector + transform.up * debugLineLength, Color.red);
-        Debug.DrawLine(transform.position + lookVector, transform.position + lookVector + transform.up * debugLineLength, Color.green);
-    }
-
 
     #endregion
 }
