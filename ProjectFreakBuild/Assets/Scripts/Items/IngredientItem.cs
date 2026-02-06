@@ -6,5 +6,5 @@ using UnityEngine;
 
 public class IngredientItem : ItemSO
 {
-
+    public Sprite itemSprite;
 }
