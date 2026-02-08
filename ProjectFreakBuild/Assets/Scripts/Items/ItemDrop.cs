@@ -12,21 +12,19 @@ public class ItemDrop : MonoBehaviour
     [Header("Event Channel")]
     [SerializeField] private PickupEventChannelSO pickupEvent;
 
-    [SerializeField] private ItemSO item;
-    [SerializeField] private int amount = 1;
-
-    public void Awake()
-    {
-        if (ItemLootDrop == null) { Debug.LogError("Warning! Loot was dropped but " + gameObject.name + " does not contain loot data."); Destroy(gameObject);  return; }
-
-    }
 
     public void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Player>() == false) return;
 
+        if (ItemLootDrop == null)
+        {
+            Debug.LogWarning("Warning! Item pickup wwas attempted however no item was found.");
+            return;
+        }
+
         print("Now adding " + ItemLootDrop.ItemName + " to inventory");
-        pickupEvent.Raise(item, amount);
+        pickupEvent.Raise(ItemLootDrop, ItemLootAmount);
 
         Destroy(gameObject);
     }

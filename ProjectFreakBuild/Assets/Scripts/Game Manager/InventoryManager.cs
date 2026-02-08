@@ -6,16 +6,22 @@ using Sirenix.Serialization;
 
 public class InventoryManager : MonoBehaviour
 {
+    ////////////////////////////////////////////////////////////////////////
+    //Manager Script that handles inventory adding, sorting, and searching
+    ////////////////////////////////////////////////////////////////////////
+
     //Static Controller//
     public static InventoryManager _PlayerInventory;
 
-    //event Variable
+    //event Variable//
     [Header("Events")]
     [SerializeField] private PickupEventChannelSO pickupChannel;
 
-    //Global Variables
+    //Global Variables//
     [OdinSerialize] 
     public Dictionary<IngredientItem, int> playerIngredients = new Dictionary<IngredientItem, int>();
+    [OdinSerialize]
+    public Dictionary<int, int> testdict = new Dictionary<int, int>();
     
     [Tooltip("Handles the maximum stack size any item can be")]
     public int ItemStackSizeMax;
@@ -75,7 +81,6 @@ public class InventoryManager : MonoBehaviour
     #endregion
 
     #region Ingredient Pickup
-    [Button]
     public bool addIngredient (IngredientItem item, int amountAdded)
     {
         if (item == null || amountAdded < 1) return false; //checks to make sure inputs are valid (should probably do this earlier up the chain but works fine for now
@@ -142,6 +147,11 @@ public class InventoryManager : MonoBehaviour
         }
             return 0;
     }
+    #endregion
+
+    #region Weapon Pickup
+
+
     #endregion
 }
 
