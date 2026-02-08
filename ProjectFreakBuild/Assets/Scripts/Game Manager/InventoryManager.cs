@@ -9,12 +9,18 @@ public class InventoryManager : MonoBehaviour
     //Static Controller//
     public static InventoryManager _PlayerInventory;
 
+    //event Variable
+    [Header("Events")]
+    [SerializeField] private PickupEventChannelSO pickupChannel;
+
     //Global Variables
     [OdinSerialize] 
-    //[DictionaryDrawerSettings(KeyLabel = "Ingredient", ValueLabel = "Amount")] 
     public Dictionary<IngredientItem, int> playerIngredients = new Dictionary<IngredientItem, int>();
-    public int ItemStackSizeMax; //handles the maximum stack size any item can be
+    
+    [Tooltip("Handles the maximum stack size any item can be")]
+    public int ItemStackSizeMax;
 
+    #region Initialization
     private void Awake()
     {
         if (_PlayerInventory != null)
@@ -26,6 +32,49 @@ public class InventoryManager : MonoBehaviour
         _PlayerInventory = this;
     }
 
+    private void OnEnable()
+    {
+       if (pickupChannel != null)
+            pickupChannel.OnPickup += HandlePickup;
+    }
+
+    private void OnDisable()
+    {
+        if (pickupChannel != null)
+        pickupChannel.OnPickup -= HandlePickup;
+    }
+
+    #endregion
+
+    #region Pickup
+
+    [Button] private void pickupTest(ItemSO item, int amount)
+    {
+        HandlePickup(item, amount);
+    }
+    
+    private void HandlePickup(ItemSO item, int amount)
+    {
+        if (item == null || amount <= 0) return;
+        switch(item)
+        {
+            case IngredientItem ingredient:
+                print("Ingredient" + item.ItemName + " picked up and added " + amount + " to inventory!");
+                addIngredient(item as IngredientItem, amount);
+                break;
+
+            case WeaponItem weapon:
+                print("Weapon Picked up and added to inventory!");
+                break;
+
+            default:
+                Debug.LogWarning("Warning! Cannot figure out what type of item was just picked up!");
+                break;
+        }
+    }
+    #endregion
+
+    #region Ingredient Pickup
     [Button]
     public bool addIngredient (IngredientItem item, int amountAdded)
     {
@@ -93,6 +142,7 @@ public class InventoryManager : MonoBehaviour
         }
             return 0;
     }
+    #endregion
 }
 
 
