@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40d8de1f28121724aaa9114885a017b4, type: 3}
+  m_Name: SO_Pistol_Rusty
+  m_EditorClassIdentifier: 
+  ItemID: 0
+  ItemName: Pistol
+  ItemDescription: Crappy little pistol used to test mechanics by the devs
+  dropArt: {fileID: 919132149155446097, guid: 5d8282ed539ffa24887e1a52174f8c5d, type: 3}
+  weaponType: 0
+  weaponPrefab: {fileID: 919132149155446097, guid: 5d8282ed539ffa24887e1a52174f8c5d,
+    type: 3}
+  weaponFireRate: 1
+  weaponWarmUpTime: 0
+  weaponKnockback: 0
+  baseDamage: 10
+  element: 0
+  knockbackHitAmount: 0
+  ProjectilePrefab: []
+  projectilePattern: 0
+  projectileMoveType: 0
+  projectileCount: 1
+  projectileSpeed: 10

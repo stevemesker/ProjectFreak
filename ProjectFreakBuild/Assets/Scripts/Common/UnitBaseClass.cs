@@ -1,4 +1,4 @@
- namespace UnitBaseClass.Types
+ namespace UnitBaseClass.Player
 {
     public enum UnitBaseClass
     {

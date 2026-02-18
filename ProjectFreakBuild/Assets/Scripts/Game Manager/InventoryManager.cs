@@ -12,12 +12,14 @@ public class InventoryManager : MonoBehaviour
 
     //Static Controller//
     public static InventoryManager _PlayerInventory;
+    public static List<WeaponItem> _weaponInventory;
+    [SerializeField, Tooltip("Maximum number of items the player can have")] private int weaponInventorySize = 15;
 
     //event Variable//
     [Header("Events")]
     [SerializeField] private PickupEventChannelSO pickupChannel;
 
-    //Global Variables//
+    //Ingredient Variables//
     [OdinSerialize] 
     public Dictionary<IngredientItem, int> playerIngredients = new Dictionary<IngredientItem, int>();
     [OdinSerialize]
@@ -25,6 +27,8 @@ public class InventoryManager : MonoBehaviour
     
     [Tooltip("Handles the maximum stack size any item can be")]
     public int ItemStackSizeMax;
+
+    //
 
     #region Initialization
     private void Awake()

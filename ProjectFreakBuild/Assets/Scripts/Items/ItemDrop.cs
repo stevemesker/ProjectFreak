@@ -1,17 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(Collider))]
 public class ItemDrop : MonoBehaviour
 {
     //Script for objects that drop after an enemy is killed that handles treasure containment
-    public ItemSO ItemLootDrop;
-    public int ItemLootAmount;
+    [Tooltip("Item Scriptable Object data being passed along. AKA the item that was dropped")] public ItemSO ItemLootDrop;
+    [Tooltip("How many copies of the item being dropped. Debug being 1")] public int ItemLootAmount = 1;
+    [SerializeField, Tooltip("Points to the child gameobject that the art gets instantiated under")] private GameObject _ArtParent;
 
     [Header("Event Channel")]
-    [SerializeField] private PickupEventChannelSO pickupEvent;
+    [SerializeField, Tooltip("Pickup event pointer")] private PickupEventChannelSO pickupEvent;
 
+    #region Initializing
+    public void OnEnable()
+    {
+        if (ItemLootDrop == null) { Debug.LogError("null item spawn"); return; }
+        GameObject art = Instantiate(ItemLootDrop.dropArt, _ArtParent.transform.position, _ArtParent.transform.rotation, _ArtParent.transform);
+        if (checkForWeapon())
+        {
+            WeaponObject wpn = art.GetComponent<WeaponObject>(); //quick grab the instanced weapon prefab
+
+            //set up offsetting
+            wpn.OffsetObject(wpn._PlacementBoneOffsetObject);
+            //spinning effect
+            _ArtParent.GetComponent<ItemFloatAndSpin>().enabled = true;
+            //set up rarity effects
+        }
+
+    }
 
     public void OnTriggerEnter(Collider other)
     {
@@ -26,6 +45,17 @@ public class ItemDrop : MonoBehaviour
         print("Now adding " + ItemLootDrop.ItemName + " to inventory");
         pickupEvent.Raise(ItemLootDrop, ItemLootAmount);
 
+        //add pickup effects here
+
         Destroy(gameObject);
     }
+
+    [Button("Test for Waapon")]private bool checkForWeapon()
+    {
+        //fucntion that tests if item is a weapon to handle turning on the spin and offset stuff. Could possibly make this an interface later but probably won't need to
+        if (ItemLootDrop is WeaponItem weapon) return true;
+        return false;
+    }
+
+    #endregion
 }

@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40d8de1f28121724aaa9114885a017b4, type: 3}
-  m_Name: SO_Pistol_Rusty
+  m_Script: {fileID: 11500000, guid: bd940d95ef006f14cac2ff4a581cbd2c, type: 3}
+  m_Name: SO_Rock
   m_EditorClassIdentifier: 
   ItemID: 0
-  ItemName: 
-  ItemDescription: 
-  ProjectilePrefab: []
-  baseDamage: 0
+  ItemName: Rock
+  ItemDescription: it's just a rock... This is a developer test item
+  dropArt: {fileID: 6693080814654682845, guid: b27f3563a64f7ce4b963225e97385c21, type: 3}
+  itemSprite: {fileID: 0}
