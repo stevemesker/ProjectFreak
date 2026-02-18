@@ -58,12 +58,12 @@ public class InventoryManager : MonoBehaviour
 
     #region Pickup
 
-    [Button] private void pickupTest(ItemSO item, int amount)
+    [Button] private void pickupTest(ItemSO item, int amount, GameObject source)
     {
-        HandlePickup(item, amount);
+        HandlePickup(item, amount, source);
     }
     
-    private void HandlePickup(ItemSO item, int amount)
+    private void HandlePickup(ItemSO item, int amount, GameObject source)
     {
         if (item == null || amount <= 0) return;
         switch(item)

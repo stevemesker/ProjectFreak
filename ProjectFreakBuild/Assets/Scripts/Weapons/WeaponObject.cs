@@ -15,17 +15,6 @@ public class WeaponObject : MonoBehaviour
     {
         instOffset = GetComponent<ItemInstanceOffset>();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     #endregion
 
     public void OffsetObject(GameObject obj)

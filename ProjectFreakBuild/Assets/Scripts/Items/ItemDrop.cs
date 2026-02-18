@@ -8,7 +8,7 @@ public class ItemDrop : MonoBehaviour
 {
     //Script for objects that drop after an enemy is killed that handles treasure containment
     [Tooltip("Item Scriptable Object data being passed along. AKA the item that was dropped")] public ItemSO ItemLootDrop;
-    [Tooltip("How many copies of the item being dropped. Debug being 1")] public int ItemLootAmount = 1;
+    [Tooltip("How many copies of the item being dropped. Debug being 1")] public int ItemLootAmount;
     [SerializeField, Tooltip("Points to the child gameobject that the art gets instantiated under")] private GameObject _ArtParent;
 
     [Header("Event Channel")]
@@ -23,7 +23,7 @@ public class ItemDrop : MonoBehaviour
         {
             WeaponObject wpn = art.GetComponent<WeaponObject>(); //quick grab the instanced weapon prefab
 
-            //set up offsetting
+            //offsetting position
             wpn.OffsetObject(wpn._PlacementBoneOffsetObject);
             //spinning effect
             _ArtParent.GetComponent<ItemFloatAndSpin>().enabled = true;
@@ -31,7 +31,7 @@ public class ItemDrop : MonoBehaviour
         }
 
     }
-
+    /*
     public void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Player>() == false) return;
@@ -48,7 +48,7 @@ public class ItemDrop : MonoBehaviour
         //add pickup effects here
 
         Destroy(gameObject);
-    }
+    }*/
 
     [Button("Test for Waapon")]private bool checkForWeapon()
     {
@@ -58,4 +58,29 @@ public class ItemDrop : MonoBehaviour
     }
 
     #endregion
+
+    public void pickupItem()
+    {
+        if (ItemLootDrop == null)
+        {
+            Debug.LogWarning("Warning! Item pickup wwas attempted however no item was found.");
+            return;
+        }
+        //print("Sending signal");
+        pickupEvent.Raise(ItemLootDrop, ItemLootAmount, gameObject);
+
+        //add pickup effects here
+    }
+    
+    public void removeItemInventory(int amount)
+    {
+        //print("Removing " + amount + " " + ItemLootDrop.ItemName);
+        ItemLootAmount -= amount;
+        if (ItemLootAmount == 0)
+        {
+            //print("empty");
+            //empty out everything
+            Destroy(gameObject);
+        }
+    }
 }
