@@ -13,17 +13,18 @@ MonoBehaviour:
   m_Name: SO_Pistol_Rusty
   m_EditorClassIdentifier: 
   ItemID: 0
-  ItemName: Pistol
+  ItemName: Dev Pistol
   ItemDescription: Crappy little pistol used to test mechanics by the devs
-  dropArt: {fileID: 919132149155446097, guid: 5d8282ed539ffa24887e1a52174f8c5d, type: 3}
+  dropArt: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6, type: 3}
+  ItemRarity: 5
   weaponType: 0
-  weaponPrefab: {fileID: 919132149155446097, guid: 5d8282ed539ffa24887e1a52174f8c5d,
+  weaponPrefab: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6,
     type: 3}
   weaponFireRate: 1
   weaponWarmUpTime: 0
   weaponKnockback: 0
   baseDamage: 10
-  element: 0
+  element: 8
   knockbackHitAmount: 0
   ProjectilePrefab: []
   projectilePattern: 0
