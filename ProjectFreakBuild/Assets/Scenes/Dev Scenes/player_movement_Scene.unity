@@ -412,6 +412,37 @@ MonoBehaviour:
   m_PointlightHDType: 0
   m_SpotLightShape: 0
   m_AreaLightShape: 0
+--- !u!1 &158011927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 158011928}
+  m_Layer: 0
+  m_Name: Temp Hand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &158011928
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158011927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.401, z: 0.6}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 675036884}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &340548341
 GameObject:
   m_ObjectHideFlags: 3
@@ -801,6 +832,7 @@ Transform:
   m_Children:
   - {fileID: 449998872}
   - {fileID: 890240554}
+  - {fileID: 158011928}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &675036885
@@ -919,10 +951,12 @@ MonoBehaviour:
       _TypeWeaknessMultiplier: 1
     _FreakClass: 0
   _Inventory:
-    _FreakEquipmentSize: 2
+    _FreakEquipmentSize: 4
     _FreakInventorySize: 20
-    _FreakEquippedWeapons: []
+    _FreakEquippedWeapons:
+    - {fileID: 11400000, guid: 741bbe83bb4a1934e9b5bdd896a75625, type: 2}
   weaponSelection: 0
+  handPointer: {fileID: 158011927}
   pickupChannel: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
 --- !u!114 &675036890
 MonoBehaviour:
@@ -1106,6 +1140,74 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 890240553}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1001 &1038240753
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.0823383
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 8.917966
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7706770537561663940, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6,
+        type: 3}
+      propertyPath: m_Name
+      value: PFB_Weapon_Ranged_Pistol_0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ca698d745efff3a469be1a011206eef6, type: 3}
 --- !u!1 &1408255192
 GameObject:
   m_ObjectHideFlags: 3
@@ -2036,7 +2138,7 @@ PrefabInstance:
         type: 3}
       propertyPath: ItemLootDrop
       value: 
-      objectReference: {fileID: 11400000, guid: ba81d2405ad423e4f90325a00159513b,
+      objectReference: {fileID: 11400000, guid: 741bbe83bb4a1934e9b5bdd896a75625,
         type: 2}
     - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
         type: 3}
@@ -2274,3 +2376,4 @@ SceneRoots:
   - {fileID: 73909845}
   - {fileID: 4690730050617817665}
   - {fileID: 5078168118966771753}
+  - {fileID: 1038240753}

@@ -1029,6 +1029,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "FreakWeaponActivation",
+                    "type": "Button",
+                    "id": "ff1c6fb2-74bc-4356-a87e-6bd046e49f7d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1117,6 +1126,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "FreakWeaponScroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb30eec0-3adf-436d-aca7-8b71b937638f",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "FreakWeaponActivation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bd7a8572-c909-4999-84b5-80ae85accf86",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "FreakWeaponActivation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -19,6 +19,7 @@ public class FreakCharacter : MonoBehaviour
     private int weaponSelection;
     [Tooltip("Points to the hand bone so weapon swapping knows where to instantiate the weapon to. IMPORTANT: hand bone must be the lowest level child as swapping checks for children and will delete it when swapping. Can easily break parent chains")]
     public GameObject handPointer;
+    private ITriggerable weaponTrigger;
 
     //event Variable//
     [Header("Events")]
@@ -110,7 +111,25 @@ public class FreakCharacter : MonoBehaviour
         }
         if (handPointer.transform.childCount != 0) Destroy(handPointer.transform.GetChild(0).gameObject);
         Instantiate(_Inventory._FreakEquippedWeapons[weaponSelection].weaponPrefab, handPointer.transform.position, handPointer.transform.transform.rotation, handPointer.transform);
-        
+        weaponTrigger = handPointer.transform.GetChild(0).GetComponent<ITriggerable>();
+    }
+    #endregion
+
+    #region WeaponUse
+    public void UseWeapon()
+    {
+        if (_Inventory._FreakEquippedWeapons[weaponSelection] == null) return; //need to add functionality for unarmed attacks here
+        if (weaponTrigger == null) Debug.LogError("Warning! Item: " + handPointer.transform.GetChild(0).transform.name + " has been equipped but does not contain trigger data!");
+        weaponTrigger.TriggerAttack(1, null);
+        //calculate damage per bullet
+        //add buffs and things here
+
+    }
+
+    public void ReleaseWEapon()
+    {
+        if (_Inventory._FreakEquippedWeapons[weaponSelection] == null) return; //need to add functionality for unarmed attacks here
+        weaponTrigger.ReleaseAttack();
     }
     #endregion
 }

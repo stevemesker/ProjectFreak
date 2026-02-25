@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class FreakInput : MonoBehaviour
 {
     [Tooltip("References the freak character class to access inventory")]
-    public FreakCharacter characterData;
+    [SerializeField] private FreakCharacter characterData;
     private PlayerInput pInput;
 
     // Start is called before the first frame update
@@ -20,14 +20,20 @@ public class FreakInput : MonoBehaviour
         pInput.Enable();
         pInput.Freak.FreakWeaponSelect.performed += switchSelection;
         pInput.Freak.FreakWeaponScroll.performed += scrollSelection;
+        pInput.Freak.FreakWeaponActivation.performed += useWeapon;
+        pInput.Freak.FreakWeaponActivation.canceled += releaseWeapon;
     }
 
     private void OnDisable()
     {
         pInput.Freak.FreakWeaponSelect.performed -= switchSelection;
         pInput.Freak.FreakWeaponScroll.performed -= scrollSelection;
+        pInput.Freak.FreakWeaponActivation.performed -= useWeapon;
+        pInput.Freak.FreakWeaponActivation.canceled -= releaseWeapon;
         pInput.Disable();
     }
+
+    #region WeaponSelecting
 
     private void switchSelection(InputAction.CallbackContext context)
     {
@@ -38,6 +44,7 @@ public class FreakInput : MonoBehaviour
 
     private void scrollSelection(InputAction.CallbackContext context)
     {
+        print("Still need to add mouse scrolling");
         print(context);
     }
 
@@ -45,4 +52,16 @@ public class FreakInput : MonoBehaviour
     {
         characterData.EquippedWeaponScrollSelection(amount);
     }
+    #endregion
+
+    #region Weapon Usage
+    private void useWeapon(InputAction.CallbackContext context)
+    {
+        characterData.UseWeapon();
+    }
+    private void releaseWeapon(InputAction.CallbackContext context)
+    {
+        characterData.ReleaseWEapon();
+    }
+    #endregion
 }

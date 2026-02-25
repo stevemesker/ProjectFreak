@@ -27,15 +27,5 @@ public class WeaponItem : ItemSO
     [Tooltip("knockback strength hitting the enemy")] 
     public float knockbackHitAmount;
 
-    [TitleGroup("---Projectile Data---")]
-    [Tooltip("projectiles that are spawned. Can be multiple projectile types which will spawn in different patterns based on the Projectile Pattern selected")] 
-    public List<GameObject> ProjectilePrefab;
-    [Tooltip("How projectiles are spawned when fired (single, line, cone, ring, charge)")] 
-    public ProjectileDataTypes.ProjectilePattern projectilePattern;
-    [Tooltip("how the projectile flies across the field (normal, hitscan, trail)")] 
-    public ProjectileDataTypes.ProjectileMoveType projectileMoveType;
-    [Tooltip("how many projectiles are spawned at once when firing")] 
-    public int projectileCount;
-    [Tooltip("how fast a projectile moves across the battlefield (ignored if hitscan is selected)")] 
-    public int projectileSpeed;
+    
 }
