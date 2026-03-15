@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7706770537561663940}
   - component: {fileID: 4199311556673982876}
   - component: {fileID: 6639912356208048710}
-  - component: {fileID: 4697455844462387926}
+  - component: {fileID: 1302099926497425274}
   m_Layer: 0
   m_Name: PFB_Weapon_Ranged_Pistol_0
   m_TagString: Untagged
@@ -64,7 +64,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OffsetTarget: {fileID: 0}
   OffsetAdjustment: {x: 0, y: 0, z: 0}
---- !u!114 &4697455844462387926
+--- !u!114 &1302099926497425274
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,7 +76,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Weapon: {fileID: 4199311556673982876}
+  _WeaponObject: {fileID: 0}
+  isFiring: 0
+  chargeAmount: 0
 --- !u!1001 &1128353897433029028
 PrefabInstance:
   m_ObjectHideFlags: 0

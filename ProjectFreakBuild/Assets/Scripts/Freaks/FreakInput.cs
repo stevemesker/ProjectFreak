@@ -57,11 +57,11 @@ public class FreakInput : MonoBehaviour
     #region Weapon Usage
     private void useWeapon(InputAction.CallbackContext context)
     {
-        characterData.UseWeapon();
+        characterData.UseCurrentWeapon();
     }
     private void releaseWeapon(InputAction.CallbackContext context)
     {
-        characterData.ReleaseWEapon();
+        characterData.releaseCurrentWeapon();
     }
     #endregion
 }

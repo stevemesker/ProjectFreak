@@ -9,6 +9,7 @@ public class WeaponObject : MonoBehaviour
     public GameObject _HandleBoneObject;
     public GameObject _PlacementBoneOffsetObject;
     private ItemInstanceOffset instOffset; //finds out if the item has the offset script attached. Will be null if not so assume all pointers will be the object's origin
+    //public WeaponItem _WeaponData;
 
     #region Initializing
     private void Awake()

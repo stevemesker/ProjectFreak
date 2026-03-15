@@ -12,18 +12,12 @@ public class WeaponRangedItem : WeaponItem
     [Tooltip("")]
     public bool isHitScan;
 
-    [Tooltip("Requires a held buildup time before attacking begins")]
-    public bool isChargedShot;
-
-    [ShowIf(nameof(isChargedShot))]
-    [Tooltip("If projectile grows in scale based on charging. 0 means no scaling")]
-    public float chargeScaling;
-
-    [Tooltip("If ticked, weapon will not quit firing after first shot and will instead wait until fire rate timer ends")]
-    public bool isAutomatic;
-
     [Tooltip("Will fire multiple shots between firing rounds. Each firing round only ends when burst completes. Must be at least 1")]
     public int shotsPerBurst = 1;
+
+    [ShowIf(nameof(IsBurst))]
+    [Tooltip("How fast the burst will wait to fire the next")]
+    public float BurstFireRate;
 
     [Tooltip("If true, automatically targets closest enemies without requiring the player to face their direction")]
     public bool isLockOn;
@@ -38,15 +32,16 @@ public class WeaponRangedItem : WeaponItem
     [Tooltip("Maximum number of targets the weapon will lock on to")]
     public int lockonTargetCount;
 
-    [ShowIf(nameof(IsBurst))]
-    [Tooltip("How fast the burst will wait to fire the next")]
-    public float BurstFireRate;
+    [Tooltip("number of projectiles are fired simultaneously in a firing round")]
+    public int shotNumber = 1;
 
     [FoldoutGroup("Fire Spread Data")]
+    [ShowIf(nameof(IsSpread))]
     [Tooltip("When fired, projectiles/hitscan will point in a arc within this range in front of the player")]
     public float fireSpread;
 
     [FoldoutGroup("Fire Spread Data")]
+    [ShowIf(nameof(IsSpread))]
     [Tooltip("When fired, origin of the shot will be within a range from the weapon/player origin")]
     public float originSpread;
 
@@ -56,7 +51,10 @@ public class WeaponRangedItem : WeaponItem
     public bool isRandomSpread;
 
     private bool IsBurst() => shotsPerBurst > 1;
-    private bool IsSpread() => fireSpread > 0 || originSpread > 0;
+    
+    private bool IsSpread() => shotNumber > 1;
+
+
     ////////////////////////////////////
 
     //PROJECTILE VARIABLES
@@ -66,10 +64,7 @@ public class WeaponRangedItem : WeaponItem
     [Tooltip("projectiles that are spawned. Can be multiple projectile types which will spawn in different patterns based on the Projectile Pattern selected")]
     public List<GameObject> ProjectilePrefab;
 
-    [FoldoutGroup("---Projectile Data---")]
-    [HideIf(nameof(isHitScan))]
-    [Tooltip("How projectiles are spawned when fired (single, line, cone, ring, charge)")]
-    public ProjectileDataTypes.ProjectilePattern projectilePattern;
+    
 
     //[FoldoutGroup("---Projectile Data---")]
     //[HideIf(nameof(isHitScan))]

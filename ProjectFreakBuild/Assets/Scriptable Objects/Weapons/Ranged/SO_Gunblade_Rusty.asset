@@ -10,39 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f5287a5ad27d2a4fbc3c4775dd0da5d, type: 3}
-  m_Name: SO_Pistol_Rusty
+  m_Name: SO_Gunblade_Rusty
   m_EditorClassIdentifier: 
-  ItemID: 0
-  ItemName: Rusty Pistol
+  ItemID: 1
+  ItemName: Rusty Gunblade
   ItemDescription: Dev item to test mechanics. You shouldn't have this!?
   dropArt: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6, type: 3}
   ItemRarity: 5
-  weaponType: 0
+  weaponType: 1
   weaponPrefab: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6,
     type: 3}
-  weaponFireRate: 0.5
+  weaponFireRate: 1
   weaponWarmUpTime: 1
   weaponKnockback: 5
-  isAutomatic: 1
-  isChargedShot: 0
-  chargeMaxAmount: 3
-  chargeScaling: 0
-  ChargeAutoAttack: 0
   baseDamage: 4
   element: 1
   knockbackHitAmount: 1
   isHitScan: 0
+  isChargedShot: 0
+  chargeScaling: 0
+  isAutomatic: 1
   shotsPerBurst: 1
-  BurstFireRate: 0
   isLockOn: 0
   lockOnDistance: 0
   lockonTargetCount: 0
-  shotNumber: 1
-  fireSpread: 45
+  BurstFireRate: 0
+  fireSpread: 0
   originSpread: 0
-  isRandomSpread: 1
+  isRandomSpread: 0
   ProjectilePrefab:
   - {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
-  projectileSpeed: 15
+  projectilePattern: 0
+  projectileSpeed: 10
   projectileLifeTime: 0
   fireDistance: 10

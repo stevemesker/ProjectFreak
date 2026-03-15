@@ -9,6 +9,8 @@ public interface IDamagable
 
 public interface ITriggerable
 {
+    void SetUpWeapon(ItemSO item, GameObject Wielder);
+    void updateStats(int power, List<ElementType.Element> element);
     void TriggerAttack(int power, List<ElementType.Element> element);
-    bool ReleaseAttack();
+    void ReleaseAttack();
 }

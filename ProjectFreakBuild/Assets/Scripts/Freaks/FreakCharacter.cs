@@ -19,14 +19,36 @@ public class FreakCharacter : MonoBehaviour
     private int weaponSelection;
     [Tooltip("Points to the hand bone so weapon swapping knows where to instantiate the weapon to. IMPORTANT: hand bone must be the lowest level child as swapping checks for children and will delete it when swapping. Can easily break parent chains")]
     public GameObject handPointer;
+    
     private ITriggerable weaponTrigger;
-
     //event Variable//
     [Header("Events")]
     [SerializeField] private PickupEventChannelSO pickupChannel;
 
     //local variables
     private PlayerInput pInput;
+    [SerializeField]GameObject wpn;
+    [SerializeField] float chargeAmount;
+    [SerializeField] bool isCharging = false;
+
+    private void Update()
+    {
+        if(isCharging == true && chargeAmount < _Inventory._FreakEquippedWeapons[weaponSelection].chargeMaxAmount)
+        {
+            chargeAmount += Time.deltaTime;
+            if (chargeAmount >= _Inventory._FreakEquippedWeapons[weaponSelection].chargeMaxAmount)
+            {
+                print("Max Charge reached");
+                chargeAmount = _Inventory._FreakEquippedWeapons[weaponSelection].chargeMaxAmount;
+                if (_Inventory._FreakEquippedWeapons[weaponSelection].ChargeAutoAttack)
+                {
+                    fireWeapon(chargeAmount);
+                    chargeAmount = 0;
+                }
+                return;
+            }
+        }
+    }
 
     #region Initializing
     private void Awake()
@@ -106,30 +128,68 @@ public class FreakCharacter : MonoBehaviour
             if (handPointer.transform.childCount != 0)
             {
                 Destroy(handPointer.transform.GetChild(0).gameObject);
+                wpn = null;
             }
             return;
         }
         if (handPointer.transform.childCount != 0) Destroy(handPointer.transform.GetChild(0).gameObject);
-        Instantiate(_Inventory._FreakEquippedWeapons[weaponSelection].weaponPrefab, handPointer.transform.position, handPointer.transform.transform.rotation, handPointer.transform);
-        weaponTrigger = handPointer.transform.GetChild(0).GetComponent<ITriggerable>();
+
+        //Spawn Current Weapon
+        wpn = Instantiate(_Inventory._FreakEquippedWeapons[weaponSelection].weaponPrefab, handPointer.transform.position, handPointer.transform.transform.rotation, handPointer.transform);
+        wpn.name = _Inventory._FreakEquippedWeapons[weaponSelection].ItemName;
+        
+        wpn.GetComponent<ITriggerable>().SetUpWeapon(_Inventory._FreakEquippedWeapons[weaponSelection], gameObject);
+        
     }
     #endregion
 
-    #region WeaponUse
-    public void UseWeapon()
+    #region UseWeapon
+    public void UseCurrentWeapon()
     {
-        if (_Inventory._FreakEquippedWeapons[weaponSelection] == null) return; //need to add functionality for unarmed attacks here
-        if (weaponTrigger == null) Debug.LogError("Warning! Item: " + handPointer.transform.GetChild(0).transform.name + " has been equipped but does not contain trigger data!");
-        weaponTrigger.TriggerAttack(1, null);
-        //calculate damage per bullet
-        //add buffs and things here
+        //print("using weapon");
+        if (wpn == null) { print("Need to add unarmed strike"); return; }
 
+        //startcharging
+        if (_Inventory._FreakEquippedWeapons[weaponSelection].isChargedShot == true)
+        {
+            print("Charging has begun...");
+            isCharging = true;
+            return;
+        }
+        fireWeapon(1f);
+    }
+    public void releaseCurrentWeapon()
+    {
+        if (_Inventory._FreakEquippedWeapons[weaponSelection].isChargedShot == false)
+        {
+            wpn.GetComponent<ITriggerable>().ReleaseAttack();
+            return;
+        }
+        if (_Inventory._FreakEquippedWeapons[weaponSelection].ChargeAutoAttack == false) fireWeapon(chargeAmount);
+        isCharging = false;
+        chargeAmount = 0;
     }
 
-    public void ReleaseWEapon()
+    void fireWeapon(float multiplier)
     {
-        if (_Inventory._FreakEquippedWeapons[weaponSelection] == null) return; //need to add functionality for unarmed attacks here
-        weaponTrigger.ReleaseAttack();
+        //print("Firing weapon");
+        wpn.GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+    }
+
+    int CalculateDamage(float multiplier)
+    {
+
+        return 0;
+    }
+    List<ElementType.Element> getElementalDamage()
+    {
+        List<ElementType.Element> eleOut = new List<ElementType.Element>();
+        eleOut.Add(_Inventory._FreakEquippedWeapons[weaponSelection].element);
+
+        //add other bonuses here
+        //------------------------
+
+        return eleOut;
     }
     #endregion
 }

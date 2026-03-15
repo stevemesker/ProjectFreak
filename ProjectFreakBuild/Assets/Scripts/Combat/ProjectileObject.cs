@@ -5,8 +5,8 @@ using UnityEngine;
 public class ProjectileObject : MonoBehaviour
 {
     public int damageAmount = 1;
-    public DamageType.Type dType;
-    public ElementType.Element element;
+    [SerializeField] private DamageType.Type dType;
+    public List<ElementType.Element> element;
     public GameObject instigator;
     public float speed;
 
@@ -19,16 +19,26 @@ public class ProjectileObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        transform.position += transform.forward * speed * Time.deltaTime;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        print("Bonk!");
-        IDamagable damagable = collision.collider.GetComponent<IDamagable>();
-        if (damagable == null) { Destroy(gameObject); return; }
+        
+        
 
-        damagable.TakeDamage(damageAmount,dType, instigator, element);
+        if (other.gameObject == instigator)
+        {
+            print("Hit the unit " + other.gameObject.name + " that spawned " + gameObject.name);
+            return;
+        }
+
+        IDamagable damagable = other.GetComponent<IDamagable>();
+        if (damagable == null) { print("Detecting hit " + other.gameObject.name); Destroy(gameObject); return; }
+
+        //spawn hit effects here
+        print("Detecting hit " + other.gameObject.name);
         Destroy(gameObject);
+        
     }
 }

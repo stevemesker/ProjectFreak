@@ -5,14 +5,7 @@ namespace ProjectileDataTypes
         single,
         line,
         cone,
-        ring,
-        charge
+        ring
     }
 
-    public enum ProjectileMoveType
-    {
-        normal,
-        hitscan,
-        trail
-    }
 }
