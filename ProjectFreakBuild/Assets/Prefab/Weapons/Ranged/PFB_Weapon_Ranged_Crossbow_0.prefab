@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6611920325481407748
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7277777319428685011}
+  - component: {fileID: 8065793852694648122}
+  - component: {fileID: 6331621189674928032}
+  - component: {fileID: 7112332799273779350}
+  m_Layer: 0
+  m_Name: PFB_Weapon_Ranged_Crossbow_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7277777319428685011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611920325481407748}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.085787, y: 0.899, z: 0.0422287}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8065793852694648122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611920325481407748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d216f5265c251a740b00de1e96b0033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Art: {fileID: 0}
+  _HandleBoneObject: {fileID: 0}
+  _PlacementBoneOffsetObject: {fileID: 0}
+--- !u!114 &6331621189674928032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611920325481407748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a8536b48439c504cb02fed3947e09c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OffsetTarget: {fileID: 0}
+  OffsetAdjustment: {x: 0, y: 0, z: 0}
+--- !u!114 &7112332799273779350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611920325481407748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Wielder: {fileID: 0}
+  _WeaponObject: {fileID: 0}
+  canFire: 1
+  isReleased: 1
