@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5287a5ad27d2a4fbc3c4775dd0da5d, type: 3}
+  m_Name: SO_CrossBow_Rusty
+  m_EditorClassIdentifier: 
+  ItemID: 0
+  ItemName: Old Crossbow
+  ItemDescription: A rusty old crossbow from a forgotten time
+  dropArt: {fileID: 0}
+  ItemRarity: 0
+  weaponType: 0
+  weaponPrefab: {fileID: 6611920325481407748, guid: ced2b75669ac0e54d8c099697f31e7ad,
+    type: 3}
+  weaponFireRate: 0
+  weaponWarmUpTime: 0
+  weaponKnockback: 0
+  isAutomatic: 0
+  isChargedShot: 0
+  chargeMaxAmount: 0
+  chargeScaling: 0
+  ChargeAutoAttack: 0
+  baseDamage: 5
+  element: 0
+  knockbackHitAmount: 5
+  isHitScan: 0
+  shotsPerBurst: 1
+  BurstFireRate: 0
+  isLockOn: 0
+  lockOnDistance: 0
+  lockonTargetCount: 0
+  shotNumber: 1
+  fireSpread: 0
+  originSpread: 0
+  isRandomSpread: 0
+  ProjectilePrefab: []
+  projectileSpeed: 15
+  projectileLifeTime: 30
+  fireDistance: 0

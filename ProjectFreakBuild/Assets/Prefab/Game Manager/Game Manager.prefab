@@ -44,4 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df799777379cf64f9555f5694afb99b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemStackSizeMax: 0
+  pickupChannel: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
+  ItemStackSizeMax: 100

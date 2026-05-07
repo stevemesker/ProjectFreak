@@ -71,6 +71,24 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""971c8331-9184-4988-98e7-a84bdcc24bb9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FreakWeaponScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""b730652e-3c83-4695-b0cf-fbe5e2a6894f"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -269,6 +287,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4f08779-796f-42ac-861b-20be2b8fad39"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f635b9b2-1595-46bd-953e-aac730978c9d"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakWeaponScroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -980,6 +1020,160 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Freak"",
+            ""id"": ""28841589-7932-432d-beb0-9fdfdce561ed"",
+            ""actions"": [
+                {
+                    ""name"": ""FreakPickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""749d63b5-62e3-4eae-b921-fa8280c5f877"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FreakWeaponSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""a7c1416a-ebcc-4265-8e45-d5c8b20fdc1b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FreakWeaponScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""0ec60005-388a-428e-b039-c93102d06a53"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""FreakWeaponActivation"",
+                    ""type"": ""Button"",
+                    ""id"": ""ff1c6fb2-74bc-4356-a87e-6bd046e49f7d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""72be585e-787b-4bc8-8c5f-95a68cd6af25"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreakPickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d4facf79-d0f7-49c9-9ffe-3a9e2a541028"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakPickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard Buttons"",
+                    ""id"": ""7b74443c-ece6-41c3-bb19-a857803befde"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FreakWeaponSelect"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""496331a3-eeb7-4138-acea-60aa491cf612"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakWeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""08f63b19-95a2-4fef-b65f-b7577b04ae5a"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreakWeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""2c6b6d98-8e63-47fc-93fd-9417b0c2ce0f"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakWeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""119cc638-a1b1-4441-a290-c1e282c9c0ad"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreakWeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a76930f-dca4-4e4f-978e-0f8cc80c2eaf"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakWeaponScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fb30eec0-3adf-436d-aca7-8b71b937638f"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreakWeaponActivation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bd7a8572-c909-4999-84b5-80ae85accf86"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreakWeaponActivation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1052,6 +1246,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Slash = m_Player.FindAction("Slash", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Pickup = m_Player.FindAction("Pickup", throwIfNotFound: true);
+        m_Player_FreakWeaponScroll = m_Player.FindAction("FreakWeaponScroll", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1068,6 +1264,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Boat = asset.FindActionMap("Boat", throwIfNotFound: true);
         m_Boat_Move = m_Boat.FindAction("Move", throwIfNotFound: true);
         m_Boat_Look = m_Boat.FindAction("Look", throwIfNotFound: true);
+        // Freak
+        m_Freak = asset.FindActionMap("Freak", throwIfNotFound: true);
+        m_Freak_FreakPickup = m_Freak.FindAction("FreakPickup", throwIfNotFound: true);
+        m_Freak_FreakWeaponSelect = m_Freak.FindAction("FreakWeaponSelect", throwIfNotFound: true);
+        m_Freak_FreakWeaponScroll = m_Freak.FindAction("FreakWeaponScroll", throwIfNotFound: true);
+        m_Freak_FreakWeaponActivation = m_Freak.FindAction("FreakWeaponActivation", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1134,6 +1336,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Slash;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Pickup;
+    private readonly InputAction m_Player_FreakWeaponScroll;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1143,6 +1347,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Player_Look;
         public InputAction @Slash => m_Wrapper.m_Player_Slash;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @Pickup => m_Wrapper.m_Player_Pickup;
+        public InputAction @FreakWeaponScroll => m_Wrapper.m_Player_FreakWeaponScroll;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1167,6 +1373,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Pickup.started += instance.OnPickup;
+            @Pickup.performed += instance.OnPickup;
+            @Pickup.canceled += instance.OnPickup;
+            @FreakWeaponScroll.started += instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.performed += instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.canceled += instance.OnFreakWeaponScroll;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1186,6 +1398,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Pickup.started -= instance.OnPickup;
+            @Pickup.performed -= instance.OnPickup;
+            @Pickup.canceled -= instance.OnPickup;
+            @FreakWeaponScroll.started -= instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.performed -= instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.canceled -= instance.OnFreakWeaponScroll;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1375,6 +1593,76 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public BoatActions @Boat => new BoatActions(this);
+
+    // Freak
+    private readonly InputActionMap m_Freak;
+    private List<IFreakActions> m_FreakActionsCallbackInterfaces = new List<IFreakActions>();
+    private readonly InputAction m_Freak_FreakPickup;
+    private readonly InputAction m_Freak_FreakWeaponSelect;
+    private readonly InputAction m_Freak_FreakWeaponScroll;
+    private readonly InputAction m_Freak_FreakWeaponActivation;
+    public struct FreakActions
+    {
+        private @PlayerInput m_Wrapper;
+        public FreakActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @FreakPickup => m_Wrapper.m_Freak_FreakPickup;
+        public InputAction @FreakWeaponSelect => m_Wrapper.m_Freak_FreakWeaponSelect;
+        public InputAction @FreakWeaponScroll => m_Wrapper.m_Freak_FreakWeaponScroll;
+        public InputAction @FreakWeaponActivation => m_Wrapper.m_Freak_FreakWeaponActivation;
+        public InputActionMap Get() { return m_Wrapper.m_Freak; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(FreakActions set) { return set.Get(); }
+        public void AddCallbacks(IFreakActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FreakActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FreakActionsCallbackInterfaces.Add(instance);
+            @FreakPickup.started += instance.OnFreakPickup;
+            @FreakPickup.performed += instance.OnFreakPickup;
+            @FreakPickup.canceled += instance.OnFreakPickup;
+            @FreakWeaponSelect.started += instance.OnFreakWeaponSelect;
+            @FreakWeaponSelect.performed += instance.OnFreakWeaponSelect;
+            @FreakWeaponSelect.canceled += instance.OnFreakWeaponSelect;
+            @FreakWeaponScroll.started += instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.performed += instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.canceled += instance.OnFreakWeaponScroll;
+            @FreakWeaponActivation.started += instance.OnFreakWeaponActivation;
+            @FreakWeaponActivation.performed += instance.OnFreakWeaponActivation;
+            @FreakWeaponActivation.canceled += instance.OnFreakWeaponActivation;
+        }
+
+        private void UnregisterCallbacks(IFreakActions instance)
+        {
+            @FreakPickup.started -= instance.OnFreakPickup;
+            @FreakPickup.performed -= instance.OnFreakPickup;
+            @FreakPickup.canceled -= instance.OnFreakPickup;
+            @FreakWeaponSelect.started -= instance.OnFreakWeaponSelect;
+            @FreakWeaponSelect.performed -= instance.OnFreakWeaponSelect;
+            @FreakWeaponSelect.canceled -= instance.OnFreakWeaponSelect;
+            @FreakWeaponScroll.started -= instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.performed -= instance.OnFreakWeaponScroll;
+            @FreakWeaponScroll.canceled -= instance.OnFreakWeaponScroll;
+            @FreakWeaponActivation.started -= instance.OnFreakWeaponActivation;
+            @FreakWeaponActivation.performed -= instance.OnFreakWeaponActivation;
+            @FreakWeaponActivation.canceled -= instance.OnFreakWeaponActivation;
+        }
+
+        public void RemoveCallbacks(IFreakActions instance)
+        {
+            if (m_Wrapper.m_FreakActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IFreakActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FreakActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FreakActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public FreakActions @Freak => new FreakActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1427,6 +1715,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnSlash(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
+        void OnFreakWeaponScroll(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1445,5 +1735,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+    }
+    public interface IFreakActions
+    {
+        void OnFreakPickup(InputAction.CallbackContext context);
+        void OnFreakWeaponSelect(InputAction.CallbackContext context);
+        void OnFreakWeaponScroll(InputAction.CallbackContext context);
+        void OnFreakWeaponActivation(InputAction.CallbackContext context);
     }
 }
