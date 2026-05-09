@@ -11,6 +11,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public List<GameObject> connectionsCurrent;
 
     [SerializeField]private List<GameObject> connectionList; //all of the nodes within range
+    [SerializeField] private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
 
     RaycastHit hit;
 
@@ -35,7 +36,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         print("Calculating snapping...");
         Vector3 temp = Input.mousePosition;
         float comparison; //used to tell distance comparison. Will use the largest value between this object and the connected object
-        int exitcounter = 20; //used to quickly break out of the loop. Dunno if needed
+        int exitcounter = recursionDetectionResolution; //used to quickly break out of the loop. Dunno if needed
 
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
@@ -48,8 +49,8 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 temp = connectionsCurrent[i].transform.position + ((temp - connectionsCurrent[i].transform.position).normalized) * comparison;
                 
                 exitcounter--;
-                if (exitcounter >0) i = 0;
-                else Debug.LogError("Warning! Over 20 recusions were found when calculating snapping distance. That's not good");
+                if (exitcounter > 0) i = 0;
+                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient..."); return transform.position; }
             }
 
             Debug.DrawLine(temp, Input.mousePosition, Color.red);
