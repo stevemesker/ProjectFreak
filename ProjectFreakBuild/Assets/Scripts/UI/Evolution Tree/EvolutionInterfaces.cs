@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IBridgeable
 {
+    float getMaxRange();
     bool canBridge();
     void BridgeNode(GameObject origin);
 }

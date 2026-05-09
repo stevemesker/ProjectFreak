@@ -22,10 +22,48 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
+        if (connectionsCurrent.Count == 0) transform.position = Input.mousePosition;
+        else transform.position = calculatePointerPosition();
+
         connectionList = FindConnections();
         connectionList = buildConnections(connectionList);
         drawLineConnectionTemp(false);
+    }
+
+    Vector3 calculatePointerPosition()
+    {
+        print("Calculating snapping...");
+        Vector3 temp = Input.mousePosition;
+        float comparison; //used to tell distance comparison. Will use the largest value between this object and the connected object
+        int exitcounter = 20; //used to quickly break out of the loop. Dunno if needed
+
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) comparison = Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width/2);
+            else comparison = connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange();
+
+            if (Vector3.Distance(temp, connectionsCurrent[i].transform.position) > comparison) 
+            { 
+                print("Too Far! Trying to move past distance of " + comparison + ". Currently at " + Vector3.Distance(temp, connectionsCurrent[i].transform.position));
+                temp = connectionsCurrent[i].transform.position + ((temp - connectionsCurrent[i].transform.position).normalized) * comparison;
+                
+                exitcounter--;
+                if (exitcounter >0) i = 0;
+                else Debug.LogError("Warning! Over 20 recusions were found when calculating snapping distance. That's not good");
+            }
+
+            Debug.DrawLine(temp, Input.mousePosition, Color.red);
+            Debug.DrawLine(connectionsCurrent[i].transform.position, temp, Color.green);
+        }
+
+        
+
+        return temp;
+    }
+
+    public float getMaxRange()
+    {
+        return Range + (GetComponent<RectTransform>().rect.width/2);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -66,10 +104,10 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         ).ToList();
 
         List<GameObject> temp = new List<GameObject>();
-        for (int i = connectionsMax - connectionsCurrent.Count; i > 0; i--)
+        for (int i = 0; i < connectionsMax - connectionsCurrent.Count; i++)
         {
-            print(i);
             if (targets.Count <= i) return temp;
+            if (connectionsCurrent.Contains(targets[i]) == false)
             temp.Add(targets[i]);
         }
         return temp;
