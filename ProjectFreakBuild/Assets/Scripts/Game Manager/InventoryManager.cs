@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -6,9 +7,10 @@ using Sirenix.Serialization;
 
 public class InventoryManager : MonoBehaviour
 {
-    ////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
     //Manager Script that handles inventory adding, sorting, and searching
-    ////////////////////////////////////////////////////////////////////////
+    //Mostly used in dungeons and transfers data to game manager when finished
+    /////////////////////////////////////////////////////////////////////////////
 
     //Static Controller//
     public static InventoryManager _PlayerInventory;
@@ -22,11 +24,17 @@ public class InventoryManager : MonoBehaviour
     //Ingredient Variables//
     [OdinSerialize] 
     public Dictionary<IngredientItem, int> playerIngredients = new Dictionary<IngredientItem, int>();
+
+    public IReadOnlyDictionary<IngredientItem, int> Ingredients
+        => playerIngredients;
+
     [OdinSerialize]
     public Dictionary<int, int> testdict = new Dictionary<int, int>();
     
     [Tooltip("Handles the maximum stack size any item can be")]
     public int ItemStackSizeMax;
+
+    public event Action OnInventoryChanged;
 
     //
 
@@ -81,6 +89,7 @@ public class InventoryManager : MonoBehaviour
                 Debug.LogWarning("Warning! Cannot figure out what type of item was just picked up!");
                 break;
         }
+        OnInventoryChanged?.Invoke();
     }
     #endregion
 
@@ -128,17 +137,22 @@ public class InventoryManager : MonoBehaviour
             {
                 print("Emptying out ingredient inventory");
                 playerIngredients.Remove(item);
+                OnInventoryChanged?.Invoke();
+                //print("Boop");
                 return true;
             }
             playerIngredients[item] = playerIngredients[item] - amountRemoved;
             print("Removal Complete! Current amount: " + playerIngredients[item]);
+            OnInventoryChanged?.Invoke();
             return true;
         }
         else
         {
             Debug.LogWarning("Warning! Attempting to remove " + item.ItemName + "But it was not found in player inventory.");
+            OnInventoryChanged?.Invoke();
             return false;
         }
+        
     }
 
     [Button]

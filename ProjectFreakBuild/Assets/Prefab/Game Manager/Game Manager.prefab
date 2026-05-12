@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8085353526394455601}
+  - component: {fileID: 758167766651089015}
   - component: {fileID: 2358789497967656618}
   m_Layer: 0
   m_Name: Game Manager
@@ -32,6 +33,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &758167766651089015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0a0d05c7d671154d91552a5edc91e6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2358789497967656618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44,5 +57,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df799777379cf64f9555f5694afb99b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponInventorySize: 15
   pickupChannel: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
   ItemStackSizeMax: 100
