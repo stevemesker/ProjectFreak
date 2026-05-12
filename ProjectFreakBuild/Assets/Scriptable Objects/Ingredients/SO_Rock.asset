@@ -16,4 +16,5 @@ MonoBehaviour:
   ItemName: Rock
   ItemDescription: it's just a rock... This is a developer test item
   dropArt: {fileID: 6693080814654682845, guid: b27f3563a64f7ce4b963225e97385c21, type: 3}
-  itemSprite: {fileID: 0}
+  ItemRarity: 0
+  itemSprite: {fileID: 21300000, guid: a38145efc70ec354497cd309a0e42e72, type: 3}

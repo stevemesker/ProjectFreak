@@ -10,8 +10,8 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public int connectionsMax = 2;
     public List<GameObject> connectionsCurrent;
 
-    [SerializeField]private List<GameObject> connectionList; //all of the nodes within range
-    [SerializeField] private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
+    [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
+    [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")]private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
 
     RaycastHit hit;
 
@@ -33,7 +33,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     Vector3 calculatePointerPosition()
     {
-        print("Calculating snapping...");
+        //print("Calculating snapping...");
         Vector3 temp = Input.mousePosition;
         float comparison; //used to tell distance comparison. Will use the largest value between this object and the connected object
         int exitcounter = recursionDetectionResolution; //used to quickly break out of the loop. Dunno if needed
@@ -45,7 +45,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
             if (Vector3.Distance(temp, connectionsCurrent[i].transform.position) > comparison) 
             { 
-                print("Too Far! Trying to move past distance of " + comparison + ". Currently at " + Vector3.Distance(temp, connectionsCurrent[i].transform.position));
+                //print("Too Far! Trying to move past distance of " + comparison + ". Currently at " + Vector3.Distance(temp, connectionsCurrent[i].transform.position));
                 temp = connectionsCurrent[i].transform.position + ((temp - connectionsCurrent[i].transform.position).normalized) * comparison;
                 
                 exitcounter--;
@@ -62,10 +62,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return temp;
     }
 
-    public float getMaxRange()
-    {
-        return Range + (GetComponent<RectTransform>().rect.width/2);
-    }
+    
 
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -79,6 +76,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             print(targets[i].name + " is added to the list");
             connectionsCurrent.Add(targets[i]);
+            targets[i].GetComponent<IBridgeable>().BridgeNode(gameObject);
         }
     }
     #endregion
@@ -93,7 +91,14 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void BridgeNode(GameObject origin)
     {
         print(gameObject.name + " received a bridge to " + origin.name);
+        connectionsCurrent.Add(origin);
     }
+
+    public float getMaxRange()
+    {
+        return Range + (GetComponent<RectTransform>().rect.width / 2);
+    }
+
     #endregion
 
     List<GameObject> buildConnections(List<GameObject> targets)
@@ -109,7 +114,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             if (targets.Count <= i) return temp;
             if (connectionsCurrent.Contains(targets[i]) == false)
-            temp.Add(targets[i]);
+            temp.Add(targets[i]); 
         }
         return temp;
     }
