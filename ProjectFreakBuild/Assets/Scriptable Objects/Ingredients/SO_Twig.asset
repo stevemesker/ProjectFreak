@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd940d95ef006f14cac2ff4a581cbd2c, type: 3}
-  m_Name: SO_Rock
+  m_Name: SO_Twig
   m_EditorClassIdentifier: 
-  ItemID: 0
-  ItemName: Rock
-  ItemDescription: it's just a rock... This is a developer test item
-  dropArt: {fileID: 6693080814654682845, guid: b27f3563a64f7ce4b963225e97385c21, type: 3}
+  ItemID: 1
+  ItemName: Twig
+  ItemDescription: It's just a stick.... how did this get in here?
+  dropArt: {fileID: 0}
   ItemRarity: 0
-  itemSprite: {fileID: 21300000, guid: a38145efc70ec354497cd309a0e42e72, type: 3}
+  itemSprite: {fileID: 21300000, guid: 6ff43ef93d3e8ee4180e76e55307cd94, type: 3}
