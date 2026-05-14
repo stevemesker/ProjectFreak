@@ -418,7 +418,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IngredientNamePointer: {fileID: 1652180451416873546}
   IngredientIconPointer: {fileID: 72718078370998661}
+  NodePrefabToSpawn: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+    type: 3}
   Item: {fileID: 0}
+  itemAmount: 0
 --- !u!1 &4958237520629017244
 GameObject:
   m_ObjectHideFlags: 0

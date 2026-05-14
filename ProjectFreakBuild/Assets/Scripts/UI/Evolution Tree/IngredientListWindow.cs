@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 public class IngredientListWindow : MonoBehaviour
 {
     public GameObject ListHolderPointer;
+    public GameObject RuneFieldPointer;
     public GameObject ButtonListPrefab;
 
     [SerializeField, Tooltip("Current List of button prefabs. Used to access their data to compare to the master list in inventory manager")]

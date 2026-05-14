@@ -6,10 +6,11 @@ public class CoreNode : MonoBehaviour, IBridgeable
 {
     public int CoreNodeMaxPower;
     public int CoreNodeCurrectPower;
+    public List<GameObject> connectionNodes;
 
-    public void BridgeNode(GameObject origin)
+    public void BridgeNode(GameObject origin, GameObject bridge)
     {
-        throw new System.NotImplementedException();
+        connectionNodes.Add(origin);
     }
 
     public bool canBridge()

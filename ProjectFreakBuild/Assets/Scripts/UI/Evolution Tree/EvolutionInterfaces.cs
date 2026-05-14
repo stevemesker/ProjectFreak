@@ -6,5 +6,6 @@ public interface IBridgeable
 {
     float getMaxRange();
     bool canBridge();
-    void BridgeNode(GameObject origin);
+    void BridgeNode(GameObject origin, GameObject bridge);
 }
+

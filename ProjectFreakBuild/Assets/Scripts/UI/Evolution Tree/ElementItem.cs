@@ -13,6 +13,10 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
     [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")]private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
 
+    [Header("Bridge Variables")]
+    [SerializeField, Tooltip("Bridge prefab object to be spawned when connections are formed")] private GameObject BridgePrefabRef;
+    private Dictionary<GameObject, GameObject> ConnectionBridgeList = new Dictionary<GameObject,GameObject>(); //other node is key, value is the bridge connecting them
+
     RaycastHit hit;
 
     #region Drag
@@ -28,6 +32,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         connectionList = FindConnections();
         connectionList = buildConnections(connectionList);
+        UpdateConnections();
         drawLineConnectionTemp(false);
     }
 
@@ -70,16 +75,43 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         connectNodes(connectionList);
     }
 
+    #endregion
+
+    public void connectBridge(GameObject bridge, GameObject connectTo)
+    {
+        ConnectionBridgeList.Add(connectTo, bridge);
+    }
+
     void connectNodes(List<GameObject> targets)
     {
+        GameObject temp;
         for (int i = 0; i < targets.Count; i++)
         {
             print(targets[i].name + " is added to the list");
             connectionsCurrent.Add(targets[i]);
-            targets[i].GetComponent<IBridgeable>().BridgeNode(gameObject);
+            temp = Instantiate(BridgePrefabRef, transform.position, Quaternion.identity, transform.parent.transform);
+            temp.transform.SetAsFirstSibling();
+            temp.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
+            targets[i].GetComponent<IBridgeable>().BridgeNode(gameObject, temp);
+            BridgeInstaceToNode(temp, targets[i]);
+            //ConnectionBridgeList.Add(targets[i], temp);
         }
     }
-    #endregion
+    void BridgeInstaceToNode(GameObject bridge, GameObject connectTo)
+    {
+        bridge.GetComponent<NodeBridge>().BuildConnection(gameObject, connectTo);
+        bridge.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectTo.transform.position));
+        ConnectionBridgeList.Add(connectTo, bridge);
+    }
+
+    void UpdateConnections()
+    {
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position));
+        }
+    }
+    
 
     #region Bridgeable Interface
     public bool canBridge()
@@ -88,10 +120,11 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return true;
     }
 
-    public void BridgeNode(GameObject origin)
+    public void BridgeNode(GameObject origin, GameObject bridge)
     {
         print(gameObject.name + " received a bridge to " + origin.name);
         connectionsCurrent.Add(origin);
+        ConnectionBridgeList.Add(origin, bridge);
     }
 
     public float getMaxRange()
@@ -101,6 +134,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     #endregion
 
+    #region Connection Building
     List<GameObject> buildConnections(List<GameObject> targets)
     {
         //function that takes the list of targets within range and returns which of them are free to build a connection
@@ -132,7 +166,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
         return temp;
     }
-
+    #endregion
 
     #region debug
 
