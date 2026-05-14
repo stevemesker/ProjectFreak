@@ -163,10 +163,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Range: 100
-  connectionsMax: 4
+  connectionsMax: 1
   connectionsCurrent: []
   connectionList: []
   recursionDetectionResolution: 30
+  BridgePrefabRef: {fileID: 1126975770387994506, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
+    type: 3}
 --- !u!114 &4375122606369374372
 MonoBehaviour:
   m_ObjectHideFlags: 0

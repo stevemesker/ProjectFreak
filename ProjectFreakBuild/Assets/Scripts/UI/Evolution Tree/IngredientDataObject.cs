@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -8,10 +9,17 @@ using Sirenix.OdinInspector;
 
 public class IngredientDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    [Header("<====Pointer Variables=====>")]
     public TextMeshProUGUI IngredientNamePointer;
     public Image IngredientIconPointer;
+    [SerializeField] private GameObject NodePrefabToSpawn;
+
+    [Header("<====Current Data=====>")]
     public IngredientItem Item;
     public int itemAmount;
+
+    //hidden private variables
+    private Vector2 _startPosition;
 
     [Button("Activate Item Test")]
     public void FillData(IngredientItem item, int amount)
@@ -25,16 +33,29 @@ public class IngredientDataObject : MonoBehaviour, IDragHandler, IBeginDragHandl
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        _startPosition = transform.position;
+        
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        transform.position = eventData.position;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        var hits = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, hits);
+
+        var hit = hits.FirstOrDefault(t => t.gameObject.CompareTag("UI Drag Field"));
+        if (hit.isValid)
+        {
+            Debug.Log("Dropping onto field");
+            Instantiate(NodePrefabToSpawn, eventData.position, Quaternion.identity ,hit.gameObject.transform);
+            transform.position = _startPosition;
+        }
+
+        transform.position = _startPosition;
+
     }
 }
