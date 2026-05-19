@@ -4,17 +4,24 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 
-public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IBridgeable
+public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IBridgeable, IConnectable
 {
+    [Header("<=====Node Settings=====>")]
     public int Range;
     public int connectionsMax = 2;
-    public List<GameObject> connectionsCurrent;
-
-    [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
-    [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")]private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
-
-    [Header("Bridge Variables")]
     [SerializeField, Tooltip("Bridge prefab object to be spawned when connections are formed")] private GameObject BridgePrefabRef;
+    [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")] private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
+
+    [Header("<=====Connections Lists")]
+    public List<GameObject> connectionsCurrent;
+    public GameObject CoreNode;
+
+    [Header("<=====Power=====>")]
+    public int RequiredPower; //how much power the node needs to function
+    public int CurrentPower; //how much power this node is using
+
+    [Header("<-----Private/Debug----->")]
+    [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
     private Dictionary<GameObject, GameObject> ConnectionBridgeList = new Dictionary<GameObject,GameObject>(); //other node is key, value is the bridge connecting them
 
     RaycastHit hit;
@@ -77,6 +84,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     #endregion
 
+    #region Bridgeable Interface
     public void connectBridge(GameObject bridge, GameObject connectTo)
     {
         ConnectionBridgeList.Add(connectTo, bridge);
@@ -94,8 +102,10 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             temp.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
             targets[i].GetComponent<IBridgeable>().BridgeNode(gameObject, temp);
             BridgeInstaceToNode(temp, targets[i]);
+            if (targets[i].GetComponent<IConnectable>() != null) { if (targets[i].GetComponent<IConnectable>().GetCoreNode() != null) CoreNode = targets[i].GetComponent<IConnectable>().GetCoreNode(); }
             //ConnectionBridgeList.Add(targets[i], temp);
         }
+        if (CoreNode != null) ConnectNode(CoreNode);
     }
     void BridgeInstaceToNode(GameObject bridge, GameObject connectTo)
     {
@@ -113,7 +123,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     }
     
 
-    #region Bridgeable Interface
+    
     public bool canBridge()
     {
         if (connectionsCurrent.Count >= connectionsMax) return false;
@@ -166,6 +176,41 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
         return temp;
     }
+    #endregion
+
+    #region Connectable Interface
+    public void ConnectNode(GameObject connectTo)
+    {
+        CoreNode = connectTo;
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            if (connectionsCurrent[i].GetComponent<IConnectable>() != null)
+            {
+                if (connectionsCurrent[i].GetComponent<IConnectable>().GetCoreNode() != connectTo) 
+                { 
+                    print("Connecting nodes to " + connectTo.name);
+                    connectionsCurrent[i].GetComponent<IConnectable>().ConnectNode(connectTo);
+                }
+            }
+        }
+        return;
+    }
+
+    public void ConsumePower()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool PowerRequired()
+    {
+        return false;
+    }
+
+    public GameObject GetCoreNode()
+    {
+        return CoreNode;
+    }
+
     #endregion
 
     #region debug

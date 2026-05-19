@@ -46,12 +46,14 @@ public class IngredientDataObject : MonoBehaviour, IDragHandler, IBeginDragHandl
     {
         var hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, hits);
+        GameObject temp;
 
         var hit = hits.FirstOrDefault(t => t.gameObject.CompareTag("UI Drag Field"));
         if (hit.isValid)
         {
             Debug.Log("Dropping onto field");
-            Instantiate(NodePrefabToSpawn, eventData.position, Quaternion.identity ,hit.gameObject.transform);
+            temp = Instantiate(NodePrefabToSpawn, eventData.position, Quaternion.identity ,hit.gameObject.transform);
+            hit.gameObject.GetComponent<RuneFieldManager>().addRuneList(temp);
             transform.position = _startPosition;
         }
 
