@@ -196,14 +196,28 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return;
     }
 
-    public void ConsumePower()
+    public void ConsumePower(int amount)
     {
-        throw new System.NotImplementedException();
+        if (CoreNode == null) return;
+        CoreNode.GetComponent<IConnectable>().ConsumePower(RequiredPower);
+        CurrentPower = RequiredPower;
+
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            if (connectionsCurrent[i].GetComponent<IConnectable>() != null)
+            {
+                if (connectionsCurrent[i].GetComponent<IConnectable>().PowerRequired() == true)
+                {
+                    connectionsCurrent[i].GetComponent<IConnectable>().ConsumePower(0);
+                }
+            }
+        }
     }
 
     public bool PowerRequired()
     {
-        return false;
+        if (CurrentPower == RequiredPower) return false;
+        return true;
     }
 
     public GameObject GetCoreNode()

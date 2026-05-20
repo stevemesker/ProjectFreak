@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
 {
     public int CoreNodeMaxPower;
-    public int CoreNodeCurrectPower;
+    public int CoreNodeCurrentPower;
     public List<GameObject> connectionNodes;
     public RuneFieldManager rField;
 
@@ -37,15 +37,26 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
     [Button("Send Power")]
     public void SendPOwerOut()
     {
+        ResetPower();
         for (int i = 0; i < connectionNodes.Count; i++)
         {
-            connectionNodes[i].GetComponent<IConnectable>().ConsumePower();
+            connectionNodes[i].GetComponent<IConnectable>().ConsumePower(0);
         }
     }
 
-    public void ConsumePower()
+    public void ResetPower()
     {
-        return;
+        CoreNodeCurrentPower = CoreNodeMaxPower;
+        rField.ResetRunePower();
+    }
+
+    public void ConsumePower(int amount)
+    {
+        CoreNodeCurrentPower -= amount;
+        if (CoreNodeCurrentPower < 0)
+        {
+            Debug.LogWarning("Warning! Not enough power! Cannot save current shade...");
+        }
     }
 
     public void DisconnectNode()
