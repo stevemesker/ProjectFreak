@@ -19,6 +19,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     [Header("<=====Power=====>")]
     public int RequiredPower; //how much power the node needs to function
     public int CurrentPower; //how much power this node is using
+    [SerializeField] private bool isChecked; //used to stop recursion on power checks
 
     [Header("<-----Private/Debug----->")]
     [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
@@ -95,7 +96,6 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         GameObject temp;
         for (int i = 0; i < targets.Count; i++)
         {
-            print(targets[i].name + " is added to the list");
             connectionsCurrent.Add(targets[i]);
             temp = Instantiate(BridgePrefabRef, transform.position, Quaternion.identity, transform.parent.transform);
             temp.transform.SetAsFirstSibling();
@@ -105,7 +105,11 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             if (targets[i].GetComponent<IConnectable>() != null) { if (targets[i].GetComponent<IConnectable>().GetCoreNode() != null) CoreNode = targets[i].GetComponent<IConnectable>().GetCoreNode(); }
             //ConnectionBridgeList.Add(targets[i], temp);
         }
-        if (CoreNode != null) ConnectNode(CoreNode);
+        if (CoreNode != null)
+        {
+            ConnectNode(CoreNode);
+            CoreNode.GetComponent<IConnectable>().ConsumePower();
+        }
     }
     void BridgeInstaceToNode(GameObject bridge, GameObject connectTo)
     {
@@ -196,28 +200,33 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return;
     }
 
-    public void ConsumePower(int amount)
+    public void ConsumePower()
     {
-        if (CoreNode == null) return;
-        CoreNode.GetComponent<IConnectable>().ConsumePower(RequiredPower);
-        CurrentPower = RequiredPower;
-
+        if (CoreNode.GetComponent<ICoreNode>() == null) return;
+        isChecked = true;
+        if (CurrentPower != RequiredPower)
+        {
+            int temp = CoreNode.GetComponent<ICoreNode>().CoreNodePowerConsume(RequiredPower - CurrentPower);
+            if (temp < RequiredPower - CurrentPower) return;
+            CurrentPower += temp;
+        }
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            if (connectionsCurrent[i].GetComponent<IConnectable>() != null)
+            if (connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked() == false)
             {
-                if (connectionsCurrent[i].GetComponent<IConnectable>().PowerRequired() == true)
-                {
-                    connectionsCurrent[i].GetComponent<IConnectable>().ConsumePower(0);
-                }
+                connectionsCurrent[i].GetComponent<IConnectable>().ConsumePower();
             }
         }
     }
 
-    public bool PowerRequired()
+    public bool PowerChecked()
     {
-        if (CurrentPower == RequiredPower) return false;
-        return true;
+        return isChecked;
+    }
+
+    public void CheckedReset()
+    {
+        isChecked = false;
     }
 
     public GameObject GetCoreNode()

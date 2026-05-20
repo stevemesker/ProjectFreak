@@ -14,15 +14,17 @@ public interface IConnectable
     
     void ConnectNode(GameObject connectTo);
 
-    //called from core node to figure out what nodes have enough power
-    void ConsumePower(int amount);
+    void ConsumePower();
 
-    //checks if removal of node removes it from the network
-    //void DisconnectNode();
-
-    //used to return core node
     GameObject GetCoreNode();
 
-    bool PowerRequired();
+    bool PowerChecked();
+}
+
+public interface ICoreNode
+{
+    bool hasPower();
+
+    int CoreNodePowerConsume(int AmountToTake);
 }
 

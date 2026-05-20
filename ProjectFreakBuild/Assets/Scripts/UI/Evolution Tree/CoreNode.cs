@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
+public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
 {
     public int CoreNodeMaxPower;
     public int CoreNodeCurrentPower;
@@ -34,14 +34,16 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
     }
     #endregion
 
+    #region debug
     [Button("Send Power")]
-    public void SendPOwerOut()
+    public void SendPowerOut()
     {
-        ResetPower();
-        for (int i = 0; i < connectionNodes.Count; i++)
+        
+        ConsumePower();
+        /*for (int i = 0; i < connectionNodes.Count; i++)
         {
-            connectionNodes[i].GetComponent<IConnectable>().ConsumePower(0);
-        }
+            connectionNodes[i].GetComponent<IConnectable>().ConsumePower();
+        }*/
     }
 
     public void ResetPower()
@@ -49,13 +51,18 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
         CoreNodeCurrentPower = CoreNodeMaxPower;
         rField.ResetRunePower();
     }
+    #endregion
 
-    public void ConsumePower(int amount)
+    public void ConsumePower()
     {
-        CoreNodeCurrentPower -= amount;
-        if (CoreNodeCurrentPower < 0)
+        //triggers when a node is linked to the core's chain
+        rField.ResetRuneChecked();
+        if (hasPower() == false) return; //make sure core even has power
+
+        //activate each node connected to core
+        for (int i = 0; i < connectionNodes.Count; i++)
         {
-            Debug.LogWarning("Warning! Not enough power! Cannot save current shade...");
+            if (connectionNodes[i].GetComponent<IConnectable>().PowerChecked() == false) connectionNodes[i].GetComponent<IConnectable>().ConsumePower();
         }
     }
 
@@ -69,8 +76,25 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable
         return gameObject;
     }
 
-    public bool PowerRequired()
+    public bool PowerChecked()
     {
+        return true;
+    }
+
+    public bool hasPower()
+    {
+        if (CoreNodeCurrentPower > 0) return true;
         return false;
+    }
+
+    public int CoreNodePowerConsume(int AmountToTake)
+    {
+        if (CoreNodeCurrentPower - AmountToTake >= 0) 
+        {
+            CoreNodeCurrentPower -= AmountToTake;
+            return AmountToTake; 
+        }
+        print("Does not have enough power, I only have " + (CoreNodeCurrentPower - AmountToTake));
+        return CoreNodeCurrentPower - AmountToTake;
     }
 }

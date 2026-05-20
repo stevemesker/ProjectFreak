@@ -956,6 +956,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
+      propertyPath: RequiredPower
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
       propertyPath: connectionsMax
       value: 3
       objectReference: {fileID: 0}
@@ -2303,6 +2308,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
+      propertyPath: RequiredPower
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
       propertyPath: connectionsMax
       value: 3
       objectReference: {fileID: 0}
@@ -2952,8 +2962,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf73c4658e6c82248b8928c14489627a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CoreNodeMaxPower: 20
-  CoreNodeCurrectPower: 0
+  CoreNodeMaxPower: 2
+  CoreNodeCurrentPower: 0
   connectionNodes: []
   rField: {fileID: 342550564}
 --- !u!135 &1529171569

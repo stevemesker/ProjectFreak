@@ -24,4 +24,13 @@ public class RuneFieldManager : MonoBehaviour
             ListOfRunes[i].GetComponent<ElementItem>().CurrentPower = 0;
         }
     }
+
+    public void ResetRuneChecked()
+    {
+        //function that resets the checked state of all runes
+        for (int i = 0; i < ListOfRunes.Count; i++)
+        {
+            ListOfRunes[i].GetComponent<ElementItem>().CheckedReset();
+        }
+    }
 }
