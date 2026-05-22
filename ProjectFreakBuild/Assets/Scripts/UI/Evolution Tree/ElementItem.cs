@@ -7,18 +7,29 @@ using System.Linq;
 public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IBridgeable, IConnectable
 {
     [Header("<=====Node Settings=====>")]
-    public int Range;
+    [Tooltip("How far from the node's center will it reach to make a bridge. Recommended at least 100")]
+    public int Range = 100;
+    [Tooltip("How many nodes can be bridged to this node. Should have at least 1 and no more than 6 is recommended")]
     public int connectionsMax = 2;
-    [SerializeField, Tooltip("Bridge prefab object to be spawned when connections are formed")] private GameObject BridgePrefabRef;
-    [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")] private int recursionDetectionResolution = 30; //number of times we'll recalculate to find snapping point during dragging
+    [SerializeField, Tooltip("Bridge prefab object to be spawned when connections are formed")] 
+    private GameObject BridgePrefabRef;
+    [SerializeField, Tooltip("Number of times we'll recalculate to find snapping point during dragging")] 
+    private int recursionDetectionResolution = 30;
+    [SerializeField, Tooltip("Extra padding so that snapping is continuous")]
+    private float snapPadding = 2;
 
     [Header("<=====Connections Lists")]
+    [Tooltip("Points to all the nodes connected to this one")]
     public List<GameObject> connectionsCurrent;
+    [Tooltip("Points to the core node if it somehow connects to it via a chain or direct connection")]
     public GameObject CoreNode;
 
     [Header("<=====Power=====>")]
+    [Tooltip("how much power the node needs to function")]
     public int RequiredPower; //how much power the node needs to function
+    [Tooltip("how much power this node is using")]
     public int CurrentPower; //how much power this node is using
+    [Tooltip("used to stop recursion on power checks")]
     [SerializeField] private bool isChecked; //used to stop recursion on power checks
 
     [Header("<-----Private/Debug----->")]
@@ -46,33 +57,44 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     Vector3 calculatePointerPosition()
     {
-        //print("Calculating snapping...");
-        Vector3 temp = Input.mousePosition;
-        float comparison; //used to tell distance comparison. Will use the largest value between this object and the connected object
+        Vector3 adjustedMousePosition = Input.mousePosition;
+        float comparison = new float(); //final distance between two elements considering the larges range each of them has
         int exitcounter = recursionDetectionResolution; //used to quickly break out of the loop. Dunno if needed
 
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) comparison = Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width/2);
-            else comparison = connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange();
+            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2);  }
+            else comparison = connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2);
 
-            if (Vector3.Distance(temp, connectionsCurrent[i].transform.position) > comparison) 
-            { 
-                //print("Too Far! Trying to move past distance of " + comparison + ". Currently at " + Vector3.Distance(temp, connectionsCurrent[i].transform.position));
-                temp = connectionsCurrent[i].transform.position + ((temp - connectionsCurrent[i].transform.position).normalized) * comparison;
+            if (Vector3.Distance(adjustedMousePosition, connectionsCurrent[i].transform.position) > comparison) 
+            {
+                adjustedMousePosition = connectionsCurrent[i].transform.position + ((adjustedMousePosition - connectionsCurrent[i].transform.position).normalized) * comparison;
                 
                 exitcounter--;
                 if (exitcounter > 0) i = 0;
-                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient..."); return transform.position; }
+                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient...");  }
+                
             }
+            Debug.DrawLine(connectionsCurrent[i].transform.position, adjustedMousePosition, Color.green);
+        }
+        Debug.DrawLine(adjustedMousePosition, Input.mousePosition, Color.red);
 
-            Debug.DrawLine(temp, Input.mousePosition, Color.red);
-            Debug.DrawLine(connectionsCurrent[i].transform.position, temp, Color.green);
+        for (int x = 0; x < connectionsCurrent.Count; x++)
+        {
+            if (Range >= connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange()) { comparison = Range + (connectionsCurrent[x].GetComponent<RectTransform>().rect.width / 2); }
+            else comparison = connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2);
+
+            if (Vector3.Distance(connectionsCurrent[x].transform.position, adjustedMousePosition) >= comparison - snapPadding && Vector3.Distance(connectionsCurrent[x].transform.position, Input.mousePosition) >= comparison - snapPadding)
+            {
+                ConnectionBridgeList[connectionsCurrent[x]].GetComponent<NodeBridge>().StartTearing(Vector3.Distance(Input.mousePosition, connectionsCurrent[x].transform.position) - comparison, gameObject);
+            }
+            else
+            {
+                ConnectionBridgeList[connectionsCurrent[x]].GetComponent<NodeBridge>().StopTearing();
+            }
         }
 
-        
-
-        return temp;
+        return adjustedMousePosition;
     }
 
     
@@ -81,6 +103,16 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         gameObject.GetComponent<SphereCollider>().enabled = true;
         connectNodes(connectionList);
+        StopAllTearing();
+    }
+
+    void StopAllTearing()
+    {
+        //cancels all tearing of bridges
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().StopTearing();
+        }
     }
 
     #endregion
@@ -103,7 +135,6 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             targets[i].GetComponent<IBridgeable>().BridgeNode(gameObject, temp);
             BridgeInstaceToNode(temp, targets[i]);
             if (targets[i].GetComponent<IConnectable>() != null) { if (targets[i].GetComponent<IConnectable>().GetCoreNode() != null) CoreNode = targets[i].GetComponent<IConnectable>().GetCoreNode(); }
-            //ConnectionBridgeList.Add(targets[i], temp);
         }
         if (CoreNode != null)
         {
@@ -143,7 +174,13 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public float getMaxRange()
     {
-        return Range + (GetComponent<RectTransform>().rect.width / 2);
+        return Range /*+ (GetComponent<RectTransform>().rect.width / 2)*/;
+    }
+
+    public void disconnectNodes(GameObject nodeToDisconnect)
+    {
+        ConnectionBridgeList.Remove(nodeToDisconnect);
+        connectionsCurrent.Remove(nodeToDisconnect);
     }
 
     #endregion
@@ -151,6 +188,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     #region Connection Building
     List<GameObject> buildConnections(List<GameObject> targets)
     {
+
         //function that takes the list of targets within range and returns which of them are free to build a connection
         //prioritizes closest objects and if they have an empty slot in connectionsCurrent
         targets = targets.OrderBy(obj =>
@@ -158,11 +196,12 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         ).ToList();
 
         List<GameObject> temp = new List<GameObject>();
-        for (int i = 0; i < connectionsMax - connectionsCurrent.Count; i++)
+        if (connectionsCurrent.Count >= connectionsMax) return temp;
+
+        for (int i = 0; i < targets.Count; i++)
         {
-            if (targets.Count <= i) return temp;
-            if (connectionsCurrent.Contains(targets[i]) == false)
-            temp.Add(targets[i]); 
+            if (connectionsCurrent.Contains(targets[i]) == false) temp.Add(targets[i]);
+            if (connectionsCurrent.Count >= connectionsMax) return temp;
         }
         return temp;
     }
@@ -212,14 +251,31 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         }
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            if (connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked() == false)
+            if (connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked(true) == false)
             {
                 connectionsCurrent[i].GetComponent<IConnectable>().ConsumePower();
             }
         }
     }
+    public void DisconnectNodeTree()
+    {
+        //go through connections and have them disconnect:
+        if (CoreNode == null) return;
+        
+        if (CurrentPower > 0) 
+        {
+            CoreNode.GetComponent<ICoreNode>().ReturnPower(CurrentPower);
+            CurrentPower = 0;
+        }
+        CoreNode = null;
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            connectionsCurrent[i].GetComponent<IConnectable>().DisconnectNodeTree();
+        }
+        
+    }
 
-    public bool PowerChecked()
+    public bool PowerChecked(bool CoreHide)
     {
         return isChecked;
     }
@@ -232,6 +288,21 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public GameObject GetCoreNode()
     {
         return CoreNode;
+    }
+
+    public bool SearchCore(GameObject Origin)
+    {
+        isChecked = true;
+
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            if (connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked(false) == false)
+            {
+                if (connectionsCurrent[i].GetComponent<IConnectable>().SearchCore(Origin)) return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion

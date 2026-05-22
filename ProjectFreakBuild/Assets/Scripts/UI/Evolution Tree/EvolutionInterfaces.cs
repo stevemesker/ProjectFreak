@@ -7,6 +7,7 @@ public interface IBridgeable
     float getMaxRange();
     bool canBridge();
     void BridgeNode(GameObject origin, GameObject bridge);
+    void disconnectNodes(GameObject nodeToDisconnect);
 }
 
 public interface IConnectable
@@ -14,11 +15,17 @@ public interface IConnectable
     
     void ConnectNode(GameObject connectTo);
 
+    void DisconnectNodeTree();
+
     void ConsumePower();
+
+    
 
     GameObject GetCoreNode();
 
-    bool PowerChecked();
+    bool PowerChecked(bool CoreHide);
+
+    bool SearchCore(GameObject Origin);
 }
 
 public interface ICoreNode
@@ -26,5 +33,7 @@ public interface ICoreNode
     bool hasPower();
 
     int CoreNodePowerConsume(int AmountToTake);
+
+    void ReturnPower(int Power);
 }
 
