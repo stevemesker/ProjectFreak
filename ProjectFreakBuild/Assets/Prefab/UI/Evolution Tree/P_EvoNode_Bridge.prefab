@@ -52,6 +52,13 @@ MonoBehaviour:
   artPointer: {fileID: 6145768985378021805}
   connectionOne: {fileID: 0}
   connectionTwo: {fileID: 0}
+  tearing: 0
+  PullTearRequiredTime: 3
+  PullTearCurrentTime: 0
+  MaxPullStrength: 10
+  currentPullStrength: 0
+  pullTickTimeLength: 0.1
+  pullStrengthModifierDampening: 50
 --- !u!1 &6145768985378021805
 GameObject:
   m_ObjectHideFlags: 0

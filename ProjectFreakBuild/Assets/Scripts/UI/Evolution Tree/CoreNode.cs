@@ -62,13 +62,20 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         //activate each node connected to core
         for (int i = 0; i < connectionNodes.Count; i++)
         {
-            if (connectionNodes[i].GetComponent<IConnectable>().PowerChecked() == false) connectionNodes[i].GetComponent<IConnectable>().ConsumePower();
+            if (connectionNodes[i].GetComponent<IConnectable>().PowerChecked(true) == false) connectionNodes[i].GetComponent<IConnectable>().ConsumePower();
         }
     }
 
-    public void DisconnectNode()
+    public void DisconnectNodeTree()
     {
-        throw new System.NotImplementedException();
+        //go through connections and have them disconnect:
+
+        return;
+    }
+
+    public void ReturnPower(int Power)
+    {
+        CoreNodeCurrentPower += Power;
     }
 
     public GameObject GetCoreNode()
@@ -76,15 +83,20 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         return gameObject;
     }
 
-    public bool PowerChecked()
+    public bool PowerChecked(bool CoreHide)
     {
-        return true;
+        return CoreHide;
     }
 
     public bool hasPower()
     {
         if (CoreNodeCurrentPower > 0) return true;
         return false;
+    }
+
+    public bool SearchCore(GameObject Origin)
+    {
+        return true;
     }
 
     public int CoreNodePowerConsume(int AmountToTake)
@@ -96,5 +108,10 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         }
         print("Does not have enough power, I only have " + (CoreNodeCurrentPower - AmountToTake));
         return CoreNodeCurrentPower - AmountToTake;
+    }
+
+    public void disconnectNodes(GameObject nodeToDisconnect)
+    {
+        connectionNodes.Remove(nodeToDisconnect);
     }
 }
