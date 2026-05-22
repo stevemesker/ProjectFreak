@@ -260,14 +260,19 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public void DisconnectNodeTree()
     {
         //go through connections and have them disconnect:
-        if (CurrentPower == 0) { print(gameObject.name + " never had power"); return; }
-        CoreNode.GetComponent<ICoreNode>().ReturnPower(CurrentPower);
-        CurrentPower = 0;
-
+        if (CoreNode == null) return;
+        
+        if (CurrentPower > 0) 
+        {
+            CoreNode.GetComponent<ICoreNode>().ReturnPower(CurrentPower);
+            CurrentPower = 0;
+        }
+        CoreNode = null;
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
             connectionsCurrent[i].GetComponent<IConnectable>().DisconnectNodeTree();
         }
+        
     }
 
     public bool PowerChecked(bool CoreHide)
