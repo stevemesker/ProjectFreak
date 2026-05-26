@@ -74,7 +74,8 @@ public class NodeBridge : MonoBehaviour
 
         //power handling
         GameObject CoreHolder = connectionOne.GetComponent<IConnectable>().GetCoreNode();
-        if (CoreHolder == null) Destroy(gameObject); //it was never connected to the core and has no power anyway
+        if (CoreHolder == null) { Destroy(gameObject); return; }//it was never connected to the core and has no power anyway
+
 
         bool tempX = connectionOne.GetComponent<IConnectable>().SearchCore(connectionOne);
         bool tempY = connectionTwo.GetComponent<IConnectable>().SearchCore(connectionOne);
