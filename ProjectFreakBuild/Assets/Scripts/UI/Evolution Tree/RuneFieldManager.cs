@@ -38,7 +38,7 @@ public class RuneFieldManager : MonoBehaviour
     public void UpdateScaler()
     {
         //function that gets called from the scaling script to deal with unity's awful way of handling colliders and such
-        //ListOfRunes[0].GetComponent<SphereCollider>().radius = (ListOfRunes[0].GetComponent<RectTransform>().rect.width * GetComponent<RectTransform>().localScale.x)/2;
+        //probably don't have to do this if I used a 2d collider but I don't feel like refactoring stuff, sue me
 
         if (GetComponent<RectTransform>().localScale.x < 1) 
         { 

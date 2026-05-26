@@ -71,8 +71,8 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2);  }
-            else comparison = connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2);
+            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;  }
+            else comparison = (connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;
 
             if (Vector3.Distance(adjustedMousePosition, connectionsCurrent[i].transform.position) > comparison) 
             {
@@ -89,10 +89,10 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         for (int x = 0; x < connectionsCurrent.Count; x++)
         {
-            if (Range >= connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange()) { comparison = Range + (connectionsCurrent[x].GetComponent<RectTransform>().rect.width / 2); }
-            else comparison = connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2);
+            if (Range >= connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[x].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x; }
+            else comparison = (connectionsCurrent[x].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;
 
-            if (Vector3.Distance(connectionsCurrent[x].transform.position, adjustedMousePosition) >= comparison - snapPadding && Vector3.Distance(connectionsCurrent[x].transform.position, Input.mousePosition) >= comparison - snapPadding)
+            if (Vector3.Distance(connectionsCurrent[x].transform.position, adjustedMousePosition) >= comparison - (snapPadding * RuneFieldTransform.localScale.x) && Vector3.Distance(connectionsCurrent[x].transform.position, Input.mousePosition) >= comparison - (snapPadding * RuneFieldTransform.localScale.x))
             {
                 ConnectionBridgeList[connectionsCurrent[x]].GetComponent<NodeBridge>().StartTearing(Vector3.Distance(Input.mousePosition, connectionsCurrent[x].transform.position) - comparison, gameObject);
             }
@@ -153,7 +153,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     void BridgeInstaceToNode(GameObject bridge, GameObject connectTo)
     {
         bridge.GetComponent<NodeBridge>().BuildConnection(gameObject, connectTo);
-        bridge.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectTo.transform.position));
+        bridge.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectTo.transform.position) / RuneFieldTransform.localScale.x);
         ConnectionBridgeList.Add(connectTo, bridge);
     }
 
@@ -161,7 +161,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position));
+            ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
         }
     }
     
@@ -217,7 +217,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     List<GameObject> FindConnections()
     {
         //finds all of the node objects within range of the element being dragged
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, Range);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, Range * RuneFieldTransform.localScale.x);
         List<GameObject> temp = new List<GameObject>();
 
         foreach (var hitCollider in hitColliders)
