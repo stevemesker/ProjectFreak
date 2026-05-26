@@ -6,6 +6,9 @@ using System.Linq;
 
 public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IBridgeable, IConnectable
 {
+    [Header("<=====Pointers=====>")]
+    public RectTransform RuneFieldTransform;
+
     [Header("<=====Node Settings=====>")]
     [Tooltip("How far from the node's center will it reach to make a bridge. Recommended at least 100")]
     public int Range = 100;
@@ -37,6 +40,11 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private Dictionary<GameObject, GameObject> ConnectionBridgeList = new Dictionary<GameObject,GameObject>(); //other node is key, value is the bridge connecting them
 
     RaycastHit hit;
+
+    void Awake()
+    {
+        if (RuneFieldTransform == null) RuneFieldTransform = gameObject.transform.parent.GetComponent<RectTransform>();
+    }
 
     #region Drag
     public void OnBeginDrag(PointerEventData eventData)
@@ -330,7 +338,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(transform.position, Range);
+        Gizmos.DrawWireSphere(transform.position, Range * RuneFieldTransform.localScale.x);
     }
 
     #endregion
