@@ -39,6 +39,9 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     [SerializeField, Tooltip("All of the nodes within range")] private List<GameObject> connectionList; //all of the nodes within range
     private Dictionary<GameObject, GameObject> ConnectionBridgeList = new Dictionary<GameObject,GameObject>(); //other node is key, value is the bridge connecting them
 
+    public GameObject pluggedNode; //currently connected node
+    [SerializeField] GameObject FoundNode; //node that may be in range of current element
+
     RaycastHit hit;
 
     void Awake()
@@ -49,39 +52,79 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     #region Drag
     public void OnBeginDrag(PointerEventData eventData)
     {
+        //add locking element here
         gameObject.GetComponent<SphereCollider>().enabled = false;
+
+        if (pluggedNode == null) return;
+        pluggedNode.GetComponent<EvolutionNode>().UnplugElement();
+        pluggedNode = null;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (connectionsCurrent.Count == 0) transform.position = Input.mousePosition;
-        else transform.position = calculatePointerPosition();
+        ElementPositionUpdate(Input.mousePosition);
+    }
 
-        connectionList = FindConnections();
-        connectionList = buildConnections(connectionList);
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        //add locking element here
+        gameObject.GetComponent<SphereCollider>().enabled = true;
+        connectNodes(connectionList);
+        StopAllTearing();
+
+        //connect to elements
+        if (FoundNode != null && pluggedNode == null) ConnectToNode();
+    }
+
+    #endregion
+    
+    #region Movement
+    private void ElementPositionUpdate(Vector3 aimInputLocation)
+    {
+        //add locking element here
+        Vector3 aimlocation = new Vector3(); //will be the final position of the element after all sticking is over
+
+        if (connectionsCurrent.Count == 0) aimlocation = aimInputLocation; //no connections found, just update the movement
+        else aimlocation = calculatePointerPosition(aimInputLocation); //there are attached bridges, must find the closest point to location
+
+        connectionList = FindConnections(aimlocation);
+
+        if (FoundNode != null) if (testLength(FoundNode.transform.position, aimlocation))
+            {
+                print("Moving to node " + FoundNode.name);
+                aimlocation = FoundNode.transform.position;
+                connectionList = FindConnections(aimlocation);
+
+            }
+        connectionList = buildConnections(connectionList, aimlocation);
+
+        transform.position = aimlocation;
+
         UpdateConnections();
+
         drawLineConnectionTemp(false);
     }
 
-    Vector3 calculatePointerPosition()
+    Vector3 calculatePointerPosition(Vector3 target)
     {
-        Vector3 adjustedMousePosition = Input.mousePosition;
+        Vector3 adjustedMousePosition = target;
         float comparison = new float(); //final distance between two elements considering the larges range each of them has
         int exitcounter = recursionDetectionResolution; //used to quickly break out of the loop. Dunno if needed
 
+
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
-            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;  }
+            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x; }
             else comparison = (connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;
 
-            if (Vector3.Distance(adjustedMousePosition, connectionsCurrent[i].transform.position) > comparison) 
+            if (Vector3.Distance(adjustedMousePosition, connectionsCurrent[i].transform.position) > comparison)
             {
                 adjustedMousePosition = connectionsCurrent[i].transform.position + ((adjustedMousePosition - connectionsCurrent[i].transform.position).normalized) * comparison;
-                
+
                 exitcounter--;
                 if (exitcounter > 0) i = 0;
-                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient...");  }
-                
+                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient..."); }
+
             }
             Debug.DrawLine(connectionsCurrent[i].transform.position, adjustedMousePosition, Color.green);
         }
@@ -105,15 +148,6 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return adjustedMousePosition;
     }
 
-    
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        gameObject.GetComponent<SphereCollider>().enabled = true;
-        connectNodes(connectionList);
-        StopAllTearing();
-    }
-
     void StopAllTearing()
     {
         //cancels all tearing of bridges
@@ -122,7 +156,6 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().StopTearing();
         }
     }
-
     #endregion
 
     #region Bridgeable Interface
@@ -194,13 +227,13 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     #endregion
 
     #region Connection Building
-    List<GameObject> buildConnections(List<GameObject> targets)
+    List<GameObject> buildConnections(List<GameObject> targets, Vector3 originPoint)
     {
 
         //function that takes the list of targets within range and returns which of them are free to build a connection
         //prioritizes closest objects and if they have an empty slot in connectionsCurrent
         targets = targets.OrderBy(obj =>
-            (obj.transform.position - transform.position).sqrMagnitude
+            (obj.transform.position - originPoint).sqrMagnitude
         ).ToList();
 
         List<GameObject> temp = new List<GameObject>();
@@ -214,19 +247,58 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return temp;
     }
 
-    List<GameObject> FindConnections()
+    List<GameObject> FindConnections(Vector3 originPoint)
     {
         //finds all of the node objects within range of the element being dragged
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, Range * RuneFieldTransform.localScale.x);
+        FoundNode = null;
+
+        Collider[] hitColliders = Physics.OverlapSphere(originPoint, Range * RuneFieldTransform.localScale.x);
         List<GameObject> temp = new List<GameObject>();
 
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.GetComponent<IBridgeable>().canBridge() == true)
-            temp.Add(hitCollider.gameObject); 
+            if (hitCollider.GetComponent<IBridgeable>() != null) if (hitCollider.GetComponent<IBridgeable>().canBridge() == true) temp.Add(hitCollider.gameObject);
+
+            if (pluggedNode == null && hitCollider.GetComponent<iEvolutionNode>() != null) 
+            { 
+                if (hitCollider.GetComponent<iEvolutionNode>().isPlugged() == false && Vector3.Distance(originPoint, hitCollider.transform.position) <= GetComponent<RectTransform>().rect.width/2) FoundNode = hitCollider.gameObject; 
+            }
         }
         return temp;
     }
+
+    public bool testLength(Vector3 position, Vector3 originPosition)
+    {
+        //takes in how much the node should move and returns if that is possible given the current connection lengths
+
+        Vector3 adjustedMousePosition = originPosition;
+        float comparison = new float(); //final distance between two elements considering the larges range each of them has
+
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            //go through each connection and see if that new position isn't achievable
+
+            if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x; }
+            else comparison = (connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;
+
+            if (comparison < Vector3.Distance(position, connectionsCurrent[i].transform.position))
+            {
+                print("Not enough room to move node because of connection length of " + connectionsCurrent[i].name + " and " + gameObject.name);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void ConnectToNode()
+    {
+        pluggedNode = FoundNode;
+        EvolutionNode plugTemp = pluggedNode.GetComponent<EvolutionNode>();
+
+        plugTemp.PlugElement(gameObject);
+        plugTemp.ActivatePluggedNode();
+    }
+
     #endregion
 
     #region Connectable Interface
