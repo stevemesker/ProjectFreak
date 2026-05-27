@@ -1,18 +1,93 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class EvolutionNode : MonoBehaviour
+public class EvolutionNode : MonoBehaviour, iEvolutionNode
 {
+    [Header("<=====Active State=====>")]
+    public bool _ActivationState;
+    public bool _LockedOut;
+
+    [Header("<=====Pointers=====>")]
+    public GameObject PluggedInNode; //element gameobject that is plugged into this node
+
+    [Header("<=====GateKeeper Settings=====>")]
+    [SerializeField, Tooltip("List of nodes that must be activated before this one can")] 
+    List<EvolutionNode> unlocks;
+    [SerializeField, Tooltip("List of nodes that will be locked out as long as this node is active")] 
+    List<EvolutionNode> Lockouts;
+
+    [Header("<---Events--->")]
+    [SerializeField] public UnityEvent ActivationEvent;
+    [SerializeField] public UnityEvent DeactivationEvent;
+
+    [Header("<---may delete--->")]
     public int nodeID;//used to tell which node a specific one is for saving out data later
     public List<EvolutionNode> connectedNodes;
     public bool NodeEnabled;
     public bool Nodelocked;
     
-
     [SerializeField] private List<GameObject> nodeStateBackground; //which background states need to be activated based on node's current activation state
 
+    public bool isPlugged()
+    {
+        if (PluggedInNode == null) return false;
+        return true;
+    }
+    public void PlugElement(GameObject ElementToPlug)
+    {
+        PluggedInNode = ElementToPlug;
+    }
+
+    public void UnplugElement ()
+    {
+        PluggedInNode = null;
+        _ActivationState = false;
+        if (Lockouts.Count > 0) for (int i = 0; i < Lockouts.Count; i++)
+            {
+                Lockouts[i].SetLockoutNodeState(false);
+            }
+        DeactivationEvent?.Invoke();
+    }
+
+    public void SetLockoutNodeState(bool State)
+    {
+        _LockedOut = State;
+    }
+
+
+    public void ActivatePluggedNode()
+    {
+        if (CanActivate() == false) return;
+        _ActivationState = true;
+        if (Lockouts.Count > 0) for (int i = 0; i < Lockouts.Count; i++)
+            {
+                Lockouts[i].SetLockoutNodeState(true);
+            }
+        ActivationEvent?.Invoke();
+    }
+
+    bool CanActivate()
+    {
+        //attached element power check
+        if (PluggedInNode.GetComponent<ElementItem>().CurrentPower <= 0) return false;
+
+        //lockout check
+        if (_LockedOut) return false;
+        
+        //unlock list gate
+        if (unlocks.Count > 0)
+            for (int i = 0; i<unlocks.Count; i++)
+            {
+                if (unlocks[i]._ActivationState == false) return false;
+            }
+
+        return true;
+    }
+
+    #region StateActivation
     [Button ("Activate node")]
     public void ActivateNode()
     {
@@ -76,4 +151,5 @@ public class EvolutionNode : MonoBehaviour
                 break;
         }
     }
+    #endregion
 }

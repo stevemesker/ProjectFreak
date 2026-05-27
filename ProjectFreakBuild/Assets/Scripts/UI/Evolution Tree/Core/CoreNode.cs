@@ -99,6 +99,11 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         return true;
     }
 
+    public bool testLength(Vector3 position, Vector3 originPosition)
+    {
+        return false;
+    }
+
     public int CoreNodePowerConsume(int AmountToTake)
     {
         if (CoreNodeCurrentPower - AmountToTake >= 0) 

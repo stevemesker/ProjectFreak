@@ -445,12 +445,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1143065798}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &263077681 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-    type: 3}
-  m_PrefabInstance: {fileID: 361135758}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &305289559
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,6 +597,7 @@ GameObject:
   - component: {fileID: 342550563}
   - component: {fileID: 342550562}
   - component: {fileID: 342550564}
+  - component: {fileID: 342550565}
   m_Layer: 5
   m_Name: Rune Field
   m_TagString: UI Drag Field
@@ -622,7 +617,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 263077681}
   - {fileID: 1068057716}
   - {fileID: 1529171567}
   - {fileID: 1106738068}
@@ -686,129 +680,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc3439237ef3804c912370689ab66c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ListOfNodes:
+  - {fileID: 1068057715}
+  - {fileID: 1529171566}
   ListOfRunes:
   - {fileID: 1175096396}
   - {fileID: 908079790}
   - {fileID: 2086693952}
   - {fileID: 2025715265}
---- !u!1001 &361135758
-PrefabInstance:
+--- !u!114 &342550565
+MonoBehaviour:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 342550561}
-    m_Modifications:
-    - target: {fileID: 1126975770387994506, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_Name
-      value: P_EvoNode_Bridge
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -633
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -453
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8287097012657117708, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 8d22c094f1e7d8d4abfbbd5bb067b378, type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 342550560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c1806960ad00ba46ac98bcc8f09bd0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ParentTransform: {fileID: 1121403364}
+  target: {fileID: 342550561}
+  currentOffset: {x: 0, y: 0, z: 0}
+  maxDragDistance: 20
+  zoomSpeed: 0.001
+  minScale: 0.5
+  maxScale: 2
+  ScaleEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 342550564}
+        m_TargetAssemblyTypeName: RuneFieldManager, Assembly-CSharp
+        m_MethodName: UpdateScaler
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &383035311
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,7 +972,7 @@ PrefabInstance:
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 39
+      value: 158
       objectReference: {fileID: 0}
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
@@ -1083,6 +996,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
+      propertyPath: Range
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
       propertyPath: RequiredPower
       value: 1
       objectReference: {fileID: 0}
@@ -1091,6 +1009,11 @@ PrefabInstance:
       propertyPath: connectionsMax
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: RuneFieldTransform
+      value: 
+      objectReference: {fileID: 342550561}
     - target: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_Name
@@ -1793,7 +1716,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1068057716
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1826,6 +1749,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 069700383a5b7b84fad096e30b6b44e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ActivationState: 0
+  _LockedOut: 0
+  PluggedInNode: {fileID: 0}
+  unlocks: []
   nodeID: 0
   connectedNodes: []
   NodeEnabled: 1
@@ -1851,7 +1778,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 50
   m_Center: {x: 0, y: 0, z: 0}
@@ -2411,7 +2338,7 @@ PrefabInstance:
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -134
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
@@ -2435,6 +2362,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
+      propertyPath: Range
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
       propertyPath: RequiredPower
       value: 1
       objectReference: {fileID: 0}
@@ -2443,6 +2375,11 @@ PrefabInstance:
       propertyPath: connectionsMax
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: RuneFieldTransform
+      value: 
+      objectReference: {fileID: 342550561}
     - target: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_Name
@@ -3641,7 +3578,7 @@ PrefabInstance:
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 210
+      value: 408
       objectReference: {fileID: 0}
     - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
@@ -3665,6 +3602,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
+      propertyPath: Range
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
       propertyPath: RequiredPower
       value: 1
       objectReference: {fileID: 0}
@@ -3673,6 +3615,11 @@ PrefabInstance:
       propertyPath: connectionsMax
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: RuneFieldTransform
+      value: 
+      objectReference: {fileID: 342550561}
     - target: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_Name
@@ -4405,7 +4352,7 @@ PrefabInstance:
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: Range
-      value: 100
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
@@ -4417,6 +4364,11 @@ PrefabInstance:
       propertyPath: connectionsMax
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: RuneFieldTransform
+      value: 
+      objectReference: {fileID: 342550561}
     - target: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
         type: 3}
       propertyPath: m_Name

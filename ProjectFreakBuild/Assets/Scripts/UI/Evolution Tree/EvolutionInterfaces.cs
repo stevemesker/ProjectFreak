@@ -19,13 +19,13 @@ public interface IConnectable
 
     void ConsumePower();
 
-    
-
     GameObject GetCoreNode();
 
     bool PowerChecked(bool CoreHide);
 
     bool SearchCore(GameObject Origin);
+
+    bool testLength(Vector3 position, Vector3 originPosition);
 }
 
 public interface ICoreNode
@@ -35,5 +35,11 @@ public interface ICoreNode
     int CoreNodePowerConsume(int AmountToTake);
 
     void ReturnPower(int Power);
+}
+
+public interface iEvolutionNode
+{
+    bool isPlugged();
+    void PlugElement(GameObject ElementToPlug);
 }
 
