@@ -23,7 +23,8 @@ public class BaseStats
     public int _MaxHP;
     public int _Strength;
     public int _Agility;
-    public int _Inteligence;
+    public int _Intelect;
+
 
     [FoldoutGroup("Elemental Effectiveness")] public List<ElementType.Element> _ElementResistance;
     [FoldoutGroup("Elemental Effectiveness")] public List<ElementType.Element> _ElementWeakness;
