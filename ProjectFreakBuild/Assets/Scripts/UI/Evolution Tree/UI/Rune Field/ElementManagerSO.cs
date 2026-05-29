@@ -13,12 +13,14 @@ public class ElementManagerSO : ScriptableObject
     {
         List<statBoostPackage> temp = source.getStatBoostPackage();
         Debug.Log(source.name + " is boosting " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
+        manager.receiveStatBoostPackage(temp);
     }
 
     public void reduceStats(ElementItemSO source)
     {
         List<statBoostPackage> temp = source.getStatBoostPackage();
         Debug.Log(source.name + " is reducing " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
+        manager.removeStatBoostPackage(temp);
     }
     #endregion
 }
