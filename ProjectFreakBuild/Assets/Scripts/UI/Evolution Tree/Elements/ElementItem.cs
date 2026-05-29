@@ -8,6 +8,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 {
     [Header("<=====Pointers=====>")]
     public RectTransform RuneFieldTransform;
+    [SerializeField] ElementItemSO _ElementAttached;
 
     [Header("<=====Node Settings=====>")]
     [Tooltip("How far from the node's center will it reach to make a bridge. Recommended at least 100")]
@@ -48,6 +49,26 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (RuneFieldTransform == null) RuneFieldTransform = gameObject.transform.parent.GetComponent<RectTransform>();
     }
+
+    #region Element Activation
+
+    void ActivateAttachedElement()
+    {
+        if (_ElementAttached == null) return;
+        _ElementAttached.triggerElementEffects(gameObject);
+    }
+
+    void DeactivateAttachedElement()
+    {
+        if (_ElementAttached == null) return;
+        _ElementAttached.deactivateElementEffects(gameObject);
+    }
+
+    public void setElementSOAttachment(ElementItemSO ele)
+    {
+        _ElementAttached = ele;
+    }
+    #endregion
 
     #region Drag
     public void OnBeginDrag(PointerEventData eventData)
@@ -328,6 +349,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             int temp = CoreNode.GetComponent<ICoreNode>().CoreNodePowerConsume(RequiredPower - CurrentPower);
             if (temp < RequiredPower - CurrentPower) return;
             CurrentPower += temp;
+            ActivateAttachedElement();
         }
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
@@ -346,6 +368,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         {
             CoreNode.GetComponent<ICoreNode>().ReturnPower(CurrentPower);
             CurrentPower = 0;
+            DeactivateAttachedElement();
         }
         CoreNode = null;
         for (int i = 0; i < connectionsCurrent.Count; i++)

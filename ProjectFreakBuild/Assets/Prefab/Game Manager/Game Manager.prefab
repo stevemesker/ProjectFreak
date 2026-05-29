@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8085353526394455601}
   - component: {fileID: 758167766651089015}
   - component: {fileID: 2358789497967656618}
+  - component: {fileID: 7544917852680856100}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -45,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a0d05c7d671154d91552a5edc91e6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shade: {fileID: 7544917852680856100}
 --- !u!114 &2358789497967656618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,3 +62,22 @@ MonoBehaviour:
   weaponInventorySize: 15
   pickupChannel: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
   ItemStackSizeMax: 100
+--- !u!114 &7544917852680856100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5145255a98260ef44a2012709860bea8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  managerScriptableObject: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530,
+    type: 2}
+  _ShadeSlots:
+  - {fileID: 11400000, guid: c2a5cbd993cf42d418a6b7db80df3cce, type: 2}
+  - {fileID: 11400000, guid: aa6dc390da24f3146899eaae6d3ebbcd, type: 2}
+  tamerSlotLevel: 1
+  currentShadeSelected: 0
