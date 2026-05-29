@@ -162,13 +162,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82e748035703d1243a8ff456f444dd35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Range: 100
-  connectionsMax: 1
-  connectionsCurrent: []
-  connectionList: []
-  recursionDetectionResolution: 30
+  RuneFieldTransform: {fileID: 0}
+  Range: 150
+  connectionsMax: 2
   BridgePrefabRef: {fileID: 1126975770387994506, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
     type: 3}
+  recursionDetectionResolution: 30
+  snapPadding: 2
+  connectionsCurrent: []
+  CoreNode: {fileID: 0}
+  RequiredPower: 1
+  CurrentPower: 0
+  isChecked: 0
+  connectionList: []
+  pluggedNode: {fileID: 0}
+  FoundNode: {fileID: 0}
 --- !u!114 &4375122606369374372
 MonoBehaviour:
   m_ObjectHideFlags: 0

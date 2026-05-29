@@ -14,7 +14,7 @@ public class SideWindowManager : MonoBehaviour
         //opens/closes/ switches side pannel windows
         float offset = ControlledPanel.GetComponent<RectTransform>().rect.width; //gets the offset for closing
 
-        print("Button has selected " + window.name);
+        //print("Button has selected " + window.name);
 
         if (CurrentActivatedWindow == window)
         {
@@ -33,7 +33,7 @@ public class SideWindowManager : MonoBehaviour
             GetComponent<RectTransform>().anchoredPosition = new Vector2(0, GetComponent<RectTransform>().anchoredPosition.y);
         }
 
-        print("Opening " + window.name);
+        //print("Opening " + window.name);
         window.SetActive(true);
         CurrentActivatedWindow = window;
     }
