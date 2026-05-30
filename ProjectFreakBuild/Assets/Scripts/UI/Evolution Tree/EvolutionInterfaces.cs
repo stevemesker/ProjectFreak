@@ -15,6 +15,8 @@ public interface IConnectable
     
     void ConnectNode(GameObject connectTo);
 
+    void ClearConnection();
+
     void DisconnectNodeTree();
 
     void ConsumePower();
@@ -41,5 +43,7 @@ public interface iEvolutionNode
 {
     bool isPlugged();
     void PlugElement(GameObject ElementToPlug);
+
+    void resetNode();
 }
 

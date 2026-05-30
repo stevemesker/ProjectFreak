@@ -17,10 +17,13 @@ public class RunePackage
 public class NodePackage
 {
     [Tooltip("refers to which rune this is in the package")]
-    public int _RuneIndex;
+    public int _NodeIndex;
     //
     [Tooltip("refers to the index of the element it is attached to")]
     public int _ElementIndex;
+
+    [Tooltip("If the attached run is powered")]
+    public bool _IsPowered;
 }
 
 public class RuneFieldPackage

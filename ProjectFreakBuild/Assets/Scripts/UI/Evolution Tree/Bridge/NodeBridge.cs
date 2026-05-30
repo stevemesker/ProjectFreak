@@ -41,6 +41,15 @@ public class NodeBridge : MonoBehaviour
 
     #region BreakConnection
 
+    public void clearConnections()
+    {
+        //used for clearing rune field quickly
+        print("Clearning nodes " + connectionOne.name + " and " + connectionTwo.name);
+        connectionOne.GetComponent<IBridgeable>().disconnectNodes(connectionTwo);
+        connectionTwo.GetComponent<IBridgeable>().disconnectNodes(connectionOne);
+        Destroy(gameObject);
+    }
+
     public void StartTearing(float distance, GameObject origin)
     {
         currentPullStrength = distance / pullStrengthModifierDampening;
