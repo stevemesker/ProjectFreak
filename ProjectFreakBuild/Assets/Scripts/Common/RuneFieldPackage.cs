@@ -1,0 +1,34 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class RunePackage
+{
+    [Tooltip("element data scriptable object held within the element rune")]
+    public ElementItemSO _elementDataPointer;
+    [Tooltip("position of the element on the rune field without the scroll zoom applied")]
+    public Vector3 _elementPosition;
+    [Tooltip("index reference of the elements attached to this element")]
+    public List<int> _connectionIndexRef;
+    [Tooltip("The element's current power")]
+    public int _currentPower;
+}
+
+public class NodePackage
+{
+    [Tooltip("refers to which rune this is in the package")]
+    public int _RuneIndex;
+    //
+    [Tooltip("refers to the index of the element it is attached to")]
+    public int _ElementIndex;
+}
+
+public class RuneFieldPackage
+{
+    //
+    [Tooltip("list of runes")]
+    public List<RunePackage> _Runes;
+    //
+    [Tooltip("list of edited nodes")]
+    public List<NodePackage> _Nodes;
+}
