@@ -87,6 +87,14 @@ public class EvolutionNode : MonoBehaviour, iEvolutionNode
         return true;
     }
 
+    public void resetNode()
+    {
+        //resets node to factory settings
+        _ActivationState = false;
+        _LockedOut = false;
+        PluggedInNode = null;
+    }
+
     #region StateActivation
     [Button ("Activate node")]
     public void ActivateNode()

@@ -48,7 +48,8 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
 
     public void ResetPower()
     {
-        CoreNodeCurrentPower = CoreNodeMaxPower;
+        //CoreNodeCurrentPower = CoreNodeMaxPower;
+        ClearPower();
         rField.ResetRunePower();
     }
     #endregion
@@ -76,6 +77,11 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
     public void ReturnPower(int Power)
     {
         CoreNodeCurrentPower += Power;
+    }
+
+    public void ClearPower()
+    {
+        CoreNodeCurrentPower = CoreNodeMaxPower;
     }
 
     public GameObject GetCoreNode()
@@ -118,5 +124,15 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
     public void disconnectNodes(GameObject nodeToDisconnect)
     {
         connectionNodes.Remove(nodeToDisconnect);
+    }
+
+    public void ClearConnection()
+    {
+        for (int i = connectionNodes.Count; i > 0; i++)
+        {
+            connectionNodes[i].GetComponent<IConnectable>().ClearConnection();
+        }
+
+        connectionNodes.Clear();
     }
 }

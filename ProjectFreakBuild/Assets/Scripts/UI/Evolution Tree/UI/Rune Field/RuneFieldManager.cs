@@ -5,8 +5,11 @@ using Sirenix.OdinInspector;
 
 public class RuneFieldManager : MonoBehaviour
 {
+    [SerializeField] GameObject CorePointer;
     public List<GameObject> ListOfNodes;
     [SerializeField]private List<GameObject> ListOfRunes;
+    [SerializeField] GameObject elementPrefab;
+    
 
     #region rune field editing
     public void addRuneList(GameObject rune)
@@ -107,12 +110,50 @@ public class RuneFieldManager : MonoBehaviour
             runes.Add(tempElement);
         }
 
+        //<---Node List Build--->//
+        NodePackage tempNode = new NodePackage();
+
+        for (int j = 0; j < ListOfNodes.Count; j++)
+        {
+            if (ListOfNodes[j].GetComponent<EvolutionNode>() != null)
+                if (ListOfNodes[j].GetComponent<EvolutionNode>().PluggedInNode != null)
+                {
+                    tempNode._NodeIndex = j;
+                    tempNode._ElementIndex = ListOfRunes.IndexOf(ListOfNodes[j].GetComponent<EvolutionNode>().PluggedInNode);
+                    tempNode._IsPowered = ListOfNodes[j].GetComponent<EvolutionNode>()._ActivationState;
+                    nodes.Add(tempNode);
+                }
+        }
+
+        Debug.LogWarning(nodes.Count + " activated nodes have been added.");
+
         temp._Runes = runes;
         temp._Nodes = nodes;
         return temp;
     }
 
-    
+    public void LoadRuneFieldFromPackage(RuneFieldPackage package)
+    {
+
+    }
+
+    [Button("Test Clear")]
+    public void ClearRuneField()
+    {
+        for (int i = 0; i < ListOfRunes.Count; i++)
+        {
+            ListOfRunes[i].GetComponent<IConnectable>().ClearConnection();
+            Destroy(ListOfRunes[i]);
+        }
+        ListOfRunes.Clear();
+
+        CorePointer.GetComponent<CoreNode>().ResetPower();
+
+        for (int j = 0; j < ListOfNodes.Count; j++)
+        {
+            ListOfNodes[j].GetComponent<iEvolutionNode>().resetNode();
+        }
+    }
 
     #endregion
 }

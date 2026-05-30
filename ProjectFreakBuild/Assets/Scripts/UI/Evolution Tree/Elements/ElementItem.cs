@@ -345,6 +345,16 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         return;
     }
 
+    public void ClearConnection()
+    {
+        print("boop");
+        for (int i = connectionsCurrent.Count-1; i > -1; i--)
+        {
+            print(i);
+            ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().clearConnections();
+        }
+    }
+
     public void ConsumePower()
     {
         if (CoreNode.GetComponent<ICoreNode>() == null) return;
