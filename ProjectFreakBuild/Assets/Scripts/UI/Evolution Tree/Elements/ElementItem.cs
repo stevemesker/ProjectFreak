@@ -68,6 +68,11 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         _ElementAttached = ele;
     }
+
+    public ElementItemSO getElementSOAttachment()
+    {
+        return _ElementAttached;
+    }
     #endregion
 
     #region Drag
