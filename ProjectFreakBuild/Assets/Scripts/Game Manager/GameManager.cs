@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     /////////////////////////////////////////////////////////////////////////////
     public static GameManager _GameManager;
     [SerializeField] ShadeManager shade;
+    [SerializeField] int PlayerLevel;
 
     #region initializing
     private void Awake()
@@ -27,6 +28,31 @@ public class GameManager : MonoBehaviour
     public List<ShadeSO> getShadeList()
     {
         return (shade._ShadeSlots);
+    }
+
+    public ShadeManager getShadeManager()
+    {
+        return GetComponent<ShadeManager>();
+    }
+    #endregion
+
+    #region Player Data
+    public int GetPlayerCurrentLevel()
+    {
+        //gets the player's current level
+        return PlayerLevel;
+    }
+
+    public void SetPlayerCurrentLevel(int NewLevel)
+    {
+        //sets player level to a specific level
+        PlayerLevel = NewLevel;
+    }
+
+    public void IncrementPlayerLevel(int LevelAdd)
+    {
+        //increments the player's current level by an amount
+        PlayerLevel += LevelAdd;
     }
     #endregion
 }

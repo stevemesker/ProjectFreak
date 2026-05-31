@@ -23,7 +23,19 @@ public class ShadeManager : MonoBehaviour
         managerScriptableObject.manager = this;
     }
 
-    #region package
+    #region get shade info
+    public ShadeSO getCurrentShade()
+    {
+        return _ShadeSlots[currentShadeSelected];
+    }
+
+    public ShadeSO getShadeOfIndex(int index)
+    {
+        return _ShadeSlots[index];
+    }
+    #endregion
+
+    #region stat change
     public void receiveStatBoostPackage(List<statBoostPackage> input)
     {
         for (int i = 0; i < input.Count; i++)
@@ -80,12 +92,19 @@ public class ShadeManager : MonoBehaviour
 
     #endregion
 
-    #region Selection Querry
-    public void setSelection(int Selection)
+    #region Save Rune Field Package
+    public void saveCurrentShadeRuneFieldPackage(RuneFieldPackage package)
+    {
+        _ShadeSlots[currentShadeSelected]._RuneFieldPackage = package;
+    }
+    #endregion
+
+    #region Shade Selection Querry
+    public void setShadeSelection(int Selection)
     {
         currentShadeSelected = Selection;
     }
-    public int getSelectionIndex()
+    public int getShadeSelectionIndex()
     {
         return currentShadeSelected;
     }

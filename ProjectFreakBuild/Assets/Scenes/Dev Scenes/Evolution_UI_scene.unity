@@ -1054,7 +1054,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &305289560
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1293,24 +1293,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 334365067}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1392,6 +1392,7 @@ RectTransform:
   - {fileID: 1529171567}
   - {fileID: 1106738068}
   - {fileID: 1118453903}
+  - {fileID: 512047862}
   m_Father: {fileID: 1121403364}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1449,12 +1450,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc3439237ef3804c912370689ab66c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CorePointer: {fileID: 1529171566}
   ListOfNodes:
   - {fileID: 1068057715}
-  - {fileID: 1529171566}
+  - {fileID: 1965567753}
   ListOfRunes:
   - {fileID: 1175096396}
   - {fileID: 1118453899}
+  - {fileID: 512047858}
+  elementPrefab: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+    type: 3}
 --- !u!114 &342550565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1777,7 +1782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9004077c939e140bea6e99cd7f9dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentActivatedWindow: {fileID: 305289559}
+  CurrentActivatedWindow: {fileID: 1397403646}
   ControlledPanel: {fileID: 424473213}
 --- !u!1 &489569565
 GameObject:
@@ -2037,6 +2042,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!1 &512047858 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1677123552}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &512047862 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1677123552}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &514835057
 GameObject:
   m_ObjectHideFlags: 0
@@ -2380,24 +2397,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 547122020}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -2919,24 +2936,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 693099935}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -3938,7 +3955,7 @@ RectTransform:
   m_Father: {fileID: 417847956}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5021,7 +5038,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1397403647
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5139,13 +5156,7 @@ MonoBehaviour:
   slotList:
   - {fileID: 1578675631}
   - {fileID: 1801580267}
-  - {fileID: 693099935}
-  - {fileID: 1985937660}
-  - {fileID: 1769430791}
-  - {fileID: 334365067}
-  - {fileID: 2124202296}
-  - {fileID: 1857516852}
-  - {fileID: 547122020}
+  _runeField: {fileID: 342550564}
 --- !u!1 &1417455930
 GameObject:
   m_ObjectHideFlags: 0
@@ -5739,10 +5750,10 @@ RectTransform:
   - {fileID: 1153228168}
   m_Father: {fileID: 2095715087}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 204, y: -20}
-  m_SizeDelta: {x: 408, y: 85.36}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 85.36}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1578675634
 MonoBehaviour:
@@ -5808,24 +5819,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1578675631}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -5891,6 +5902,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 758167766651089015, guid: a95674f4a883c4742a7a84a8dbe41e1a,
+        type: 3}
+      propertyPath: PlayerLevel
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4504963059241807485, guid: a95674f4a883c4742a7a84a8dbe41e1a,
         type: 3}
       propertyPath: m_Name
@@ -6098,7 +6114,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -16.64, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1646896323
 MonoBehaviour:
@@ -6286,6 +6302,135 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1673578190}
   m_CullTransparentMesh: 1
+--- !u!1001 &1677123552
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 342550561}
+    m_Modifications:
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -330
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2959732984521689579, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: _ElementAttached
+      value: 
+      objectReference: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4,
+        type: 2}
+    - target: {fileID: 4263141756395150385, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: RuneFieldTransform
+      value: 
+      objectReference: {fileID: 342550561}
+    - target: {fileID: 6027929220727492930, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1,
+        type: 3}
+      propertyPath: m_Name
+      value: P_EvoNode_Element 3
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ef14ddec7c2b4fa41beab57ad0bf1cc1, type: 3}
 --- !u!1 &1680466740
 GameObject:
   m_ObjectHideFlags: 0
@@ -6456,7 +6601,7 @@ RectTransform:
   m_AnchorMin: {x: 0.05, y: 0.01}
   m_AnchorMax: {x: 0.9, y: 0.99}
   m_AnchoredPosition: {x: 0, y: 10.800049}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: -1038.4}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1711140144
 MonoBehaviour:
@@ -6707,24 +6852,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1769430791}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -7132,24 +7277,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1801580267}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -7313,24 +7458,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1857516852}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -7442,7 +7587,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 305, y: 154}
+  m_AnchoredPosition: {x: 109, y: 154}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1965567756
@@ -7634,24 +7779,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1985937660}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -7729,7 +7874,7 @@ RectTransform:
   m_Father: {fileID: 1348607376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7815,7 +7960,7 @@ RectTransform:
   m_AnchorMin: {x: 0.05, y: 0.01}
   m_AnchorMax: {x: 0.9, y: 0.99}
   m_AnchoredPosition: {x: 0, y: 10.800049}
-  m_SizeDelta: {x: 0, y: -953.04004}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2095715088
 MonoBehaviour:
@@ -7976,24 +8121,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 424473215}
-        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
-        m_MethodName: CloseWindow
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1397403646}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
         m_MethodName: loadShadeSlectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 2124202296}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 424473215}
+        m_TargetAssemblyTypeName: SideWindowManager, Assembly-CSharp
+        m_MethodName: CloseWindow
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1397403646}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0

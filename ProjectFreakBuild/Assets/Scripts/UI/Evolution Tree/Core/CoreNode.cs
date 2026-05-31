@@ -135,4 +135,29 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
 
         connectionNodes.Clear();
     }
+    public void LoadReconnect()
+    {
+        //function called to reset a node after the rune field has been loaded
+        GameObject temp;
+        for (int i = 0; i < connectionNodes.Count; i++)
+        {
+            if (connectionNodes[i].GetComponent<ElementItem>() != null)
+            connectionNodes[i].GetComponent<ElementItem>().connectionsCurrent.Add(gameObject);
+            if (connectionNodes[i].GetComponent<IBridgeable>() != null)
+                connectionNodes[i].GetComponent<IBridgeable>().LoadReconnect();
+            /*
+            //if (ConnectionBridgeList[connectionsCurrent[i]] == null)
+            if (connectionNodes.ContainsKey(connectionNodes[i]) == false)
+            {
+                print("Need a bridge");
+                temp = Instantiate(BridgePrefabRef, transform.position, Quaternion.identity, transform.parent.transform);
+                temp.transform.SetAsFirstSibling();
+                temp.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
+                ConnectionBridgeList.Add(connectionsCurrent[i], temp);
+                temp.GetComponent<NodeBridge>().BuildConnection(gameObject, connectionsCurrent[i]);
+                temp.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
+                connectionsCurrent[i].GetComponent<ElementItem>().setBridgeOutside(gameObject, temp);
+            }*/
+        }
+    }
 }
