@@ -109,38 +109,46 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private void ElementPositionUpdate(Vector3 aimInputLocation)
     {
         //add locking element here
+
+        //<---decide where element is trying to move to (pointer position, or max reach)--->//
         Vector3 aimlocation = new Vector3(); //will be the final position of the element after all sticking is over
 
         if (connectionsCurrent.Count == 0) aimlocation = aimInputLocation; //no connections found, just update the movement
         else aimlocation = calculatePointerPosition(aimInputLocation); //there are attached bridges, must find the closest point to location
+        //<---|||||--->//
 
+        //<---Find possible rune connections--->//
         connectionList = FindConnections(aimlocation);
 
         if (FoundNode != null) if (testLength(FoundNode.transform.position, aimlocation))
             {
+                //this handles snapping to pre made nodes on the field
                 print("Moving to node " + FoundNode.name);
                 aimlocation = FoundNode.transform.position;
                 connectionList = FindConnections(aimlocation);
 
             }
+        //<---|||||--->//
+
+        //<---Cuts the list down to the closest elements that have space for connections--->//
         connectionList = buildConnections(connectionList, aimlocation);
+        //<---|||||--->//
 
         transform.position = aimlocation;
-
         UpdateConnections();
-
         drawLineConnectionTemp(false);
     }
 
     Vector3 calculatePointerPosition(Vector3 target)
     {
         Vector3 adjustedMousePosition = target;
-        float comparison = new float(); //final distance between two elements considering the larges range each of them has
+        float comparison = new float(); //final distance between two elements considering the largest range each of them has
         int exitcounter = recursionDetectionResolution; //used to quickly break out of the loop. Dunno if needed
 
-
+        //make sure target is withing range of all connected nodes
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
+            //comparison is the total range based on which element has a greater range
             if (Range >= connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange()) { comparison = (Range + (connectionsCurrent[i].GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x; }
             else comparison = (connectionsCurrent[i].GetComponent<IBridgeable>().getMaxRange() + (gameObject.GetComponent<RectTransform>().rect.width / 2)) * RuneFieldTransform.localScale.x;
 
@@ -150,7 +158,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
                 exitcounter--;
                 if (exitcounter > 0) i = 0;
-                else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient..."); }
+                //else { Debug.LogWarning("Warning! Over " + recursionDetectionResolution + " recalculations were found when finding snapping distance. Man this algorithm is inefficient..."); }
 
             }
             Debug.DrawLine(connectionsCurrent[i].transform.position, adjustedMousePosition, Color.green);
@@ -220,6 +228,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     void UpdateConnections()
     {
+        //function goes through all connections after moving and ensures they're in the right length/position/rotation
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
             ConnectionBridgeList[connectionsCurrent[i]].GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
@@ -286,7 +295,6 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     List<GameObject> buildConnections(List<GameObject> targets, Vector3 originPoint)
     {
-
         //function that takes the list of targets within range and returns which of them are free to build a connection
         //prioritizes closest objects and if they have an empty slot in connectionsCurrent
         targets = targets.OrderBy(obj =>
@@ -445,6 +453,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
         for (int i = 0; i < connectionsCurrent.Count; i++)
         {
+            print(connectionsCurrent[i].name + " is checking as " + connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked(false));
             if (connectionsCurrent[i].GetComponent<IConnectable>().PowerChecked(false) == false)
             {
                 if (connectionsCurrent[i].GetComponent<IConnectable>().SearchCore(Origin)) return true;

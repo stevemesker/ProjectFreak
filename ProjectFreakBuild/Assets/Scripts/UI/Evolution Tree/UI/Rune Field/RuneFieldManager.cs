@@ -57,6 +57,7 @@ public class RuneFieldManager : MonoBehaviour
             {
                 ListOfNodes[i].GetComponent<SphereCollider>().radius = (ListOfNodes[i].GetComponent<RectTransform>().rect.width * GetComponent<RectTransform>().localScale.x) / 2;
             }
+            CorePointer.GetComponent<SphereCollider>().radius = (CorePointer.GetComponent<RectTransform>().rect.width * GetComponent<RectTransform>().localScale.x) / 2;
         }
         //Debug.LogWarning(ListOfRunes[0].GetComponent<RectTransform>().rect.width);
         //Debug.LogWarning(GetComponent<RectTransform>().localScale.x);
