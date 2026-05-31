@@ -27,14 +27,16 @@ public class NodeBridge : MonoBehaviour
 
     public void updatePosition(float length)
     {
-        //transform.position = connectionOne.transform.position;
+        //move to position of first connected node
         transform.position = connectionOne.GetComponent<RectTransform>().transform.position;
         RectTransform rect = artPointer.GetComponent<RectTransform>();
 
+        //find current angle rotation
         Vector2 direction = connectionTwo.transform.position - connectionOne.transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //set angle and length of bridge
         rect.rotation = Quaternion.Euler(0, 0, angle-90f);
-        //rect.sizeDelta = new Vector2(rect.sizeDelta.x, length+(connectionOne.GetComponent<RectTransform>().rect.width/2) + (connectionTwo.GetComponent<RectTransform>().rect.width / 2));
         rect.sizeDelta = new Vector2(rect.sizeDelta.x, length);
 
     }
@@ -85,6 +87,7 @@ public class NodeBridge : MonoBehaviour
         GameObject CoreHolder = connectionOne.GetComponent<IConnectable>().GetCoreNode();
         if (CoreHolder == null) { Destroy(gameObject); return; }//it was never connected to the core and has no power anyway
 
+        CoreHolder.GetComponent<CoreNode>().ResetCheckedData();
 
         bool tempX = connectionOne.GetComponent<IConnectable>().SearchCore(connectionOne);
         bool tempY = connectionTwo.GetComponent<IConnectable>().SearchCore(connectionOne);

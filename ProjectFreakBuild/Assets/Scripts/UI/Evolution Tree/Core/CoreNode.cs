@@ -57,7 +57,8 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
     public void ConsumePower()
     {
         //triggers when a node is linked to the core's chain
-        rField.ResetRuneChecked();
+        //rField.ResetRuneChecked();
+        ResetCheckedData();
         if (hasPower() == false) return; //make sure core even has power
 
         //activate each node connected to core
@@ -134,6 +135,11 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         }
 
         connectionNodes.Clear();
+    }
+
+    public void ResetCheckedData()
+    {
+        rField.ResetRuneChecked();
     }
     public void LoadReconnect()
     {
