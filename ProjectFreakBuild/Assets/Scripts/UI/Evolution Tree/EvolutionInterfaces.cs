@@ -8,6 +8,7 @@ public interface IBridgeable
     bool canBridge();
     void BridgeNode(GameObject origin, GameObject bridge);
     void disconnectNodes(GameObject nodeToDisconnect);
+    void LoadReconnect();
 }
 
 public interface IConnectable

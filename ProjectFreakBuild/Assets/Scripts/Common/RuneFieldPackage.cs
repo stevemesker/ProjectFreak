@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class RunePackage
 {
     [Tooltip("element data scriptable object held within the element rune")]
@@ -14,6 +15,7 @@ public class RunePackage
     public int _currentPower;
 }
 
+[System.Serializable]
 public class NodePackage
 {
     [Tooltip("refers to which rune this is in the package")]
@@ -25,7 +27,16 @@ public class NodePackage
     [Tooltip("If the attached run is powered")]
     public bool _IsPowered;
 }
+[System.Serializable]
+public class CorePackage
+{
+    [Tooltip("Current Power of the Core")]
+    public int _CoreCurrentPower;
+    [Tooltip("index reference of the elements attached to the core")]
+    public List<int> _ConnectionIndexRef;
+}
 
+[System.Serializable]
 public class RuneFieldPackage
 {
     //
@@ -34,4 +45,6 @@ public class RuneFieldPackage
     //
     [Tooltip("list of edited nodes")]
     public List<NodePackage> _Nodes;
+
+    public CorePackage _Core;
 }

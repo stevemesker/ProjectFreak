@@ -66,6 +66,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void setElementSOAttachment(ElementItemSO ele)
     {
+        print("Setting element " + ele.name);
         _ElementAttached = ele;
     }
 
@@ -206,6 +207,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (CoreNode != null)
         {
             ConnectNode(CoreNode);
+            print("Boop");
             CoreNode.GetComponent<IConnectable>().ConsumePower();
         }
     }
@@ -253,6 +255,35 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     #endregion
 
     #region Connection Building
+
+    public void LoadReconnect()
+    {
+        //function called to reset a node after the rune field has been loaded
+        GameObject temp;
+        for (int i = 0; i < connectionsCurrent.Count; i++)
+        {
+            //if (ConnectionBridgeList[connectionsCurrent[i]] == null)
+            if (ConnectionBridgeList.ContainsKey(connectionsCurrent[i]) == false)
+            {
+                print("Need a bridge");
+                temp = Instantiate(BridgePrefabRef, transform.position, Quaternion.identity, transform.parent.transform);
+                temp.transform.SetAsFirstSibling();
+                temp.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
+                ConnectionBridgeList.Add(connectionsCurrent[i], temp);
+                temp.GetComponent<NodeBridge>().BuildConnection(gameObject, connectionsCurrent[i]);
+                temp.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
+
+                if (connectionsCurrent[i].GetComponent<ElementItem>() != null)
+                connectionsCurrent[i].GetComponent<ElementItem>().setBridgeOutside(gameObject, temp);
+            }
+        }
+    }
+
+    public void setBridgeOutside(GameObject origin, GameObject existingBridge)
+    {
+        ConnectionBridgeList.Add(origin, existingBridge);
+    }
+
     List<GameObject> buildConnections(List<GameObject> targets, Vector3 originPoint)
     {
 

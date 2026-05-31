@@ -8,4 +8,5 @@ public class ShadeSO : ScriptableObject
     public ShadeStats _shadeStats;
     public ShadeStats _AlteredStats;
     public ShadeEvolutionSO _CurrentEvolution;
+    public RuneFieldPackage _RuneFieldPackage;
 }
