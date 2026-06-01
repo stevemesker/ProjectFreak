@@ -6,6 +6,9 @@ using UnityEngine.Events;
 [CreateAssetMenu(fileName = "SO_NewElement", menuName = "ScriptableObjects/Items/Element", order = 0)]
 public class ElementItemSO : ItemSO
 {
+    [Header("===Ingredient Base Data===")]
+    public Sprite itemSprite;
+
     [Header("Stat Upgrade")]
     [SerializeField] List<statBoostPackage> mypackage;
 
