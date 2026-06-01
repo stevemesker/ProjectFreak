@@ -9,7 +9,6 @@ public class InventoryManager : MonoBehaviour
 {
     /////////////////////////////////////////////////////////////////////////////
     //Manager Script that handles inventory adding, sorting, and searching
-    //Mostly used in dungeons and transfers data to game manager when finished
     /////////////////////////////////////////////////////////////////////////////
 
     //Static Controller//
@@ -25,8 +24,13 @@ public class InventoryManager : MonoBehaviour
     [OdinSerialize] 
     public Dictionary<IngredientItem, int> playerIngredients = new Dictionary<IngredientItem, int>();
 
+    //Element Variables//
+    public Dictionary<ElementItemSO, int> playerElements = new Dictionary<ElementItemSO, int>();
+
     public IReadOnlyDictionary<IngredientItem, int> Ingredients
         => playerIngredients;
+    public IReadOnlyDictionary<ElementItemSO, int> Elements
+        => playerElements;
 
     [OdinSerialize]
     public Dictionary<int, int> testdict = new Dictionary<int, int>();
@@ -83,6 +87,10 @@ public class InventoryManager : MonoBehaviour
 
             case WeaponItem weapon:
                 print("Weapon Picked up and added to inventory!");
+                break;
+            case ElementItemSO element:
+                print("Adding element to inventory!");
+                addElement(item as ElementItemSO, amount);
                 break;
 
             default:
@@ -171,6 +179,43 @@ public class InventoryManager : MonoBehaviour
 
 
     #endregion
+
+    #region Element Pickup
+    [Button]
+    public bool addElement(ElementItemSO item, int amountAdded)
+    {
+        if (item == null || amountAdded < 1) return false; //checks to make sure inputs are valid (should probably do this earlier up the chain but works fine for now
+        if (playerElements.TryGetValue(item, out int current))
+        {
+            print("Inventory slot exists, current count " + current);
+            if ((current + amountAdded) > ItemStackSizeMax)
+            {
+                Debug.LogWarning("Warning! Maximum item amount has been surpassed for item " + item.ItemName);
+                playerElements[item] = ItemStackSizeMax;
+                return false;
+            }
+            print(" new inventory amount should be " + (current + amountAdded));
+            playerElements[item] = current + amountAdded;
+            print("Current count is " + playerElements[item]);
+            return true;
+        }
+        else
+        {
+            if (amountAdded < 1)
+            {
+                Debug.LogError("Cannot add item " + item.ItemName + " due to inventory amount issues attempting to add " + amountAdded + " to a new list item.");
+                return false;
+            }
+            if (amountAdded > ItemStackSizeMax) amountAdded = ItemStackSizeMax;
+            print("New Inventory adding: " + item.ItemName + " X " + amountAdded);
+
+            playerElements.Add(item, amountAdded);
+            return true;
+        }
+
+    }
+    #endregion
+
 }
 
 

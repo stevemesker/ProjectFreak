@@ -31,6 +31,23 @@ public class IngredientListWindow : MonoBehaviour
     [Button("Update List")]
     public void UpdateList()
     {
+        //pull in the manager's source of truth for elements
+        var elements = InventoryManager._PlayerInventory.Elements;
+
+        if (elements.Count < currentListAssets.Count) removeUnusedBoxes(currentListAssets.Count - elements.Count);
+        if (elements.Count > currentListAssets.Count) spawnMoreButtons(elements.Count - currentListAssets.Count);
+
+        int index = 0;
+        foreach (var entry in InventoryManager._PlayerInventory.Elements)
+        {
+            //if (currentListAssets.Count < i) currentListAssets.Add(Instantiate(ButtonListPrefab, ListHolderPointer.transform));
+            //currentListAssets[i].GetComponent<IngredientDataObject>().FillData(ingredients[i])
+            currentListAssets[index].SetActive(true);
+            currentListAssets[index].GetComponent<ElementDataObject>().FillData(entry.Key, entry.Value);
+            index++;
+        }
+
+        /*
         //pull in the manager's source of truth for ingredients
         var ingredients = InventoryManager._PlayerInventory.Ingredients;
 
@@ -45,7 +62,7 @@ public class IngredientListWindow : MonoBehaviour
             currentListAssets[index].SetActive(true);
             currentListAssets[index].GetComponent<IngredientDataObject>().FillData(entry.Key, entry.Value);
             index++;
-        }
+        }*/
     }
 
     private void spawnMoreButtons(int amount)
