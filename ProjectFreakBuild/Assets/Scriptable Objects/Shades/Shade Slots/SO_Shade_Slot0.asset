@@ -27,12 +27,12 @@ MonoBehaviour:
     _DIS: 0
     _WILD: 0
   _AlteredStats:
-    _HP: 0
-    _Health: 0
-    _STR: 0
+    _HP: 19
+    _Health: 19
+    _STR: 16
     _DEF: 0
     _AGI: 0
-    _INT: 0
+    _INT: 17
     _SPR: 0
     _WIS: 0
     _LVL: 0
@@ -42,6 +42,23 @@ MonoBehaviour:
     _WILD: 0
   _CurrentEvolution: {fileID: 0}
   _RuneFieldPackage:
-    _Runes: []
+    _Runes:
+    - _elementDataPointer: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4,
+        type: 2}
+      _elementPosition: {x: -208.15643, y: -114.63687, z: 0}
+      _connectionIndexRef: 01000000
+      _currentPower: 1
+    - _elementDataPointer: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2,
+        type: 2}
+      _elementPosition: {x: -188.8916, y: -313.70688, z: 0}
+      _connectionIndexRef: 00000000
+      _currentPower: 1
+    - _elementDataPointer: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702,
+        type: 2}
+      _elementPosition: {x: 72.40222, y: -193.0726, z: 0}
+      _connectionIndexRef: ffffffff
+      _currentPower: 1
     _Nodes: []
-    _CoreCurrentPower: 1
+    _Core:
+      _CoreCurrentPower: 1
+      _ConnectionIndexRef: 0000000002000000

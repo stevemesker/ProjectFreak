@@ -1,0 +1,3 @@
+[[SHA]]
+[[Shade Slot]]
+[[SOUL]]

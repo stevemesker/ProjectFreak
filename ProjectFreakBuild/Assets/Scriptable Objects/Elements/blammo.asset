@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: blammo
   m_EditorClassIdentifier: 
   ItemID: 0
-  ItemName: Basic Element
+  ItemName: Blammo
   ItemDescription: Nothing special about this
   dropArt: {fileID: 0}
   ItemRarity: 0
+  itemSprite: {fileID: 0}
   mypackage:
   - _linkedElement: {fileID: 11400000}
     _ElementConnect: {fileID: 0}
-    _statToChange: 0
+    _statToChange: 4
     _ChangeAmount: 1
   statusEffectEnable:
     m_PersistentCalls:
@@ -54,6 +55,6 @@ MonoBehaviour:
         m_CallState: 2
   element: 0
   materialType: 0
-  connectionsAllowed: 2
+  connectionsAllowed: 3
   connectionDistance: 150
   powerNeeded: 1
