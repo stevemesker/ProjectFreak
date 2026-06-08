@@ -1,0 +1,1 @@
+A shade slot is part of a list of [[Shade]]s the player is able to summon in combat. It holds the actual shade data as well as its [[Rune Field]] data

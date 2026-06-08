@@ -1,0 +1,1 @@
+Bring the shade out from your shadow. It will remain tethered to the character but will otherwise act independently depending on the shade's [[DIS]] and [[WILD]] 

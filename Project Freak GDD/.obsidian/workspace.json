@@ -6,6 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
+        "dimension": 30.11308562197092,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -13,19 +14,56 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Character Traits/Main Character Stats.md",
+                "file": "Shade Info/Shade Stats.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Main Character Stats"
+              "title": "Shade Stats"
             }
           }
         ]
       },
       {
+        "id": "eac25e156f0891bc",
+        "type": "tabs",
+        "dimension": 34.92730210016155,
+        "children": [
+          {
+            "id": "7b56b5d63f9352c9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Game design.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Game design"
+            }
+          },
+          {
+            "id": "77a68866680671e7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Character Traits/Main Character.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Main Character"
+            }
+          }
+        ],
+        "currentTab": 1
+      },
+      {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
+        "dimension": 34.95961227786753,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -110,7 +148,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Character Traits/Main Character Stats.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,7 +157,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Main Character Stats"
+              "title": "Backlinks"
             }
           },
           {
@@ -129,12 +166,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Character Traits/Main Character Stats.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Main Character Stats"
+              "title": "Outgoing links"
             }
           },
           {
@@ -172,13 +208,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Character Traits/Main Character Stats.md",
+                "file": "Welcome.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Main Character Stats"
+              "title": "Outline of Welcome"
             }
           }
         ]
@@ -196,15 +232,32 @@
       "daily-notes:Open today's daily note": false,
       "templates:Insert template": false,
       "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "bases:Create new base": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "96228a7edd8b3eaa",
+  "active": "7e60bd6793e60dcd",
   "lastOpenFiles": [
-    "Character Traits/Party Stats.md",
-    "Character Traits/Main Character Stats.md",
+    "Shade Info/Shade Stats.md",
+    "Shade Info/Shade.md",
     "Character Traits/Character Stats.md",
+    "Character Traits/Main Character.md",
+    "Atlas.md",
     "Game design.md",
+    "Character Traits/Main Character Abilities/Dive Switch.md",
+    "Character Traits/Main Character Abilities/Fuse Shade.md",
+    "Character Traits/Tamer Level.md",
+    "Character Traits/Main Character Abilities/Separate Shade.md",
+    "Character Traits/Main Character Abilities/Summon Shade.md",
+    "Character Traits/Party Stats.md",
+    "UI/Rune Field.md",
+    "Character Traits/Shade Slot.md",
+    "UI",
+    "Character Traits/Main Character Stats.md",
+    "Character Traits/Main Character Abilities/Control Shade.md",
+    "Character Traits/Main Character Abilities",
+    "Narrative",
+    "Shade Info",
     "Welcome.md",
     "Character Traits",
     "Links/Names.md",
