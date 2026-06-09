@@ -2,7 +2,7 @@
 
 ---
 **Description**
-[[Element Rune]]s are the only nodes that can be moved by the player. They can be dragged over from the player's [[inventory]] and interact with [[Ability Node]]s and the [[Core Node]].
+[[Element Rune]]s are the only nodes that can be moved by the player. They can be dragged over from the player's [[inventory]] and interact with [[Ability Node]]s, other [[Element Rune]]s via [[Bridge]]s , and the [[Core Node]].
 
 ---
 **Rarity and elemental effects**
@@ -40,3 +40,7 @@ These nodes (when powered) give various types of buffs, debuffs, and other effec
 | element effect   | adds an [[Elemental Affinity]] to attack/defense   |
 | connect boost    | adds more of a stat to nodes connected to this one |
 | energy reduction | lowers the required energy a node needs to power   |
+
+---
+**Energy Requirements**
+All [[Element Rune]]s have a required energy they must consume from the [[Core Node]] in order to apply stat effects and activate [[Ability Node]]s. When on the [[Rune Field]], energy requirements are listed at the bottom of the node and are displayed as the current energy / required energy (example 2/2 or 0/4). Nodes cannot take up fractions of energy, they are either on or off.
