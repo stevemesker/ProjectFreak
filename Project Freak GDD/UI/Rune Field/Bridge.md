@@ -1,0 +1,1 @@
+A [[Bridge]] is a visual asset that connects [[Element Rune]]s to other nodes on the [[Rune Field]]. It helps deal with severing [[Element Rune]]s from each other and visually displaying energy connection.

@@ -1,3 +1,4 @@
+Core Node Graphic:
 ![[Core Node.png]]
 
 ---
