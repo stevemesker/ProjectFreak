@@ -1,0 +1,1 @@
+The current ruler of [[Sanctoria]] and head of the [[Lumina Council]]. He created the order that led to the extinction of the Keepers. He believed this would ensure the secret of Pallium would remain hidden.

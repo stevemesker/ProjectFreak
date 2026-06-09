@@ -1,0 +1,1 @@
+A special type of magic user that has separated their soul and fused it with their shadow, allowing them to empower it with magical [[elements]]. This fusion is called a [[Shade]] and it can be summoned to assist with various tasks such as combat and navigation

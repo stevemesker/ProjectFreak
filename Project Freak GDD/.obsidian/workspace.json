@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 30.11308562197092,
+        "dimension": 25.290697674418606,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Shade Info/Shade Stats.md",
+                "file": "Atlas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Shade Stats"
+              "title": "Atlas"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 34.92730210016155,
+        "dimension": 29.037467700258397,
         "children": [
           {
             "id": "7b56b5d63f9352c9",
@@ -49,12 +49,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Character Traits/Main Character.md",
+                "file": "Atlas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Main Character"
+              "title": "Atlas"
             }
           }
         ],
@@ -63,7 +63,7 @@
       {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
-        "dimension": 34.95961227786753,
+        "dimension": 45.671834625323,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -208,13 +208,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Welcome.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Welcome"
+              "title": "Outline"
             }
           }
         ]
@@ -236,31 +235,42 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "7e60bd6793e60dcd",
+  "active": "ffe826f6f1cc8cbf",
   "lastOpenFiles": [
-    "Shade Info/Shade Stats.md",
-    "Shade Info/Shade.md",
-    "Character Traits/Character Stats.md",
-    "Character Traits/Main Character.md",
     "Atlas.md",
+    "Legendary Heroes.md",
     "Game design.md",
-    "Character Traits/Main Character Abilities/Dive Switch.md",
-    "Character Traits/Main Character Abilities/Fuse Shade.md",
-    "Character Traits/Tamer Level.md",
-    "Character Traits/Main Character Abilities/Separate Shade.md",
-    "Character Traits/Main Character Abilities/Summon Shade.md",
-    "Character Traits/Party Stats.md",
-    "UI/Rune Field.md",
+    "Narrative/Locations/Cradle.md",
     "Character Traits/Shade Slot.md",
+    "Narrative/Factions/Keepers.md",
+    "Narrative/Factions/Lumina Council.md",
+    "Character Traits/Tamer Level.md",
+    "Narrative/Cataclysm.md",
+    "Narrative/Locations/Pallium.md",
+    "Narrative/Factions/Lanterns.md",
+    "Character Traits/Main Character.md",
+    "Narrative/Locations/The Black Lantern.md",
+    "Shade Info/Shade.md",
+    "Narrative/characters/Shadow Tamer.md",
+    "Narrative/characters/Hazen.md",
+    "Shade Info/Shade Stats.md",
+    "Narrative/Locations/Outworld.md",
+    "Narrative/Main Narrative.md",
+    "Narrative/Locations/Sanctoria.md",
+    "Narrative/characters/Silent King.md",
+    "Narrative/Locations",
+    "Narrative/Factions",
+    "Narrative/characters/Stolas.md",
+    "Narrative/characters",
+    "Narrative/Characters.md",
+    "Character Traits/Character Stats.md",
+    "Welcome.md",
+    "Character Traits/Main Character Abilities/Dive Switch.md",
     "UI",
-    "Character Traits/Main Character Stats.md",
-    "Character Traits/Main Character Abilities/Control Shade.md",
     "Character Traits/Main Character Abilities",
     "Narrative",
     "Shade Info",
-    "Welcome.md",
     "Character Traits",
-    "Links/Names.md",
     "Links",
     "Combat"
   ]
