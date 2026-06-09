@@ -1,3 +1,5 @@
 [[Game design]]
 [[Main Character]]
 [[Main Narrative]]
+[[Rune Field]]
+[[Elemental Affinity]]
