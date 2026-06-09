@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 25.290697674418606,
+        "dimension": 23.546511627906977,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Atlas.md",
+                "file": "Shade Info/Shade Ability.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Atlas"
+              "title": "Shade Ability"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 29.037467700258397,
+        "dimension": 59.399224806201545,
         "children": [
           {
             "id": "7b56b5d63f9352c9",
@@ -49,12 +49,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Atlas.md",
+                "file": "Shade Info/Evolution.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Atlas"
+              "title": "Evolution"
             }
           }
         ],
@@ -63,7 +63,7 @@
       {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
-        "dimension": 45.671834625323,
+        "dimension": 17.05426356589147,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -148,6 +148,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Shade Info/Shade Ability.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -157,7 +158,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Shade Ability"
             }
           },
           {
@@ -166,11 +167,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Shade Info/Shade Ability.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from Shade Ability"
             }
           },
           {
@@ -208,12 +210,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Shade Info/Shade Ability.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Shade Ability"
             }
           }
         ]
@@ -235,10 +238,30 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "ffe826f6f1cc8cbf",
+  "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
     "Atlas.md",
-    "Legendary Heroes.md",
+    "Shade Info/Evolution.md",
+    "Shade Info/Shade.md",
+    "Shade Info/Shade Ability.md",
+    "Shade Info/Shade Stats.md",
+    "UI/Rune Field/Element Rune.md",
+    "UI/Rune Field/Core Node.md",
+    "UI/Rune Field/Ability Node.md",
+    "UI/Rune Field/Rune Field.md",
+    "zz Templates/2 wide table.md",
+    "UI/Rune Field",
+    "Combat/Elemental Affinity.md",
+    "zz Templates",
+    "Attachments/Rune Field AI mockup.png",
+    "Attachments/Core Node.png",
+    "Attachments",
+    "Narrative/characters/Lady Kimaris.md",
+    "Narrative/Main Narrative.md",
+    "Narrative/characters/Stolas.md",
+    "Narrative/characters/Legendary Heroes.md",
+    "Narrative/characters/Quiet King.md",
+    "Narrative/characters/Shadow Tamer.md",
     "Game design.md",
     "Narrative/Locations/Cradle.md",
     "Character Traits/Shade Slot.md",
@@ -248,30 +271,12 @@
     "Narrative/Cataclysm.md",
     "Narrative/Locations/Pallium.md",
     "Narrative/Factions/Lanterns.md",
-    "Character Traits/Main Character.md",
-    "Narrative/Locations/The Black Lantern.md",
-    "Shade Info/Shade.md",
-    "Narrative/characters/Shadow Tamer.md",
-    "Narrative/characters/Hazen.md",
-    "Shade Info/Shade Stats.md",
-    "Narrative/Locations/Outworld.md",
-    "Narrative/Main Narrative.md",
-    "Narrative/Locations/Sanctoria.md",
-    "Narrative/characters/Silent King.md",
     "Narrative/Locations",
     "Narrative/Factions",
-    "Narrative/characters/Stolas.md",
     "Narrative/characters",
-    "Narrative/Characters.md",
-    "Character Traits/Character Stats.md",
-    "Welcome.md",
-    "Character Traits/Main Character Abilities/Dive Switch.md",
     "UI",
     "Character Traits/Main Character Abilities",
     "Narrative",
-    "Shade Info",
-    "Character Traits",
-    "Links",
-    "Combat"
+    "Shade Info"
   ]
 }
