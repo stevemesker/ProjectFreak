@@ -1,4 +1,5 @@
-[[Note To Self]] add image here
+Element Rune Mockup
+![[Element node.png|275]]
 
 ---
 **Description**

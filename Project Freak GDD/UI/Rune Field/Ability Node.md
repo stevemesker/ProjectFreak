@@ -1,3 +1,6 @@
+Ability Node
+![[Ability Node Example.png|272]]
+
 These nodes are placed on the [[Rune Field]] ahead of time and are the primary goal for a player to reach by chaining [[Element Rune]]s to reach. When a powered rune is placed directly on top of the [[Ability Node]] it will activate the node provided no other criteria is not yet met.
 
 ---

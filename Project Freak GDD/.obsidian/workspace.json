@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 23.55411954765751,
+        "dimension": 14.666666666666666,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 36.86591276252019,
+        "dimension": 72.63492063492063,
         "children": [
           {
             "id": "77a68866680671e7",
@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "UI/Rune Field/Element Rune.md",
+                "file": "UI/Rune Field/Rune Field.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Element Rune"
+              "title": "Rune Field"
             }
           }
         ]
@@ -48,7 +48,7 @@
       {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
-        "dimension": 39.57996768982229,
+        "dimension": 12.698412698412698,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -133,6 +133,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "UI/Rune Field/Rune Field.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -142,7 +143,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Rune Field"
             }
           },
           {
@@ -151,11 +152,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "UI/Rune Field/Rune Field.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from Rune Field"
             }
           },
           {
@@ -193,12 +195,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "UI/Rune Field/Rune Field.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Rune Field"
             }
           }
         ]
@@ -220,40 +223,41 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "ffe826f6f1cc8cbf",
+  "active": "77a68866680671e7",
   "lastOpenFiles": [
-    "UI/Rune Field/Element Rune.md",
-    "UI/Rune Field/Bridge.md",
-    "UI/Rune Field/Ability Node.md",
-    "UI/Rune Field/Core Node.md",
-    "Shade Info/Shade Ability.md",
-    "Game design.md",
-    "Atlas.md",
+    "zzz Extras/Attachments/Rune Field AI mockup.png",
+    "zzz Extras/Attachments/Ability Node Example.png",
+    "UI/Rune Field/Rune Field.md",
     "Shade Info/Shade.md",
+    "Shade Info/Shade Ability.md",
+    "Shade Info/Shade Stats.md",
+    "Character Traits/Shade Slot.md",
+    "Character Traits/Party Stats.md",
+    "Character Traits/Main Character Stats.md",
+    "Character Traits/Main Character.md",
+    "Character Traits/Character Stats.md",
+    "Narrative/Random Name Ideas.md",
+    "Atlas.md",
+    "zzz Extras/Attachments/Element node.png",
+    "zzz Extras/Attachments/Core Node.png",
+    "UI/Rune Field/Ability Node.md",
+    "UI/Rune Field/Bridge.md",
+    "UI/Rune Field/Core Node.md",
+    "UI/Rune Field/Element Rune.md",
     "Shade Info/Evolution Type.md",
     "Shade Info/Evolution.md",
-    "Shade Info/Shade Stats.md",
-    "Project Freak.md",
-    "zzz Extras",
-    "UI/Rune Field/Rune Field.md",
-    "zzz Extras/Templates/2 wide table.md",
-    "UI/Rune Field",
-    "Combat/Elemental Affinity.md",
-    "zzz Extras/Templates",
-    "zzz Extras/Attachments/Rune Field AI mockup.png",
-    "zzz Extras/Attachments/Core Node.png",
-    "zzz Extras/Attachments",
-    "Narrative/characters/Lady Kimaris.md",
     "Narrative/Main Narrative.md",
-    "Narrative/characters/Stolas.md",
-    "Narrative/characters/Legendary Heroes.md",
-    "Narrative/characters/Quiet King.md",
-    "Narrative/characters/Shadow Tamer.md",
+    "Narrative/Cataclysm.md",
+    "Narrative/Locations/The Black Lantern.md",
+    "Narrative/Locations/Sanctoria.md",
+    "Narrative/Locations/Pallium.md",
+    "Narrative/Locations/Outworld.md",
     "Narrative/Locations/Cradle.md",
-    "Character Traits/Shade Slot.md",
-    "Narrative/Factions/Keepers.md",
     "Narrative/Factions/Lumina Council.md",
-    "Character Traits/Tamer Level.md",
+    "zzz Extras",
+    "UI/Rune Field",
+    "zzz Extras/Templates",
+    "zzz Extras/Attachments",
     "Narrative/Locations",
     "Narrative/Factions",
     "Narrative/characters",
