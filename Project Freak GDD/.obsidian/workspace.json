@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 14.666666666666666,
+        "dimension": 14.73015873015873,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 72.63492063492063,
+        "dimension": 64,
         "children": [
           {
             "id": "77a68866680671e7",
@@ -48,7 +48,7 @@
       {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
-        "dimension": 12.698412698412698,
+        "dimension": 21.26984126984127,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -133,7 +133,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "UI/Rune Field/Rune Field.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -143,7 +142,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Rune Field"
+              "title": "Backlinks"
             }
           },
           {
@@ -152,12 +151,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "UI/Rune Field/Rune Field.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Rune Field"
+              "title": "Outgoing links"
             }
           },
           {
@@ -195,13 +193,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "UI/Rune Field/Rune Field.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Rune Field"
+              "title": "Outline"
             }
           }
         ]
@@ -223,11 +220,11 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "77a68866680671e7",
+  "active": "ffe826f6f1cc8cbf",
   "lastOpenFiles": [
+    "UI/Rune Field/Rune Field.md",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
     "zzz Extras/Attachments/Ability Node Example.png",
-    "UI/Rune Field/Rune Field.md",
     "Shade Info/Shade.md",
     "Shade Info/Shade Ability.md",
     "Shade Info/Shade Stats.md",
