@@ -1,0 +1,8 @@
+The game will run off of a few managers that keep track of their specific tasks. They're ordered in somewhat of a hierarchy to keep things organized:
+
+| Type                  | Description                                                                                                                                                                                                          |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [[Game Manager]]      | The primary manager in charge of referencing the other managers and utilizing their functions. Managers should never call other managers, they should always reference [[Game Manager]] or the objects querying them |
+| [[Shade Manager]]     | This manager takes care of data for each shade in the various [[Shade Slot]]s                                                                                                                                        |
+| [[Inventory Manager]] | Used to add/remove/manage the player's inventory. Has a working list of all items separated by an [[item ID]] that the manager can spawn when queried                                                                |
+| [[Save Manager]]      | in charge of saving/loading game data                                                                                                                                                                                |
