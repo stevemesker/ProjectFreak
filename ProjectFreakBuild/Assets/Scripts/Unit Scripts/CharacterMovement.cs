@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class CharacterMovement : MonoBehaviour
 {
+    [Header("Debug Stuff for now")]
+    [SerializeField] Vector3 goalVel;
+
     [Header("Stats")]
     public Rigidbody _RB;
     public GameObject _MainCamera;
@@ -22,7 +25,11 @@ public class CharacterMovement : MonoBehaviour
     [Header("Locomotion")]
     [SerializeField] float maxSpeed = 8;
     [SerializeField] float acceleration = 200;
+    [SerializeField] AnimationCurve AccelerationFactorFromDot;
     [SerializeField] float maxAccelForce = 150;
+    [SerializeField] AnimationCurve MaxAccelerationForceFactorFromDot;
+    [SerializeField] Vector3 forceScale;
+    [SerializeField] float maxAccelForceFactor = 1;
     [SerializeField] float speedFactor = 1;
     [SerializeField] public Vector3 m_UnitGoal;
     Vector3 m_GoalVel;
@@ -116,23 +123,18 @@ public class CharacterMovement : MonoBehaviour
 
     void MovementForce()
     {
-        Vector3 desiredVelocity = m_UnitGoal * maxSpeed;
+        Vector3 unitVel = m_GoalVel.normalized;
+        float velDot = Vector3.Dot(m_UnitGoal, unitVel);
+        float accel = acceleration * AccelerationFactorFromDot.Evaluate(velDot);
+        goalVel = m_UnitGoal * maxSpeed * speedFactor;
 
-        Vector3 currentVelocity = _RB.velocity;
-        currentVelocity.y = 0f;
+        m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel*Time.fixedDeltaTime);
 
-        Vector3 velocityDelta =
-            desiredVelocity - currentVelocity;
+        Vector3 neededAccel = (m_GoalVel - _RB.velocity);
 
-        Vector3 desiredAccel =
-            velocityDelta * acceleration;
-
-        Vector3 accelForce =
-            Vector3.ClampMagnitude(
-                desiredAccel * _RB.mass,
-                maxAccelForce);
-
-        _RB.AddForce(accelForce);
+        float maxAccel = maxAccelForce * MaxAccelerationForceFactorFromDot.Evaluate(velDot) * maxAccelForceFactor;
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel)/Time.fixedDeltaTime;
+        _RB.AddForce(Vector3.Scale(neededAccel * _RB.mass, forceScale));
     }
 
     #region Inputs
