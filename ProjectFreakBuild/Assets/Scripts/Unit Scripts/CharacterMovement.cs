@@ -24,12 +24,15 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] float acceleration = 200;
     [SerializeField] float maxAccelForce = 150;
     [SerializeField] float speedFactor = 1;
-    [SerializeField] Vector3 m_UnitGoal;
+    [SerializeField] public Vector3 m_UnitGoal;
     Vector3 m_GoalVel;
 
     [Header("Turning")]
+    [SerializeField, Tooltip("When true, the unit's rotation will match their movement vector")] bool isTurnSnapped = true;
     [SerializeField] float TurnSpeed;
-    [SerializeField] Vector3 m_turnGoal;
+    [SerializeField] public Vector3 m_turnGoal;
+    [SerializeField] float turnIdleTime = 1;
+    Coroutine IdleTimer;
 
     [Header("Mouse Settings")]
     [SerializeField] bool isUsingMouse;
@@ -49,6 +52,7 @@ public class CharacterMovement : MonoBehaviour
 
         pInput.Player.Look.performed += StickTurn;
         pInput.Player.Look.canceled += StickTurn;
+        pInput.Player.Look.canceled += EndStickTurn;
 
         pInput.Player.Point.performed += MouseInput;
         pInput.Player.Point.canceled += MouseStopInput;
@@ -70,6 +74,7 @@ public class CharacterMovement : MonoBehaviour
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _rayHit, RayLength)) _rayDidHit = true;
         else _rayDidHit = false;
         StandingForce();
+        MovementForce();
 
         if (OnDebugDrawLines) debugLineDraw();
     }
@@ -109,12 +114,34 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+    void MovementForce()
+    {
+        Vector3 desiredVelocity = m_UnitGoal * maxSpeed;
+
+        Vector3 currentVelocity = _RB.velocity;
+        currentVelocity.y = 0f;
+
+        Vector3 velocityDelta =
+            desiredVelocity - currentVelocity;
+
+        Vector3 desiredAccel =
+            velocityDelta * acceleration;
+
+        Vector3 accelForce =
+            Vector3.ClampMagnitude(
+                desiredAccel * _RB.mass,
+                maxAccelForce);
+
+        _RB.AddForce(accelForce);
+    }
+
     #region Inputs
     void MovementInput(InputAction.CallbackContext context)
     {
         Vector2 stickInput = context.ReadValue<Vector2>();
         Vector3 move = new Vector3(stickInput.x,0, stickInput.y);
         m_UnitGoal = ConvertMovementScreenSpace(move);
+        if (isTurnSnapped) m_turnGoal = m_UnitGoal;
     }
     
     void StickTurn(InputAction.CallbackContext context)
@@ -124,18 +151,28 @@ public class CharacterMovement : MonoBehaviour
         Vector3 roate = new Vector3(stickInput.x, 0, stickInput.y);
         m_turnGoal = ConvertMovementScreenSpace(roate);
         isUsingMouse = false;
+        isTurnSnapped = false;
+        IdleTimer = null;
+    }
+
+    void EndStickTurn(InputAction.CallbackContext context)
+    {
+        IdleTimer = StartCoroutine(IdleTimerCoroutine());
     }
 
     void MouseInput(InputAction.CallbackContext context)
     {
+        if (IdleTimer != null) StopCoroutine(IdleTimer);
+        IdleTimer = null;
         isUsingMouse = true;
+        isTurnSnapped = false;
         m_turnGoal = GetMouseAimDirection();
     }
 
     void MouseStopInput(InputAction.CallbackContext context)
     {
         //when the mouse clicks outside of the window apparently
-        //will be useful later
+        IdleTimer = StartCoroutine(IdleTimerCoroutine());
     }
 
     #endregion
@@ -148,7 +185,7 @@ public class CharacterMovement : MonoBehaviour
         _MainCamera.transform.eulerAngles.y,
         0f);
 
-        return (cameraRotation * input).normalized;
+        return (cameraRotation * input);
     }
 
     Vector3 GetMouseAimDirection()
@@ -173,6 +210,14 @@ public class CharacterMovement : MonoBehaviour
         return transform.forward;
     }
 
+    private IEnumerator IdleTimerCoroutine()
+    {
+        print("Starting coroutine...");
+        yield return new WaitForSeconds(turnIdleTime);
+        if (IdleTimer != null) isTurnSnapped = true;
+        m_turnGoal = m_UnitGoal;
+    }
+
     void debugLineDraw()
     {
         //forward vector
@@ -182,10 +227,14 @@ public class CharacterMovement : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + m_UnitGoal * lineLength, Color.green);
 
         //rotation direction vector
-        if (isUsingMouse)
-            Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.red);
+        if (isTurnSnapped) Debug.DrawLine(transform.position, m_turnGoal * lineLength + transform.position, Color.black);
         else
-            Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.yellow);
+        {
+            if (isUsingMouse)
+                Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.red);
+            else
+                Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.yellow);
+        }
     }
     #endregion
 }
