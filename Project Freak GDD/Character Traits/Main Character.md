@@ -9,4 +9,5 @@ Data:
 [[Tamer Level]]
 
 ---
-Movement:
+Movement
+see [[Character Movement]]. Hazen uses the basic walk type unless being effected by fuse shade abilities

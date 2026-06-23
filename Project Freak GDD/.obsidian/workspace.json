@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 14.73015873015873,
+        "dimension": 18.966074313408722,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 64,
+        "dimension": 52.24555735056543,
         "children": [
           {
             "id": "77a68866680671e7",
@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "UI/Rune Field/Rune Field.md",
+                "file": "Character Traits/Character Movement.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune Field"
+              "title": "Character Movement"
             }
           }
         ]
@@ -48,7 +48,7 @@
       {
         "id": "46ee70be0e397b8d",
         "type": "tabs",
-        "dimension": 21.26984126984127,
+        "dimension": 28.788368336025847,
         "children": [
           {
             "id": "ffe826f6f1cc8cbf",
@@ -133,6 +133,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Character Traits/Character Movement.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -142,7 +143,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Backlinks for Character Movement"
             }
           },
           {
@@ -151,11 +152,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Character Traits/Character Movement.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links"
+              "title": "Outgoing links from Character Movement"
             }
           },
           {
@@ -193,12 +195,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Character Traits/Character Movement.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline"
+              "title": "Outline of Character Movement"
             }
           }
         ]
@@ -220,8 +223,15 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "ffe826f6f1cc8cbf",
+  "active": "77a68866680671e7",
   "lastOpenFiles": [
+    "Architecture/Managers.md",
+    "UI/Rune Field/Element Rune.md",
+    "Game design.md",
+    "Character Traits/Main Character.md",
+    "Atlas.md",
+    "Character Traits/Character Movement.md",
+    "Architecture",
     "UI/Rune Field/Rune Field.md",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
     "zzz Extras/Attachments/Ability Node Example.png",
@@ -231,16 +241,13 @@
     "Character Traits/Shade Slot.md",
     "Character Traits/Party Stats.md",
     "Character Traits/Main Character Stats.md",
-    "Character Traits/Main Character.md",
     "Character Traits/Character Stats.md",
     "Narrative/Random Name Ideas.md",
-    "Atlas.md",
     "zzz Extras/Attachments/Element node.png",
     "zzz Extras/Attachments/Core Node.png",
     "UI/Rune Field/Ability Node.md",
     "UI/Rune Field/Bridge.md",
     "UI/Rune Field/Core Node.md",
-    "UI/Rune Field/Element Rune.md",
     "Shade Info/Evolution Type.md",
     "Shade Info/Evolution.md",
     "Narrative/Main Narrative.md",
@@ -249,8 +256,6 @@
     "Narrative/Locations/Sanctoria.md",
     "Narrative/Locations/Pallium.md",
     "Narrative/Locations/Outworld.md",
-    "Narrative/Locations/Cradle.md",
-    "Narrative/Factions/Lumina Council.md",
     "zzz Extras",
     "UI/Rune Field",
     "zzz Extras/Templates",
@@ -259,7 +264,6 @@
     "Narrative/Factions",
     "Narrative/characters",
     "UI",
-    "Character Traits/Main Character Abilities",
-    "Narrative"
+    "Character Traits/Main Character Abilities"
   ]
 }
