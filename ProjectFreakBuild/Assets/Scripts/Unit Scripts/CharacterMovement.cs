@@ -58,7 +58,7 @@ public class CharacterMovement : MonoBehaviour
         pInput.Player.Move.canceled += MovementInput;
 
         pInput.Player.Look.performed += StickTurn;
-        pInput.Player.Look.canceled += StickTurn;
+        //pInput.Player.Look.canceled += StickTurn;
         pInput.Player.Look.canceled += EndStickTurn;
 
         pInput.Player.Point.performed += MouseInput;
@@ -82,6 +82,7 @@ public class CharacterMovement : MonoBehaviour
         else _rayDidHit = false;
         StandingForce();
         MovementForce();
+        Rotationforce();
 
         if (OnDebugDrawLines) debugLineDraw();
     }
@@ -137,13 +138,26 @@ public class CharacterMovement : MonoBehaviour
         _RB.AddForce(Vector3.Scale(neededAccel * _RB.mass, forceScale));
     }
 
+    void Rotationforce()
+    {
+        Quaternion targetRotation =
+        Quaternion.LookRotation(m_turnGoal);
+
+        transform.rotation =
+            Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                TurnSpeed * Time.fixedDeltaTime);
+    }
+
     #region Inputs
     void MovementInput(InputAction.CallbackContext context)
     {
         Vector2 stickInput = context.ReadValue<Vector2>();
         Vector3 move = new Vector3(stickInput.x,0, stickInput.y);
         m_UnitGoal = ConvertMovementScreenSpace(move);
-        if (isTurnSnapped) m_turnGoal = m_UnitGoal;
+        if (isTurnSnapped && m_UnitGoal != Vector3.zero) m_turnGoal = m_UnitGoal;
+        else if (isUsingMouse) m_turnGoal = GetMouseAimDirection();
     }
     
     void StickTurn(InputAction.CallbackContext context)
@@ -214,10 +228,9 @@ public class CharacterMovement : MonoBehaviour
 
     private IEnumerator IdleTimerCoroutine()
     {
-        print("Starting coroutine...");
         yield return new WaitForSeconds(turnIdleTime);
         if (IdleTimer != null) isTurnSnapped = true;
-        m_turnGoal = m_UnitGoal;
+        //m_turnGoal = transform.forward;
     }
 
     void debugLineDraw()

@@ -1143,7 +1143,7 @@ MonoBehaviour:
   speedFactor: 1
   m_UnitGoal: {x: 0, y: 0, z: 0}
   isTurnSnapped: 1
-  TurnSpeed: 0
+  TurnSpeed: 500
   m_turnGoal: {x: 0, y: 0, z: 0}
   turnIdleTime: 1
   isUsingMouse: 0
