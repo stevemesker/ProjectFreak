@@ -58,7 +58,6 @@ public class CharacterMovement : MonoBehaviour
         pInput.Player.Move.canceled += MovementInput;
 
         pInput.Player.Look.performed += StickTurn;
-        //pInput.Player.Look.canceled += StickTurn;
         pInput.Player.Look.canceled += EndStickTurn;
 
         pInput.Player.Point.performed += MouseInput;
@@ -67,6 +66,14 @@ public class CharacterMovement : MonoBehaviour
 
     private void OnDisable()
     {
+        pInput.Player.Move.performed -= MovementInput;
+        pInput.Player.Move.canceled -= MovementInput;
+
+        pInput.Player.Look.performed -= StickTurn;
+        pInput.Player.Look.canceled -= EndStickTurn;
+
+        pInput.Player.Point.performed -= MouseInput;
+        pInput.Player.Point.canceled -= MouseStopInput;
         pInput.Disable();
     }
     private void Awake()

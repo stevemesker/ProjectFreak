@@ -82,3 +82,48 @@ public class EnemyStats : CoreStats
     [Tooltip("")]
     public List<ItemSO> DropItems;
 }
+
+[Serializable]
+public class Inventory
+{
+    [Tooltip("Number of equipment the character can switch between")] public int _EquipmentSize;
+    [Tooltip("Inventory size of the specific character")] public int _InventorySize;
+    public List<WeaponItem> _EquippedWeapons;
+    public Dictionary<ItemSO, int> _BackpackInventory;
+
+    public bool checkInventoryFits(ItemSO item, int amount)
+    {
+        if (_BackpackInventory.ContainsKey(item))
+        {
+            if (_BackpackInventory[item] + amount < item.itemStackSizeMax) return true;
+            else return false;
+        }
+        else if (_BackpackInventory.Count < _InventorySize)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool checkEquippedWeaponFits(WeaponItem x)
+    {
+        for (int i = 0; i < _EquippedWeapons.Count; i++)
+            if (_EquippedWeapons[i] == null) return true;
+        return false;
+    }
+
+    public void addBackpackInventory (ItemSO x, int y)
+    {
+        _BackpackInventory.Add(x, y);
+    }
+
+    public void addEquipmentInventory(WeaponItem x)
+    {
+        for (int i = 0; i < _EquippedWeapons.Count; i++)
+            if (_EquippedWeapons[i] == null)
+            {
+                _EquippedWeapons[i] = x;
+                return;
+            }
+    }
+}
