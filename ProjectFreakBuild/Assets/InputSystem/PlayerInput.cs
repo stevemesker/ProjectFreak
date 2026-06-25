@@ -89,6 +89,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""WeaponSelect"",
+                    ""type"": ""Button"",
+                    ""id"": ""2ad5cd1a-a4ef-4bd7-be51-5aa0d9a2e7ba"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -311,6 +320,72 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""FreakWeaponScroll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""ad5b4e6f-78fd-403e-9ac6-981ee4000fae"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""08462223-6a2c-411d-b5be-300a051422c7"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""3f7fa62b-2618-4cef-bac7-1e7036b9a12a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""GamePad"",
+                    ""id"": ""e03dfbde-4a1c-4e78-b31c-490ae80667aa"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""04d855f4-7468-46e4-b9c8-8d19bf9aef8b"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""c7f1cf18-6d26-40eb-92e4-3d275e56ad6d"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""WeaponSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -1248,6 +1323,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Pickup = m_Player.FindAction("Pickup", throwIfNotFound: true);
         m_Player_FreakWeaponScroll = m_Player.FindAction("FreakWeaponScroll", throwIfNotFound: true);
+        m_Player_WeaponSelect = m_Player.FindAction("WeaponSelect", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1338,6 +1414,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Pickup;
     private readonly InputAction m_Player_FreakWeaponScroll;
+    private readonly InputAction m_Player_WeaponSelect;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1349,6 +1426,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Pickup => m_Wrapper.m_Player_Pickup;
         public InputAction @FreakWeaponScroll => m_Wrapper.m_Player_FreakWeaponScroll;
+        public InputAction @WeaponSelect => m_Wrapper.m_Player_WeaponSelect;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1379,6 +1457,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @FreakWeaponScroll.started += instance.OnFreakWeaponScroll;
             @FreakWeaponScroll.performed += instance.OnFreakWeaponScroll;
             @FreakWeaponScroll.canceled += instance.OnFreakWeaponScroll;
+            @WeaponSelect.started += instance.OnWeaponSelect;
+            @WeaponSelect.performed += instance.OnWeaponSelect;
+            @WeaponSelect.canceled += instance.OnWeaponSelect;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1404,6 +1485,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @FreakWeaponScroll.started -= instance.OnFreakWeaponScroll;
             @FreakWeaponScroll.performed -= instance.OnFreakWeaponScroll;
             @FreakWeaponScroll.canceled -= instance.OnFreakWeaponScroll;
+            @WeaponSelect.started -= instance.OnWeaponSelect;
+            @WeaponSelect.performed -= instance.OnWeaponSelect;
+            @WeaponSelect.canceled -= instance.OnWeaponSelect;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1717,6 +1801,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnInteract(InputAction.CallbackContext context);
         void OnPickup(InputAction.CallbackContext context);
         void OnFreakWeaponScroll(InputAction.CallbackContext context);
+        void OnWeaponSelect(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

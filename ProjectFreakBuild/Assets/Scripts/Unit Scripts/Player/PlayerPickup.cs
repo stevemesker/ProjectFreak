@@ -20,6 +20,7 @@ public class PlayerPickup : MonoBehaviour
     }
     private void OnDisable()
     {
+        pInput.Player.Pickup.performed -= PickupInput;
         pInput.Disable();
     }
     private void OnTriggerEnter(Collider other)
@@ -31,9 +32,6 @@ public class PlayerPickup : MonoBehaviour
         if (itm is WeaponItem) { InRangePickup.Add(other.gameObject); /*print("Adding weapon to gatherables");*/ return; }
         print("Adding ingredient to inventory automatically");
 
-
-        //InRangePickup.Add(other.gameObject);
-        
     }
     private void OnTriggerExit(Collider other)
     {
@@ -51,6 +49,7 @@ public class PlayerPickup : MonoBehaviour
         {
             //print("Now picking up " + InRangePickup[0].name);
             InRangePickup[0].GetComponent<ItemDrop>().pickupItem();
+            InRangePickup.Clear();
             return; 
         }
         int index = 0;
@@ -61,10 +60,7 @@ public class PlayerPickup : MonoBehaviour
                 index = i;
             }
         }
-        //print("Now picking up " + InRangePickup[index].name);
-    }
-    private GameObject findClosestPickup()
-    {
-        return null;
+        InRangePickup[index].GetComponent<ItemDrop>().pickupItem();
+        InRangePickup.RemoveAt(index);
     }
 }

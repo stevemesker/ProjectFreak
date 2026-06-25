@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Atlas.md",
+                "file": "Character Traits/Main Character Abilities/Control Shade.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Atlas"
+              "title": "Control Shade"
             }
           }
         ]
@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Character Traits/Character Movement.md",
+                "file": "Architecture/Architecture Atlas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Character Movement"
+              "title": "Architecture Atlas"
             }
           }
         ]
@@ -225,12 +225,16 @@
   },
   "active": "77a68866680671e7",
   "lastOpenFiles": [
-    "Architecture/Managers.md",
-    "UI/Rune Field/Element Rune.md",
-    "Game design.md",
-    "Character Traits/Main Character.md",
+    "Architecture/Cameras.md",
+    "Character Traits/Main Character Abilities/Control Shade.md",
     "Atlas.md",
+    "Architecture/Managers.md",
+    "Architecture/Player Movement.md",
+    "Game design.md",
+    "Architecture/Architecture Atlas.md",
     "Character Traits/Character Movement.md",
+    "UI/Rune Field/Element Rune.md",
+    "Character Traits/Main Character.md",
     "Architecture",
     "UI/Rune Field/Rune Field.md",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
@@ -252,10 +256,6 @@
     "Shade Info/Evolution.md",
     "Narrative/Main Narrative.md",
     "Narrative/Cataclysm.md",
-    "Narrative/Locations/The Black Lantern.md",
-    "Narrative/Locations/Sanctoria.md",
-    "Narrative/Locations/Pallium.md",
-    "Narrative/Locations/Outworld.md",
     "zzz Extras",
     "UI/Rune Field",
     "zzz Extras/Templates",

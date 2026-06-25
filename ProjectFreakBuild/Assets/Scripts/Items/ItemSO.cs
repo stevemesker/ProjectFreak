@@ -15,4 +15,5 @@ public abstract class ItemSO : ScriptableObject
     [Tooltip("What art asset gameobject is spawned when the drop is created")]
     public GameObject dropArt;
     [Tooltip("Rarity type of the item: Normal, Common, Rare, Epic, Legendary, God")]public Rarity.Type ItemRarity;
+    public int itemStackSizeMax = 99;
 }
