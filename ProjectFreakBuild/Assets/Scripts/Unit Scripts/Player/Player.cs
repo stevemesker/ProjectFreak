@@ -6,22 +6,33 @@ using Sirenix.OdinInspector;
 
 public class Player : MonoBehaviour
 {
+    //Core
     public static Player player;
     public PlayerData pData;
+
+    //State Data/Pointers
+    [FoldoutGroup("Current State Data")]
     public GameObject camTarget;
-
-    [Header("Current State Data")]
-
-    [Tooltip("Current selection number"), SerializeField]
-    private int weaponSelection;
+    [FoldoutGroup("Current State Data")]
     [Tooltip("Points to the hand bone so weapon swapping knows where to instantiate the weapon to. IMPORTANT: hand bone must be the lowest level child as swapping checks for children and will delete it when swapping. Can easily break parent chains")]
     public GameObject handPointer;
 
-    private ITriggerable weaponTrigger;
     //event Variable//
-    [Header("Events")]
+    [FoldoutGroup("Events")]
     [SerializeField] private PickupEventChannelSO pickupChannel;
 
+    //Combat Variables
+    [FoldoutGroup("Combat")][Header("Weapons")][SerializeField] 
+    bool isCharging;
+    [FoldoutGroup("Combat")][SerializeField] 
+    float chargeAmount;
+    [FoldoutGroup("Combat")][Tooltip("Current selection number"), SerializeField]
+    private int weaponSelection;
+
+    //Private/Unserialized Variables
+    private ITriggerable weaponTrigger;
+
+    #region Initialize
     private void Start()
     {
         if (Player.player != null) { Destroy(gameObject); return; }
@@ -40,6 +51,7 @@ public class Player : MonoBehaviour
         if (pickupChannel != null)
             pickupChannel.OnPickup -= HandlePickup;
     }
+    #endregion
 
     #region Item Pickup
     private void HandlePickup(ItemSO item, int amount, GameObject origin)
@@ -103,17 +115,7 @@ public class Player : MonoBehaviour
     void updateCurrentWeapon()
     {
         if (handPointer == null) { Debug.LogError("Error! Hand bone has not been selected to allow weapon swapping"); return; }
-        /*
-        if (weaponSelection+1 > pData.pInventory._EquippedWeapons.Count)
-        {
-            if (handPointer.transform.childCount != 0)
-            {
-                Destroy(handPointer.transform.GetChild(0).gameObject);
-            }
-            return;
-        }
-        */
-        
+
         if (pData.pInventory._EquippedWeapons[weaponSelection] == null || pData.pInventory._EquippedWeapons[weaponSelection].weaponPrefab == null)
         {
             //empty selection or no weapon prefab, hold nothing
@@ -157,6 +159,56 @@ public class Player : MonoBehaviour
     public int getActiveWeaponIndex()
     {
         return weaponSelection;
+    }
+    #endregion
+
+    #region Use Weapon
+    public void UseCurrentWeapon()
+    {
+        //print("using weapon");
+        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+
+        //startcharging
+        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == true)
+        {
+            print("Charging has begun...");
+            isCharging = true;
+            return;
+        }
+        fireWeapon(1f);
+    }
+    public void releaseCurrentWeapon()
+    {
+        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == false)
+        {
+            handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
+            return;
+        }
+        if (pData.pInventory._EquippedWeapons[weaponSelection].ChargeAutoAttack == false) fireWeapon(chargeAmount);
+        isCharging = false;
+        chargeAmount = 0;
+    }
+
+    void fireWeapon(float multiplier)
+    {
+        //print("Firing weapon");
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+    }
+
+    int CalculateDamage(float multiplier)
+    {
+
+        return 0;
+    }
+    List<ElementType.Element> getElementalDamage()
+    {
+        List<ElementType.Element> eleOut = new List<ElementType.Element>();
+        eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
+
+        //add other bonuses here
+        //------------------------
+
+        return eleOut;
     }
     #endregion
 

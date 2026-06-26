@@ -61,6 +61,7 @@ public class PlayerPickup : MonoBehaviour
             }
         }
         InRangePickup[index].GetComponent<ItemDrop>().pickupItem();
+        print(index);
         InRangePickup.RemoveAt(index);
     }
 }

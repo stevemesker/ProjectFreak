@@ -15,17 +15,18 @@ MonoBehaviour:
   ItemID: 0
   ItemName: Old Crossbow
   ItemDescription: A rusty old crossbow from a forgotten time
-  dropArt: {fileID: 0}
+  dropArt: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6, type: 3}
   ItemRarity: 0
+  itemStackSizeMax: 99
   weaponType: 0
-  weaponPrefab: {fileID: 6611920325481407748, guid: ced2b75669ac0e54d8c099697f31e7ad,
+  weaponPrefab: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6,
     type: 3}
   weaponFireRate: 0
   weaponWarmUpTime: 0
   weaponKnockback: 0
   isAutomatic: 0
-  isChargedShot: 0
-  chargeMaxAmount: 0
+  isChargedShot: 1
+  chargeMaxAmount: 3
   chargeScaling: 0
   ChargeAutoAttack: 0
   baseDamage: 5

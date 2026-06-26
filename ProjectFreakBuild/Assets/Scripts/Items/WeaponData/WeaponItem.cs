@@ -41,7 +41,7 @@ public class WeaponItem : ItemSO
 
     [ShowIf(nameof(isChargedShot))]
     [FoldoutGroup("Charge Settings")]
-    [Tooltip("If projectile grows in scale based on charging. 0 means no scaling")]
+    [Tooltip("probably should get rid of this")]
     public bool ChargeAutoAttack;
 
     [TitleGroup("---Damage Data---")]
