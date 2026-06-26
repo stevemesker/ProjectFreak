@@ -98,6 +98,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Trigger"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ca4873b-3770-4fb6-8487-7f97a42733bd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -386,6 +395,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""WeaponSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a82873da-558a-4049-a4b4-067b52c5b2d0"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d33537d0-19ce-419e-baaa-94300057a446"",
+                    ""path"": ""<Mouse>/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1324,6 +1355,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Pickup = m_Player.FindAction("Pickup", throwIfNotFound: true);
         m_Player_FreakWeaponScroll = m_Player.FindAction("FreakWeaponScroll", throwIfNotFound: true);
         m_Player_WeaponSelect = m_Player.FindAction("WeaponSelect", throwIfNotFound: true);
+        m_Player_Trigger = m_Player.FindAction("Trigger", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1415,6 +1447,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pickup;
     private readonly InputAction m_Player_FreakWeaponScroll;
     private readonly InputAction m_Player_WeaponSelect;
+    private readonly InputAction m_Player_Trigger;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1427,6 +1460,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Pickup => m_Wrapper.m_Player_Pickup;
         public InputAction @FreakWeaponScroll => m_Wrapper.m_Player_FreakWeaponScroll;
         public InputAction @WeaponSelect => m_Wrapper.m_Player_WeaponSelect;
+        public InputAction @Trigger => m_Wrapper.m_Player_Trigger;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1460,6 +1494,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @WeaponSelect.started += instance.OnWeaponSelect;
             @WeaponSelect.performed += instance.OnWeaponSelect;
             @WeaponSelect.canceled += instance.OnWeaponSelect;
+            @Trigger.started += instance.OnTrigger;
+            @Trigger.performed += instance.OnTrigger;
+            @Trigger.canceled += instance.OnTrigger;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1488,6 +1525,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @WeaponSelect.started -= instance.OnWeaponSelect;
             @WeaponSelect.performed -= instance.OnWeaponSelect;
             @WeaponSelect.canceled -= instance.OnWeaponSelect;
+            @Trigger.started -= instance.OnTrigger;
+            @Trigger.performed -= instance.OnTrigger;
+            @Trigger.canceled -= instance.OnTrigger;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1802,6 +1842,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnPickup(InputAction.CallbackContext context);
         void OnFreakWeaponScroll(InputAction.CallbackContext context);
         void OnWeaponSelect(InputAction.CallbackContext context);
+        void OnTrigger(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
