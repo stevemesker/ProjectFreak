@@ -1,0 +1,1 @@
+Main Character. Once a member of the [[Keepers]] until their demise at the hands of the [[Lumina Council]]. Now hides among [[Lanterns]] and operates as a paranormal investigator using his powers as a [[Shadow Tamer]].

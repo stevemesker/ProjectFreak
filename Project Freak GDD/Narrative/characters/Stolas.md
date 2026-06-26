@@ -1,0 +1,1 @@
+A member of the Lumina that kicks off the story by hiring [[Hazen]]. He is secretly the [[Dark Prince Stolas]] who seeks to unleash the light of [[Pallium]] for his own mysterious purposes. he is always accompanied by his associate [[Lady Kimaris]].

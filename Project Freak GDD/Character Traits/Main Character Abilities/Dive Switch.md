@@ -1,0 +1,1 @@
+When Hazen becomes strong enough he can actually bring more than 1 [[Shade]] into a [[Dive]]. Dive switch defines how many more shades he can bring.

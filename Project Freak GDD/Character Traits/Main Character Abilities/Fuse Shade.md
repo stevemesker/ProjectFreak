@@ -1,0 +1,1 @@
+This is a [[Shadow Tamer]]’s ultimate technique. Hazen and the shade become one once again allowing Hazen to access all of his skills and the shades as well as boosting his strength higher than both of them combined. Requires very high [[DIS]] to achieve but will last the entire floor or until canceled.

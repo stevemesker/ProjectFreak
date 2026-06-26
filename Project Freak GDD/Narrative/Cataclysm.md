@@ -1,0 +1,1 @@
+Long ago the world was torn asunder by the [[Dark King]] turning the relatively peaceful world into [[Outworld]]. It is foretold 4 [[Legendary Heroes]] will restore the world to what it once was.

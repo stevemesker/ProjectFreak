@@ -1,0 +1,1 @@
+The city built on the walls of [[Pallium]] that is composed of overlapping plates. [[High Sanctoria]] is closest to the great sun at the center of Pallium and is where the rich and influential live. The outer plates of Lower Sanctoria is where the common folk live.

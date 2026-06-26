@@ -1,0 +1,1 @@
+One of the last remaining cities outside of [[Pallium]]. It exists in a pocket dimension, awaiting the day when the [[Legendary Heroes]] will return and save the land from the Dark Princes

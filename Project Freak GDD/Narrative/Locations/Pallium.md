@@ -1,0 +1,1 @@
+The great sphere that was constructed to hide the people of [[Sanctoria]] from the great [[Cataclysm]] that destroyed the world. It is secretly an egg that houses a great power that could destroy all life on the planet or possibly restart it.

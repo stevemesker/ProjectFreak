@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e73515bf993f1984eb25aee108bf7070, type: 3}
+  m_Name: Basic
+  m_EditorClassIdentifier: 
+  ItemID: 0
+  ItemName: Basic Element
+  ItemDescription: Nothing special about this
+  dropArt: {fileID: 0}
+  ItemRarity: 0
+  itemSprite: {fileID: 0}
+  mypackage:
+  - _linkedElement: {fileID: 11400000}
+    _ElementConnect: {fileID: 0}
+    _statToChange: 0
+    _ChangeAmount: 1
+  statusEffectEnable:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530, type: 2}
+        m_TargetAssemblyTypeName: ElementManagerSO, Assembly-CSharp
+        m_MethodName: boostStats
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000}
+          m_ObjectArgumentAssemblyTypeName: ElementItemSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  statusEffectDisable:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530, type: 2}
+        m_TargetAssemblyTypeName: ElementManagerSO, Assembly-CSharp
+        m_MethodName: reduceStats
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000}
+          m_ObjectArgumentAssemblyTypeName: ElementItemSO, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  element: 0
+  materialType: 0
+  connectionsAllowed: 3
+  connectionDistance: 150
+  powerNeeded: 1
