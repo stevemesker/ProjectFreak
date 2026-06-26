@@ -31,6 +31,9 @@ public class Player : MonoBehaviour
 
     //Private/Unserialized Variables
     private ITriggerable weaponTrigger;
+    private Coroutine chargeTime;
+    private Coroutine cycleTimer;
+    private float chargeTimeInitiated;
 
     #region Initialize
     private void Start()
@@ -165,7 +168,20 @@ public class Player : MonoBehaviour
     #region Use Weapon
     public void UseCurrentWeapon()
     {
-        //print("using weapon");
+        print("using weapon");
+        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+
+        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == true)
+        {
+            print("Charging has begun...");
+            
+            chargeTimeInitiated = Time.time;
+            chargeTime = StartCoroutine(ChargeTimer(pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount));
+            return;
+        }
+        fireWeapon(1);
+        /*
+        
         if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
 
         //startcharging
@@ -176,23 +192,52 @@ public class Player : MonoBehaviour
             return;
         }
         fireWeapon(1f);
+        */
     }
     public void releaseCurrentWeapon()
     {
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == false)
+        if (isCharging)
         {
-            handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
+            float timeRemaining = Time.time - chargeTimeInitiated;
+            if (timeRemaining > pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount) timeRemaining = pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount;
+            StopCoroutine(chargeTime);
+            chargeTime = null;
+            //fireWeapon(timeRemaining);
+            isCharging = false;
             return;
         }
-        if (pData.pInventory._EquippedWeapons[weaponSelection].ChargeAutoAttack == false) fireWeapon(chargeAmount);
-        isCharging = false;
-        chargeAmount = 0;
+        if (cycleTimer != null)
+        {
+            StopCoroutine(cycleTimer);
+            cycleTimer = null;
+        }
     }
 
     void fireWeapon(float multiplier)
     {
-        //print("Firing weapon");
-        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+        print("Bang! X " + multiplier);
+        //handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+
+        if (pData.pInventory._EquippedWeapons[weaponSelection].isAutomatic)
+        {
+            cycleTimer = StartCoroutine (CycleTimer(pData.pInventory._EquippedWeapons[weaponSelection].weaponFireRate, multiplier));
+        }
+    }
+
+    IEnumerator ChargeTimer(float amount)
+    {
+        isCharging = true;
+        yield return new WaitForSeconds(amount);
+        if (pData.pInventory._EquippedWeapons[weaponSelection].isAutomatic) 
+        { 
+            fireWeapon(amount);
+        }
+    }
+
+    IEnumerator CycleTimer(float cycleTime, float bonus)
+    {
+        yield return new WaitForSeconds(cycleTime);
+        fireWeapon(bonus);
     }
 
     int CalculateDamage(float multiplier)
