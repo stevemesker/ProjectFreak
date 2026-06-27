@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 4518730403146200569}
   - component: {fileID: 6520675311133957686}
   - component: {fileID: 3450627793422731530}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pickup_PFB
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6037441376553766297}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef09df66f4d069840a18fb4eae452bcf, type: 3}
   m_Name: 

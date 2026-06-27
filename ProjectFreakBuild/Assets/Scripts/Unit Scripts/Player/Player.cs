@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
         UpdateEquippedWeaponSlotSize();
+        updateCurrentWeapon();
     }
 
     private void OnEnable()
