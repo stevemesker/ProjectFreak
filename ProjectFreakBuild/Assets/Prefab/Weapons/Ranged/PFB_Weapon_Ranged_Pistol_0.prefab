@@ -76,9 +76,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _WeaponObject: {fileID: 0}
-  isFiring: 0
-  chargeAmount: 0
+  _Wielder: {fileID: 0}
+  _WeaponObject: {fileID: 11400000, guid: 741bbe83bb4a1934e9b5bdd896a75625, type: 2}
+  canFire: 1
+  isReleased: 1
+  isCharging: 0
 --- !u!1001 &1128353897433029028
 PrefabInstance:
   m_ObjectHideFlags: 0

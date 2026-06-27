@@ -31,6 +31,9 @@ public class Player : MonoBehaviour
 
     //Private/Unserialized Variables
     private ITriggerable weaponTrigger;
+    private Coroutine chargeTime;
+    private Coroutine cycleTimer;
+    private float chargeTimeInitiated;
 
     #region Initialize
     private void Start()
@@ -38,6 +41,7 @@ public class Player : MonoBehaviour
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
         UpdateEquippedWeaponSlotSize();
+        updateCurrentWeapon();
     }
 
     private void OnEnable()
@@ -165,34 +169,20 @@ public class Player : MonoBehaviour
     #region Use Weapon
     public void UseCurrentWeapon()
     {
-        //print("using weapon");
+        print("Using weapon");
         if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
 
-        //startcharging
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == true)
-        {
-            print("Charging has begun...");
-            isCharging = true;
-            return;
-        }
-        fireWeapon(1f);
+        //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(0, getElementalDamage());
     }
     public void releaseCurrentWeapon()
     {
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == false)
-        {
-            handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
-            return;
-        }
-        if (pData.pInventory._EquippedWeapons[weaponSelection].ChargeAutoAttack == false) fireWeapon(chargeAmount);
-        isCharging = false;
-        chargeAmount = 0;
-    }
+        print("Releasing weapon");
+        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
 
-    void fireWeapon(float multiplier)
-    {
-        //print("Firing weapon");
-        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
 
     int CalculateDamage(float multiplier)
@@ -203,7 +193,7 @@ public class Player : MonoBehaviour
     List<ElementType.Element> getElementalDamage()
     {
         List<ElementType.Element> eleOut = new List<ElementType.Element>();
-        eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
+        //eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
 
         //add other bonuses here
         //------------------------
@@ -211,12 +201,4 @@ public class Player : MonoBehaviour
         return eleOut;
     }
     #endregion
-
-    //[Button("Test equipment Index")]
-    public ItemSO testInventoryIndex(int index)
-    {
-        if (pData.pInventory._BackpackInventory.Count < index + 1) return null;
-        ItemSO keyAtIndex = pData.pInventory._BackpackInventory.Keys.ElementAt(index);
-        return keyAtIndex;
-    }
 }

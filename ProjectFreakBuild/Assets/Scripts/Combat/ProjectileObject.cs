@@ -24,8 +24,8 @@ public class ProjectileObject : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        
-        
+
+        print("Doot");
 
         if (other.gameObject == instigator)
         {
