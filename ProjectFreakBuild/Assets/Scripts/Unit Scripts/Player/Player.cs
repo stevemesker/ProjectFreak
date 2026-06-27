@@ -168,76 +168,20 @@ public class Player : MonoBehaviour
     #region Use Weapon
     public void UseCurrentWeapon()
     {
-        print("using weapon");
+        print("Using weapon");
         if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
 
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == true)
-        {
-            print("Charging has begun...");
-            
-            chargeTimeInitiated = Time.time;
-            chargeTime = StartCoroutine(ChargeTimer(pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount));
-            return;
-        }
-        fireWeapon(1);
-        /*
-        
-        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
-
-        //startcharging
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isChargedShot == true)
-        {
-            print("Charging has begun...");
-            isCharging = true;
-            return;
-        }
-        fireWeapon(1f);
-        */
+        //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(0, getElementalDamage());
     }
     public void releaseCurrentWeapon()
     {
-        if (isCharging)
-        {
-            float timeRemaining = Time.time - chargeTimeInitiated;
-            if (timeRemaining > pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount) timeRemaining = pData.pInventory._EquippedWeapons[weaponSelection].chargeMaxAmount;
-            StopCoroutine(chargeTime);
-            chargeTime = null;
-            //fireWeapon(timeRemaining);
-            isCharging = false;
-            return;
-        }
-        if (cycleTimer != null)
-        {
-            StopCoroutine(cycleTimer);
-            cycleTimer = null;
-        }
-    }
+        print("Releasing weapon");
+        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
 
-    void fireWeapon(float multiplier)
-    {
-        print("Bang! X " + multiplier);
-        //handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
-
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isAutomatic)
-        {
-            cycleTimer = StartCoroutine (CycleTimer(pData.pInventory._EquippedWeapons[weaponSelection].weaponFireRate, multiplier));
-        }
-    }
-
-    IEnumerator ChargeTimer(float amount)
-    {
-        isCharging = true;
-        yield return new WaitForSeconds(amount);
-        if (pData.pInventory._EquippedWeapons[weaponSelection].isAutomatic) 
-        { 
-            fireWeapon(amount);
-        }
-    }
-
-    IEnumerator CycleTimer(float cycleTime, float bonus)
-    {
-        yield return new WaitForSeconds(cycleTime);
-        fireWeapon(bonus);
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
 
     int CalculateDamage(float multiplier)
@@ -248,7 +192,7 @@ public class Player : MonoBehaviour
     List<ElementType.Element> getElementalDamage()
     {
         List<ElementType.Element> eleOut = new List<ElementType.Element>();
-        eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
+        //eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
 
         //add other bonuses here
         //------------------------
@@ -256,12 +200,4 @@ public class Player : MonoBehaviour
         return eleOut;
     }
     #endregion
-
-    //[Button("Test equipment Index")]
-    public ItemSO testInventoryIndex(int index)
-    {
-        if (pData.pInventory._BackpackInventory.Count < index + 1) return null;
-        ItemSO keyAtIndex = pData.pInventory._BackpackInventory.Keys.ElementAt(index);
-        return keyAtIndex;
-    }
 }

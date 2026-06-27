@@ -122,6 +122,95 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &42545696
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3450627793422731530, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3450627793422731530, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: ItemLootDrop
+      value: 
+      objectReference: {fileID: 11400000, guid: 46630085cb633884397a78295d55b895,
+        type: 2}
+    - target: {fileID: 3450627793422731530, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: ItemLootAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.542
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0058550835
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.1401577
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518730403146200569, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6037441376553766297, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_Name
+      value: Pickup_PFB (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6037441376553766297, guid: 3f023a995ad46714ca5b6132b54958cf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3f023a995ad46714ca5b6132b54958cf, type: 3}
 --- !u!1 &157207112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1519,7 +1608,7 @@ MonoBehaviour:
   m_turnGoal: {x: 0, y: 0, z: 0}
   turnIdleTime: 1
   isUsingMouse: 0
-  OnDebugDrawLines: 1
+  OnDebugDrawLines: 0
   lineLength: 2
 --- !u!54 &1825784496
 Rigidbody:
@@ -1632,7 +1721,9 @@ MonoBehaviour:
   pInventory:
     _EquipmentSize: 4
     _InventorySize: 10
-    _EquippedWeapons: []
+    _EquippedWeapons:
+    - {fileID: 11400000, guid: 46630085cb633884397a78295d55b895, type: 2}
+    - {fileID: 11400000, guid: 741bbe83bb4a1934e9b5bdd896a75625, type: 2}
 --- !u!114 &1825784501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1926,4 +2017,5 @@ SceneRoots:
   - {fileID: 2043564620}
   - {fileID: 435514644}
   - {fileID: 1785610015}
+  - {fileID: 42545696}
   - {fileID: 197116677}

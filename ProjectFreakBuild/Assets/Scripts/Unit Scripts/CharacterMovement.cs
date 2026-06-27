@@ -85,7 +85,7 @@ public class CharacterMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _rayHit, RayLength)) _rayDidHit = true;
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _rayHit, RayLength,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)) _rayDidHit = true;
         else _rayDidHit = false;
         StandingForce();
         MovementForce();
