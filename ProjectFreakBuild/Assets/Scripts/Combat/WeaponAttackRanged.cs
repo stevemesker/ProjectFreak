@@ -11,12 +11,17 @@ using Sirenix.OdinInspector;
 /// ////////////////////////////////////////////////
 public class WeaponAttackRanged : MonoBehaviour, ITriggerable
 {
-    [Tooltip("Gameobject using the weapon. Used so that spawned bullets do not run into the unit that shot it")]public GameObject _Wielder;
-    [SerializeField] public WeaponRangedItem _WeaponObject;
-    //public WeaponItem weaponData;
-    //[SerializeField, Tooltip("Amount of current charge for the weapon")] private float chargeAmount;
+    [Tooltip("Gameobject using the weapon. Used so that spawned bullets do not run into the unit that shot it")]
+    public GameObject _Wielder;
+    [SerializeField] 
+    public WeaponRangedItem _WeaponObject;
+    
     [SerializeField] private bool canFire = true; //used for global pausing
     [SerializeField] private bool isReleased = true; //used for non-automatic attack gating
+    
+    [SerializeField]
+    bool isCharging;
+
     private int projectileIndex = 0;
 
     private Coroutine currentTimer;
@@ -26,40 +31,78 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
 
     private int projectileIndexer; //used tyo scycke through projectiles in case there are multiple types
 
+    //
+    //Private/Unserialized Variables
+    private ITriggerable weaponTrigger;
+    private Coroutine chargeTime;
+    private Coroutine cycleTimer;
+    private float chargeTimeInitiated;
+
+    #region Initialization
     public void SetUpWeapon(ItemSO item, GameObject Wielder)
     {
         _Wielder = Wielder;
         _WeaponObject = item as WeaponRangedItem;
     }
 
-    #region WeaponUse
     public void updateStats(int power, List<ElementType.Element> element)
     {
 
     }
+
+    void FillProjectileStats(ProjectileObject projectile)
+    {
+        projectile.instigator = _Wielder;
+        projectile.speed = _WeaponObject.projectileSpeed;
+
+    }
+    #endregion
+
+    #region Weapon Activation Trigger
     public void TriggerAttack(int power, List<Element> element)
     {
-        //input that comes from the freak character. Does not fire the round but tells the gun to continue firing if it can
-        updateStats(power, element);
-        if (canFire == false) return;
-        isReleased = false;
-        FireGun();
+        if (_WeaponObject.isChargedShot == true)
+        {
+            print("Charging has begun...");
+
+            chargeTimeInitiated = Time.time;
+            chargeTime = StartCoroutine(ChargeTimer(_WeaponObject.chargeMaxAmount));
+            return;
+        }
+        fireWeapon(1);
     }
 
     public void ReleaseAttack()
     {
-        isReleased = true;
+        if (isCharging)
+        {
+            float timeRemaining = Time.time - chargeTimeInitiated;
+            if (timeRemaining > _WeaponObject.chargeMaxAmount) timeRemaining = _WeaponObject.chargeMaxAmount;
+            StopCoroutine(chargeTime);
+            chargeTime = null;
+            isCharging = false;
+            //return;
+        }
+        if (cycleTimer != null)
+        {
+            StopCoroutine(cycleTimer);
+            cycleTimer = null;
+        }
     }
+    #endregion
 
-    void FireGun()
+    #region Weapon Firing
+    void fireWeapon(float multiplier)
     {
-        if (isReleased || currentTimer != null) return;
-        print("Firing Gun");
+        print("Bang! X " + multiplier);
 
         if (_WeaponObject.shotNumber > 1) multishot();
         else SingleShot();
-        //cooldown
-        if (_WeaponObject.isAutomatic)currentTimer = StartCoroutine(CoolDownTimer(_WeaponObject.weaponFireRate));
+
+        if (_WeaponObject.isAutomatic)
+        {
+            cycleTimer = StartCoroutine(CycleTimer(_WeaponObject.weaponFireRate, multiplier));
+        }
     }
 
     void SingleShot()
@@ -70,14 +113,13 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         spawnedProjectile = spawnProjectile(projectileIndex, transform.position, transform.rotation);
         FillProjectileStats(spawnedProjectile.GetComponent<ProjectileObject>());
 
-        projectileIndex ++;
-        
+        projectileIndex++;
+
     }
 
     void multishot()
     {
         GameObject spawnedProjectile;
-        //int projectileIndex = 0;
         for (int i = 0; i < _WeaponObject.shotNumber; i++)
         {
             print("bang!");
@@ -87,13 +129,10 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
             else spawnedProjectile = spawnProjectile(projectileIndex, SpawnOrigin(i, _WeaponObject.shotNumber, _WeaponObject.originSpread), SpawnRotation(i, _WeaponObject.shotNumber, _WeaponObject.fireSpread));
 
             FillProjectileStats(spawnedProjectile.GetComponent<ProjectileObject>());
-            
+
             projectileIndex++;
         }
     }
-    #endregion
-
-    #region spawning damage dealers
 
     GameObject spawnProjectile(int projectileIndex, Vector3 position, Quaternion rotation)
     {
@@ -101,25 +140,22 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         spawnedProjectile = Instantiate(_WeaponObject.ProjectilePrefab[projectileIndex], position, rotation);
         return spawnedProjectile;
     }
+    #endregion
 
-    void FillProjectileStats(ProjectileObject projectile)
+    #region Timers
+    IEnumerator ChargeTimer(float amount)
     {
-        projectile.instigator = _Wielder;
-        projectile.speed = _WeaponObject.projectileSpeed;
-        
+        isCharging = true;
+        yield return new WaitForSeconds(amount);
+        if (_WeaponObject.isAutomatic)
+        {
+            fireWeapon(amount);
+        }
     }
-
-
-    void fireHitScan()
+    IEnumerator CycleTimer(float cycleTime, float bonus)
     {
-        //function used to fire hitscan attacks
-    }
-
-    IEnumerator CoolDownTimer(float time)
-    {
-        yield return new WaitForSeconds(time);
-        currentTimer = null;
-        if (_WeaponObject.isAutomatic && isReleased == false) FireGun();
+        yield return new WaitForSeconds(cycleTime);
+        fireWeapon(bonus);
     }
     #endregion
 
@@ -131,8 +167,8 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         //index:        which bullet are we dealing with of the maxcount being spawned
         //distance:     How far from the origin the spacing will go
         if (maxCount <= 1) return transform.position;
-        float xPosition = ((distance / (maxCount-1))*index - (distance/2));
-        return transform.position + (transform.right*xPosition);
+        float xPosition = ((distance / (maxCount - 1)) * index - (distance / 2));
+        return transform.position + (transform.right * xPosition);
     }
     public Quaternion SpawnRotation(int index, int maxCount, float spreadAngle)
     {
@@ -148,4 +184,5 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         //return Quaternion.identity;
     }
     #endregion
+
 }
