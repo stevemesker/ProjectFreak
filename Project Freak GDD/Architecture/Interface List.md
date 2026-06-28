@@ -1,0 +1,2 @@
+IDamageable - anything that can be effected by damaging projectiles, weapons, spells, and abilities
+ITrigerable - any equipment that can be activated via the trigger function in combat. More details in [[Weapon usage]]

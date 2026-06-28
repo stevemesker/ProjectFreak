@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 18.966074313408722,
+        "dimension": 28.389830508474578,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Character Traits/Main Character Abilities/Control Shade.md",
+                "file": "Character Traits/Character Stats.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Control Shade"
+              "title": "Character Stats"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 52.24555735056542,
+        "dimension": 71.61016949152543,
         "children": [
           {
             "id": "77a68866680671e7",
@@ -35,29 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Weapon usage.md",
+                "file": "Architecture/Combat/Damage.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Weapon usage"
-            }
-          }
-        ]
-      },
-      {
-        "id": "46ee70be0e397b8d",
-        "type": "tabs",
-        "dimension": 28.788368336025847,
-        "children": [
-          {
-            "id": "ffe826f6f1cc8cbf",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "title": "Damage"
             }
           }
         ]
@@ -117,7 +100,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 215
   },
   "right": {
     "id": "7c0e43bd9ab3c1fa",
@@ -225,11 +208,17 @@
   },
   "active": "77a68866680671e7",
   "lastOpenFiles": [
+    "Character Traits/Character Stats.md",
     "Architecture/Architecture Atlas.md",
-    "Architecture/Weapon usage.md",
-    "Architecture/Cameras.md",
-    "Character Traits/Main Character Abilities/Control Shade.md",
+    "Architecture/Combat/Damage.md",
+    "Destructible Objects.md",
+    "UI/Rune Field/Ability Node.md",
+    "Architecture/Interface List.md",
+    "Architecture/Combat/Weapon usage.md",
     "Atlas.md",
+    "Architecture/Combat",
+    "Character Traits/Main Character Abilities/Control Shade.md",
+    "Architecture/Cameras.md",
     "Architecture/Managers.md",
     "Architecture/Player Movement.md",
     "Game design.md",
@@ -246,16 +235,11 @@
     "Character Traits/Shade Slot.md",
     "Character Traits/Party Stats.md",
     "Character Traits/Main Character Stats.md",
-    "Character Traits/Character Stats.md",
     "Narrative/Random Name Ideas.md",
     "zzz Extras/Attachments/Element node.png",
     "zzz Extras/Attachments/Core Node.png",
-    "UI/Rune Field/Ability Node.md",
     "UI/Rune Field/Bridge.md",
     "UI/Rune Field/Core Node.md",
-    "Shade Info/Evolution Type.md",
-    "Shade Info/Evolution.md",
-    "Narrative/Main Narrative.md",
     "zzz Extras",
     "UI/Rune Field",
     "zzz Extras/Templates",
@@ -263,7 +247,6 @@
     "Narrative/Locations",
     "Narrative/Factions",
     "Narrative/characters",
-    "UI",
-    "Character Traits/Main Character Abilities"
+    "UI"
   ]
 }
