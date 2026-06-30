@@ -107,7 +107,7 @@ Examples:
 
 - Damage scaling stat
 - Source reference (owner)
-- Base Damage
+- Other frequently-used player values
 
 Caching these values avoids repeatedly querying the player every frame while the weapon is equipped.
 

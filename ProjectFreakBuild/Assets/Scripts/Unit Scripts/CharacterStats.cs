@@ -50,10 +50,19 @@ public class CoreStats
     [Tooltip("Stat used for magical ranged attacks. Intelect is the default")]
     public DamageType.StatType MagicalSecondaryStat = DamageType.StatType.Intelect;
 
+    [Header("Modifier Pointers")]
     [Tooltip("What stat is used for physical defense. Defense is the default, AGI is usually the other but there is no hard limit")]
     public DamageType.StatType PhysicalDefMod = DamageType.StatType.Defense;
     [Tooltip("What stat is used for magical defense. Spirit is the default")]
     public DamageType.StatType MagicalDefMod = DamageType.StatType.Spirit;
+
+    [Header("Resistances: Half Damage")]
+    public List<DamageType.AttackType> AttackTypeResistance;
+    public List<DamageType.ElementType> ElementTypeResistance;
+
+    [Header("Immunity: No Damage")]
+    public List<DamageType.AttackType> AttackTypeImmunity;
+    public List<DamageType.ElementType> ElementTypeImmunity;
 
     public int TypeToStatFinder(DamageType.StatType type)
     {
@@ -100,6 +109,21 @@ public class CoreStats
             default: return DamageType.StatType.None;
         }
     }
+    public float GetAttackResistanceModifier(DamageType.AttackType atk, DamageType.ElementType ele)
+    {
+        if (atk == DamageType.AttackType.None && ele == DamageType.ElementType.None) return 1;
+
+        for (int i = 0; i < AttackTypeResistance.Count; i++)
+        {
+            if (atk == AttackTypeResistance[i]) return .5f;
+        }
+        for (int i = 0; i < ElementTypeResistance.Count; i++)
+        {
+            if (ele == ElementTypeResistance[i]) return .5f;
+        }
+
+        return 1;
+    }
 }
 
 [Serializable]
@@ -135,7 +159,7 @@ public class PlayerStats : PartyStats
 }
 
 [Serializable]
-public class EnemyStats : CoreStats
+public class EnemyCoreStats : CoreStats
 {
     [Header("Loot Drops")]
     [Tooltip("")]
