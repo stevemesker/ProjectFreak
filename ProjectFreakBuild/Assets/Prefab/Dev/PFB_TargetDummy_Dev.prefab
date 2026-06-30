@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4520473137970374280}
   - component: {fileID: 5183555112417552592}
+  - component: {fileID: 6285648430214503133}
   - component: {fileID: 6667231965098780187}
   m_Layer: 0
   m_Name: PFB_TargetDummy_Dev
@@ -46,12 +47,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777a664b2f3c5c3449ae465f859649e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseStats:
-    _MaxHP: 0
-    _Strength: 0
-    _Agility: 0
-    _Inteligence: 0
-  currentHealth: 0
+  onDamage:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &6285648430214503133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78f79b6e39659b4c8a31ad96247dc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &6667231965098780187
 CapsuleCollider:
   m_ObjectHideFlags: 0

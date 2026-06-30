@@ -78,7 +78,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     {
         projectile.instigator = _Wielder;
         projectile.speed = _WeaponObject.projectileSpeed;
-
+        projectile._Damage = dmgPackage;
     }
 
     public bool isRange()
