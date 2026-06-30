@@ -9,7 +9,7 @@ public class WeaponItem : ItemSO
 {
     [TitleGroup("---Weapon Data---")]
     [Tooltip("Class of weapon: Melee, Ranged, Summon")]
-    public WeaponTypeBaseClass.WeaponType weaponType;
+    public DamageType.AttackType weaponAttackType;
 
     [Tooltip("The art associated with the data which includes the model and its muzzle location")] 
     public GameObject weaponPrefab;
@@ -52,5 +52,4 @@ public class WeaponItem : ItemSO
     [Tooltip("knockback strength hitting the enemy")] 
     public float knockbackHitAmount;
 
-    
 }

@@ -15,6 +15,12 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     public GameObject _Wielder;
     [SerializeField] 
     public WeaponRangedItem _WeaponObject;
+    [SerializeField]
+    //private DamageType.StatType _WeaponAttackStat;
+    public int _AttackBonus;
+
+    DamagePackage dmgPackage;
+    public DamageType.ElementType elementType;
     
     [SerializeField] private bool canFire = true; //used for global pausing
     [SerializeField] private bool isReleased = true; //used for non-automatic attack gating
@@ -39,15 +45,33 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     private float chargeTimeInitiated;
 
     #region Initialization
-    public void SetUpWeapon(ItemSO item, GameObject Wielder)
+    public void SetUpWeapon(ItemSO item, GameObject Wielder, CoreStats stats)
     {
         _Wielder = Wielder;
         _WeaponObject = item as WeaponRangedItem;
+        
+        dmgPackage = new DamagePackage();
+
+        dmgPackage._Source = Wielder;
+        dmgPackage._CritMultiplier = 1; //figure this out later, it'll probably come from the weapon data? but maybe not it might be a stat thing I dunno man I just work here
+        int dmg = stats.TypeToStatFinder(stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType));
+
+        addDamageEntryToPackage(CreateDamageEntry(dmg, _WeaponObject.weaponAttackType, stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType), elementType));
+    }
+    
+    public void addDamageEntryToPackage(DamageEntry entry)
+    {
+        dmgPackage._Entries.Add(entry);
     }
 
-    public void updateStats(int power, List<ElementType.Element> element)
+    public DamageEntry CreateDamageEntry(int dmg, DamageType.AttackType atk, DamageType.StatType stat, DamageType.ElementType element)
     {
-
+        DamageEntry entry = new DamageEntry();
+        entry._Damage = dmg;
+        entry._atkType = atk;
+        entry._statType = stat;
+        entry._elementType = element;
+        return entry;
     }
 
     void FillProjectileStats(ProjectileObject projectile)
@@ -56,10 +80,15 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         projectile.speed = _WeaponObject.projectileSpeed;
 
     }
+
+    public bool isRange()
+    {
+        return true;
+    }
     #endregion
 
     #region Weapon Activation Trigger
-    public void TriggerAttack(int power, List<Element> element)
+    public void TriggerAttack()
     {
         if (_WeaponObject.isChargedShot == true)
         {

@@ -6,69 +6,59 @@ using Sirenix.OdinInspector;
 
 public class EnemyDamagable : MonoBehaviour, IDamagable
 {
-    public BaseStats baseStats;
+    public CoreStats baseStats;
+
 
     [Header ("Current Stats")]
     public int currentHealth;
-    
-    public bool TakeDamage(int damage, DamageType.Type type, GameObject agressor, Element element)
-    {
-        if (type == DamageType.Type.TrueDamage) { takeTrueDamage(damage); return true; } //handles true damage
-        currentHealth -= damage *  (int)(testResistanceDamageType(type) * testResistanceElement(element));
 
+    public bool TakeDamage(DamagePackage dmgPackage)
+    {
+        //primary function from the IDamagable class
+        int finalDamage = 0;
+        for(int i = 0; i < dmgPackage._Entries.Count; i++)
+        {
+            if (dmgPackage._Entries[i]._atkType == DamageType.AttackType.TrueDamage)
+            {
+                finalDamage += (int)(dmgPackage._Entries[i]._Damage * dmgPackage._CritMultiplier);
+            }
+            else
+            {
+                finalDamage += takeNormalDamage(dmgPackage._Entries[i], dmgPackage._CritMultiplier);
+            }
+        }
+        if (finalDamage == 0) return false;
+        if (finalDamage < 0 && currentHealth - finalDamage > baseStats._HP) finalDamage = currentHealth - baseStats._HP; //this is for somehow healing
+        currentHealth -= finalDamage;
+        if (currentHealth <= 0) killUnit();
         return true;
     }
 
-    private bool takeTrueDamage(int damage)
+    int takeNormalDamage(DamageEntry atk, float crit)
     {
-        //for dealing damage that cannot be modified or resisted
-        currentHealth -= damage;
-        return true;
+        switch(atk._statType)
+        {
+            case DamageType.StatType.Strength:
+                return (int)((atk._Damage - baseStats.TypeToStatFinder(baseStats.PhysicalDefMod)) * crit);
+            case DamageType.StatType.Defense:
+                return (int)((atk._Damage - baseStats.TypeToStatFinder(baseStats.PhysicalDefMod)) * crit);
+            case DamageType.StatType.Agility:
+                return (int)((atk._Damage - baseStats.TypeToStatFinder(baseStats.PhysicalDefMod)) * crit);
+            case DamageType.StatType.Intelect:
+                return (int)((atk._Damage - baseStats._SPR) * crit);
+            case DamageType.StatType.Spirit:
+                return (int)((atk._Damage - baseStats._SPR) * crit);
+            case DamageType.StatType.Wisdom:
+                return (int)((atk._Damage - baseStats._SPR) * crit);
+            default: return atk._Damage;
+        }
+        
+        //return 0;
     }
 
-    [Button("Test Elemental Resistance")]
-    private float testResistanceElement(Element element)
+    private void killUnit()
     {
-        float finalMultiplier = 1;
-        for (int i = 0; i < baseStats._ElementResistance.Count; i++)
-        {
-            if (baseStats._ElementResistance[i] == element)
-            {
-                print("resistance found! Type: " + element);
-                finalMultiplier = finalMultiplier / baseStats._ElementResitanceMultiplier;
-            }
-        }
-        for (int i = 0; i < baseStats._ElementWeakness.Count; i++)
-        {
-            if (baseStats._ElementWeakness[i] == element)
-            {
-                print("weakness found! Type: " + element);
-                finalMultiplier = finalMultiplier * baseStats._ElementWeaknessMultiplier;
-            }
-        }
-        return finalMultiplier;
-    }
-
-    [Button("Test Damage Type Resistance")]
-    private float testResistanceDamageType(DamageType.Type type)
-    {
-        float finalMultiplier = 1;
-        for (int i = 0; i < baseStats._TypeResistance.Count; i++)
-        {
-            if (baseStats._TypeResistance[i] == type)
-            {
-                print("resistance found! Type: " + type);
-                finalMultiplier = finalMultiplier / baseStats._TypeResitanceMultiplier;
-            }
-        }
-        for (int i = 0; i < baseStats._TypeWeakness.Count; i++)
-        {
-            if (baseStats._TypeWeakness[i] == type)
-            {
-                print("weakness found! Type: " + type);
-                finalMultiplier = finalMultiplier * baseStats._TypeWeaknessMultiplier;
-            }
-        }
-        return finalMultiplier;
+        print("I dead");
+        Destroy(gameObject);
     }
 }
