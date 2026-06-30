@@ -138,7 +138,7 @@ public class FreakCharacter : MonoBehaviour
         wpn = Instantiate(_Inventory._FreakEquippedWeapons[weaponSelection].weaponPrefab, handPointer.transform.position, handPointer.transform.transform.rotation, handPointer.transform);
         wpn.name = _Inventory._FreakEquippedWeapons[weaponSelection].ItemName;
         
-        wpn.GetComponent<ITriggerable>().SetUpWeapon(_Inventory._FreakEquippedWeapons[weaponSelection], gameObject);
+        //wpn.GetComponent<ITriggerable>().SetUpWeapon(_Inventory._FreakEquippedWeapons[weaponSelection], gameObject);
         
     }
     #endregion
@@ -173,7 +173,7 @@ public class FreakCharacter : MonoBehaviour
     void fireWeapon(float multiplier)
     {
         //print("Firing weapon");
-        wpn.GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+        //wpn.GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
     }
 
     int CalculateDamage(float multiplier)

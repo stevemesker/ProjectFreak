@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class ProjectileObject : MonoBehaviour
 {
+    public float speed;
+    public DamagePackage _Damage;
+
+    [Header("Depreciated")]
     public int damageAmount = 1;
-    [SerializeField] private DamageType.Type dType;
+    [SerializeField] private DamageType.AttackType dType;
     public List<ElementType.Element> element;
     public GameObject instigator;
-    public float speed;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -24,21 +28,24 @@ public class ProjectileObject : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
-        print("Doot");
-
         if (other.gameObject == instigator)
         {
-            print("Hit the unit " + other.gameObject.name + " that spawned " + gameObject.name);
             return;
         }
 
         IDamagable damagable = other.GetComponent<IDamagable>();
-        if (damagable == null) { print("Detecting hit " + other.gameObject.name); Destroy(gameObject); return; }
+        if (damagable == null) 
+        { 
+            print("Detecting hit " + other.gameObject.name); 
+            Destroy(gameObject); 
+            return; 
+        }
 
         //spawn hit effects here
         print("Detecting hit " + other.gameObject.name);
+        damagable.TakeDamage(_Damage);
         Destroy(gameObject);
         
     }
+
 }

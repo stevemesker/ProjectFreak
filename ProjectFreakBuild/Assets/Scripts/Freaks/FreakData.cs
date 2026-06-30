@@ -31,8 +31,8 @@ public class BaseStats
     [FoldoutGroup("Elemental Effectiveness")] public float _ElementResitanceMultiplier = 1;
     [FoldoutGroup("Elemental Effectiveness")] public float _ElementWeaknessMultiplier = 1;
 
-    [FoldoutGroup("Damage Type Effectiveness")] public List<DamageType.Type> _TypeResistance;
-    [FoldoutGroup("Damage Type Effectiveness")] public List<DamageType.Type> _TypeWeakness;
+    [FoldoutGroup("Damage Type Effectiveness")] public List<DamageType.AttackType> _TypeResistance;
+    [FoldoutGroup("Damage Type Effectiveness")] public List<DamageType.AttackType> _TypeWeakness;
     [FoldoutGroup("Damage Type Effectiveness")] public float _TypeResitanceMultiplier = 1;
     [FoldoutGroup("Damage Type Effectiveness")] public float _TypeWeaknessMultiplier = 1;
     

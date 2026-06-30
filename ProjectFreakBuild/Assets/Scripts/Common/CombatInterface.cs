@@ -4,13 +4,14 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    bool TakeDamage(int damage, DamageType.Type type, GameObject agressor, ElementType.Element element);
+    bool TakeDamage(DamagePackage dmgPackage);
 }
 
 public interface ITriggerable
 {
-    void SetUpWeapon(ItemSO item, GameObject Wielder);
-    void updateStats(int power, List<ElementType.Element> element);
-    void TriggerAttack(int power, List<ElementType.Element> element);
+    void SetUpWeapon(ItemSO item, GameObject Wielder, CoreStats stats);
+    void TriggerAttack();
     void ReleaseAttack();
+    //DamageType.StatType GetStatType();
+    bool isRange();
 }

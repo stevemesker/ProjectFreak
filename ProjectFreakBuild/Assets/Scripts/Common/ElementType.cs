@@ -1,5 +1,6 @@
 namespace ElementType
 {
+    //probably going to depreciate this
    public enum Element
     {
         normal = 0,

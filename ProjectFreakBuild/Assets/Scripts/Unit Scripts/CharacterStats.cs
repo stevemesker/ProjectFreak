@@ -39,6 +39,67 @@ public class CoreStats
     public int _LVL;
     [Tooltip("Name of the Unit")]
     public string _Name;
+
+    [Header("Combat Stats")]
+    [Tooltip("Stat used for physical melee attacks. Strength is the default")]
+    public DamageType.StatType PhysicalPrimaryStat = DamageType.StatType.Strength;
+    [Tooltip("Stat used for physical ranged attacks. Agility is the default")]
+    public DamageType.StatType PhysicalSecondaryStat = DamageType.StatType.Agility;
+    [Tooltip("Stat used for magical melee attacks. Intelect is the default")]
+    public DamageType.StatType MagicalPrimaryStat = DamageType.StatType.Intelect;
+    [Tooltip("Stat used for magical ranged attacks. Intelect is the default")]
+    public DamageType.StatType MagicalSecondaryStat = DamageType.StatType.Intelect;
+
+    [Tooltip("What stat is used for physical defense. Defense is the default, AGI is usually the other but there is no hard limit")]
+    public DamageType.StatType PhysicalDefMod = DamageType.StatType.Defense;
+    [Tooltip("What stat is used for magical defense. Spirit is the default")]
+    public DamageType.StatType MagicalDefMod = DamageType.StatType.Spirit;
+
+    public int TypeToStatFinder(DamageType.StatType type)
+    {
+        switch(type)
+        {
+            case DamageType.StatType.Health:
+                return _HP;
+            case DamageType.StatType.Strength:
+                return _STR;
+            case DamageType.StatType.Defense:
+                return _DEF;
+            case DamageType.StatType.Agility:
+                return _AGI;
+            case DamageType.StatType.Intelect:
+                return _INT;
+            case DamageType.StatType.Spirit:
+                return _SPR;
+            case DamageType.StatType.Wisdom:
+                return _WIS;
+            default:
+                return 0;
+        }
+    }
+
+    public DamageType.StatType GetDefensiveStatType(DamageType.StatType type)
+    {
+        if (type == DamageType.StatType.Strength || type == DamageType.StatType.Agility || type == DamageType.StatType.Defense)
+            return PhysicalDefMod;
+        if (type == DamageType.StatType.Intelect || type == DamageType.StatType.Spirit || type == DamageType.StatType.Wisdom)
+            return MagicalDefMod;
+        return DamageType.StatType.None;
+    }
+
+    public DamageType.StatType GetAttackStatType(bool isRanged, DamageType.AttackType type)
+    {
+        switch(type)
+        {
+            case DamageType.AttackType.Physical:
+                if (isRanged) return PhysicalSecondaryStat;
+                else return PhysicalPrimaryStat;
+            case DamageType.AttackType.Magical:
+                if (isRanged) return MagicalSecondaryStat;
+                else return MagicalPrimaryStat;
+            default: return DamageType.StatType.None;
+        }
+    }
 }
 
 [Serializable]

@@ -6,3 +6,4 @@ This is a handy link area to help access the top levels of a chapter
 [[Elemental Affinity]]
 [[Random Name Ideas]]
 [[Architecture Atlas]]
+[[Notes for the future]]

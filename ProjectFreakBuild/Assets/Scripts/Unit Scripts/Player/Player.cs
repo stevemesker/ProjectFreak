@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Equipment
+
     public void setActiveWeapon (int index)
     {
         //function that hanles switching weapon selection
@@ -115,6 +116,7 @@ public class Player : MonoBehaviour
         weaponSelection = wpn % pData.pInventory._EquipmentSize;
         updateCurrentWeapon();
     }
+
 
     void updateCurrentWeapon()
     {
@@ -135,8 +137,8 @@ public class Player : MonoBehaviour
         GameObject wpn = Instantiate(pData.pInventory._EquippedWeapons[weaponSelection].weaponPrefab, handPointer.transform.position, handPointer.transform.transform.rotation, handPointer.transform);
         wpn.name = pData.pInventory._EquippedWeapons[weaponSelection].ItemName;
 
-        wpn.GetComponent<ITriggerable>().SetUpWeapon(pData.pInventory._EquippedWeapons[weaponSelection], gameObject);
-
+        wpn.GetComponent<ITriggerable>().SetUpWeapon(pData.pInventory._EquippedWeapons[weaponSelection], gameObject, pData.pStats);
+        print(pData.pStats.GetAttackStatType(wpn.GetComponent<ITriggerable>().isRange(), pData.pInventory._EquippedWeapons[weaponSelection].weaponAttackType));
     }
     public void UpdateEquippedWeaponSlotSize()
     {
@@ -174,7 +176,7 @@ public class Player : MonoBehaviour
         if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
 
         //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
-        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack(0, getElementalDamage());
+        handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack();
     }
     public void releaseCurrentWeapon()
     {
