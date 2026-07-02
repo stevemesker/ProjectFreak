@@ -30,20 +30,6 @@
         "dimension": 71.61016949152543,
         "children": [
           {
-            "id": "77a68866680671e7",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Atlas.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Atlas"
-            }
-          },
-          {
             "id": "a492a5f394994b7d",
             "type": "leaf",
             "state": {
@@ -57,8 +43,7 @@
               "title": "Damage"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -115,7 +100,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 215
+    "width": 329
   },
   "right": {
     "id": "7c0e43bd9ab3c1fa",
@@ -223,12 +208,12 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
-    "Combat/Elemental Affinity.md",
+    "Atlas.md",
     "Combat/Damage.md",
+    "Combat/Elemental Affinity.md",
     "Architecture/Combat/Damage Package.md",
     "Narrative/characters/Lord Old Man.md",
     "Notes for the future.md",
-    "Atlas.md",
     "Game design.md",
     "Character Traits/Character Stats.md",
     "Architecture/Architecture Atlas.md",

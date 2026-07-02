@@ -18,7 +18,7 @@ MonoBehaviour:
   dropArt: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6, type: 3}
   ItemRarity: 0
   itemStackSizeMax: 99
-  weaponStatType: 0
+  weaponAttackType: 1
   weaponPrefab: {fileID: 8650534591627461858, guid: ca698d745efff3a469be1a011206eef6,
     type: 3}
   weaponFireRate: 1
