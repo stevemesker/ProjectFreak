@@ -402,11 +402,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PFB_TargetDummy_Dev
       objectReference: {fileID: 0}
-    - target: {fileID: 5183555112417552592, guid: b74a7eeaaee4d3d4c998bfb6a8647aec,
-        type: 3}
-      propertyPath: currentHealth
-      value: 100
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1461,7 +1456,16 @@ MonoBehaviour:
     _WIS: 3
     _LVL: 1
     _Name: Steve
+    PhysicalPrimaryStat: 2
+    PhysicalSecondaryStat: 4
+    MagicalPrimaryStat: 5
+    MagicalSecondaryStat: 5
     PhysicalDefMod: 3
+    MagicalDefMod: 6
+    AttackTypeResistance: 
+    ElementTypeResistance: 
+    AttackTypeImmunity: 
+    ElementTypeImmunity: 
     _XP: 0
     _SOUL: 1
     _SHA: 1

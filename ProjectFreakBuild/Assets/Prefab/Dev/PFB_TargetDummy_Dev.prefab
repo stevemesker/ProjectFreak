@@ -49,6 +49,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   onDamage:
     m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6285648430214503133}
+        m_TargetAssemblyTypeName: EnemyStats, Assembly-CSharp
+        m_MethodName: TakeDamage
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onHit:
+    m_PersistentCalls:
       m_Calls: []
 --- !u!114 &6285648430214503133
 MonoBehaviour:
@@ -62,6 +77,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d78f79b6e39659b4c8a31ad96247dc30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eStats:
+    _HP: 10
+    _Health: 10
+    _STR: 0
+    _DEF: 1
+    _AGI: 0
+    _INT: 1
+    _SPR: 1
+    _WIS: 1
+    _LVL: 0
+    _Name: 
+    PhysicalPrimaryStat: 2
+    PhysicalSecondaryStat: 4
+    MagicalPrimaryStat: 5
+    MagicalSecondaryStat: 5
+    PhysicalDefMod: 3
+    MagicalDefMod: 6
+    AttackTypeResistance: 00000000
+    ElementTypeResistance: 00000000
+    AttackTypeImmunity: 
+    ElementTypeImmunity: 
+    _DropGold: 0
+    DropItems: []
+  onDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!136 &6667231965098780187
 CapsuleCollider:
   m_ObjectHideFlags: 0
