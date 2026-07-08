@@ -1,0 +1,177 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8567313939770354761
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6290264631016927834}
+  - component: {fileID: 1583258812779793042}
+  - component: {fileID: 8713638435748779992}
+  - component: {fileID: 6681318171562485221}
+  m_Layer: 0
+  m_Name: PFB_Weapon_Sword_Radiant_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6290264631016927834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567313939770354761}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.70710677}
+  m_LocalPosition: {x: -5.521, y: 0.621, z: 3.918}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 739716789816875056}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1583258812779793042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567313939770354761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d216f5265c251a740b00de1e96b0033e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Art: {fileID: 76508609606648458}
+  _HandleBoneObject: {fileID: 3147231503193661910}
+  _PlacementBoneOffsetObject: {fileID: 2233151033398587931}
+--- !u!114 &8713638435748779992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567313939770354761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Wielder: {fileID: 0}
+  _WeaponObject: {fileID: 0}
+  _AttackBonus: 0
+  elementType: 0
+  canFire: 1
+  isReleased: 1
+  isCharging: 0
+--- !u!114 &6681318171562485221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8567313939770354761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a8536b48439c504cb02fed3947e09c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OffsetTarget: {fileID: 2233151033398587931}
+  OffsetAdjustment: {x: 0, y: 0, z: 0}
+--- !u!1001 &994937064876163035
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6290264631016927834}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a9ca16053303c7645b50650bf8c7c194,
+        type: 3}
+      propertyPath: m_Name
+      value: Mesh_Sword_0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a9ca16053303c7645b50650bf8c7c194, type: 3}
+--- !u!1 &76508609606648458 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a9ca16053303c7645b50650bf8c7c194,
+    type: 3}
+  m_PrefabInstance: {fileID: 994937064876163035}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &739716789816875056 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a9ca16053303c7645b50650bf8c7c194,
+    type: 3}
+  m_PrefabInstance: {fileID: 994937064876163035}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2233151033398587931 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1383457161183808960, guid: a9ca16053303c7645b50650bf8c7c194,
+    type: 3}
+  m_PrefabInstance: {fileID: 994937064876163035}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3147231503193661910 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2766212503428324877, guid: a9ca16053303c7645b50650bf8c7c194,
+    type: 3}
+  m_PrefabInstance: {fileID: 994937064876163035}
+  m_PrefabAsset: {fileID: 0}

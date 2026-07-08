@@ -16,6 +16,9 @@ public class CharacterMovement : MonoBehaviour
     RaycastHit _rayHit;
     [Tooltip("True if floor was detected under gameobject")]public bool _rayDidHit;
 
+    [Header("State Variables")]
+    [SerializeField, Tooltip("When true, turn off the ability to move and turn the character")] bool isMovePaused;
+
     [Header("Standing")]
     [SerializeField, Tooltip("How far to cast the ray to find the standing upright position")] float RayLength;
     [SerializeField, Tooltip("The desired height of the character")] float RideHeight;
@@ -33,6 +36,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] float speedFactor = 1;
     [SerializeField] public Vector3 m_UnitGoal;
     Vector3 m_GoalVel;
+    Vector3 savedVel; //used when stopping the unit and restarting at the same speed is necessary, saved to this variable
 
     [Header("Turning")]
     [SerializeField, Tooltip("When true, the unit's rotation will match their movement vector")] bool isTurnSnapped = true;
@@ -40,6 +44,10 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] public Vector3 m_turnGoal;
     [SerializeField] float turnIdleTime = 1;
     Coroutine IdleTimer;
+
+    [Header("Dash")]
+    [SerializeField] UnitDash _Dash;
+    
 
     [Header("Mouse Settings")]
     [SerializeField] bool isUsingMouse;
@@ -62,6 +70,8 @@ public class CharacterMovement : MonoBehaviour
 
         pInput.Player.Point.performed += MouseInput;
         pInput.Player.Point.canceled += MouseStopInput;
+
+        pInput.Player.Dash.performed += DashInput;
     }
 
     private void OnDisable()
@@ -74,6 +84,9 @@ public class CharacterMovement : MonoBehaviour
 
         pInput.Player.Point.performed -= MouseInput;
         pInput.Player.Point.canceled -= MouseStopInput;
+
+        pInput.Player.Dash.performed -= DashInput;
+
         pInput.Disable();
     }
     private void Awake()
@@ -131,6 +144,7 @@ public class CharacterMovement : MonoBehaviour
 
     void MovementForce()
     {
+        if (isMovePaused) return;
         Vector3 unitVel = m_GoalVel.normalized;
         float velDot = Vector3.Dot(m_UnitGoal, unitVel);
         float accel = acceleration * AccelerationFactorFromDot.Evaluate(velDot);
@@ -147,6 +161,7 @@ public class CharacterMovement : MonoBehaviour
 
     void Rotationforce()
     {
+        if (isMovePaused) return;
         Quaternion targetRotation =
         Quaternion.LookRotation(m_turnGoal);
 
@@ -198,9 +213,32 @@ public class CharacterMovement : MonoBehaviour
         IdleTimer = StartCoroutine(IdleTimerCoroutine());
     }
 
+    void DashInput(InputAction.CallbackContext context)
+    {
+        //Vector3 direction = new Vector3();
+        //print("Boop");
+        _Dash.DashCharacter(m_UnitGoal);
+    }
+
     #endregion
 
     #region Tools
+    public void DeactivateMovement()
+    {
+        //function that turns off movement/rotation of the character for pausing purposes
+        isMovePaused = true;
+        savedVel = _RB.velocity;
+        _RB.velocity = Vector3.zero;
+        print("On");
+    }
+    public void ReactivateMovement()
+    {
+        //function that turns back on the movement/rotation of the character after it had been paused
+        isMovePaused = false;
+        _RB.velocity = savedVel;
+        print("Off");
+    }
+
     Vector3 ConvertMovementScreenSpace(Vector3 input)
     {
         Quaternion cameraRotation = Quaternion.Euler(

@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Combat/Damage.md",
+                "file": "Combat/Dash.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Damage"
+              "title": "Dash"
             }
           }
         ]
@@ -208,8 +208,9 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
-    "Atlas.md",
     "Combat/Damage.md",
+    "Combat/Dash.md",
+    "Atlas.md",
     "Combat/Elemental Affinity.md",
     "Architecture/Combat/Damage Package.md",
     "Narrative/characters/Lord Old Man.md",
@@ -237,7 +238,6 @@
     "Shade Info/Shade Ability.md",
     "Shade Info/Shade Stats.md",
     "Character Traits/Shade Slot.md",
-    "Character Traits/Party Stats.md",
     "zzz Extras/Attachments/Element node.png",
     "zzz Extras/Attachments/Core Node.png",
     "zzz Extras",
