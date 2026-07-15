@@ -1,4 +1,4 @@
-[[Hazen]] and his [[Shade]]s will have the ability to dash around levels. At the beginning of the game, players will only have access to the basic dash which is just a small speed boost. Later on they will have a dash that passes through [[Destructible Objects]] and even does damage to enemies.
+[[Hazen]] and his [[Shade]]s will have the ability to dash around levels. At the beginning of the game, players will only have access to the basic dash which is just a small speed boost. Later on they will have a dash that passes through [[Destructible Objects]] and even does damage to enemies. For more information see [[Unit Dash Script]] for more info.
 
 ---
 **Dash General**
@@ -15,3 +15,6 @@ When a dash is triggered it will initialize and dash cooldown timer which scales
 When the player presses the dash button (see [[Game Controls]]) the simplest form is the [[Basic Dash]] which uses physics to simply push the character forward. It will be intercepted by anything with physics.
 
 ---
+
+**Dash Passthrough**
+Eventually Hazen, his shades, or [[Enemy Unit]]s can gain the ability to make a passthrough dash. Most of the time this will deal damage based on their [[AGI]] modifier (can change based on other effects that changes their physical ranged properties).
