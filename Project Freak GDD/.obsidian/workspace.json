@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 28.389830508474578,
+        "dimension": 42.00913242009132,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Narrative/characters/Lord Old Man.md",
+                "file": "Character Traits/Character Stats.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Lord Old Man"
+              "title": "Character Stats"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 71.61016949152543,
+        "dimension": 57.99086757990868,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Combat/Dash.md",
+                "file": "Architecture/Combat/Unit Dash Script.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Dash"
+              "title": "Unit Dash Script"
             }
           }
         ]
@@ -208,20 +208,25 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
-    "Combat/Damage.md",
-    "Combat/Dash.md",
-    "Atlas.md",
+    "Character Traits/Character Stats.md",
+    "Character Traits/Main Character Stats.md",
+    "Character Traits/Main Character.md",
+    "Architecture/Combat/Unit Dash Script.md",
     "Combat/Elemental Affinity.md",
-    "Architecture/Combat/Damage Package.md",
+    "Element Type.md",
+    "Architecture/Combat/Weapon usage.md",
+    "Combat/Attack Type.md",
+    "Combat/Dash.md",
     "Narrative/characters/Lord Old Man.md",
+    "Combat/Damage.md",
+    "Atlas.md",
+    "Architecture/Combat/Damage Package.md",
     "Notes for the future.md",
     "Game design.md",
-    "Character Traits/Character Stats.md",
     "Architecture/Architecture Atlas.md",
     "Architecture/Destructible Objects.md",
     "UI/Rune Field/Ability Node.md",
     "Architecture/Interface List.md",
-    "Architecture/Combat/Weapon usage.md",
     "Architecture/Combat",
     "Character Traits/Main Character Abilities/Control Shade.md",
     "Architecture/Cameras.md",
@@ -229,15 +234,10 @@
     "Architecture/Player Movement.md",
     "Character Traits/Character Movement.md",
     "UI/Rune Field/Element Rune.md",
-    "Character Traits/Main Character.md",
     "Architecture",
     "UI/Rune Field/Rune Field.md",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
     "zzz Extras/Attachments/Ability Node Example.png",
-    "Shade Info/Shade.md",
-    "Shade Info/Shade Ability.md",
-    "Shade Info/Shade Stats.md",
-    "Character Traits/Shade Slot.md",
     "zzz Extras/Attachments/Element node.png",
     "zzz Extras/Attachments/Core Node.png",
     "zzz Extras",
