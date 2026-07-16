@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Combat/Unit Dash Script.md",
+                "file": "Architecture/Combat/Damage Package.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Unit Dash Script"
+              "title": "Damage Package"
             }
           }
         ]
@@ -208,10 +208,10 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
+    "Architecture/Combat/Unit Dash Script.md",
     "Character Traits/Character Stats.md",
     "Character Traits/Main Character Stats.md",
     "Character Traits/Main Character.md",
-    "Architecture/Combat/Unit Dash Script.md",
     "Combat/Elemental Affinity.md",
     "Element Type.md",
     "Architecture/Combat/Weapon usage.md",
