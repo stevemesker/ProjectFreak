@@ -35,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Combat/Damage Package.md",
+                "file": "Architecture/Combat/Unit Dash Script.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Damage Package"
+              "title": "Unit Dash Script"
             }
           }
         ]
@@ -208,6 +208,8 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
+    "Combat/Dash.md",
+    "Architecture/Combat/Damage Package.md",
     "Architecture/Combat/Unit Dash Script.md",
     "Character Traits/Character Stats.md",
     "Character Traits/Main Character Stats.md",
@@ -216,11 +218,9 @@
     "Element Type.md",
     "Architecture/Combat/Weapon usage.md",
     "Combat/Attack Type.md",
-    "Combat/Dash.md",
     "Narrative/characters/Lord Old Man.md",
     "Combat/Damage.md",
     "Atlas.md",
-    "Architecture/Combat/Damage Package.md",
     "Notes for the future.md",
     "Game design.md",
     "Architecture/Architecture Atlas.md",
