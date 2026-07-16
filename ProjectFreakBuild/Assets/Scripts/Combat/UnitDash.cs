@@ -29,22 +29,14 @@ public class UnitDash : MonoBehaviour
     public float floorDetectionAdjustment = 0.05f;
 
     //Passthrough Data----------------------------------------------------------------
-    [Header("Dash Type")]
-    [Tooltip("If true, unit will dash through anything labeled as damageable")]
-    public bool isPassThrough;
-    
+    [FoldoutGroup("---Pass Through Data---")]
+    public float passThroughDetectionRadius = .5f;
 
     [FoldoutGroup("---Pass Through Data---")]
-    [ShowIf(nameof(isPassThrough))]
-    public float _DashDistance;
+    [SerializeField]public DamagePackage Damage;
 
     [FoldoutGroup("---Pass Through Data---")]
-    [ShowIf(nameof(isPassThrough))]
-    [SerializeField]public List<DamageEntry> Damage;
-    //--------------------------------------------------------------------------------
-    [FoldoutGroup("---Impulse Data---")]
-    [HideIf(nameof(isPassThrough))]
-    public float _DashImpulseStrength;
+    [SerializeField] private HashSet<GameObject> hitList; //objects that actually need to take damage
     //--------------------------------------------------------------------------------
     [Header("Event Actions")]
     public UnityEvent startDashEvent;
@@ -53,28 +45,27 @@ public class UnitDash : MonoBehaviour
 
     private Coroutine refreshTimer = null;
     private Vector3 dashOriginPoint;
-    [SerializeField]private List<GameObject> hitList; //objects that actually need to take damage
+    
     //private ColliderHit 
     
 
     #region Input
     public void DashCharacter(Vector3 direction)
     {
+        //Dash activation
+
         if (DashCurrent <= 0 || canDash == false) return;
         DashCurrent -= 1;
         if (refreshTimer == null) refreshTimer = StartCoroutine(DashRefresh());
-        //startDashEvent?.Invoke();
 
         Vector3 dashDirection = DashFloorDirectionCalculation(direction);
         float finalDashDistance = dashDistance;
-        //Vector3 endPosition = _RB.position + (dashDirection * dashDistance);
 
         RaycastHit[] hits = Physics.RaycastAll(dashOriginPoint, dashDirection, dashDistance);
         System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
-        hitList = new List<GameObject>();
+        //hitList.Clear();
+        hitList = new HashSet<GameObject>();
         int stopIndex = FindDashStopperIndex(hits);
-
-        hitListCheck(hits);
 
         if (stopIndex != -1)
         {
@@ -83,12 +74,116 @@ public class UnitDash : MonoBehaviour
 
         StartCoroutine(DashRoutine(_RB.position, _RB.position+(dashDirection*finalDashDistance)));
 
-        /*
-        if (isPassThrough) PassthroughDash(dashDirection, hits);
-        else
+    }
+
+    public void DashPassthrough(Vector3 direction, DamagePackage dmg)
+    {
+        //alternate dash activation that also includes damage
+
+        Damage = dmg;
+        DashCharacter(direction);
+    }
+
+    IEnumerator DashRoutine(Vector3 startPosition, Vector3 endPosition)
+    {
+        //Dashing movement code
+
+        float elapsed = 0f;
+        float nextCastDistance = passThroughDetectionRadius;
+
+        Vector3 lastCastPosition = startPosition;
+        float dashDistance = Vector3.Distance(startPosition, endPosition);
+
+        while (elapsed < dashDuration)
         {
-            
-        }*/
+            elapsed += Time.fixedDeltaTime;
+
+            float t = Mathf.Clamp01(elapsed / dashDuration);
+            float curveT = dashCurve.Evaluate(t);
+
+            Vector3 targetPosition = Vector3.Lerp(startPosition, endPosition, curveT);
+
+            _RB.MovePosition(targetPosition);
+
+            //damage detections
+            if (Damage != null)
+            {
+                float distanceTraveled = curveT * dashDistance;
+
+                if (distanceTraveled >= nextCastDistance)
+                {
+                    print("Boop");
+                    SphereCastForHits(lastCastPosition, targetPosition);
+
+                    lastCastPosition = targetPosition;
+                    nextCastDistance += passThroughDetectionRadius;
+                }
+            }
+            //-----
+
+            yield return new WaitForFixedUpdate();
+        }
+
+        _RB.MovePosition(endPosition);
+
+        if (Damage != null)
+        {
+            ApplyDashDamage();
+        }
+
+        endDashEvent?.Invoke();
+    }
+    #endregion
+
+    #region Tools
+
+    void ApplyDashDamage()
+    {
+        foreach(GameObject hits in hitList)
+        {
+            hits.GetComponent<IDamagable>().TakeDamage(Damage);
+            print(hits + "Takes " + Damage._Entries[0]._Damage + " " + Damage._Entries[0]._atkType + " damage from " + Damage._Source.name);
+        }
+    }
+
+    void SphereCastForHits(Vector3 start, Vector3 end)
+    {
+        //raycast sphere for hit detection for dash damage
+
+        Vector3 direction = (end - start).normalized;
+        float distance = Vector3.Distance(start, end);
+
+        RaycastHit[] hits = Physics.SphereCastAll(start, passThroughDetectionRadius, direction, distance);
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider.GetComponent<IDamagable>() != null)
+            {
+                hitList.Add(hit.transform.gameObject);
+            }
+        }
+    }
+
+    Vector3 DashFloorDirectionCalculation(Vector3 direction)
+    {
+        //function that returns the final direction all dashes should move
+        //Also saves out the floor position for further calculations
+
+        RaycastHit hit;
+        Vector3 adjustedDirection = direction.normalized;
+
+        if (direction == Vector3.zero) direction = transform.forward;
+
+        dashOriginPoint = _RB.position;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, floorDetectionDistance))
+        {
+            adjustedDirection = Vector3.ProjectOnPlane(direction, hit.normal).normalized;
+            dashOriginPoint = hit.point;
+            dashOriginPoint.y += floorDetectionAdjustment;
+        }
+
+        return adjustedDirection;
     }
 
     int FindDashStopperIndex(RaycastHit[] hits)
@@ -109,72 +204,6 @@ public class UnitDash : MonoBehaviour
             }
         }
         return -1;
-
-
-        /*
-        print("Running pass through dash");
-        if (DashCurrent <= 0 || canDash == false) return;
-        DashCurrent -= 1;
-        if (refreshTimer == null) refreshTimer = StartCoroutine(DashRefresh());
-        startDashEvent?.Invoke();
-
-        
-        RaycastHit hit;
-        Vector3 adjustedDirection = direction.normalized;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, floorDetectionDistance)) adjustedDirection = Vector3.ProjectOnPlane(direction, hit.normal).normalized;
-        */
-        //StartCoroutine(DashRoutine(adjustedDirection));
-    }
-
-    #endregion
-
-    #region Tools
-
-    Vector3 DashFloorDirectionCalculation(Vector3 direction)
-    {
-        //function that returns the final direction all dashes should move
-        //Also saves out the floor position for further calculations
-
-        RaycastHit hit;
-        Vector3 adjustedDirection = direction.normalized;
-        if (direction == Vector3.zero) direction = transform.forward;
-        dashOriginPoint = _RB.position;
-
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, floorDetectionDistance))
-        {
-            adjustedDirection = Vector3.ProjectOnPlane(direction, hit.normal).normalized;
-            dashOriginPoint = hit.point;
-            dashOriginPoint.y += floorDetectionAdjustment;
-        }
-
-        return adjustedDirection;
-    }
-    IEnumerator DashRoutine(Vector3 startPosition, Vector3 endPosition)
-    {
-        float elapsed = 0f;
-
-        //Vector3 startPosition = _RB.position;
-        //Vector3 endPosition = startPosition + dashDirection * dashDistance;
-
-        while (elapsed < dashDuration)
-        {
-            elapsed += Time.fixedDeltaTime;
-
-            float t = Mathf.Clamp01(elapsed / dashDuration);
-
-            float curveT = dashCurve.Evaluate(t);
-
-            Vector3 targetPosition =
-                Vector3.Lerp(startPosition, endPosition, curveT);
-
-            _RB.MovePosition(targetPosition);
-
-            yield return new WaitForFixedUpdate();
-        }
-
-        _RB.MovePosition(endPosition);
-
-        endDashEvent?.Invoke();
     }
 
     IEnumerator DashRefresh()
@@ -185,15 +214,5 @@ public class UnitDash : MonoBehaviour
         else refreshTimer = null;
     }
 
-    #endregion
-
-    #region debug
-    void hitListCheck(RaycastHit[] hits)
-    {
-        for (int i = 0; i < hits.Length; i++)
-        {
-            print("Hit " + i + " | " + hits[i].transform.name);
-        }
-    }
     #endregion
 }
