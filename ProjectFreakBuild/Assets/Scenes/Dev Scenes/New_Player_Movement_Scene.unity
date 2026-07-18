@@ -985,12 +985,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1096832321}
+  - component: {fileID: 1096832316}
+  - component: {fileID: 1096832317}
+  - component: {fileID: 1096832322}
   - component: {fileID: 1096832320}
   - component: {fileID: 1096832319}
   - component: {fileID: 1096832318}
-  - component: {fileID: 1096832317}
-  - component: {fileID: 1096832316}
-  - component: {fileID: 1096832322}
   m_Layer: 0
   m_Name: PFB_Chest
   m_TagString: Untagged
@@ -1011,6 +1011,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   content: {fileID: 0}
+  _TLine: {fileID: 1096832322}
 --- !u!114 &1096832317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1137,42 +1138,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeline:
-  - StartDelay: 1
-    WaitForContinue: 0
-    EndDelay: 1
-    Event:
+  - Event:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1096832316}
-          m_TargetAssemblyTypeName: ChestContent, Assembly-CSharp
-          m_MethodName: openChest
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-  - StartDelay: 1
+        m_Calls: []
+    StartDelay: 0
     WaitForContinue: 0
-    EndDelay: 1
-    Event:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1096832316}
-          m_TargetAssemblyTypeName: ChestContent, Assembly-CSharp
-          m_MethodName: test
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+    EndDelay: 0
   onTimelineComplete:
     m_PersistentCalls:
       m_Calls: []

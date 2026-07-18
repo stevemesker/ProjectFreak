@@ -7,6 +7,9 @@ using Sirenix.OdinInspector;
 [System.Serializable]
 public class TimelineEventTrack
 {
+    [FoldoutGroup("Event")]
+    public UnityEvent Event;
+
     [FoldoutGroup("Timing")]
     [MinValue(0)]
     public float StartDelay;
@@ -18,7 +21,4 @@ public class TimelineEventTrack
     [HideIf(nameof(WaitForContinue))]
     [MinValue(0)]
     public float EndDelay;
-
-    [FoldoutGroup("Event")]
-    public UnityEvent Event;
 }
