@@ -18,6 +18,12 @@ public class ItemDrop : MonoBehaviour
     public void OnEnable()
     {
         if (ItemLootDrop == null) { Debug.LogError("null item spawn"); return; }
+        fillDrop(ItemLootDrop);
+    }
+
+    public void fillDrop(ItemSO itm)
+    {
+        ItemLootDrop = itm;
         GameObject art = Instantiate(ItemLootDrop.dropArt, _ArtParent.transform.position, _ArtParent.transform.rotation, _ArtParent.transform);
         if (checkForWeapon())
         {
@@ -29,26 +35,7 @@ public class ItemDrop : MonoBehaviour
             _ArtParent.GetComponent<ItemFloatAndSpin>().enabled = true;
             //set up rarity effects
         }
-
     }
-    /*
-    public void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Player>() == false) return;
-
-        if (ItemLootDrop == null)
-        {
-            Debug.LogWarning("Warning! Item pickup wwas attempted however no item was found.");
-            return;
-        }
-
-        print("Now adding " + ItemLootDrop.ItemName + " to inventory");
-        pickupEvent.Raise(ItemLootDrop, ItemLootAmount);
-
-        //add pickup effects here
-
-        Destroy(gameObject);
-    }*/
 
     [Button("Test for Waapon")]private bool checkForWeapon()
     {
@@ -59,6 +46,7 @@ public class ItemDrop : MonoBehaviour
 
     #endregion
 
+    #region Interaction
     public void pickupItem()
     {
         if (ItemLootDrop == null)
@@ -83,4 +71,14 @@ public class ItemDrop : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    #endregion
+
+    #region Spawning
+    public void MoveArc(Vector3 location, float arcHeight, float speed)
+    {
+        _ArtParent.GetComponent<ItemFloatAndSpin>().enabled = false;
+        GetComponent<ArcMover>().LaunchTo(location, arcHeight, speed);
+    }
+
+    #endregion
 }

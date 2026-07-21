@@ -1,0 +1,1 @@
+This is a generic script that uses [[IInteractable]] interface (see [[Interface List]]) and fires off an event. It is intended to be a generic catch all for physical objects that have some sort of interaction. Example: a chest, a door, npc chat initiation

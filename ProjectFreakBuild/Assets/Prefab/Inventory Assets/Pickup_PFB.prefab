@@ -58,6 +58,7 @@ GameObject:
   - component: {fileID: 4518730403146200569}
   - component: {fileID: 6520675311133957686}
   - component: {fileID: 3450627793422731530}
+  - component: {fileID: 1413216649079556272}
   m_Layer: 7
   m_Name: Pickup_PFB
   m_TagString: Item
@@ -109,7 +110,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6037441376553766297}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef09df66f4d069840a18fb4eae452bcf, type: 3}
   m_Name: 
@@ -118,3 +119,56 @@ MonoBehaviour:
   ItemLootAmount: 1
   _ArtParent: {fileID: 1001120119663010773}
   pickupEvent: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
+--- !u!114 &1413216649079556272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6037441376553766297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e42ab04578cfd1746b097301fd675f3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ArcCurveShape:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _targetPosition: {x: 0, y: 0, z: 0}
+  _Duration: 0
+  finishEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2001398395180715196}
+        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+        m_MethodName: set_enabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
