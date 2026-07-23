@@ -17,9 +17,12 @@ public class EnemyStats : MonoBehaviour
         int damageTakenTotal = 0;
         for (int i = 0; i < dmg._Entries.Count; i++)
         {
+            if (ScreenDamageUIManager._UIdamage != null) ScreenDamageUIManager._UIdamage._damageCanvas.displayDamage(transform.position, (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier), false);
             damageTakenTotal += (int)(DamageCalculation(dmg._Entries[i])*dmg._CritMultiplier);
         }
         eStats._Health -= damageTakenTotal;
+        
+
         if (eStats._Health <= 0) onDeath?.Invoke();
         if (eStats._Health > eStats._HP) eStats._Health = eStats._HP;
     }
