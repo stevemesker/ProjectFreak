@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5183555112417552592}
   - component: {fileID: 6285648430214503133}
   - component: {fileID: 6667231965098780187}
+  - component: {fileID: 494046753337041394}
   m_Layer: 0
   m_Name: PFB_TargetDummy_Dev
   m_TagString: Untagged
@@ -126,6 +127,18 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &494046753337041394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c64f0d9ef42277e4aaef3eaa66f9c073, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3116855252906575070
 PrefabInstance:
   m_ObjectHideFlags: 0
