@@ -1,5 +1,6 @@
 ## Overview
 
+![[ArcMover Example.png]]
 `ArcMover` is a reusable utility component responsible for moving any GameObject from its current position to a target position using a configurable arc. The component is intentionally generic and contains no knowledge of the object it is moving, making it suitable for loot drops, thrown weapons, spell effects, projectiles, cutscene objects, and future gameplay systems.
 
 The movement is deterministic and does not rely on Unity physics or projectile calculations. Instead, the object interpolates horizontally while its vertical motion is controlled by an `AnimationCurve`.

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Grad_CombatText_Basic
   m_EditorClassIdentifier: 
   colorMode: 3
-  topLeft: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 1}
-  topRight: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
-  bottomLeft: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
-  bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  topLeft: {r: 0.71084017, g: 0.9245283, b: 0.90911543, a: 1}
+  topRight: {r: 0.3023318, g: 0.5316364, b: 0.8113208, a: 1}
+  bottomLeft: {r: 0.3501691, g: 0.45436192, b: 0.5754717, a: 1}
+  bottomRight: {r: 0.64146495, g: 0.65356183, b: 0.8773585, a: 1}

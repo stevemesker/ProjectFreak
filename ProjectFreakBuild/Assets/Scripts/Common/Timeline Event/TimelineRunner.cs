@@ -2,21 +2,60 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Sirenix.OdinInspector;
 
 public class TimelineRunner : MonoBehaviour
 {
+    [Header("Settings")]
+    [Tooltip("When true, event trigger launches automatically on enable")] 
+    public bool _StartEventAutomatically;
+
+    [Tooltip("When true, event triggers when object enters trigger volume")] 
+    public bool _triggerActivation;
+
+    [ShowIf(nameof(_triggerActivation))]
+    [Tooltip("List of objects that will only trigger the event if they contain a tag in this list")] 
+    public List<string> _triggerMask;
+
+    [Header("Timeline")]
     [SerializeField]
     private List<TimelineEventTrack> timeline;
 
     [SerializeField]
     private UnityEvent onTimelineComplete;
 
-    private Coroutine currentTimeline;
 
+    //Private Variables
+    private Coroutine currentTimeline;
     private bool waitingForContinue;
 
     public bool IsRunning { get; private set; }
 
+    #region Trigger Functions
+    private void OnEnable()
+    {
+        if (_StartEventAutomatically) PlayTimeline();
+    }
+
+    private void OnDisable()
+    {
+        StopTimeline();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (_triggerActivation == false) return;
+
+        if (_triggerMask.Count > 0)
+        {
+            if (_triggerMask.Contains(other.gameObject.tag) == false) return;
+        }
+
+        PlayTimeline();
+    }
+    #endregion
+
+    #region Timeline Functions
     public void PlayTimeline()
     {
         StopTimeline();
@@ -77,4 +116,5 @@ public class TimelineRunner : MonoBehaviour
 
         onTimelineComplete?.Invoke();
     }
+    #endregion
 }
