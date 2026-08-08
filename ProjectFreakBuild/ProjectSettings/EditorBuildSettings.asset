@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/OutdoorsScene.unity
-    guid: 8124e5870f4fd4c779e7a5f994e84ad1
+    path: Assets/Scenes/Scene_OpeningScene_Logo.unity
+    guid: ff8a929c091df294c90f6b53dd3121f6
+  - enabled: 1
+    path: Assets/Scenes/Title Background Scenes/SCN_TitleBackground_0.unity
+    guid: 9621891f3ad35734aa99636b23a457a5
+  - enabled: 1
+    path: Assets/Scenes/Title Background Scenes/SCN_TitleBackground_1.unity
+    guid: 3034b3c4857c39c43a903a8c343a319a
   m_configObjects: {}

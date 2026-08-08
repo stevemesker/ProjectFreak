@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 758167766651089015}
   - component: {fileID: 2358789497967656618}
   - component: {fileID: 7544917852680856100}
+  - component: {fileID: 9061649919952316187}
+  - component: {fileID: 3518485283853445535}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -47,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shade: {fileID: 7544917852680856100}
+  PlayerLevel: 0
 --- !u!114 &2358789497967656618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81,3 +84,28 @@ MonoBehaviour:
   - {fileID: 11400000, guid: aa6dc390da24f3146899eaae6d3ebbcd, type: 2}
   tamerSlotLevel: 1
   currentShadeSelected: 0
+  shadeAlterPackages: []
+--- !u!114 &9061649919952316187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be022f7f50fca9a49acc3e329d672b89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3518485283853445535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1e321ca8fe776428fcfb4ea39a70d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

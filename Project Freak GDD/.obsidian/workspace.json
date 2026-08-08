@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 54.044357469015004,
+        "dimension": 60.60802069857697,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 45.955642530984996,
+        "dimension": 39.39197930142303,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -213,12 +213,12 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "96228a7edd8b3eaa",
+  "active": "f4d21ec82e0cd74b",
   "lastOpenFiles": [
+    "File Naming Conventions.md",
     "Architecture/Combat/Damage Popup System.md",
     "Architecture/Combat/Damage Package.md",
     "Character Traits/Main Character Abilities/Dive Switch.md",
-    "File Naming Conventions.md",
     "Architecture/Tools/ArcMover.md",
     "Atlas.md",
     "Architecture/Managers.md",

@@ -9,12 +9,12 @@ Example:
 ---
 File type list
 
-| Type  | Description                             |
-| :---- | :-------------------------------------- |
-| M     | Mesh - 3d models                        |
-| T     | Texture - any 2d bitmap image           |
-| Mat   | Material - materials applied to a model |
-| Sha   | Shader - custom shaders                 |
-| PFB   | Prefab - prefab assemblies              |
-| Scene | Scene - unity scenes                    |
-| SO    | Scriptable Object - Scriptable Objects  |
+| Type | Description                             |
+| :--- | :-------------------------------------- |
+| M    | Mesh - 3d models                        |
+| T    | Texture - any 2d bitmap image           |
+| MAT  | Material - materials applied to a model |
+| SHA  | Shader - custom shaders                 |
+| PFB  | Prefab - prefab assemblies              |
+| SCN  | Scene - unity scenes                    |
+| SO   | Scriptable Object - Scriptable Objects  |
