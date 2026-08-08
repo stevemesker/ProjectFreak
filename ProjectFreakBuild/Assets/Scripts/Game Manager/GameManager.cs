@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         _GameManager = this;
+        DontDestroyOnLoad(gameObject);
     }
     #endregion
 

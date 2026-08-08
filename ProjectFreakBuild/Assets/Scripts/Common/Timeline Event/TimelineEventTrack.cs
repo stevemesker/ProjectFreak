@@ -7,6 +7,8 @@ using Sirenix.OdinInspector;
 [System.Serializable]
 public class TimelineEventTrack
 {
+    [SerializeField] string Label;
+
     [FoldoutGroup("Event")]
     public UnityEvent Event;
 
