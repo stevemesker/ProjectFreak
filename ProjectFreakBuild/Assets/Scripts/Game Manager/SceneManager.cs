@@ -5,12 +5,13 @@ using UnityEngine;
 public class SceneManager : MonoBehaviour
 {
     [SerializeField, Tooltip("List index tied to what chapter the save slot is on. Will load what value that chapter is set to. Default 0")] 
-    List<Object> _loadSceneOpeningByChapterIndex;
+    List<string> _loadSceneOpeningByChapterIndex;
 
     private UnityEngine.SceneManagement.Scene _currentOpeningScene;
 
     public void loadStartScene()
     {
+        Debug.Log("Testing: " + _loadSceneOpeningByChapterIndex.Count);
         //this should never happen but just in case
         if (_loadSceneOpeningByChapterIndex.Count == 0 || GameManager._GameManager == null) return;
 
@@ -23,9 +24,8 @@ public class SceneManager : MonoBehaviour
         if (_loadSceneOpeningByChapterIndex.Count - 1 < _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter) _loadIndex = 0;
         else _loadIndex = _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter;
 
-        Debug.Log("Now loading scene index: " + _loadIndex + " : scene " + _loadSceneOpeningByChapterIndex[_loadIndex].name);
 
-        StartCoroutine(loadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex].name));
+        StartCoroutine(loadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex]));
     }
 
     private IEnumerator loadOpeningScene(string _sceneName)
