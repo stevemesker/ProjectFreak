@@ -3581,7 +3581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.24705882}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4090,10 +4090,10 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    StartDelay: 0
+    StartDelay: 1
     WaitForContinue: 0
     EndDelay: 0.5
-  - Label: fade in logo
+  - Label: fade in logo, preload scene
     Event:
       m_PersistentCalls:
         m_Calls:
@@ -4143,7 +4143,39 @@ MonoBehaviour:
     StartDelay: 4
     WaitForContinue: 0
     EndDelay: 0
-  - Label: deactivate logo, activate opening ui, load opening scene
+  - Label: orthographic camera shut off
+    Event:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2059096375}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 603603413}
+          m_TargetAssemblyTypeName: Cinemachine.CinemachineVirtualCameraBase, Cinemachine
+          m_MethodName: set_Priority
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: -10000
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    StartDelay: 0.2
+    WaitForContinue: 0
+    EndDelay: 0
+  - Label: deactivate logo, activate opening ui, load opening scene, disable camera
+      move
     Event:
       m_PersistentCalls:
         m_Calls:
@@ -4182,6 +4214,18 @@ MonoBehaviour:
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 1
+          m_CallState: 2
+        - m_Target: {fileID: 603603414}
+          m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+          m_MethodName: set_enabled
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
           m_CallState: 2
     StartDelay: 2
     WaitForContinue: 0
@@ -4322,12 +4366,22 @@ PrefabInstance:
     - target: {fileID: 9061649919952316187, guid: a95674f4a883c4742a7a84a8dbe41e1a,
         type: 3}
       propertyPath: _loadSceneOpeningByChapterIndex.Array.data[0]
+      value: SCN_TitleBackground_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061649919952316187, guid: a95674f4a883c4742a7a84a8dbe41e1a,
+        type: 3}
+      propertyPath: _loadSceneOpeningByChapterIndex.Array.data[1]
+      value: SCN_TitleBackground_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061649919952316187, guid: a95674f4a883c4742a7a84a8dbe41e1a,
+        type: 3}
+      propertyPath: _loadSceneOpeningByChapterIndex.Array.data[0]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 9621891f3ad35734aa99636b23a457a5,
         type: 3}
     - target: {fileID: 9061649919952316187, guid: a95674f4a883c4742a7a84a8dbe41e1a,
         type: 3}
-      propertyPath: _loadSceneOpeningByChapterIndex.Array.data[1]
+      propertyPath: _loadSceneOpeningByChapterIndex.Array.data[1]._sceneAsset
       value: 
       objectReference: {fileID: 102900000, guid: 3034b3c4857c39c43a903a8c343a319a,
         type: 3}
