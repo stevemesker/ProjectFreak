@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 60.60802069857697,
+        "dimension": 80.1125703564728,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "File Naming Conventions.md",
+                "file": "Narrative/characters/Stolas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "File Naming Conventions"
+              "title": "Stolas"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 39.39197930142303,
+        "dimension": 19.887429643527206,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -38,19 +38,8 @@
               "icon": "lucide-git-fork",
               "title": "Graph view"
             }
-          },
-          {
-            "id": "f4d21ec82e0cd74b",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -213,8 +202,20 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "f4d21ec82e0cd74b",
+  "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Narrative/Main Narrative.md",
+    "Narrative/Random Name Ideas.md",
+    "Narrative/characters/Stolas.md",
+    "Narrative/characters/Shadow Tamer.md",
+    "Narrative/characters/Lord Kestrel.md",
+    "Narrative/characters/Quiet King.md",
+    "Narrative/Locations/Pallium.md",
+    "Narrative/Locations/Sanctoria.md",
+    "Narrative/Locations/Cradle.md",
+    "Narrative/Cataclysm.md",
+    "Narrative/characters/Legendary Heroes.md",
+    "Narrative/characters/Hazen.md",
     "File Naming Conventions.md",
     "Architecture/Combat/Damage Popup System.md",
     "Architecture/Combat/Damage Package.md",
@@ -231,18 +232,6 @@
     "Character Traits/Character Stats.md",
     "Architecture/Timeline Runner System.md",
     "Architecture/Combat/Unit Dash Script.md",
-    "Combat/Dash.md",
-    "Character Traits/Main Character Stats.md",
-    "Character Traits/Main Character.md",
-    "Combat/Elemental Affinity.md",
-    "Element Type.md",
-    "Architecture/Combat/Weapon usage.md",
-    "Combat/Attack Type.md",
-    "Narrative/characters/Lord Old Man.md",
-    "Combat/Damage.md",
-    "Notes for the future.md",
-    "Game design.md",
-    "Architecture/Destructible Objects.md",
     "Architecture/Combat",
     "Architecture",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
