@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 80.1125703564728,
+        "dimension": 50.94585779517287,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 19.887429643527206,
+        "dimension": 49.05414220482713,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -59,7 +59,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -202,11 +204,11 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "96228a7edd8b3eaa",
+  "active": "a492a5f394994b7d",
   "lastOpenFiles": [
+    "Narrative/characters/Stolas.md",
     "Narrative/Main Narrative.md",
     "Narrative/Random Name Ideas.md",
-    "Narrative/characters/Stolas.md",
     "Narrative/characters/Shadow Tamer.md",
     "Narrative/characters/Lord Kestrel.md",
     "Narrative/characters/Quiet King.md",
