@@ -1,1 +1,3 @@
-Right hand to the [[Quiet King]] and speaker of the [[Lumina Council]]. He is the eldest member of the council and one of the last few remaining [[Shadow Tamer]]s. When [[Stolas]] first arrived, he needed a powerful [[Shadow Tamer]] and thought at first to use [[Lord Kestrel]] until discovering [[Hazen]]. This was very fortunate for the dark prince as [[Lord Kestrel]] was on to his scheme.
+Right hand to the [[Quiet King]] and speaker of the [[Lumina Council]]. He is the eldest member of the council and one of the last few remaining [[Shadow Tamer]]s. He was trained as a [[Scholar]] and assigned to work directly with the [[Quiet King]]. 
+
+When [[Stolas]] first arrived, he needed a powerful [[Shadow Tamer]] and thought at first to use [[Lord Kestrel]] until discovering [[Hazen]]. This was very fortunate for the dark prince as [[Lord Kestrel]] was on to his scheme.
