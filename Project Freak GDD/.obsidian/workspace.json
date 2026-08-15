@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Narrative/characters/Stolas.md",
+                "file": "Architecture/Save Data/Save slot.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Stolas"
+              "title": "Save slot"
             }
           }
         ]
@@ -206,7 +206,11 @@
   },
   "active": "a492a5f394994b7d",
   "lastOpenFiles": [
+    "Narrative/characters/Hazen.md",
+    "Architecture/Save Data/Save slot.md",
+    "Architecture/Save Data/Save Manager.md",
     "Narrative/characters/Stolas.md",
+    "Architecture/Save Data",
     "Narrative/Main Narrative.md",
     "Narrative/Random Name Ideas.md",
     "Narrative/characters/Shadow Tamer.md",
@@ -217,7 +221,6 @@
     "Narrative/Locations/Cradle.md",
     "Narrative/Cataclysm.md",
     "Narrative/characters/Legendary Heroes.md",
-    "Narrative/characters/Hazen.md",
     "File Naming Conventions.md",
     "Architecture/Combat/Damage Popup System.md",
     "Architecture/Combat/Damage Package.md",
@@ -232,8 +235,6 @@
     "Architecture/Tools/Interaction Object.md",
     "Architecture/Tools",
     "Character Traits/Character Stats.md",
-    "Architecture/Timeline Runner System.md",
-    "Architecture/Combat/Unit Dash Script.md",
     "Architecture/Combat",
     "Architecture",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
@@ -245,7 +246,6 @@
     "zzz Extras/Templates",
     "zzz Extras/Attachments",
     "Narrative/Locations",
-    "Narrative/Factions",
-    "Narrative/characters"
+    "Narrative/Factions"
   ]
 }

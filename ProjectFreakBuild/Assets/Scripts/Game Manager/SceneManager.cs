@@ -1,14 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
-public class SceneManager : MonoBehaviour
+public class SceneManagerObject : MonoBehaviour
 {
+    [FoldoutGroup ("Opening Scene Data")]
     [SerializeField, Tooltip("List index tied to what chapter the save slot is on. Will load what value that chapter is set to. Default 0")] 
     List<string> _loadSceneOpeningByChapterIndex;
 
+    [FoldoutGroup("Scene Data")]
+    [SerializeField] string _currentSceneName;
+
+    [FoldoutGroup("Location Change")]
+    [SerializeField] bool _fadeInTransition;
+    [FoldoutGroup("Location Change")]
+    [SerializeField] float _fadeInTransitionSpeed;
+    [FoldoutGroup("Location Change")]
+    [SerializeField, Tooltip("world space location where the player is going to move to")] Vector3 _PlayerMoveLocation;
+    [FoldoutGroup("Location Change")]
+    [SerializeField] SceneLocationSO _PlayerMoveTarget;
+
     private UnityEngine.SceneManagement.Scene _currentOpeningScene;
 
+    private void OnEnable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    #region Opening Scripts
     public void loadStartScene()
     {
         Debug.Log("Testing: " + _loadSceneOpeningByChapterIndex.Count);
@@ -52,8 +78,6 @@ public class SceneManager : MonoBehaviour
         {
             _rootObject.SetActive(false);
         }
-
-        Debug.Log("Finished loading opening scene: " + _sceneName);
     }
 
     public void activateOpeningScene()
@@ -70,7 +94,40 @@ public class SceneManager : MonoBehaviour
         {
             _rootObject.SetActive(true);
         }
+    }
+    #endregion
 
-        Debug.Log("Activated opening scene");
+    #region Scene Selection
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"Scene loaded: {scene.name}");
+        Debug.Log($"Loading mode: {mode}");
+        if (_fadeInTransition == false) return;
+        HUDManager._HUD.FadeIn(_fadeInTransitionSpeed);
+        _fadeInTransition = false;
+    }
+
+    public void changeScene(string sceneName)
+    {
+        _currentSceneName = sceneName;
+        SceneManager.LoadScene(_currentSceneName);
+    }
+
+    public void sceneLocationDataChange(SceneLocationSO data)
+    {
+        changeScene(data._Scene);
+    }
+
+    public void HudFadeOnOpen(float timing)
+    {
+        //when called, ensures the next time a scene is loaded the hud will fade in
+        _fadeInTransition = true;
+        _fadeInTransitionSpeed = timing;
+    }
+    #endregion
+
+    public void movePlayerToLocation(Vector3 location, Quaternion rotation)
+    {
+
     }
 }

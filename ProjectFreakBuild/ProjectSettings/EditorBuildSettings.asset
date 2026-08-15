@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Title Background Scenes/SCN_TitleBackground_1.unity
     guid: 3034b3c4857c39c43a903a8c343a319a
+  - enabled: 1
+    path: Assets/Scenes/Dev Scenes/New_Player_Movement_Scene.unity
+    guid: 22f1e35c3e7d9194581db89b5edab619
   m_configObjects: {}
