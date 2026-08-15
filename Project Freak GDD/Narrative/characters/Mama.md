@@ -1,0 +1,1 @@
+Owner of [[The Black Lantern Bar]] and leader of [[The Black Lantern]] group. She helps the people of [[Lower Sanctoria]] with various types of problems that the [[Lumina Council]] refuses to help with. In her younger days she befriended a member of the [[Keepers]]. During the purge of the [[Keepers]], [[Mama]] took in his apprentice [[Hazen]] and hid him in the lower city.

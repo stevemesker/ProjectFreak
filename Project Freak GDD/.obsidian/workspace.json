@@ -204,8 +204,10 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "a492a5f394994b7d",
+  "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Narrative/characters/Mama.md",
+    "Narrative/characters/Dark King.md",
     "Narrative/characters/Hazen.md",
     "Architecture/Save Data/Save slot.md",
     "Architecture/Save Data/Save Manager.md",
@@ -232,9 +234,7 @@
     "Architecture/Architecture Atlas.md",
     "Architecture/Chest Content.md",
     "Architecture/Tools/Interface List.md",
-    "Architecture/Tools/Interaction Object.md",
     "Architecture/Tools",
-    "Character Traits/Character Stats.md",
     "Architecture/Combat",
     "Architecture",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
