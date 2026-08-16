@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class SceneManagerWrapper : MonoBehaviour
 {
@@ -14,27 +15,40 @@ public class SceneManagerWrapper : MonoBehaviour
             Debug.LogError("Error! No scene data was used. Use alternative scene changing, this one ain't it good sir");
             return;
         }
-        GameManager._GameManager.GetComponent<SceneManagerObject>().sceneLocationDataChange(data);
+        SceneManagerObject._SceneManager.sceneLocationDataChange(data);
     }
 
     public void changeScene(string sceneName)
     {
         //changes scene based on input string
-        GameManager._GameManager.GetComponent<SceneManagerObject>().changeScene(sceneName);
+        SceneManagerObject._SceneManager.changeScene(sceneName);
     }
 
     public void HudFadeOnOpen(float speed)
     {
         //ensures the hud will fade in when scene is loaded
-        GameManager._GameManager.GetComponent<SceneManagerObject>().HudFadeOnOpen(speed);
+        SceneManagerObject._SceneManager.HudFadeOnOpen(speed);
     }
     public void ActiveOpeningScene()
     {
-        GameManager._GameManager.GetComponent<SceneManagerObject>().activateOpeningScene();
+        SceneManagerObject._SceneManager.activateOpeningScene();
     }
 
     public void LoadOpeningScene()
     {
-        GameManager._GameManager.GetComponent<SceneManagerObject>().loadStartScene();
+        SceneManagerObject._SceneManager.loadStartScene();
+    }
+
+    [Button("Test")]
+    public void testSingleton()
+    {
+        if (SceneManagerObject._SceneManager != null)
+        {
+            print("Pow");
+        }
+        else
+        {
+            print("Hmmmmm");
+        }
     }
 }

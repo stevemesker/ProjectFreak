@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Save Data/Save slot.md",
+                "file": "Architecture/Managers.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Save slot"
+              "title": "Managers"
             }
           }
         ]
@@ -73,7 +73,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "scene manager",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -94,7 +94,8 @@
               "title": "Bookmarks"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -206,10 +207,10 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Architecture/Save Data/Save slot.md",
     "Narrative/characters/Mama.md",
     "Narrative/characters/Dark King.md",
     "Narrative/characters/Hazen.md",
-    "Architecture/Save Data/Save slot.md",
     "Architecture/Save Data/Save Manager.md",
     "Narrative/characters/Stolas.md",
     "Architecture/Save Data",

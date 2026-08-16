@@ -22,8 +22,15 @@ public class SceneManagerObject : MonoBehaviour
     [FoldoutGroup("Location Change")]
     [SerializeField] SceneLocationSO _PlayerMoveTarget;
 
+    public static SceneManagerObject _SceneManager;
+
     private UnityEngine.SceneManagement.Scene _currentOpeningScene;
 
+    #region Setup
+    private void Awake()
+    {
+        if (_SceneManager == null) _SceneManager = this;
+    }
     private void OnEnable()
     {
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
@@ -33,6 +40,7 @@ public class SceneManagerObject : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+    #endregion
 
     #region Opening Scripts
     public void loadStartScene()
@@ -115,7 +123,16 @@ public class SceneManagerObject : MonoBehaviour
 
     public void sceneLocationDataChange(SceneLocationSO data)
     {
-        changeScene(data._Scene);
+        if (data._IsLinked)
+        {
+            _PlayerMoveTarget = data._Link;
+            changeScene(data._Scene);
+        }
+        else
+        {
+            movePlayerToLocation(data._LinkLocation, Player.player.gameObject.transform.rotation);
+        }
+        
     }
 
     public void HudFadeOnOpen(float timing)
@@ -126,8 +143,19 @@ public class SceneManagerObject : MonoBehaviour
     }
     #endregion
 
+    public bool TestDoorEntranceTarget(SceneLocationSO data)
+    {
+        if (data == _PlayerMoveTarget)
+        {
+            print("Found matching door!");
+            return true;
+        }
+        return false;
+    }
+
     public void movePlayerToLocation(Vector3 location, Quaternion rotation)
     {
-
+        Player.player.gameObject.transform.position = location;
+        Player.player.gameObject.transform.rotation = rotation;
     }
 }
