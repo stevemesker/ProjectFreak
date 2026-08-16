@@ -21,6 +21,7 @@ public class ScreenFadeOut : MonoBehaviour
 
     public void FadeOut(float fadeTime)
     {
+        _canvasImage.enabled = true;
         if (_fadeTimer != null)
         {
             StopCoroutine(_fadeTimer);
@@ -31,12 +32,18 @@ public class ScreenFadeOut : MonoBehaviour
 
     public void FadeIn(float fadeTime)
     {
+        _canvasImage.enabled = true;
         if (_fadeTimer != null)
         {
             StopCoroutine(_fadeTimer);
             _fadeTimer = null;
         }
         _fadeTimer = StartCoroutine(fadeTimer(fadeTime, 0));
+    }
+
+    public float GetFadeStatus()
+    {
+        return _canvasImage.color.a;
     }
 
     private IEnumerator fadeTimer(float fadeTime, float fadeValueGoal)
@@ -64,7 +71,10 @@ public class ScreenFadeOut : MonoBehaviour
         Color finalColor = _canvasImage.color;
         finalColor.a = fadeValueGoal;
         _canvasImage.color = finalColor;
-
+        if (fadeValueGoal == 0)
+        {
+            _canvasImage.enabled = false;
+        }
         _fadeTimer = null;
     }
 }

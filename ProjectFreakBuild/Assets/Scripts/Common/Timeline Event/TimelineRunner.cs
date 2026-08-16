@@ -21,6 +21,7 @@ public class TimelineRunner : MonoBehaviour
     [SerializeField]
     private List<TimelineEventTrack> timeline;
 
+    [Header("Timeline Complete")]
     [SerializeField]
     private UnityEvent onTimelineComplete;
 

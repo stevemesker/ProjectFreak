@@ -97,6 +97,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be022f7f50fca9a49acc3e329d672b89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _loadSceneOpeningByChapterIndex:
+  - SCN_TitleBackground_0
+  - SCN_TitleBackground_1
+  _currentSceneName: 
+  _fadeInTransition: 0
+  _fadeInTransitionSpeed: 0
+  _PlayerMoveLocation: {x: 0, y: 0, z: 0}
+  _PlayerMoveTarget: {fileID: 0}
 --- !u!114 &3518485283853445535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,3 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1e321ca8fe776428fcfb4ea39a70d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ActiveSaveSlotIndex: 0
+  _saveSlotList:
+  - {fileID: 11400000, guid: 2b7b35d333ec21e43b7e78ad86963a67, type: 2}
+  - {fileID: 11400000, guid: 945e5d7dd13f914429b73196edf3ca5f, type: 2}
+  - {fileID: 11400000, guid: a84f27b9cc1d0f848b4709e01261713b, type: 2}

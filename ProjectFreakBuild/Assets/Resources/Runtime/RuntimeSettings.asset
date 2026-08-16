@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b6f82462679fed4faa7876ce45c1340, type: 3}
-  m_Name: SO_SaveSlot_0
+  m_Script: {fileID: 11500000, guid: 90303701b4fd37847976865817c2c7ca, type: 3}
+  m_Name: RuntimeSettings
   m_EditorClassIdentifier: 
-  _IsEmpty: 1
-  _SaveChapter: 0
-  _PlayerTamerLevel: 0
-  _ShadeSlotSelection: 0
-  _CurrentScene: 
-  _CurrentSceneReadable: 
+  _persistentPrefabs:
+  - {fileID: 4504963059241807485, guid: a95674f4a883c4742a7a84a8dbe41e1a, type: 3}

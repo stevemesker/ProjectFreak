@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
     {
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
+        DontDestroyOnLoad(gameObject);
         UpdateEquippedWeaponSlotSize();
         updateCurrentWeapon();
     }
