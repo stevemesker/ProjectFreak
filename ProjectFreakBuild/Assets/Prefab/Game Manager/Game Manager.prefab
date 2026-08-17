@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2358789497967656618}
   - component: {fileID: 7544917852680856100}
   - component: {fileID: 9061649919952316187}
+  - component: {fileID: -231757592882101734}
   - component: {fileID: 3518485283853445535}
   m_Layer: 0
   m_Name: Game Manager
@@ -105,6 +106,22 @@ MonoBehaviour:
   _fadeInTransitionSpeed: 0
   _PlayerMoveLocation: {x: 0, y: 0, z: 0}
   _PlayerMoveTarget: {fileID: 0}
+--- !u!114 &-231757592882101734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 156e9c4f1d3c98a4685a198a6a1840d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameplayCameraPrefab: {fileID: 1786482435782004827, guid: ae18f5c2bcac55b48a3949bf6d0db028,
+    type: 3}
+  _followOffset: {x: 7, y: 9, z: -10}
+  _currentGameplayCamera: {fileID: 0}
 --- !u!114 &3518485283853445535
 MonoBehaviour:
   m_ObjectHideFlags: 0

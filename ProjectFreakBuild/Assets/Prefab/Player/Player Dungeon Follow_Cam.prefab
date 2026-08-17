@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4809273190572285526}
   - component: {fileID: 4159175712819417890}
+  - component: {fileID: -3226693428342085709}
   m_Layer: 0
   m_Name: Player Dungeon Follow_Cam
   m_TagString: Untagged
@@ -79,6 +80,18 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 2186383545089100075}
+--- !u!114 &-3226693428342085709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786482435782004827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f2ee2f331d407a4087dc842767cd456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7231651149843444436
 GameObject:
   m_ObjectHideFlags: 0
