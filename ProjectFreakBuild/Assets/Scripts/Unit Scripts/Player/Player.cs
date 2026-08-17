@@ -36,13 +36,14 @@ public class Player : MonoBehaviour
     private float chargeTimeInitiated;
 
     #region Initialize
-    private void Start()
+    private void Awake()
     {
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
         DontDestroyOnLoad(gameObject);
         UpdateEquippedWeaponSlotSize();
         updateCurrentWeapon();
+        CameraManager._CamManager.setCamTargetToPlayer();
     }
 
     private void OnEnable()

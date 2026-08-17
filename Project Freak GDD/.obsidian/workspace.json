@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Managers.md",
+                "file": "Architecture/Architecture Atlas.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Managers"
+              "title": "Architecture Atlas"
             }
           }
         ]
@@ -33,10 +33,14 @@
             "id": "a492a5f394994b7d",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "Camera Manager.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Camera Manager"
             }
           }
         ]
@@ -73,7 +77,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "scene manager",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -94,8 +98,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -205,13 +208,21 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "96228a7edd8b3eaa",
+  "active": "a492a5f394994b7d",
   "lastOpenFiles": [
+    "Architecture/Game Management/Managers.md",
+    "Camera Manager.md",
+    "Scene Manager.md",
+    "Architecture/Cameras.md",
+    "Architecture/Architecture Atlas.md",
+    "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
+    "Architecture/Untitled",
+    "Architecture/Game Management",
     "Architecture/Save Data/Save slot.md",
     "Narrative/characters/Mama.md",
     "Narrative/characters/Dark King.md",
     "Narrative/characters/Hazen.md",
-    "Architecture/Save Data/Save Manager.md",
+    "Architecture/Game Management/Save Manager.md",
     "Narrative/characters/Stolas.md",
     "Architecture/Save Data",
     "Narrative/Main Narrative.md",
@@ -228,13 +239,7 @@
     "Architecture/Combat/Damage Popup System.md",
     "Architecture/Combat/Damage Package.md",
     "Character Traits/Main Character Abilities/Dive Switch.md",
-    "Architecture/Tools/ArcMover.md",
-    "Atlas.md",
-    "Architecture/Managers.md",
     "zzz Extras/Attachments/ArcMover Example.png",
-    "Architecture/Architecture Atlas.md",
-    "Architecture/Chest Content.md",
-    "Architecture/Tools/Interface List.md",
     "Architecture/Tools",
     "Architecture/Combat",
     "Architecture",
@@ -245,8 +250,6 @@
     "zzz Extras",
     "UI/Rune Field",
     "zzz Extras/Templates",
-    "zzz Extras/Attachments",
-    "Narrative/Locations",
-    "Narrative/Factions"
+    "zzz Extras/Attachments"
   ]
 }
