@@ -1,0 +1,1 @@
+dungeon entrances are small scenes that contain the first doors to the dungeon. They're essentially miniature hub worlds that initialize the dungeon systems

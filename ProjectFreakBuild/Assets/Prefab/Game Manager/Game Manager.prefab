@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9061649919952316187}
   - component: {fileID: -231757592882101734}
   - component: {fileID: 3518485283853445535}
+  - component: {fileID: -5946205990496243704}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -139,3 +140,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2b7b35d333ec21e43b7e78ad86963a67, type: 2}
   - {fileID: 11400000, guid: 945e5d7dd13f914429b73196edf3ca5f, type: 2}
   - {fileID: 11400000, guid: a84f27b9cc1d0f848b4709e01261713b, type: 2}
+--- !u!114 &-5946205990496243704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4504963059241807485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 690b01ab14d0ccd4898237d248e70740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CurrentDungeon: {fileID: 0}
+  _DungeonChapterData:
+  - DungeonChapter: 0
+    DungeonEntranceSceneName: SCN_DungeonEntrance_0
+    _DungeonData: {fileID: 11400000, guid: 42838faace43d3f468496b848a756b70, type: 2}

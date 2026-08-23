@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Dev Scenes/TestDungeon_0.unity
     guid: dd0fa1b5ea9b798448e02e89afda19b5
+  - enabled: 1
+    path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonEntrance_0.unity
+    guid: c5630bf4d7015a04bba633bc92077b04
   m_configObjects: {}
