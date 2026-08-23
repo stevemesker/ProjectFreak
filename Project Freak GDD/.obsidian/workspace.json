@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 50.896641669383754,
+        "dimension": 80.1125703564728,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Dungeons/Dungeon Architecture.md",
+                "file": "Architecture/Dungeons/Dungeon Map Node.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Dungeon Architecture"
+              "title": "Dungeon Map Node"
             }
           }
         ]
@@ -27,41 +27,16 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 32.344310401043366,
+        "dimension": 19.887429643527206,
         "children": [
           {
             "id": "a492a5f394994b7d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Architecture/Tools/ArcMover.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "ArcMover"
-            }
-          }
-        ]
-      },
-      {
-        "id": "61347cd08ee47fa1",
-        "type": "tabs",
-        "dimension": 16.759047929572873,
-        "children": [
-          {
-            "id": "8f34965267559858",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "File Naming Conventions.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "File Naming Conventions"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
         ]
@@ -84,9 +59,7 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false,
-                "showSearch": false,
-                "searchQuery": ""
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
@@ -231,36 +204,36 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
-    "Architecture/Tools/ArcMover.md",
     "Architecture/Dungeons/Dungeon Architecture.md",
+    "Architecture/Dungeons/Dungeon Map Node.md",
+    "Narrative/characters/Hazen.md",
+    "Scene Manager.md",
     "Dungeons/Dungeon.md",
     "Dungeons/Dungeon Floor.md",
-    "Architecture/Dungeons",
     "Dungeons/Dungeon Entrance.md",
-    "File Naming Conventions.md",
-    "Architecture/Game Management/Dungeon Manager.md",
-    "Architecture/Game Management/AA - Managers.md",
-    "Character Traits/Main Character.md",
-    "Atlas.md",
-    "Game design.md",
-    "Architecture/Architecture Atlas.md",
-    "Architecture/Game Management/Camera Manager.md",
     "Dungeons",
-    "Scene Manager.md",
-    "Architecture/Cameras.md",
-    "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
-    "Architecture/Game Management",
-    "Architecture/Save Data/Save slot.md",
-    "Narrative/characters/Mama.md",
-    "Narrative/characters/Dark King.md",
-    "Narrative/characters/Hazen.md",
+    "Architecture/Tools/Timeline Runner System.md",
     "Architecture/Game Management/Save Manager.md",
-    "Narrative/characters/Stolas.md",
+    "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
+    "Architecture/Game Management/Dungeon Manager.md",
+    "Architecture/Game Management/Camera Manager.md",
+    "Architecture/Game Management/AA - Managers.md",
+    "Architecture/Game Management",
+    "Architecture/Dungeons",
+    "Architecture/Save Data/Save slot.md",
+    "Architecture/Save Data/Save Manager.md",
     "Architecture/Save Data",
+    "Narrative/characters/Mama.md",
+    "Narrative/characters/Lord Kestrel.md",
+    "Narrative/characters/Quiet King.md",
+    "Narrative/Factions/Keepers.md",
+    "Narrative/Factions/Lanterns.md",
+    "Narrative/Factions/Lumina Council.md",
     "Narrative/Main Narrative.md",
+    "Narrative/characters/Dark King.md",
+    "Narrative/characters/Stolas.md",
     "Narrative/Random Name Ideas.md",
     "Narrative/characters/Shadow Tamer.md",
-    "Narrative/characters/Lord Kestrel.md",
     "zzz Extras/Attachments/ArcMover Example.png",
     "Architecture/Tools",
     "Architecture/Combat",
