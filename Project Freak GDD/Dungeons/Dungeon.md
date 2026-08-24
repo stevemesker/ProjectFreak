@@ -8,7 +8,7 @@ Once their path is chosen, player's will have to navigate the [[Dungeon Floor]] 
 
 ---
 **Typical Flow**
-Player has selected their [[Shade]]/s they are taking into the dungeon and enters via the [[Dungeon Door]]. They are brought to the entrance of the dungeon and are immediately presented with several doors. the player checks their [[Dungeon Map]] and sees the path to the right is the most dangerous but has rare loot right away and is connected to a rest spot. They decide to risk it and take the door with the same markings as the map.
+Player has selected their [[Shade]]/s they are taking into the dungeon and enters via the [[Dungeon Door]]. They are brought to the entrance of the dungeon and are immediately presented with several doors. the player checks their [[Dungeon Map Manager]] and sees the path to the right is the most dangerous but has rare loot right away and is connected to a rest spot. They decide to risk it and take the door with the same markings as the map.
 
 The player proceeds to enter the floor and is immediately greeted with a monster spawning arena [[POI]] and has to summon their shade to fight while they take a position in the back corner and lob bombs. Eventually they succeed in clearing out the [[POI]] and that triggers a chest to spawn with loot. They continue through the room, stopping to blow up a wall on the side of a building to ambush some smaller enemies and take some of their runes. All of this combat has taken more out of their shade than they would have hoped. When they saw the first door is not the one they're looking for but does, on closer inspection of the map, lead to an easier line. They decide to take it for now instead of trying to clear out the next room in hopes of finding the door on their original path.
 

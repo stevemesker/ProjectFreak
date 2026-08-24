@@ -377,7 +377,7 @@ public class ElementItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
                 if (connectionsCurrent[i].GetComponent<IConnectable>().GetCoreNode() != connectTo) 
                 { 
                     print("Connecting nodes to " + connectTo.name);
-                    connectionsCurrent[i].GetComponent<IConnectable>().ConnectNode(connectTo);
+                    connectionsCurrent[i].GetComponent<IBridgeable>().ConnectNode(connectTo);
                 }
             }
         }
