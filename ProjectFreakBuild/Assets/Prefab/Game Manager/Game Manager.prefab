@@ -153,7 +153,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _CurrentDungeon: {fileID: 0}
+  _CurrentRoomID: 0
+  _CurrentDungeonMap: {fileID: 0}
   _DungeonChapterData:
   - DungeonChapter: 0
     DungeonEntranceSceneName: SCN_DungeonEntrance_0
     _DungeonData: {fileID: 11400000, guid: 42838faace43d3f468496b848a756b70, type: 2}
+  _MapPrefab: {fileID: 0}
+  _NodePrefab: {fileID: 3887585706692087567, guid: 4615bc7cb1335eb4db486c14f5a60685,
+    type: 3}
+  _BridgePrefab: {fileID: 1126975770387994506, guid: 8d22c094f1e7d8d4abfbbd5bb067b378,
+    type: 3}

@@ -9,13 +9,11 @@ public interface IBridgeable
     void BridgeNode(GameObject origin, GameObject bridge);
     void disconnectNodes(GameObject nodeToDisconnect);
     void LoadReconnect();
+    void ConnectNode(GameObject connectTo);
 }
 
 public interface IConnectable
 {
-    
-    void ConnectNode(GameObject connectTo);
-
     void ClearConnection();
 
     void DisconnectNodeTree();

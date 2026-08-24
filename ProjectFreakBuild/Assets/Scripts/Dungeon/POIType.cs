@@ -5,6 +5,7 @@ namespace POIType
         Basic,
         Boss,
         MiniBoss,
+        Entrance,
         Treasure,
         Enemy,
         Safehouse

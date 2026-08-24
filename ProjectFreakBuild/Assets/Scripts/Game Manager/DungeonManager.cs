@@ -5,6 +5,7 @@ using UnityEngine;
 public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager _DM;
+
     [Header("Current Data")]
     public DungeonSO _CurrentDungeon;
     public int _CurrentRoomID;
@@ -15,6 +16,8 @@ public class DungeonManager : MonoBehaviour
 
     [Header("Dungeon Settings")]
     public GameObject _MapPrefab;
+    public GameObject _NodePrefab;
+    public GameObject _BridgePrefab;
 
     //local variables
     DungeonMapManager _map;
