@@ -16,9 +16,14 @@ public class DungeonSO : ScriptableObject
     public List<string> _DungeonFloorList;
     public List<DungeonPOISO> POIList;
 
+    [Header("Floor Types")]
+    public int _DungeonFloorPoolSize = 36;
+    public List<floorPoolColumn> _DungeonFloorPoolTypes;
+
     [Header("Tables")]
     public DungeonLootTableSO LootTable;
     public DungeonEnemyTableSO EnemyTable;
+
 
     #region Data Fill
     [Header("Temp")]
@@ -43,4 +48,17 @@ public class DungeonSO : ScriptableObject
         POIList.Clear();
     }
     #endregion
+}
+
+[System.Serializable]
+public class floorPoolColumn
+{
+    public List<floorPoolEntry> Entry;
+}
+
+[System.Serializable]
+public class floorPoolEntry
+{
+    public POIType.Type _EntryType;
+    public float _EntryChace;
 }
