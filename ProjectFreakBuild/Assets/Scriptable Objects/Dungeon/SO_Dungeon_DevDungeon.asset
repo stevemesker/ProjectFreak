@@ -18,6 +18,17 @@ MonoBehaviour:
   _DungeonMapNodeWiggle: 300
   _DungeonFloorList: []
   POIList: []
+  _DungeonFloorPoolSize: 35
+  _DungeonFloorPoolTypes:
+  - Entry:
+    - _EntryType: 4
+      _EntryChace: 30
+    - _EntryType: 7
+      _EntryChace: 10
+    - _EntryType: 6
+      _EntryChace: 50
+  - Entry: []
+  - Entry: []
   LootTable: {fileID: 0}
   EnemyTable: {fileID: 0}
   _SceneAdd: []

@@ -7,7 +7,9 @@ namespace POIType
         MiniBoss,
         Entrance,
         Treasure,
+        Vault,
         Enemy,
-        Safehouse
+        Safehouse,
+        Unique
     }
 }

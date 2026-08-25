@@ -18,6 +18,7 @@ public class DungeonMapManager : MonoBehaviour
     [Header("Runetime Data")]
     [SerializeField] public List<GameObject> _FloorNodes;
     public DungeonMapNode _EntranceNode;
+    public List<List<POIType.Type>> _FloorPool;
 
     [Header("Prefab Settings")]
     [SerializeField] GameObject _floorNodePrefab;
@@ -71,6 +72,17 @@ public class DungeonMapManager : MonoBehaviour
         
         int counter = 0;
 
+        //set new floor pool
+        _FloorPool = new List<List<POIType.Type>>();
+        for (int x = 0; x < columns; x++)
+        {
+            _FloorPool.Add(new List<POIType.Type>());
+            _FloorPool[x] = new List<POIType.Type>();
+            print(_FloorPool[x].Count);
+            getFloorNodeTypePool(x);
+            print(_FloorPool[x].Count);
+        }
+
         for (int i = 0; i < columns; i++)
         {
             for (int j = 0; j < rows; j++)
@@ -114,7 +126,9 @@ public class DungeonMapManager : MonoBehaviour
                     _FloorNodes[counter - 1].GetComponent<DungeonMapNode>().SetInitialDetectionRange();
                     bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(_FloorNodes[counter - 1].transform.position, instance.transform.position));
                 }
-                
+                mapNode._Type = setNodeType(i);
+
+
                 counter++;
             }
         }
@@ -207,14 +221,52 @@ public class DungeonMapManager : MonoBehaviour
     {
         for (int i = 0; i < _FloorNodes.Count; i++)
         {
-            if (_FloorNodes[i].GetComponent<IBridgeable>().canBridge() == false) { print(_FloorNodes[i].name + " returned false"); continue; }
+            if (_FloorNodes[i].GetComponent<IBridgeable>().canBridge() == false) { /*print(_FloorNodes[i].name + " returned false");*/ continue; }
             _FloorNodes[i].GetComponent<DungeonMapNode>().ConnectNodesInRange();
         }
     }
 
-    void setNodeType()
+    void getFloorNodeTypePool(int index)
     {
+        //function that refills the type pool of index
+        //index represents the column the pool is supposed to handle
+        List<floorPoolEntry> data = _CurrentDungeonData._DungeonFloorPoolTypes[index].Entry;
+        int poolMin = _CurrentDungeonData._DungeonFloorPoolSize;
+        float temp;
+        int tempInt;
 
+        for (int i = 0; i < data.Count; i++)
+        {
+            temp = poolMin * (data[i]._EntryChace / 100);
+            tempInt = (int)temp;
+            if (tempInt <= 0) tempInt = 1;
+
+            print($"Now adding {(int)temp} notes of { data[i]._EntryType } to the pool");
+            for (int j = 0; j < tempInt; j++)
+            {
+                _FloorPool[index].Add(data[i]._EntryType);
+            }
+        }
+
+        if (_FloorPool[index].Count < poolMin)
+        {
+            print($"Not enough entries to pool, adding {poolMin - _FloorPool[index].Count} units of basic to pool");
+            while (_FloorPool[index].Count < poolMin)
+            {
+                _FloorPool[index].Add(POIType.Type.Basic);
+            }
+        }
+    }
+    POIType.Type setNodeType(int index)
+    {
+        int rand = Random.Range(0, _FloorPool[index].Count);
+        POIType.Type temp = _FloorPool[index][rand];
+        _FloorPool[index].RemoveAt(rand);
+        print($"now assigning {temp} to node");
+
+        if (_FloorPool[index].Count <= 0) getFloorNodeTypePool(index);
+
+        return temp;
     }
 
     IEnumerator detectNodeRange()

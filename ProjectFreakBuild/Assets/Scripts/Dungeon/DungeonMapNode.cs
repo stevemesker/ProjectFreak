@@ -69,7 +69,7 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
     #region Bridgeable Interface
     public void BridgeNode(GameObject origin, GameObject bridge)
     {
-        print("bridging connections " + origin.name + " | " + bridge.name);
+        //print("bridging connections " + origin.name + " | " + bridge.name);
         _BridgeConnections.Add(origin, bridge);
     }
 
