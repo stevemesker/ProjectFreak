@@ -13,6 +13,8 @@ public class DungeonSO : ScriptableObject
     public float _DungeonMapNodeWiggle = 20.5f;
 
     [Header ("Scene Lists")]
+    public string _DungeonEntranceSceneName = "SCN_DungeonEntrance_0";
+    public string _DungeonBossSceneName = "SCN_DungeonBossRoom_0";
     public List<string> _DungeonFloorList;
     public List<DungeonPOISO> POIList;
 
@@ -23,7 +25,6 @@ public class DungeonSO : ScriptableObject
     [Header("Tables")]
     public DungeonLootTableSO LootTable;
     public DungeonEnemyTableSO EnemyTable;
-
 
     #region Data Fill
     [Header("Temp")]
