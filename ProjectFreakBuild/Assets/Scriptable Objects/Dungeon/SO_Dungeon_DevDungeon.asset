@@ -16,7 +16,10 @@ MonoBehaviour:
   _DungeonColumnCount: 3
   _DungeonRowCount: 6
   _DungeonMapNodeWiggle: 300
-  _DungeonFloorList: []
+  _DungeonFloorList:
+  - SCN_DungeonTestRoom_0
+  - SCN_DungeonTestRoom_1
+  - SCN_DungeonTestRoom_2
   POIList: []
   _DungeonFloorPoolSize: 35
   _DungeonFloorPoolTypes:

@@ -81,6 +81,21 @@ The detection is intentionally delayed by one frame through `detectNodeRange()`.
 
 This allows the generated map objects to finish initialization before connection detection begins.
 
+### Floor Node Type Pool
+
+Each dungeon path maintains its own runtime **Floor Node Type Pool**, populated from the path's designer-defined `FloorPoolEntry` data.
+
+- The configured dungeon floor pool size determines the target number of entries in the pool.
+- Each `FloorPoolEntry` specifies a `POIType` and a percentage-based weight.
+- The generator converts each percentage into a number of entries and adds that many copies of the corresponding `POIType` to the pool.
+- Each entry is guaranteed to contribute at least **1 card**, even if its calculated percentage would produce less than 1.
+- If the resulting pool does not reach the configured minimum pool size, the remaining entries are filled with the default `Basic` POI type.
+- When assigning a type to a dungeon node, the system selects a random entry from the pool and **removes it from the pool**.
+- This creates a **weighted-bag/deck system** rather than independent random rolls: once a type has been drawn, it cannot be drawn again until that path's pool is exhausted.
+- When the pool becomes empty, it is automatically regenerated from the path's configured weights and the process repeats.
+
+This system provides controlled randomness while maintaining the intended overall distribution of node types. Designers can adjust the percentages and pool size during balancing without changing the underlying generation logic.
+
 ---
 
 # Inspector Data

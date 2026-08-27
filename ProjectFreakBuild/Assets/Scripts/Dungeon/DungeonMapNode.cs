@@ -6,12 +6,12 @@ using UnityEngine;
 public class DungeonMapNode : MonoBehaviour, IBridgeable
 {
     [Header("Data")]
+    public string _FloorSceneName;
     public int _ID;
     public int _ColumnNumber;
     public POIType.Type _Type;
     public List<GameObject> _NodeConnections;
     public Dictionary<GameObject, GameObject> _BridgeConnections;
-    public string _FloorSceneName;
     
     [Header("Settings")]
     public float _DetectionRange;

@@ -62,7 +62,7 @@ public class ActivateObject : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            print(hit.name);
+            //print(hit.name);
             if (!hit.TryGetComponent(out IInteractable interactable))
                 continue;
             if (!interactable.CanInteract())

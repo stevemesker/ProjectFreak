@@ -6,22 +6,43 @@ using Sirenix.OdinInspector;
 public class DungeonMapManager : MonoBehaviour
 {
     [Header("Data")]
+    [Tooltip("The ScriptableObject containing the configuration and generation data for the current dungeon")]
     public DungeonSO _CurrentDungeonData;
+
+    [Tooltip("Controls the vertical/column distribution of dungeon nodes during map generation")]
     public AnimationCurve _nodeDistribution;
 
+
     [Header("Pointers")]
+    [Tooltip("The GameObject representing the boss area of the dungeon")]
     [SerializeField] GameObject _BossZone;
+
+    [Tooltip("The parent/container GameObject used for generated floor nodes")]
     [SerializeField] GameObject _FloorZone;
+
+    [Tooltip("The GameObject representing the dungeon entrance area")]
     [SerializeField] GameObject _EntranceZone;
+
+    [Tooltip("The GameObject used to visually connect dungeon areas/nodes")]
     [SerializeField] public GameObject _BridgeZone;
 
-    [Header("Runetime Data")]
+
+    [Header("Runtime Data")]
+    [Tooltip("Runtime list containing all floor node GameObjects generated for the current dungeon")]
     [SerializeField] public List<GameObject> _FloorNodes;
+
+    [Tooltip("Reference to the DungeonMapNode representing the dungeon entrance")]
     public DungeonMapNode _EntranceNode;
+
+    [Tooltip("Separate weighted POI type pools for each dungeon path. Types are drawn from these pools as nodes are assigned and the pool is regenerated when exhausted")]
     public List<List<POIType.Type>> _FloorPool;
 
+
     [Header("Prefab Settings")]
+    [Tooltip("Prefab instantiated when creating a dungeon floor node")]
     [SerializeField] GameObject _floorNodePrefab;
+
+    [Tooltip("Prefab instantiated to visually connect adjacent dungeon nodes")]
     [SerializeField] public GameObject _lineConnectionPrefab;
 
     public void StartNewMap(DungeonSO data)
@@ -62,8 +83,13 @@ public class DungeonMapManager : MonoBehaviour
         _EntranceNode = null;
     }
     #endregion
+
+    #region Initial Node Creation
     void SpawnFloorNodes()
     {
+        //function that spawns the majority of floor nodes
+        //gives them subtle random changes in position based on an animation curve
+
         RectTransform zoneTrans = _FloorZone.GetComponent<RectTransform>();
         DungeonMapNode mapNode = new DungeonMapNode();
 
@@ -78,9 +104,9 @@ public class DungeonMapManager : MonoBehaviour
         {
             _FloorPool.Add(new List<POIType.Type>());
             _FloorPool[x] = new List<POIType.Type>();
-            print(_FloorPool[x].Count);
+            //print(_FloorPool[x].Count);
             getFloorNodeTypePool(x);
-            print(_FloorPool[x].Count);
+            //print(_FloorPool[x].Count);
         }
 
         for (int i = 0; i < columns; i++)
@@ -159,6 +185,7 @@ public class DungeonMapManager : MonoBehaviour
         mapNode._ID = counter;
         mapNode._ColumnNumber = columns + 1;
         mapNode._Type = POIType.Type.Entrance;
+        mapNode._FloorSceneName = DungeonManager._DM._CurrentDungeon._DungeonEntranceSceneName;
         counter++;
 
         KeyInstance = Instantiate(
@@ -174,6 +201,7 @@ public class DungeonMapManager : MonoBehaviour
         mapNode._ID = counter;
         mapNode._ColumnNumber = columns + 1;
         mapNode._Type = POIType.Type.Boss;
+        mapNode._FloorSceneName = DungeonManager._DM._CurrentDungeon._DungeonBossSceneName;
 
         //set connections
         for (int i = 0; i < columns; i++)
@@ -226,6 +254,9 @@ public class DungeonMapManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Set Nody Type
     void getFloorNodeTypePool(int index)
     {
         //function that refills the type pool of index
@@ -250,7 +281,7 @@ public class DungeonMapManager : MonoBehaviour
 
         if (_FloorPool[index].Count < poolMin)
         {
-            print($"Not enough entries to pool, adding {poolMin - _FloorPool[index].Count} units of basic to pool");
+            //print($"Not enough entries to pool, adding {poolMin - _FloorPool[index].Count} units of basic to pool");
             while (_FloorPool[index].Count < poolMin)
             {
                 _FloorPool[index].Add(POIType.Type.Basic);
@@ -262,12 +293,14 @@ public class DungeonMapManager : MonoBehaviour
         int rand = Random.Range(0, _FloorPool[index].Count);
         POIType.Type temp = _FloorPool[index][rand];
         _FloorPool[index].RemoveAt(rand);
-        print($"now assigning {temp} to node");
+        //print($"now assigning {temp} to node");
 
         if (_FloorPool[index].Count <= 0) getFloorNodeTypePool(index);
 
         return temp;
     }
+
+    #endregion
 
     IEnumerator detectNodeRange()
     {

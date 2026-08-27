@@ -1769,7 +1769,7 @@ GameObject:
   - component: {fileID: 1956100267}
   - component: {fileID: 1956100266}
   m_Layer: 0
-  m_Name: PFB_DungeonDoorSpawner (0)
+  m_Name: DungeonDoorSpawner (0)
   m_TagString: Untagged
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -2222,74 +2222,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.0000002, y: 1, z: 1.0000002}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1001 &1124878320141947985
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -7.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.52
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -4.78
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071079
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.70710576
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2326298186734786660, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6877732555610619440, guid: 7d3e33622bf8a1d48b62e200901bd754,
-        type: 3}
-      propertyPath: m_Name
-      value: PFB_DungeonDoor
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7d3e33622bf8a1d48b62e200901bd754, type: 3}
 --- !u!1001 &5482699412295792358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2382,74 +2314,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1825199259}
   m_SourcePrefab: {fileID: 100100000, guid: b27f3563a64f7ce4b963225e97385c21, type: 3}
---- !u!1001 &6996332190237729730
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -7.72
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.52
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.76
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071079
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.70710576
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 41708232264831113, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7077450680505796150, guid: 99f28ec406be9d1488ba9ab227545a33,
-        type: 3}
-      propertyPath: m_Name
-      value: PFB_DungeonDoor_Null
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 99f28ec406be9d1488ba9ab227545a33, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2473,5 +2337,3 @@ SceneRoots:
   - {fileID: 2058737965}
   - {fileID: 948747986}
   - {fileID: 1956100268}
-  - {fileID: 1124878320141947985}
-  - {fileID: 6996332190237729730}

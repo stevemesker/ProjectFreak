@@ -27,23 +27,58 @@ public class DungeonManager : MonoBehaviour
         if (_DM == null) _DM = this;
     }
 
+    #region Dungeon Floor Changing
     public void EnterDungeon(int dungeonID)
     {
-        SceneManagerObject._SceneManager.HudFadeOnOpen(1);
-        SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID].DungeonEntranceSceneName);
-        
         if (_MapPrefab == null) Debug.LogError("Error! Map prefab not found!");
+        _CurrentDungeon = _DungeonChapterData[dungeonID]._DungeonData;
+
+        _CurrentRoomID = _CurrentDungeon._DungeonColumnCount * _CurrentDungeon._DungeonRowCount;
 
         _CurrentDungeonMap = Instantiate(_MapPrefab);
         _map = _CurrentDungeonMap.GetComponent<DungeonMapManager>();
-        _map.StartNewMap(_DungeonChapterData[dungeonID]._DungeonData);
+        _map.StartNewMap(_CurrentDungeon);
+
+        SceneManagerObject._SceneManager.HudFadeOnOpen(1);
+        SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
     }
+
+    public void MoveToFloor(int floorID)
+    {
+        DungeonMapNode temp = getMapNode(floorID);
+        string floorToEnter;
+        if (temp._FloorSceneName == "")
+        {
+            print("Need to generate new floor...");
+            floorToEnter = _CurrentDungeon._DungeonFloorList[Random.Range(0, _CurrentDungeon._DungeonFloorList.Count)];
+        }
+        else floorToEnter = temp._FloorSceneName;
+        _CurrentRoomID = floorID;
+
+        SceneManagerObject._SceneManager.HudFadeOnOpen(1);
+        SceneManagerObject._SceneManager.changeScene(floorToEnter);
+    }
+
+    #endregion
+
+    #region Tools
+    public DungeonMapNode getMapNode(int ID)
+    {
+        if (ID >= _map._FloorNodes.Count) return _map._FloorNodes[_map._FloorNodes.Count - 1].GetComponent<DungeonMapNode>();
+        return _map._FloorNodes[ID].GetComponent<DungeonMapNode>();
+    }
+
+    public int getCurrentDungeonFloorID()
+    {
+        return _CurrentRoomID;
+    }
+
+    #endregion
 }
 
 [System.Serializable]
 public class DungeonChapterData
 {
     public int DungeonChapter;
-    public string DungeonEntranceSceneName = "SCN_DungeonEntrance_0";
     public DungeonSO _DungeonData;
 }

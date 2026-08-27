@@ -23,4 +23,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonEntrance_0.unity
     guid: c5630bf4d7015a04bba633bc92077b04
+  - enabled: 1
+    path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonBossRoom_0.unity
+    guid: 7cece518b3677b64ba519ab001fe8f3d
+  - enabled: 1
+    path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonTestRoom_0.unity
+    guid: 325295a74548cb645b208f5637b14e9d
+  - enabled: 1
+    path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonTestRoom_1.unity
+    guid: e340cde1e2011ad408d46be6e4d08888
+  - enabled: 1
+    path: Assets/Scriptable Objects/Dungeon/Chapter Dev/SCN_DungeonTestRoom_2.unity
+    guid: c6e702a2abbd143408327153e2e30009
   m_configObjects: {}
