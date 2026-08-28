@@ -94,6 +94,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "OptionsMenu",
+                    "type": "Button",
+                    "id": "7cb4329b-379b-43e3-b0d6-cb975e7a82c5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -435,6 +444,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca7a35f0-71c2-4ca8-8ec6-8e465e44ba31",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OptionsMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

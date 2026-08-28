@@ -2,6 +2,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DungeonMapNode : MonoBehaviour, IBridgeable
 {
@@ -12,6 +13,7 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
     public POIType.Type _Type;
     public List<GameObject> _NodeConnections;
     public Dictionary<GameObject, GameObject> _BridgeConnections;
+    public ColorPaletteSO _ColorSwatch;
     
     [Header("Settings")]
     public float _DetectionRange;
@@ -63,6 +65,48 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
             bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(transform.position, hit.transform.position));
         }
         
+    }
+
+    public void SetColorPaletteSwatch(ColorPaletteSO colorSwatch)
+    {
+        _ColorSwatch = colorSwatch;
+
+        //temp for now til I make the nodes good
+        gameObject.GetComponent<Image>().color = _ColorSwatch._PrimaryColor;
+    }
+
+    public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
+    {
+        //function that tests object and its neighbors if a color is being used
+        //used to ensure more readable maps
+        //print($"Now testing {gameObject.name} and {_NodeConnections.Count} neighbors for {colorToTest.name}...");
+        if (TestColor(colorToTest)) return true;
+        //print($"{gameObject.name} does not have color assigned, checking neighbors...");
+        for (int i = 0; i < _NodeConnections.Count; i++)
+        {
+            if (_NodeConnections[i].GetComponent<DungeonMapNode>().testNeighborColor(colorToTest)) { /*print($"Cannot chose color {colorToTest.name} as that has been assigned to node: {_NodeConnections[i].name}");*/ return true; }
+        }
+        //print($"Neighborbeors of {gameObject.name} do not have color {colorToTest.name}...");
+        return false;
+    }
+
+    public bool testNeighborColor(ColorPaletteSO colorToTest)
+    {
+        if (TestColor(colorToTest)) return true;
+        for (int i = 0; i < _NodeConnections.Count; i++)
+        {
+            if (_NodeConnections[i].GetComponent<DungeonMapNode>().TestColor(colorToTest)) { /*print($"Cannot chose color {colorToTest.name} as that has been assigned to node: {_NodeConnections[i].name}");*/ return true; }
+        }
+        return false;
+    }
+
+    public bool TestColor(ColorPaletteSO colorTest)
+    {
+        //print($"Now testing for node {gameObject.name} to see if it has color:{colorTest.name}");
+        if (_ColorSwatch == null) { /*print($"{gameObject.name} currently does not have a color assigned");*/ return false; }
+        if (colorTest == _ColorSwatch) { /*Debug.LogError($"{gameObject.name} currently has {_ColorSwatch.name}");*/ return true; }
+        //print($"Success! {gameObject.name} does not currently have {colorTest.name} assigned!");
+        return false;
     }
 
 

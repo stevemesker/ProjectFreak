@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a6234aac9bf3641a424a42a20f0999, type: 3}
+  m_Name: SO_ColorPalette_Blue
+  m_EditorClassIdentifier: 
+  _PrimaryColor: {r: 0.13968495, g: 0.2718441, b: 0.6886792, a: 1}
+  _SecondaryColor: {r: 0.26032397, g: 0.6351367, b: 0.8490566, a: 1}
+  _TirtiaryColor: {r: 0.45443216, g: 0.46866006, b: 0.8679245, a: 1}

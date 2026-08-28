@@ -642,6 +642,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: PFB_Dungeon Map Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 2767451897065599408, guid: 80fcaa6f284660347946fbb9fb6e975f,
+        type: 3}
+      propertyPath: _CurrentDungeonData
+      value: 
+      objectReference: {fileID: 11400000, guid: 42838faace43d3f468496b848a756b70,
+        type: 2}
     - target: {fileID: 5178232892686083396, guid: 80fcaa6f284660347946fbb9fb6e975f,
         type: 3}
       propertyPath: m_Pivot.x

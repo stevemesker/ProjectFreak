@@ -89,11 +89,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62447e94c421b3e40b9016ee29547957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _FloorSceneName: 
   _ID: 0
   _ColumnNumber: 0
   _Type: 0
   _NodeConnections: []
-  _FloorSceneName: 
+  _ColorSwatch: {fileID: 0}
   _DetectionRange: 0
   _MinimumNodePlacementRange: 0
   _ConnectionsMax: 3
