@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class DungeonManager : MonoBehaviour
     public DungeonSO _CurrentDungeon;
     public int _CurrentRoomID;
     public GameObject _CurrentDungeonMap;
+    public GameObject _CurrentMapLocator;
 
     [Header("Dungeon Chapter Settings")]
     public List<DungeonChapterData> _DungeonChapterData;
@@ -18,13 +20,29 @@ public class DungeonManager : MonoBehaviour
     public GameObject _MapPrefab;
     public GameObject _NodePrefab;
     public GameObject _BridgePrefab;
+    public GameObject _LocatorPrefab;
 
     //local variables
     DungeonMapManager _map;
+    private PlayerInput pInput;
 
     void Start()
     {
         if (_DM == null) _DM = this;
+    }
+
+    private void OnEnable()
+    {
+        pInput = new PlayerInput();
+        pInput.Enable();
+
+        pInput.Player.OptionsMenu.performed += toggleMap;
+    }
+
+    private void OnDisable()
+    {
+        pInput.Player.OptionsMenu.performed -= toggleMap;
+        pInput.Disable();
     }
 
     #region Dungeon Floor Changing
@@ -39,8 +57,8 @@ public class DungeonManager : MonoBehaviour
         _map = _CurrentDungeonMap.GetComponent<DungeonMapManager>();
         _map.StartNewMap(_CurrentDungeon);
 
-        SceneManagerObject._SceneManager.HudFadeOnOpen(1);
-        SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
+        //SceneManagerObject._SceneManager.HudFadeOnOpen(1);
+        //SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
     }
 
     public void MoveToFloor(int floorID)
@@ -54,12 +72,18 @@ public class DungeonManager : MonoBehaviour
         }
         else floorToEnter = temp._FloorSceneName;
         _CurrentRoomID = floorID;
+        _CurrentMapLocator.transform.position = temp.gameObject.transform.position;
 
         SceneManagerObject._SceneManager.HudFadeOnOpen(1);
         SceneManagerObject._SceneManager.changeScene(floorToEnter);
     }
 
     #endregion
+
+    void toggleMap(InputAction.CallbackContext context)
+    {
+        _CurrentDungeonMap.GetComponent<DungeonMapManager>().ToggleMap();
+    }
 
     #region Tools
     public DungeonMapNode getMapNode(int ID)
@@ -71,6 +95,11 @@ public class DungeonManager : MonoBehaviour
     public int getCurrentDungeonFloorID()
     {
         return _CurrentRoomID;
+    }
+
+    public void setDungeonLocator(GameObject target)
+    {
+        _CurrentMapLocator = target;
     }
 
     #endregion

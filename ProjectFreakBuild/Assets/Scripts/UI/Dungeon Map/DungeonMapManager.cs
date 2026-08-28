@@ -14,17 +14,23 @@ public class DungeonMapManager : MonoBehaviour
 
 
     [Header("Pointers")]
-    [Tooltip("The GameObject representing the boss area of the dungeon")]
+    [Tooltip("Pointer for the visuals to toggle on/off the map")]
+    [SerializeField] GameObject _MapVisuals;
+
+    [Tooltip("The parent/container representing the boss area of the dungeon")]
     [SerializeField] GameObject _BossZone;
 
     [Tooltip("The parent/container GameObject used for generated floor nodes")]
     [SerializeField] GameObject _FloorZone;
 
-    [Tooltip("The GameObject representing the dungeon entrance area")]
+    [Tooltip("The parent/container representing the dungeon entrance area")]
     [SerializeField] GameObject _EntranceZone;
 
-    [Tooltip("The GameObject used to visually connect dungeon areas/nodes")]
+    [Tooltip("The parent/container used to visually connect dungeon areas/nodes")]
     [SerializeField] public GameObject _BridgeZone;
+
+    [Tooltip("The parent/container for locators and other player information about the dungeon")]
+    [SerializeField] public GameObject _LocatorZone;
 
 
     [Header("Runtime Data")]
@@ -45,6 +51,9 @@ public class DungeonMapManager : MonoBehaviour
     [Tooltip("Prefab instantiated to visually connect adjacent dungeon nodes")]
     [SerializeField] public GameObject _lineConnectionPrefab;
 
+    [Tooltip("Possible color combos a floor node can have. Used in the map and the doors to this node")]
+    [SerializeField] List<ColorPaletteSO> _ColorSwatches;
+
     public void StartNewMap(DungeonSO data)
     {
         _CurrentDungeonData = data;
@@ -53,9 +62,10 @@ public class DungeonMapManager : MonoBehaviour
         if (_FloorZone == null) { Debug.LogError("Error! Selection zone not assigned!"); return; }
         if (_EntranceZone == null) { Debug.LogError("Error! Selection zone not assigned!"); return; }
         if (_BridgeZone == null) { Debug.LogError("Error! Selection zone not assigned!"); return; }
+        if (_LocatorZone == null) { Debug.LogError("Error! Selection zone not assigned!"); return; }
 
         SpawnFloorNodes();
-        connectNodes();
+        //connectNodes();
         StartCoroutine(detectNodeRange());
     }
     #region Test Tools
@@ -172,6 +182,7 @@ public class DungeonMapManager : MonoBehaviour
         int columns = _CurrentDungeonData._DungeonColumnCount;
         int rows = _CurrentDungeonData._DungeonRowCount;
 
+        //spawn entrance node
         GameObject KeyInstance = Instantiate(
                     _floorNodePrefab,
                     _EntranceZone.GetComponent<RectTransform>().position,
@@ -187,7 +198,10 @@ public class DungeonMapManager : MonoBehaviour
         mapNode._Type = POIType.Type.Entrance;
         mapNode._FloorSceneName = DungeonManager._DM._CurrentDungeon._DungeonEntranceSceneName;
         counter++;
+        DungeonManager._DM._CurrentMapLocator = Instantiate(DungeonManager._DM._LocatorPrefab, KeyInstance.transform.position, Quaternion.identity, _LocatorZone.transform);
+        //DungeonManager._DM.setDungeonLocator(KeyInstance);
 
+        //spawn boss node
         KeyInstance = Instantiate(
                     _floorNodePrefab,
                     _BossZone.GetComponent<RectTransform>().position,
@@ -251,12 +265,14 @@ public class DungeonMapManager : MonoBehaviour
         {
             if (_FloorNodes[i].GetComponent<IBridgeable>().canBridge() == false) { /*print(_FloorNodes[i].name + " returned false");*/ continue; }
             _FloorNodes[i].GetComponent<DungeonMapNode>().ConnectNodesInRange();
+            //print(i);
         }
+        
     }
 
     #endregion
 
-    #region Set Nody Type
+    #region Set Node Type
     void getFloorNodeTypePool(int index)
     {
         //function that refills the type pool of index
@@ -302,10 +318,40 @@ public class DungeonMapManager : MonoBehaviour
 
     #endregion
 
+    #region NodeColor
+    void setNodeColorPalettes()
+    {
+        int colorPalletCount = 0;
+        //print($" <-----Now starting color assign, current floor node count: {_FloorNodes.Count} with possible swatch count: {_ColorSwatches.Count}----->");
+        for (int i = 0; i < _FloorNodes.Count; i++)
+        {
+            //Debug.LogWarning($"Now assigning color for {_FloorNodes[i].name}");
+            for (int j = 0; j < _ColorSwatches.Count; j++)
+            {
+                if (_FloorNodes[i].GetComponent<DungeonMapNode>().TestSelfAndNeighborColor(_ColorSwatches[colorPalletCount]) == false)
+                {
+                    _FloorNodes[i].GetComponent<DungeonMapNode>().SetColorPaletteSwatch(_ColorSwatches[colorPalletCount]);
+                    j = _ColorSwatches.Count;
+                }
+                colorPalletCount++;
+                if (colorPalletCount >= _ColorSwatches.Count) colorPalletCount = 0;
+            }
+        }
+    }
+    #endregion
+
+    [Button("Toggle Map")]
+    public void ToggleMap()
+    {
+        _MapVisuals.SetActive(!_MapVisuals.activeSelf);
+    }
+
     IEnumerator detectNodeRange()
     {
         //yield return new WaitForSeconds(.01f);
         yield return null;
         connectNodes();
+        setNodeColorPalettes();
+        DungeonManager._DM.MoveToFloor(_FloorNodes.Count - 2);
     }
 }

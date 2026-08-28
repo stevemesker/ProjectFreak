@@ -116,6 +116,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OptionsMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""7cb4329b-379b-43e3-b0d6-cb975e7a82c5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -457,6 +466,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ca7a35f0-71c2-4ca8-8ec6-8e465e44ba31"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OptionsMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1399,6 +1419,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_WeaponSelect = m_Player.FindAction("WeaponSelect", throwIfNotFound: true);
         m_Player_Trigger = m_Player.FindAction("Trigger", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_OptionsMenu = m_Player.FindAction("OptionsMenu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1492,6 +1513,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_WeaponSelect;
     private readonly InputAction m_Player_Trigger;
     private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_OptionsMenu;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1506,6 +1528,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @WeaponSelect => m_Wrapper.m_Player_WeaponSelect;
         public InputAction @Trigger => m_Wrapper.m_Player_Trigger;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @OptionsMenu => m_Wrapper.m_Player_OptionsMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1545,6 +1568,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
+            @OptionsMenu.started += instance.OnOptionsMenu;
+            @OptionsMenu.performed += instance.OnOptionsMenu;
+            @OptionsMenu.canceled += instance.OnOptionsMenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1579,6 +1605,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
+            @OptionsMenu.started -= instance.OnOptionsMenu;
+            @OptionsMenu.performed -= instance.OnOptionsMenu;
+            @OptionsMenu.canceled -= instance.OnOptionsMenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1895,6 +1924,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnWeaponSelect(InputAction.CallbackContext context);
         void OnTrigger(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnOptionsMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
