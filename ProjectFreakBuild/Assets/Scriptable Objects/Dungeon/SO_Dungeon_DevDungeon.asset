@@ -16,6 +16,8 @@ MonoBehaviour:
   _DungeonColumnCount: 3
   _DungeonRowCount: 6
   _DungeonMapNodeWiggle: 300
+  _DungeonEntranceSceneName: SCN_DungeonEntrance_0
+  _DungeonBossSceneName: SCN_DungeonBossRoom_0
   _DungeonFloorList:
   - SCN_DungeonTestRoom_0
   - SCN_DungeonTestRoom_1
@@ -30,8 +32,12 @@ MonoBehaviour:
       _EntryChace: 10
     - _EntryType: 6
       _EntryChace: 50
-  - Entry: []
-  - Entry: []
+  - Entry:
+    - _EntryType: 4
+      _EntryChace: 100
+  - Entry:
+    - _EntryType: 2
+      _EntryChace: 100
   LootTable: {fileID: 0}
   EnemyTable: {fileID: 0}
   _SceneAdd: []

@@ -83,6 +83,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1996874820265280454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5706627910512157749}
+  m_Layer: 0
+  m_Name: Player TP Locator
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5706627910512157749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996874820265280454}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 1.298}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2326298186734786660}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6877732555610619440
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,6 +129,7 @@ GameObject:
   - component: {fileID: 7865277639004971617}
   - component: {fileID: 1881595970571859113}
   - component: {fileID: 9025609562348362164}
+  - component: {fileID: 7109724917747794508}
   m_Layer: 0
   m_Name: PFB_DungeonDoor
   m_TagString: Untagged
@@ -119,6 +151,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1885993443408972074}
+  - {fileID: 5706627910512157749}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &7973009193352137860
@@ -136,6 +169,7 @@ MonoBehaviour:
   _NextRoomNode: {fileID: 0}
   _ColorPalette: {fileID: 0}
   _DMWrapper: {fileID: 1881595970571859113}
+  _TpLocator: {fileID: 1996874820265280454}
   _DoorRenderers:
   - {fileID: 8062460460781739208}
 --- !u!114 &4422319167311274349
@@ -187,7 +221,19 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 9025609562348362164}
           m_TargetAssemblyTypeName: HUDWrapper, Assembly-CSharp
-          m_MethodName: FadeHudIn
+          m_MethodName: FadeHudOut
+          m_Mode: 4
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0.5
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 7109724917747794508}
+          m_TargetAssemblyTypeName: SceneManagerWrapper, Assembly-CSharp
+          m_MethodName: HudFadeOnOpen
           m_Mode: 4
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -265,6 +311,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4879ba44225c9c14b975a892686471c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7109724917747794508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6877732555610619440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9b60e0f176061f498188ab8dc100ea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7643853824140580071

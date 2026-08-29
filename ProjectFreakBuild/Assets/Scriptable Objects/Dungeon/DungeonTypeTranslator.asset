@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e02a3a9a5e6231a4da9ac437bc3664b6, type: 3}
+  m_Name: DungeonTypeTranslator
+  m_EditorClassIdentifier: 
+  _DefaultTypePackage:
+    _PackageType: 0
+    _TypeSprite: {fileID: 21300000, guid: 5bb45d7774c9ce54294383b3ab5162bd, type: 3}
+    _TypeTexture: {fileID: 2800000, guid: 5bb45d7774c9ce54294383b3ab5162bd, type: 3}
+  _TypePackages:
+  - _PackageType: 0
+    _TypeSprite: {fileID: 21300000, guid: 2e571b2bd50440347b849881f8290c40, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 1
+    _TypeSprite: {fileID: 21300000, guid: a576b140ff30b3b44997d7d587b51c9b, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 2
+    _TypeSprite: {fileID: 21300000, guid: 374b49127493ea74cbbb83db96772704, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 3
+    _TypeSprite: {fileID: 21300000, guid: e8625e4f810538d43b3db5d0afe1b42a, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 4
+    _TypeSprite: {fileID: 21300000, guid: 4bea9bcb443c0d04ca14cd955aaf1c7a, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 5
+    _TypeSprite: {fileID: 21300000, guid: 4bea9bcb443c0d04ca14cd955aaf1c7a, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 6
+    _TypeSprite: {fileID: 21300000, guid: 2aecd44c4004c9f49b98f20c951a075d, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 7
+    _TypeSprite: {fileID: 21300000, guid: fa49e8b380a0f2c40bf7ef065d248639, type: 3}
+    _TypeTexture: {fileID: 0}
+  - _PackageType: 8
+    _TypeSprite: {fileID: 21300000, guid: 5bb45d7774c9ce54294383b3ab5162bd, type: 3}
+    _TypeTexture: {fileID: 0}
