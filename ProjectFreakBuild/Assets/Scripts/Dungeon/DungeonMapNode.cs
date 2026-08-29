@@ -19,6 +19,10 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
     public float _DetectionRange;
     public float _MinimumNodePlacementRange;
     public int _ConnectionsMax = 3;
+
+    [Header("Reference")]
+    public GameObject _IconPointer;
+    public GameObject _IconColorChanger;
     
     void Awake()
     {
@@ -72,10 +76,15 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
         _ColorSwatch = colorSwatch;
 
         //temp for now til I make the nodes good
-        gameObject.GetComponent<Image>().color = _ColorSwatch._PrimaryColor;
+        _IconColorChanger.GetComponent<Image>().color = _ColorSwatch._PrimaryColor;
     }
 
-    public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
+    public void SetIcon(Sprite Icon)
+    {
+        _IconPointer.GetComponent<Image>().sprite = Icon;
+    }
+
+public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
     {
         //function that tests object and its neighbors if a color is being used
         //used to ensure more readable maps

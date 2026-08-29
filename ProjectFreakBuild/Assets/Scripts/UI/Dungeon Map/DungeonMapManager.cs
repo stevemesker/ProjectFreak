@@ -41,7 +41,7 @@ public class DungeonMapManager : MonoBehaviour
     public DungeonMapNode _EntranceNode;
 
     [Tooltip("Separate weighted POI type pools for each dungeon path. Types are drawn from these pools as nodes are assigned and the pool is regenerated when exhausted")]
-    public List<List<POIType.Type>> _FloorPool;
+    [SerializeField]public List<List<POIType.Type>> _FloorPool;
 
 
     [Header("Prefab Settings")]
@@ -163,7 +163,8 @@ public class DungeonMapManager : MonoBehaviour
                     bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(_FloorNodes[counter - 1].transform.position, instance.transform.position));
                 }
                 mapNode._Type = setNodeType(i);
-
+                //mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(temptype));
+                mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Type));
 
                 counter++;
             }
@@ -197,9 +198,9 @@ public class DungeonMapManager : MonoBehaviour
         mapNode._ColumnNumber = columns + 1;
         mapNode._Type = POIType.Type.Entrance;
         mapNode._FloorSceneName = DungeonManager._DM._CurrentDungeon._DungeonEntranceSceneName;
+        mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Type));
         counter++;
         DungeonManager._DM._CurrentMapLocator = Instantiate(DungeonManager._DM._LocatorPrefab, KeyInstance.transform.position, Quaternion.identity, _LocatorZone.transform);
-        //DungeonManager._DM.setDungeonLocator(KeyInstance);
 
         //spawn boss node
         KeyInstance = Instantiate(
@@ -215,7 +216,9 @@ public class DungeonMapManager : MonoBehaviour
         mapNode._ID = counter;
         mapNode._ColumnNumber = columns + 1;
         mapNode._Type = POIType.Type.Boss;
+        mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Type));
         mapNode._FloorSceneName = DungeonManager._DM._CurrentDungeon._DungeonBossSceneName;
+
 
         //set connections
         for (int i = 0; i < columns; i++)
@@ -336,6 +339,7 @@ public class DungeonMapManager : MonoBehaviour
                 colorPalletCount++;
                 if (colorPalletCount >= _ColorSwatches.Count) colorPalletCount = 0;
             }
+            
         }
     }
     #endregion

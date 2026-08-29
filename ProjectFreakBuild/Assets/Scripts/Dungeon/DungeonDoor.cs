@@ -10,6 +10,7 @@ public class DungeonDoor : MonoBehaviour
 
     [Header("References")]
     [SerializeField] DungeonManagerWrapper _DMWrapper;
+    [SerializeField] GameObject _TpLocator;
     [SerializeField] Renderer[] _DoorRenderers;
 
     private MaterialPropertyBlock _PropertyBlock;
@@ -24,6 +25,14 @@ public class DungeonDoor : MonoBehaviour
     public void ApplyNodeData(DungeonMapNode data)
     {
         _NextRoomNode = data;
+
+        if (DungeonManager._DM._PreviousRoomNode == _NextRoomNode)
+        {
+            print($"Player just came from room behind {gameObject.name}, now teleportying to front of door...");
+            Player.player.transform.position = _TpLocator.transform.position;
+            Player.player.transform.rotation = _TpLocator.transform.rotation;
+        }
+
         _ColorPalette = _NextRoomNode._ColorSwatch;
 
         ApplyDoorColor();
@@ -54,29 +63,4 @@ public class DungeonDoor : MonoBehaviour
     {
         _DMWrapper.MoveToDungeonRoom(_NextRoomNode._ID);
     }
-    /*
-    public DungeonMapNode _NextRoomNode;
-    //public string _SceneName;
-    [SerializeField] DungeonManagerWrapper _DMWrapper;
-    [SerializeField] ColorPaletteSO _ColorPalette;
-
-    public void ApplyNodeData(DungeonMapNode data)
-    {
-        _NextRoomNode = data;
-        _ColorPalette = _NextRoomNode._ColorSwatch;
-
-        if (_DMWrapper == null)
-        {
-            if (gameObject.GetComponent<DungeonManagerWrapper>() == null)
-                _DMWrapper = gameObject.AddComponent<DungeonManagerWrapper>();
-            else
-                _DMWrapper = gameObject.GetComponent<DungeonManagerWrapper>();
-        }
-    }
-
-    public void EnterNewDungeonScene()
-    {
-        _DMWrapper.MoveToDungeonRoom(_NextRoomNode._ID);
-    }
-    */
 }

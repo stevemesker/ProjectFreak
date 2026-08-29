@@ -10,6 +10,7 @@ public class DungeonManager : MonoBehaviour
     [Header("Current Data")]
     public DungeonSO _CurrentDungeon;
     public int _CurrentRoomID;
+    public DungeonMapNode _PreviousRoomNode;
     public GameObject _CurrentDungeonMap;
     public GameObject _CurrentMapLocator;
 
@@ -21,6 +22,7 @@ public class DungeonManager : MonoBehaviour
     public GameObject _NodePrefab;
     public GameObject _BridgePrefab;
     public GameObject _LocatorPrefab;
+    public DungeonTypeTranslatorSO _DungeonTypeTranslator;
 
     //local variables
     DungeonMapManager _map;
@@ -71,6 +73,7 @@ public class DungeonManager : MonoBehaviour
             floorToEnter = _CurrentDungeon._DungeonFloorList[Random.Range(0, _CurrentDungeon._DungeonFloorList.Count)];
         }
         else floorToEnter = temp._FloorSceneName;
+        _PreviousRoomNode = _CurrentDungeonMap.GetComponent<DungeonMapManager>()._FloorNodes[_CurrentRoomID].GetComponent<DungeonMapNode>();
         _CurrentRoomID = floorID;
         _CurrentMapLocator.transform.position = temp.gameObject.transform.position;
 

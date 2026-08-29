@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _CurrentDungeon: {fileID: 11400000, guid: 42838faace43d3f468496b848a756b70, type: 2}
   _CurrentRoomID: 0
+  _PreviousRoomNode: {fileID: 0}
   _CurrentDungeonMap: {fileID: 0}
   _CurrentMapLocator: {fileID: 0}
   _DungeonChapterData:
@@ -167,3 +168,5 @@ MonoBehaviour:
     type: 3}
   _LocatorPrefab: {fileID: 1109719409974698091, guid: 7da5170c50a44a44ba82e271978090dd,
     type: 3}
+  _DungeonTypeTranslator: {fileID: 11400000, guid: b370312327963a5479e4698537264a53,
+    type: 2}
