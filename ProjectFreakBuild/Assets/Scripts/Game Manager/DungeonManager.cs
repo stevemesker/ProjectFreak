@@ -31,6 +31,7 @@ public class DungeonManager : MonoBehaviour
     void Start()
     {
         if (_DM == null) _DM = this;
+        BuildDungeonDictionaries();
     }
 
     private void OnEnable()
@@ -105,6 +106,22 @@ public class DungeonManager : MonoBehaviour
         _CurrentMapLocator = target;
     }
 
+    #endregion
+
+    #region POI
+    public void BuildDungeonDictionaries()
+    {
+        for (int i = 0; i < _DungeonChapterData.Count; i++)
+        {
+            _DungeonChapterData[i]._DungeonData.BuildPOIDictionaries();
+        }
+    }
+
+    public DungeonPOISO getPOIFromCurrentRoom()
+    {
+        print($"Getting POI for currentroom {getMapNode(_CurrentRoomID).gameObject.name}...");
+        return null;
+    }
     #endregion
 }
 
