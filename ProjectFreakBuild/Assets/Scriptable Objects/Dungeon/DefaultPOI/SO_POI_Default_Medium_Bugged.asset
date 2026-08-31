@@ -10,12 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f665ff7b29ff1314eb4db25dde942d67, type: 3}
-  m_Name: SO_POI_1x1_Square_1
+  m_Name: SO_POI_Default_Medium_Bugged
   m_EditorClassIdentifier: 
-  _POI_Prefab: {fileID: 1373361855728550822, guid: 87df4549888b17842a8853599962166f,
-    type: 3}
-  _POI_Type: 0
-  _POI_Dimension: {x: 1, y: 1}
-  _POI_Shape: 0
-  _POI_LootTable: {fileID: 0}
-  _POI_EnemyTable: {fileID: 0}
+  _POI_Prefab: {fileID: 0}
+  _POI_Size: 2
+  _POI_Tags: 

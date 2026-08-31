@@ -22,7 +22,6 @@ MonoBehaviour:
   - SCN_DungeonTestRoom_0
   - SCN_DungeonTestRoom_1
   - SCN_DungeonTestRoom_2
-  POIList: []
   _DungeonFloorPoolSize: 35
   _DungeonFloorPoolTypes:
   - Entry:
@@ -38,6 +37,9 @@ MonoBehaviour:
   - Entry:
     - _EntryType: 2
       _EntryChace: 100
+  POIList:
+  - {fileID: 11400000, guid: 61c750d5865968345ab4e73baaf3d833, type: 2}
+  - {fileID: 11400000, guid: de31043808cb45849b57744ae5f29881, type: 2}
   LootTable: {fileID: 0}
   EnemyTable: {fileID: 0}
   _SceneAdd: []

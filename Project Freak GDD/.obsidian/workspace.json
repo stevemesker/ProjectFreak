@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Game Management/AA - Managers.md",
+                "file": "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AA - Managers"
+              "title": "Runtime Bootstrapper & Runtime Asset"
             }
           }
         ]
@@ -231,6 +231,8 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Architecture/Architecture Atlas.md",
+    "Architecture/Game Management/AA - Managers.md",
     "Combat/Attack Type.md",
     "Narrative/characters/Dark King.md",
     "Narrative/characters/Lord Kestrel.md",
@@ -238,7 +240,6 @@
     "Architecture/Dungeons/Dungeon Architecture.md",
     "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
     "Architecture/Game Management/Dungeon Manager.md",
-    "Architecture/Game Management/AA - Managers.md",
     "Architecture/Dungeons/Dungeon Map Node.md",
     "Architecture/Tools/ArcMover.md",
     "DungeonMapNode.md",
@@ -250,7 +251,6 @@
     "Character Traits/Main Character.md",
     "Atlas.md",
     "Game design.md",
-    "Architecture/Architecture Atlas.md",
     "Architecture/Game Management/Camera Manager.md",
     "Dungeons",
     "Scene Manager.md",
