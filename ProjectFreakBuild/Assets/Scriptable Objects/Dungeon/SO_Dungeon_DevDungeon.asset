@@ -40,6 +40,8 @@ MonoBehaviour:
   POIList:
   - {fileID: 11400000, guid: 61c750d5865968345ab4e73baaf3d833, type: 2}
   - {fileID: 11400000, guid: de31043808cb45849b57744ae5f29881, type: 2}
+  - {fileID: 11400000, guid: f6ba700cccdf899479d034c1f76f0eff, type: 2}
+  POILUT: {fileID: 11400000, guid: 41702ad9caf2a1248beabb6f0ce9cb06, type: 2}
   LootTable: {fileID: 0}
   EnemyTable: {fileID: 0}
   _SceneAdd: []
