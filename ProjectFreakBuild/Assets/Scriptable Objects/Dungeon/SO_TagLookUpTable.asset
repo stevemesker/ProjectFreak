@@ -12,4 +12,104 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d014cc477997e8c48b90c6e1a56008ce, type: 3}
   m_Name: SO_TagLookUpTable
   m_EditorClassIdentifier: 
-  _POIType: []
+  _EntryPoolSize: 10
+  _POIType:
+  - _Type: 0
+    _Entry:
+    - _Tag: 0
+      _EntryChance: 0
+    - _Tag: 1
+      _EntryChance: 0
+    - _Tag: 2
+      _EntryChance: 0
+    - _Tag: 3
+      _EntryChance: 0
+    - _Tag: 5
+      _EntryChance: 0
+    - _Tag: 6
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 1
+    _Entry:
+    - _Tag: 0
+      _EntryChance: 0
+    - _Tag: 8
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 2
+    _Entry:
+    - _Tag: 8
+      _EntryChance: 0
+    - _Tag: 3
+      _EntryChance: 0
+    - _Tag: 2
+      _EntryChance: 0
+    - _Tag: 4
+      _EntryChance: 0
+    - _Tag: 0
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 3
+    _Entry:
+    - _Tag: 0
+      _EntryChance: 0
+    - _Tag: 1
+      _EntryChance: 0
+    - _Tag: 7
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 4
+    _Entry:
+    - _Tag: 0
+      _EntryChance: 0
+    - _Tag: 1
+      _EntryChance: 0
+    - _Tag: 5
+      _EntryChance: 0
+    - _Tag: 3
+      _EntryChance: 0
+    - _Tag: 4
+      _EntryChance: 0
+    - _Tag: 6
+      _EntryChance: 0
+    - _Tag: 7
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 5
+    _Entry:
+    - _Tag: 0
+      _EntryChance: 0
+    - _Tag: 4
+      _EntryChance: 0
+    - _Tag: 3
+      _EntryChance: 0
+    - _Tag: 6
+      _EntryChance: 0
+    - _Tag: 8
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 6
+    _Entry:
+    - _Tag: 2
+      _EntryChance: 0
+    - _Tag: 3
+      _EntryChance: 0
+    - _Tag: 4
+      _EntryChance: 0
+    - _Tag: 5
+      _EntryChance: 0
+    - _Tag: 6
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 7
+    _Entry:
+    - _Tag: 7
+      _EntryChance: 0
+    - _Tag: 1
+      _EntryChance: 0
+    _EntryPool: 
+  - _Type: 8
+    _Entry:
+    - _Tag: 8
+      _EntryChance: 0
+    _EntryPool: 
