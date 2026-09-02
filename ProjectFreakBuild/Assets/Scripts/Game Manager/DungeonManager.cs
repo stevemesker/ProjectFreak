@@ -117,10 +117,10 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    public DungeonPOISO getPOIFromCurrentRoom()
+    public DungeonPOISO getPOIFromCurrentRoom(POIType.Size size)
     {
         print($"Getting POI for currentroom {getMapNode(_CurrentRoomID).gameObject.name}...");
-        return null;
+        return _CurrentDungeon.GetPOI(getMapNode(_CurrentRoomID)._Type, size);
     }
     #endregion
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   - _Type: 0
     _Entry:
     - _Tag: 0
-      _EntryChance: 0
+      _EntryChance: 100
     - _Tag: 1
       _EntryChance: 0
     - _Tag: 2
@@ -32,14 +32,14 @@ MonoBehaviour:
   - _Type: 1
     _Entry:
     - _Tag: 0
-      _EntryChance: 0
+      _EntryChance: 100
     - _Tag: 8
       _EntryChance: 0
     _EntryPool: 
   - _Type: 2
     _Entry:
     - _Tag: 8
-      _EntryChance: 0
+      _EntryChance: 100
     - _Tag: 3
       _EntryChance: 0
     - _Tag: 2
@@ -52,7 +52,7 @@ MonoBehaviour:
   - _Type: 3
     _Entry:
     - _Tag: 0
-      _EntryChance: 0
+      _EntryChance: 100
     - _Tag: 1
       _EntryChance: 0
     - _Tag: 7
@@ -61,7 +61,7 @@ MonoBehaviour:
   - _Type: 4
     _Entry:
     - _Tag: 0
-      _EntryChance: 0
+      _EntryChance: 100
     - _Tag: 1
       _EntryChance: 0
     - _Tag: 5
@@ -74,6 +74,8 @@ MonoBehaviour:
       _EntryChance: 0
     - _Tag: 7
       _EntryChance: 0
+    - _Tag: 8
+      _EntryChance: 100
     _EntryPool: 
   - _Type: 5
     _Entry:
