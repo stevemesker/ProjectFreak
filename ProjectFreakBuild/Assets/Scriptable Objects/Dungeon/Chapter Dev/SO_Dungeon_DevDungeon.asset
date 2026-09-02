@@ -43,6 +43,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 61c750d5865968345ab4e73baaf3d833, type: 2}
   - {fileID: 11400000, guid: f8363bc9e5d3544f99b65bdfd23176b1, type: 2}
   - {fileID: 11400000, guid: de31043808cb45849b57744ae5f29881, type: 2}
+  - {fileID: 11400000, guid: 71a5f035def8c98418bd0622f7213ab9, type: 2}
   POILUT: {fileID: 11400000, guid: 41702ad9caf2a1248beabb6f0ce9cb06, type: 2}
   LootTable: {fileID: 0}
   EnemyTable: {fileID: 0}
