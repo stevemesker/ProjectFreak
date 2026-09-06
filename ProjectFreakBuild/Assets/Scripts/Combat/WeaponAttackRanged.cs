@@ -76,8 +76,8 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
 
     void FillProjectileStats(ProjectileObject projectile)
     {
-        projectile.instigator = _Wielder;
-        projectile.speed = _WeaponObject.projectileSpeed;
+        projectile._Damage._Source = _Wielder;
+        projectile._Speed = _WeaponObject.projectileSpeed;
         projectile._Damage = dmgPackage;
     }
 

@@ -15,3 +15,8 @@ public interface ITriggerable
     //DamageType.StatType GetStatType();
     bool isRange();
 }
+
+public interface IUnitData
+{
+    DangerLevel GetDangerLevelSettings();
+}

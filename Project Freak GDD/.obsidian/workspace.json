@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
+                "file": "Dungeons/Dungeon.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Runtime Bootstrapper & Runtime Asset"
+              "title": "Dungeon"
             }
           }
         ]
@@ -33,17 +33,24 @@
             "id": "a492a5f394994b7d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Combat/Attack Type.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Attack Type"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          },
+          {
+            "id": "ecc4a37c8f083c41",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       },
       {
         "id": "61347cd08ee47fa1",
@@ -229,22 +236,24 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "96228a7edd8b3eaa",
+  "active": "ecc4a37c8f083c41",
   "lastOpenFiles": [
+    "Architecture/Dungeons/Dungeon Creation.md",
+    "Architecture/Dungeons/Dungeon Architecture.md",
+    "Architecture/Dungeons/Dungeon Map Node.md",
+    "Architecture/Dungeons/Dungeon Map Manager.md",
+    "Dungeons/Dungeon Floor.md",
+    "Dungeons/Dungeon.md",
+    "POI.md",
+    "Combat/Attack Type.md",
+    "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
     "Architecture/Architecture Atlas.md",
     "Architecture/Game Management/AA - Managers.md",
-    "Combat/Attack Type.md",
     "Narrative/characters/Dark King.md",
     "Narrative/characters/Lord Kestrel.md",
-    "Architecture/Dungeons/Dungeon Map Manager.md",
-    "Architecture/Dungeons/Dungeon Architecture.md",
-    "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
     "Architecture/Game Management/Dungeon Manager.md",
-    "Architecture/Dungeons/Dungeon Map Node.md",
     "Architecture/Tools/ArcMover.md",
     "DungeonMapNode.md",
-    "Dungeons/Dungeon.md",
-    "Dungeons/Dungeon Floor.md",
     "Architecture/Dungeons",
     "Dungeons/Dungeon Entrance.md",
     "File Naming Conventions.md",
@@ -258,8 +267,6 @@
     "Architecture/Game Management",
     "Architecture/Save Data/Save slot.md",
     "Narrative/characters/Mama.md",
-    "Narrative/characters/Hazen.md",
-    "Architecture/Game Management/Save Manager.md",
     "Architecture/Save Data",
     "zzz Extras/Attachments/ArcMover Example.png",
     "Architecture/Tools",

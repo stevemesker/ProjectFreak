@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Sirenix.OdinInspector;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
     float chargeAmount;
     [FoldoutGroup("Combat")][Tooltip("Current selection number"), SerializeField]
     private int weaponSelection;
+
 
     //Private/Unserialized Variables
     private ITriggerable weaponTrigger;
@@ -205,4 +207,6 @@ public class Player : MonoBehaviour
         return eleOut;
     }
     #endregion
+
+    
 }

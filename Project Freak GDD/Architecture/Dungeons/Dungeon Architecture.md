@@ -1,4 +1,6 @@
-[[Dungeon]]s are semi procedural linked environments where the majority of combat is held. They're controlled by a tiered data structure, starting with the [[Dungeon Manager]] to the [[Dungeon Floor]]
+[[Dungeon]]s are semi procedural linked environments where the majority of combat is held. They're controlled by a tiered data structure, starting with the [[Dungeon Manager]] to the [[Dungeon Floor]].
+
+***For information on creating a dungeon from scratch see: [[Dungeon Creation]]***
 
 ---
 ## Dungeon Manager

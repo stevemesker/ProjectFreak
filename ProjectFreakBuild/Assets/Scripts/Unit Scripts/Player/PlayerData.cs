@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerData : MonoBehaviour
+public class PlayerData : MonoBehaviour, IUnitData
 {
     //script that governs the active data and stats of the player
     [Header("Base Stat Data")]
@@ -16,5 +16,12 @@ public class PlayerData : MonoBehaviour
     private void Awake()
     {
         pInventory._BackpackInventory = new Dictionary<ItemSO, int>();
+    }
+
+    
+
+    public DangerLevel GetDangerLevelSettings()
+    {
+        return pStats._Danger;
     }
 }
