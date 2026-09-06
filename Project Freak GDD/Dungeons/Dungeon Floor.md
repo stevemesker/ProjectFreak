@@ -5,4 +5,9 @@
 [[Dungeon Floor]]s are defined by the zone or chapter they belong to and the number of connections they contain. This allows the [[Dungeon Manager]] to pull from its list of premade dungeon room layouts. This allows me to make well crafted and interesting rooms that still have some variance to keep the player entertained.
 
 ---
-**Point Of Interests**
+**Point Of Interests ([[POI]])**
+small modular prefabs that add variability to dungeons.
+
+---
+**[[Dungeon Door]]**
+Floors are connected via [[Dungeon Door]]s in a web. Doors are color coated to show what rooms they lead to.

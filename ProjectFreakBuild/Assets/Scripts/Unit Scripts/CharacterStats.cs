@@ -132,6 +132,13 @@ public class PartyStats : CoreStats
     [Header("Party Stats")]
     [Tooltip("How much current xp the unit has. Needed level is calculated elsewhere")]
     public int _XP;
+    public DangerLevel _Danger;
+    public DangerType _CurrentDangerType;
+
+    public void SetCurrentDangerType()
+    {
+        _CurrentDangerType = _Danger.getCurrentDangerType(_Health, _HP);
+    }
 }
 
 [Serializable]

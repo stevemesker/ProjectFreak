@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using Sirenix.OdinInspector;
 
 public class CameraManager : MonoBehaviour
 {
@@ -10,10 +11,14 @@ public class CameraManager : MonoBehaviour
     public GameObject _gameplayCameraPrefab;
     public Vector3 _followOffset;
 
-    [Header("Realtime data")]
+    [Header("Runtime data")]
     public GameObject _currentGameplayCamera;
+    public GameObject _currentFollowTarget;
     private CinemachineVirtualCamera _followCam;
     private CinemachineTransposer _transposer;
+
+    [Header("Private")]
+    CinemachineImpulseSource _impulseSource;
 
     private void Awake()
     {
@@ -22,8 +27,11 @@ public class CameraManager : MonoBehaviour
         if (_currentGameplayCamera == null)
         {
             _currentGameplayCamera = Instantiate(_gameplayCameraPrefab);
+            
             print("Spawning gameplay camera... Camera name" + _currentGameplayCamera.name);
         }
+        _impulseSource = _currentGameplayCamera.GetComponent<CinemachineImpulseSource>();
+        print(_impulseSource);
     }
 
     private void Start()
@@ -44,6 +52,7 @@ public class CameraManager : MonoBehaviour
             _followCam.Follow = Player.player.transform;
             _followCam.LookAt = Player.player.transform;
             Player.player.GetComponent<CharacterMovement>()._MainCamera = _currentGameplayCamera;
+            _currentFollowTarget = Player.player.gameObject;
         }
     }
 
@@ -51,4 +60,29 @@ public class CameraManager : MonoBehaviour
     {
         _followCam.Priority = priority;
     }
+
+    #region Camera Shake
+    [Button("Test Shake")]
+    void testShake(float force)
+    {
+        CombatCameraShake(force, null);
+    }
+
+    public void CombatCameraShake(float force, CinemachineImpulseSource impulseSource)
+    {
+        CinemachineImpulseSource temp = impulseSource;
+        if (temp == null) temp = _impulseSource;
+        print(temp);
+        //dampen force here
+        CameraShake(force, temp);
+    }
+
+    public void CameraShake(float force, CinemachineImpulseSource impulseSource)
+    {
+        CinemachineImpulseSource temp = impulseSource;
+        if (temp == null) temp = _impulseSource;
+        temp.GenerateImpulseWithForce(force);
+    }
+
+    #endregion
 }

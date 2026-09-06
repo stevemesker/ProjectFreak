@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class ProjectileObject : MonoBehaviour
 {
-    public float speed;
+    public float _Speed;
     public DamagePackage _Damage;
-
-    [Header("Depreciated")]
-    public int damageAmount = 1;
-    [SerializeField] private DamageType.AttackType dType;
-    public List<ElementType.Element> element;
-    public GameObject instigator;
-    
 
     // Start is called before the first frame update
     void Start()
@@ -23,12 +16,13 @@ public class ProjectileObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position += transform.forward * speed * Time.deltaTime;
+        transform.position += transform.forward * _Speed * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == instigator)
+
+        if (other.gameObject == _Damage._Source || other.isTrigger)
         {
             return;
         }

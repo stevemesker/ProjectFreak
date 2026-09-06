@@ -42,7 +42,7 @@ namespace DamageType
     }
 }
 
-[SerializeField]
+[System.Serializable]
 public struct DamageEntry
 {
     public int _Damage;

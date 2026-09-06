@@ -21,6 +21,8 @@ GameObject:
   - component: {fileID: 3798115793417221162}
   - component: {fileID: 3296923925115962705}
   - component: {fileID: 5255348119692755052}
+  - component: {fileID: 753683252311642273}
+  - component: {fileID: 5949827839321499019}
   m_Layer: 0
   m_Name: Player Character_PFB
   m_TagString: Player
@@ -161,8 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pStats:
-    _HP: 10
-    _Health: 10
+    _HP: 100
+    _Health: 100
     _STR: 5
     _DEF: 1
     _AGI: 5
@@ -182,6 +184,21 @@ MonoBehaviour:
     AttackTypeImmunity: 
     ElementTypeImmunity: 
     _XP: 0
+    _Danger:
+      _DangerLevels:
+      - _Type: 0
+        _Percentage: 90
+        _ShakeDampenMultiplier: 0.5
+      - _Type: 1
+        _Percentage: 75
+        _ShakeDampenMultiplier: 0.75
+      - _Type: 2
+        _Percentage: 50
+        _ShakeDampenMultiplier: 1
+      - _Type: 3
+        _Percentage: 0
+        _ShakeDampenMultiplier: 1.25
+    _CurrentDangerType: 0
     _SOUL: 1
     _SHA: 1
     _CurrentShade: 0
@@ -264,7 +281,11 @@ MonoBehaviour:
   floorDetectionDistance: 2
   floorDetectionAdjustment: 0.1
   passThroughDetectionRadius: 0.5
-  Damage: {fileID: 0}
+  Damage:
+    _Source: {fileID: 0}
+    _CritMultiplier: 0
+    _DamageImpactStrength: 0.5
+    _Entries: []
   startDashEvent:
     m_PersistentCalls:
       m_Calls:
@@ -431,6 +452,64 @@ MonoBehaviour:
   _ActivateVolumeRadius: 0.75
   _ActivateOffset: 0.45
   CanActivate: 1
+--- !u!114 &753683252311642273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648769780060643362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 777a664b2f3c5c3449ae465f859649e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onDamage:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5949827839321499019}
+        m_TargetAssemblyTypeName: PlayerDamegable, Assembly-CSharp
+        m_MethodName: TakeDamage
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &5949827839321499019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648769780060643362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db85e95d7aa30345989723d43222243, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageTextOffset: {x: 0, y: 1.5, z: 0}
+  onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5949827839321499019}
+        m_TargetAssemblyTypeName: PlayerDamegable, Assembly-CSharp
+        m_MethodName: Death
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5035668622668642745
 GameObject:
   m_ObjectHideFlags: 0
