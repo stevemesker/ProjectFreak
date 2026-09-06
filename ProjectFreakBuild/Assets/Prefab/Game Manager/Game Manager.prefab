@@ -123,6 +123,7 @@ MonoBehaviour:
     type: 3}
   _followOffset: {x: 7, y: 9, z: -10}
   _currentGameplayCamera: {fileID: 0}
+  _currentFollowTarget: {fileID: 0}
 --- !u!114 &3518485283853445535
 MonoBehaviour:
   m_ObjectHideFlags: 0

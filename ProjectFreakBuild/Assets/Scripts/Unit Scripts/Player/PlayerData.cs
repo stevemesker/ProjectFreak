@@ -15,7 +15,7 @@ public class PlayerData : MonoBehaviour, IUnitData
 
     private void Awake()
     {
-        pInventory._BackpackInventory = new Dictionary<ItemSO, int>();
+        //pInventory._BackpackInventory = new Dictionary<ItemSO, int>();
     }
 
     

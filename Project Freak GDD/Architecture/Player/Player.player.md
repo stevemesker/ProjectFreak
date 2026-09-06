@@ -1,0 +1,1 @@
+The player script is the runtime root/accessor for the [[Hazen]] character. It is responsible for being the beacon for the player object as well as the accessor for player data and systems

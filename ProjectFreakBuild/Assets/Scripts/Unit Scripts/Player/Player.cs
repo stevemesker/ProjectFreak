@@ -37,25 +37,28 @@ public class Player : MonoBehaviour
     private Coroutine cycleTimer;
     private float chargeTimeInitiated;
 
-    #region Initialize
+    //#region Initialize
     private void Awake()
     {
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
+        Debug.Log("Player set");
         DontDestroyOnLoad(gameObject);
         UpdateEquippedWeaponSlotSize();
         updateCurrentWeapon();
         CameraManager._CamManager.setCamTargetToPlayer();
     }
-
+    /*
     private void OnEnable()
     {
+        Debug.Log("Player Awake"); // ? click the left margin here
         if (pickupChannel != null)
             pickupChannel.OnPickup += HandlePickup;
     }
 
     private void OnDisable()
     {
+        Debug.Log("Player Not Awake"); // ? click the left margin here
         if (pickupChannel != null)
             pickupChannel.OnPickup -= HandlePickup;
     }
@@ -106,7 +109,7 @@ public class Player : MonoBehaviour
         return false;
     }
     #endregion
-
+    */
     #region Equipment
 
     public void setActiveWeapon (int index)
@@ -191,11 +194,6 @@ public class Player : MonoBehaviour
         handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
 
-    int CalculateDamage(float multiplier)
-    {
-
-        return 0;
-    }
     List<ElementType.Element> getElementalDamage()
     {
         List<ElementType.Element> eleOut = new List<ElementType.Element>();

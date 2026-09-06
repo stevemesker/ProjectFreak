@@ -238,6 +238,11 @@
   },
   "active": "ecc4a37c8f083c41",
   "lastOpenFiles": [
+    "Architecture/Architecture Atlas.md",
+    "Architecture/Player/Player.player.md",
+    "Architecture/Player/Player Movement.md",
+    "Architecture/Game Management/Camera Manager.md",
+    "Architecture/Player",
     "Architecture/Dungeons/Dungeon Creation.md",
     "Architecture/Dungeons/Dungeon Architecture.md",
     "Architecture/Dungeons/Dungeon Map Node.md",
@@ -247,7 +252,6 @@
     "POI.md",
     "Combat/Attack Type.md",
     "Architecture/Game Management/Runtime Bootstrapper & Runtime Asset.md",
-    "Architecture/Architecture Atlas.md",
     "Architecture/Game Management/AA - Managers.md",
     "Narrative/characters/Dark King.md",
     "Narrative/characters/Lord Kestrel.md",
@@ -260,13 +264,10 @@
     "Character Traits/Main Character.md",
     "Atlas.md",
     "Game design.md",
-    "Architecture/Game Management/Camera Manager.md",
     "Dungeons",
     "Scene Manager.md",
     "Architecture/Cameras.md",
     "Architecture/Game Management",
-    "Architecture/Save Data/Save slot.md",
-    "Narrative/characters/Mama.md",
     "Architecture/Save Data",
     "zzz Extras/Attachments/ArcMover Example.png",
     "Architecture/Tools",
@@ -277,7 +278,6 @@
     "zzz Extras/Attachments/Element node.png",
     "zzz Extras/Attachments/Core Node.png",
     "zzz Extras",
-    "UI/Rune Field",
-    "zzz Extras/Templates"
+    "UI/Rune Field"
   ]
 }

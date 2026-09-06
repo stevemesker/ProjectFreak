@@ -23,6 +23,8 @@ public class PlayerPickup : MonoBehaviour
         pInput.Player.Pickup.performed -= PickupInput;
         pInput.Disable();
     }
+
+    #region Range Detection
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag != "Item") return;
@@ -42,8 +44,11 @@ public class PlayerPickup : MonoBehaviour
         if (itm is WeaponItem) { InRangePickup.Remove(other.gameObject); /*print("Removing weapon to gatherables");*/ return; }
         
     }
+    #endregion
+
     private void PickupInput(InputAction.CallbackContext context)
     {
+        /*
         if (InRangePickup.Count < 1) return;
         if (InRangePickup.Count == 1) 
         {
@@ -63,5 +68,6 @@ public class PlayerPickup : MonoBehaviour
         InRangePickup[index].GetComponent<ItemDrop>().pickupItem();
         print(index);
         InRangePickup.RemoveAt(index);
+        */
     }
 }

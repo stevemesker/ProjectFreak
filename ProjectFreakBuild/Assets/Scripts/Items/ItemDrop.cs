@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(Collider))]
-public class ItemDrop : MonoBehaviour
+public class ItemDrop : MonoBehaviour, IPickup
 {
     //Script for objects that drop after an enemy is killed that handles treasure containment
     [Tooltip("Item Scriptable Object data being passed along. AKA the item that was dropped")] public ItemSO ItemLootDrop;
@@ -46,9 +46,36 @@ public class ItemDrop : MonoBehaviour
 
     #endregion
 
+    public ItemSO GetObject()
+    {
+        if (ItemLootDrop == null)
+        {
+            Debug.LogWarning("Warning! Item pickup wwas attempted however no item was found.");
+            return null;
+        }
+        return ItemLootDrop;
+    }
+
+    public int GetAmount()
+    {
+        return ItemLootAmount;
+    }
+
+    public void TakeObjectAmount(int amount)
+    {
+        ItemLootAmount -= amount;
+        if (ItemLootAmount <= 0)
+        {
+            if (ItemLootAmount < 0) Debug.LogWarning($"Warning! Item drop amount taken exceeded limit by {Mathf.Abs (ItemLootAmount)}. Please make sure you're taken the returned amount.");
+            //add any other pickup effects here
+            Destroy(gameObject);
+        }
+    }
+
     #region Interaction
     public void pickupItem()
     {
+        //depreciated
         if (ItemLootDrop == null)
         {
             Debug.LogWarning("Warning! Item pickup wwas attempted however no item was found.");

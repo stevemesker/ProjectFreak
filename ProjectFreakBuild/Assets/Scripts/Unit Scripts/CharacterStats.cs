@@ -180,7 +180,7 @@ public class Inventory
 {
     [Tooltip("Number of equipment the character can switch between")] public int _EquipmentSize;
     [Tooltip("Inventory size of the specific character")] public int _InventorySize;
-    public List<WeaponItem> _EquippedWeapons;
+    [SerializeField]public List<WeaponItem> _EquippedWeapons;
     public Dictionary<ItemSO, int> _BackpackInventory;
 
     public bool checkInventoryFits(ItemSO item, int amount)
@@ -206,11 +206,13 @@ public class Inventory
 
     public void addBackpackInventory (ItemSO x, int y)
     {
+        Debug.LogWarning($"Adding inventory: {x.name} x {y}");
         _BackpackInventory.Add(x, y);
     }
 
     public void addEquipmentInventory(WeaponItem x)
     {
+        Debug.LogWarning($"Adding equipped inventory {x.name}");
         for (int i = 0; i < _EquippedWeapons.Count; i++)
             if (_EquippedWeapons[i] == null)
             {
