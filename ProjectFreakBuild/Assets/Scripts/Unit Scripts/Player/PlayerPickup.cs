@@ -48,16 +48,11 @@ public class PlayerPickup : MonoBehaviour
 
     private void PickupInput(InputAction.CallbackContext context)
     {
-        /*
         if (InRangePickup.Count < 1) return;
-        if (InRangePickup.Count == 1) 
-        {
-            //print("Now picking up " + InRangePickup[0].name);
-            InRangePickup[0].GetComponent<ItemDrop>().pickupItem();
-            InRangePickup.Clear();
-            return; 
-        }
+        
+        //find closest item to pick up
         int index = 0;
+
         for (int i = 1; i < InRangePickup.Count; i++)
         {
             if (Vector3.Distance(InRangePickup[i].transform.position, transform.position) < Vector3.Distance(InRangePickup[index].transform.position, transform.position))
@@ -65,9 +60,32 @@ public class PlayerPickup : MonoBehaviour
                 index = i;
             }
         }
-        InRangePickup[index].GetComponent<ItemDrop>().pickupItem();
-        print(index);
+
+        //GameObject tempObj = InRangePickup[index];
+        IPickup temp = InRangePickup[index].GetComponent<IPickup>();
+        Debug.Log($"Picking up item | {temp.GetObject().ItemName}");
+        if (!TryGetComponent<IInventory>(out IInventory inv))
+        {
+            Debug.LogError(
+                $"Error! Unit {gameObject.name} is trying to pick up item | {temp.GetObject().ItemName} | but this unit has no inventory interface..."
+            );
+            return;
+        }
+
+        handlePickupToInventory(temp, inv);
         InRangePickup.RemoveAt(index);
-        */
+    }
+
+    void handlePickupToInventory(IPickup pickup, IInventory inv)
+    {
+        ItemSO itm = pickup.GetObject();
+        int amount = pickup.GetAmount();
+
+        int remainder = inv.AddItem(itm, amount);
+
+        //figure out how many we're taking from the stack
+        amount -= remainder;
+
+        pickup.TakeObjectAmount(amount);
     }
 }

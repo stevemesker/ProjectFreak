@@ -7,8 +7,11 @@ using Sirenix.OdinInspector;
 public class ItemDrop : MonoBehaviour, IPickup
 {
     //Script for objects that drop after an enemy is killed that handles treasure containment
+    [Header("Runtime Data")]
     [Tooltip("Item Scriptable Object data being passed along. AKA the item that was dropped")] public ItemSO ItemLootDrop;
     [Tooltip("How many copies of the item being dropped. Debug being 1")] public int ItemLootAmount;
+    
+    [Header("Pointer")]
     [SerializeField, Tooltip("Points to the child gameobject that the art gets instantiated under")] private GameObject _ArtParent;
 
     [Header("Event Channel")]

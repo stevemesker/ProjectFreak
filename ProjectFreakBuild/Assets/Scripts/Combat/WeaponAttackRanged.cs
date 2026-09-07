@@ -47,6 +47,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     #region Initialization
     public void SetUpWeapon(ItemSO item, GameObject Wielder, CoreStats stats)
     {
+        return;
         _Wielder = Wielder;
         _WeaponObject = item as WeaponRangedItem;
         

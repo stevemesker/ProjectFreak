@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     [FoldoutGroup("Combat")][SerializeField] 
     float chargeAmount;
     [FoldoutGroup("Combat")][Tooltip("Current selection number"), SerializeField]
-    private int weaponSelection;
+    public int weaponSelection;
 
 
     //Private/Unserialized Variables
@@ -112,9 +112,10 @@ public class Player : MonoBehaviour
     */
     #region Equipment
 
+    /*
     public void setActiveWeapon (int index)
     {
-        //function that hanles switching weapon selection
+        //function that handles switching weapon selection
         int wpn = index;
         if (index < 0)
         {
@@ -122,10 +123,10 @@ public class Player : MonoBehaviour
         }
         weaponSelection = wpn % pData.pInventory._EquipmentSize;
         updateCurrentWeapon();
-    }
+    }*/
 
 
-    void updateCurrentWeapon()
+    public void updateCurrentWeapon()
     {
         if (handPointer == null) { Debug.LogError("Error! Hand bone has not been selected to allow weapon swapping"); return; }
 
