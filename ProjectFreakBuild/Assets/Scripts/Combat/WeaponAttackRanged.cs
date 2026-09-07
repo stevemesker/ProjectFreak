@@ -35,7 +35,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     private int currentPower;
     List<ElementType.Element> currentElement;
 
-    private int projectileIndexer; //used tyo scycke through projectiles in case there are multiple types
+    private int projectileIndexer; //used tyo cycle through projectiles in case there are multiple types
 
     //
     //Private/Unserialized Variables
@@ -51,12 +51,18 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         _WeaponObject = item as WeaponRangedItem;
         
         dmgPackage = new DamagePackage();
+        dmgPackage._Entries = new List<DamageEntry>();
 
         dmgPackage._Source = Wielder;
         dmgPackage._CritMultiplier = 1; //figure this out later, it'll probably come from the weapon data? but maybe not it might be a stat thing I dunno man I just work here
         int dmg = stats.TypeToStatFinder(stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType));
+        
+        DamageEntry tempEntry = CreateDamageEntry(dmg, _WeaponObject.weaponAttackType, stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType), elementType);
 
-        addDamageEntryToPackage(CreateDamageEntry(dmg, _WeaponObject.weaponAttackType, stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType), elementType));
+        //Debug.LogWarning($"testing package builder: Damage {tempEntry._Damage} | Atk Type {tempEntry._atkType}");
+        //Debug.LogWarning($"Attack stat type {tempEntry._statType} | element type {tempEntry._elementType}");
+
+        addDamageEntryToPackage(tempEntry);
     }
     
     public void addDamageEntryToPackage(DamageEntry entry)
@@ -124,6 +130,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     void fireWeapon(float multiplier)
     {
         print("Bang! X " + multiplier);
+        CameraManager._CamManager.CameraShake(_WeaponObject.activationShake, null);
 
         if (_WeaponObject.shotNumber > 1) multishot();
         else SingleShot();

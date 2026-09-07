@@ -23,6 +23,9 @@ public class WeaponItem : ItemSO
     [Tooltip("how strong the kickback of the gun is to the player")] 
     public float weaponKnockback;
 
+    [Tooltip("How much the camera shake will move when using the weapon")]
+    public float activationShake = 0.15f;
+
     [Tooltip("If ticked, weapon will not quit firing after first shot and will instead wait until fire rate timer ends")]
     public bool isAutomatic;
 

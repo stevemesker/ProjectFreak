@@ -93,11 +93,23 @@ public class PlayerCombatInteract : MonoBehaviour
     #region useWeapon
     private void useWeapon(InputAction.CallbackContext context)
     {
-        Player.player.UseCurrentWeapon();
+        //Player.player.UseCurrentWeapon();
+        print("Using weapon");
+        if (Player.player.handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (Player.player.handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
+
+        //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
+        Player.player.handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack();
     }
     private void releaseWeapon(InputAction.CallbackContext context)
     {
-        Player.player.releaseCurrentWeapon();
+        //Player.player.releaseCurrentWeapon();
+        print("Releasing weapon");
+        if (Player.player.handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
+        if (Player.player.handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
+
+        Player.player.handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
+
     #endregion
 }
