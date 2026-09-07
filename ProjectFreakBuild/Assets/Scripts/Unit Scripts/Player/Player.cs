@@ -18,10 +18,6 @@ public class Player : MonoBehaviour
     [Tooltip("Points to the hand bone so weapon swapping knows where to instantiate the weapon to. IMPORTANT: hand bone must be the lowest level child as swapping checks for children and will delete it when swapping. Can easily break parent chains")]
     public GameObject handPointer;
 
-    //event Variable//
-    [FoldoutGroup("Events")]
-    [SerializeField] private PickupEventChannelSO pickupChannel;
-
     //Combat Variables
     [FoldoutGroup("Combat")][Header("Weapons")][SerializeField] 
     bool isCharging;
@@ -48,83 +44,8 @@ public class Player : MonoBehaviour
         updateCurrentWeapon();
         CameraManager._CamManager.setCamTargetToPlayer();
     }
-    /*
-    private void OnEnable()
-    {
-        Debug.Log("Player Awake"); // ? click the left margin here
-        if (pickupChannel != null)
-            pickupChannel.OnPickup += HandlePickup;
-    }
-
-    private void OnDisable()
-    {
-        Debug.Log("Player Not Awake"); // ? click the left margin here
-        if (pickupChannel != null)
-            pickupChannel.OnPickup -= HandlePickup;
-    }
-    #endregion
-
-    #region Item Pickup
-    private void HandlePickup(ItemSO item, int amount, GameObject origin)
-    {
-        print("Picking up " + item.name);
-
-        switch(item)
-        {
-            case WeaponItem weapon:
-                if (pickUpWeapon(item as WeaponItem)) origin.GetComponent<ItemDrop>().removeItemInventory(amount);
-                else Debug.LogWarning("Warning! Cannot fit weapon " + item.name);
-                break;
-            default:
-                if (pickUpItem(item, amount)) origin.GetComponent<ItemDrop>().removeItemInventory(amount);
-                else Debug.LogWarning("Warning! Cannot fit item " + item.name);
-                break;
-        }
-    }
-
-    private bool pickUpWeapon(WeaponItem wpn)
-    {
-        if (pData.pInventory.checkEquippedWeaponFits(wpn) == true)
-        {
-            pData.pInventory.addEquipmentInventory(wpn);
-            updateCurrentWeapon();
-            return true;
-        }
-        else if (pData.pInventory.checkInventoryFits(wpn, 1))
-        {
-            pData.pInventory.addBackpackInventory(wpn, 1);
-            return true;
-        }
-
-        return false;
-    }
     
-    private bool pickUpItem(ItemSO item, int amount)
-    {
-        if (pData.pInventory.checkInventoryFits(item, amount))
-        {
-            pData.pInventory.addBackpackInventory(item, 1);
-            return true;
-        }
-        return false;
-    }
-    #endregion
-    */
     #region Equipment
-
-    /*
-    public void setActiveWeapon (int index)
-    {
-        //function that handles switching weapon selection
-        int wpn = index;
-        if (index < 0)
-        {
-            wpn = pData.pInventory._EquipmentSize - Mathf.Abs(index % pData.pInventory._EquipmentSize);
-        }
-        weaponSelection = wpn % pData.pInventory._EquipmentSize;
-        updateCurrentWeapon();
-    }*/
-
 
     public void updateCurrentWeapon()
     {
@@ -195,16 +116,6 @@ public class Player : MonoBehaviour
         handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
 
-    List<ElementType.Element> getElementalDamage()
-    {
-        List<ElementType.Element> eleOut = new List<ElementType.Element>();
-        //eleOut.Add(pData.pInventory._EquippedWeapons[weaponSelection].element);
-
-        //add other bonuses here
-        //------------------------
-
-        return eleOut;
-    }
     #endregion
 
     
