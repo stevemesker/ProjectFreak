@@ -6,10 +6,14 @@ using Sirenix.OdinInspector;
 
 public class PlayerCombatInteract : MonoBehaviour
 {
+    [Header("Weapon Switching")]
     [SerializeField] float cycleTime;
     [SerializeField] float cycleScale;
     [SerializeField] bool isCycling;
     Coroutine cycleTimer;
+
+    [Header("Pointers")]
+    [SerializeField]PlayerData pData;
 
     private PlayerInput pInput;
 
@@ -45,15 +49,19 @@ public class PlayerCombatInteract : MonoBehaviour
             cycleTimer = null;
             isCycling = false;
         }
-        Player.player.setActiveWeapon(Player.player.getActiveWeaponIndex() + (int)Mathf.Sign(context.ReadValue<float>()));
+        
+        setActiveWeapon(Player.player.getActiveWeaponIndex() + (int)Mathf.Sign(context.ReadValue<float>()));
         cycleTimer = StartCoroutine(selectionCycle((int)Mathf.Sign(context.ReadValue<float>())));
+        
     }
 
     void endSelection(InputAction.CallbackContext context)
     {
+        
         StopCoroutine(cycleTimer);
         cycleTimer = null;
         isCycling = false;
+        
     }
 
     IEnumerator selectionCycle(int direction)
@@ -63,9 +71,21 @@ public class PlayerCombatInteract : MonoBehaviour
         else scale = 1;
 
         yield return new WaitForSeconds(cycleTime / scale);
-        Player.player.setActiveWeapon(Player.player.getActiveWeaponIndex() + direction);
+        setActiveWeapon(Player.player.getActiveWeaponIndex() + direction);
         isCycling = true;
         cycleTimer = StartCoroutine(selectionCycle(direction));
+    }
+
+    public void setActiveWeapon(int index)
+    {
+        //function that handles switching weapon selection
+        int wpn = index;
+        if (index < 0)
+        {
+            wpn = pData.pInventory._EquipmentSize - Mathf.Abs(index % pData.pInventory._EquipmentSize);
+        }
+        Player.player.weaponSelection = wpn % pData.pInventory._EquipmentSize;
+        Player.player.updateCurrentWeapon();
     }
 
     #endregion
