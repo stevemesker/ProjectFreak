@@ -8,6 +8,7 @@ public class HUDManager : MonoBehaviour
     [Header("Pointers")]
     public static HUDManager _HUD;
     public ScreenFadeOut FadeOutCanvasObject;
+    [SerializeField] GameObject _RadialMenu;
 
     private void Awake()
     {
@@ -29,6 +30,26 @@ public class HUDManager : MonoBehaviour
     {
         return;
     }
+
+    #region RadialMenu
+    [Button("Activate")]
+    public void toggleRadialMenu()
+    {
+        if (_RadialMenu == null) return;
+        _RadialMenu.SetActive(!_RadialMenu.activeSelf);
+        _RadialMenu.GetComponent<RadialMenuManager>().enabled = _RadialMenu.activeSelf;
+        //turns on tamer abilities but not sure if we'll need to make other kinds of abilities...
+        UpdateRadialDial(Player.player.pData._TamerAbilities.Count);
+        Player.player.SetPlayerTurning(!_RadialMenu.activeSelf);
+    }
+
+    [Button("Update Radial Dial")]
+    void UpdateRadialDial (int ButtonCount)
+    {
+        _RadialMenu.GetComponent<RadialMenuManager>().UpdateRadialButtonSetUp(ButtonCount);
+    }
+
+    #endregion
 
     #region Fades
 

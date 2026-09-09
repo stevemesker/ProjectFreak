@@ -13,6 +13,10 @@ public class PlayerData : MonoBehaviour, IUnitData, IInventory
     [SerializeField, Tooltip("Active inventory of the player")]
     public Inventory pInventory;
 
+    [Header("Ability Data")]
+    public List<AbilitySO> _TamerAbilities;
+    public List<AbilitySO> _StandardAbilities;
+
     private void Awake()
     {
         pInventory._BackpackInventory = new Dictionary<ItemSO, int>();

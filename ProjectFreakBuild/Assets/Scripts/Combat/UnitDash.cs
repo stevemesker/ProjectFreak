@@ -81,6 +81,7 @@ public class UnitDash : MonoBehaviour
         //alternate dash activation that also includes damage
 
         Damage = dmg;
+        dmg._Entries = new List<DamageEntry>();
         DashCharacter(direction);
     }
 
@@ -112,7 +113,6 @@ public class UnitDash : MonoBehaviour
 
                 if (distanceTraveled >= nextCastDistance)
                 {
-                    print("Boop");
                     SphereCastForHits(lastCastPosition, targetPosition);
 
                     lastCastPosition = targetPosition;

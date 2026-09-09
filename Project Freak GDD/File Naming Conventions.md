@@ -18,3 +18,4 @@ File type list
 | PFB  | Prefab - prefab assemblies              |
 | SCN  | Scene - unity scenes                    |
 | SO   | Scriptable Object - Scriptable Objects  |
+| ICON | Icon - Image icons for UI               |

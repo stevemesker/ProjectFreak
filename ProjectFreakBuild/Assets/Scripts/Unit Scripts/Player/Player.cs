@@ -26,6 +26,9 @@ public class Player : MonoBehaviour
     [FoldoutGroup("Combat")][Tooltip("Current selection number"), SerializeField]
     public int weaponSelection;
 
+    [FoldoutGroup("Script Pointers")]
+    public CharacterMovement _movement;
+
 
     //Private/Unserialized Variables
     private ITriggerable weaponTrigger;
@@ -118,5 +121,21 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    
+    #region Disabling Player Character
+    public void EnablePlayerControl()
+    {
+        _movement.EnableMovement();
+    }
+
+    public void DisablePlayerControl()
+    {
+        _movement.DisableMovement();
+    }
+
+    public void SetPlayerTurning(bool Active)
+    {
+        _movement.SetTurning(Active);
+    }
+
+    #endregion
 }

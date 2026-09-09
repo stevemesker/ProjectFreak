@@ -24,6 +24,7 @@ MonoBehaviour:
   weaponFireRate: 1
   weaponWarmUpTime: 0
   weaponKnockback: 0
+  activationShake: 0.3
   isAutomatic: 1
   isChargedShot: 1
   chargeMaxAmount: 2

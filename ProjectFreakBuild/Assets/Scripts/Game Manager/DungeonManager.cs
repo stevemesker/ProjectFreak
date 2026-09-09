@@ -64,6 +64,19 @@ public class DungeonManager : MonoBehaviour
         //SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
     }
 
+    public void CompleteDungeon(string ReturnMap)
+    {
+        //add reward stuff here
+
+        _CurrentDungeon = null;
+        _CurrentRoomID = 0;
+        Destroy(_CurrentDungeonMap);
+        _map = null;
+
+        //migth need a better system for returning to previous areas
+        SceneManagerObject._SceneManager.changeScene(ReturnMap);
+    }
+
     public void MoveToFloor(int floorID)
     {
         DungeonMapNode temp = getMapNode(floorID);

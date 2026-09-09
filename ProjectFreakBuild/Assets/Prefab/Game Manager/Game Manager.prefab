@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 690b01ab14d0ccd4898237d248e70740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _CurrentDungeon: {fileID: 11400000, guid: 42838faace43d3f468496b848a756b70, type: 2}
+  _CurrentDungeon: {fileID: 0}
   _CurrentRoomID: 0
   _PreviousRoomNode: {fileID: 0}
   _CurrentDungeonMap: {fileID: 0}
