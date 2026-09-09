@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 public class ShadeManager : MonoBehaviour
 {
@@ -18,10 +19,58 @@ public class ShadeManager : MonoBehaviour
     [SerializeField] int currentShadeSelected;
     [SerializeField] List<statBoostPackage> shadeAlterPackages;
 
+    [Header("Local Variables")]
+    [SerializeField] float _switchTimeIn = .5f;
+    [SerializeField] float _switchTimeOut = .3f;
+    Coroutine _transferTimer;
+    [SerializeField] bool isBusy;
+
     private void OnEnable()
     {
         managerScriptableObject.manager = this;
     }
+
+    #region ShadeControl
+    [Button("Control Shade")]
+
+    public void ShadeControlAbility(GameObject controlTarget)
+    {
+        if (isBusy) return;
+        isBusy = true;
+        _transferTimer = StartCoroutine(ShadeControlSwitch(_switchTimeIn, _switchTimeOut, controlTarget));
+    }
+
+    public void ControlShade(bool control)
+    {
+        if (control)
+        {
+            Player.player.DisablePlayerControl();
+            Shade.shade.EnablePlayerControl();
+        }
+        else
+        {
+            Player.player.EnablePlayerControl();
+            Shade.shade.EnableShadeControl();
+        }
+        
+    }
+
+    IEnumerator ShadeControlSwitch(float easeOutTime, float easeInTime, GameObject controlTarget)
+    {
+        print($"Transfering focus to {controlTarget}");
+        HUDManager._HUD.FadeOut(easeOutTime);
+        yield return new WaitForSeconds(easeOutTime + .5f);
+
+        CameraManager._CamManager.setCamTargetToTarget(controlTarget);
+        if (controlTarget == Player.player.gameObject) { print($"Player is controlling their body"); ControlShade(false); }
+        else { print($"Player is controlling the body of {controlTarget.name}"); ControlShade(true); }
+
+        HUDManager._HUD.FadeIn(easeInTime);
+        yield return new WaitForSeconds(easeInTime + .1f);
+        isBusy = false;
+    }
+
+    #endregion
 
     #region get shade info
     public ShadeSO getCurrentShade()

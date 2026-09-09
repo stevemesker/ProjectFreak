@@ -10,6 +10,12 @@ public class DungeonManagerWrapper : MonoBehaviour
         DungeonManager._DM.EnterDungeon(dungeonID);
     }
 
+    public void EndDungeon(string ReturnMap)
+    {
+        if (ManagerTester("EndDungeon") == false) return;
+        DungeonManager._DM.CompleteDungeon(ReturnMap);
+    }
+
     public void MoveToDungeonRoom(int ID)
     {
         if (ManagerTester("MoveToDungeonRoom") == false) return;

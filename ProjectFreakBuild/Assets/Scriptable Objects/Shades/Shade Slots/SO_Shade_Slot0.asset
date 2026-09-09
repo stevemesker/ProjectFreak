@@ -23,7 +23,20 @@ MonoBehaviour:
     _WIS: 0
     _LVL: 0
     _Name: 
+    PhysicalPrimaryStat: 2
+    PhysicalSecondaryStat: 4
+    MagicalPrimaryStat: 5
+    MagicalSecondaryStat: 5
+    PhysicalDefMod: 3
+    MagicalDefMod: 6
+    AttackTypeResistance: 
+    ElementTypeResistance: 
+    AttackTypeImmunity: 
+    ElementTypeImmunity: 
     _XP: 0
+    _Danger:
+      _DangerLevels: []
+    _CurrentDangerType: 0
     _DIS: 0
     _WILD: 0
   _AlteredStats:
@@ -37,10 +50,23 @@ MonoBehaviour:
     _WIS: 0
     _LVL: 0
     _Name: 
+    PhysicalPrimaryStat: 2
+    PhysicalSecondaryStat: 4
+    MagicalPrimaryStat: 5
+    MagicalSecondaryStat: 5
+    PhysicalDefMod: 3
+    MagicalDefMod: 6
+    AttackTypeResistance: 
+    ElementTypeResistance: 
+    AttackTypeImmunity: 
+    ElementTypeImmunity: 
     _XP: 0
+    _Danger:
+      _DangerLevels: []
+    _CurrentDangerType: 0
     _DIS: 0
     _WILD: 0
-  _CurrentEvolution: {fileID: 0}
+  _CurrentEvolution: {fileID: 11400000, guid: c46287d04494e97458b17d159937a386, type: 2}
   _RuneFieldPackage:
     _Runes:
     - _elementDataPointer: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4,

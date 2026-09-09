@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 5255348119692755052}
   - component: {fileID: 753683252311642273}
   - component: {fileID: 5949827839321499019}
+  - component: {fileID: 6597945903533169669}
   m_Layer: 0
   m_Name: Player Character_PFB
   m_TagString: Player
@@ -62,6 +63,7 @@ MonoBehaviour:
   _MainCamera: {fileID: 0}
   _rayDidHit: 0
   isMovePaused: 0
+  isInputDisabled: 0
   RayLength: 3
   RideHeight: 1.5
   RideSpringStrength: 100
@@ -144,10 +146,10 @@ MonoBehaviour:
   pData: {fileID: 8785431862165512943}
   camTarget: {fileID: 4648769780060643362}
   handPointer: {fileID: 5035668622668642745}
-  pickupChannel: {fileID: 11400000, guid: 46fa219562a3ef748b6ca98113f84113, type: 2}
   isCharging: 0
   chargeAmount: 0
   weaponSelection: 0
+  _movement: {fileID: 6392860718488940342}
 --- !u!114 &8785431862165512943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,6 +207,10 @@ MonoBehaviour:
     _EquipmentSize: 2
     _InventorySize: 10
     _EquippedWeapons: []
+  _TamerAbilities:
+  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
+  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
+  _StandardAbilities: []
 --- !u!114 &4226439366264996839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -459,6 +465,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6597945903533169669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648769780060643362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 739c8f543eee65749bc86425c894bf8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5035668622668642745
 GameObject:
   m_ObjectHideFlags: 0

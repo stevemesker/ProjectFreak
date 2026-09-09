@@ -56,6 +56,13 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    public void setCamTargetToTarget(GameObject target)
+    {
+        _followCam.Follow = target.transform;
+        _followCam.LookAt = target.transform;
+        _currentFollowTarget = target;
+    }
+
     public void setGameplayCameraPriority(int priority)
     {
         _followCam.Priority = priority;

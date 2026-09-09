@@ -18,6 +18,7 @@ public class CharacterMovement : MonoBehaviour
 
     [Header("State Variables")]
     [SerializeField, Tooltip("When true, turn off the ability to move and turn the character")] bool isMovePaused;
+    [Tooltip("Tells if the input has been disabled but all other functions still run")] public bool isInputDisabled;
 
     [Header("Standing")]
     [SerializeField, Tooltip("How far to cast the ray to find the standing upright position")] float RayLength;
@@ -56,10 +57,68 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] bool OnDebugDrawLines;
     [SerializeField] float lineLength = 2;
 
+    [Header("State Machine Variables")]
+    [SerializeField] bool _CanTurn = true;
+
     #region Initialize
     private void OnEnable()
     {
+        if (CameraManager._CamManager != null) _MainCamera = CameraManager._CamManager._currentGameplayCamera;
         pInput = new PlayerInput();
+        EnableMovement();
+        /*
+        pInput.Enable();
+
+        pInput.Player.Move.performed += MovementInput;
+        pInput.Player.Move.canceled += MovementInput;
+
+        pInput.Player.Look.performed += StickTurn;
+        pInput.Player.Look.canceled += EndStickTurn;
+
+        pInput.Player.Point.performed += MouseInput;
+        pInput.Player.Point.canceled += MouseStopInput;
+
+        pInput.Player.Dash.performed += DashInput;*/
+    }
+
+    private void OnDisable()
+    {
+        DisableMovement();
+        /*
+        pInput.Player.Move.performed -= MovementInput;
+        pInput.Player.Move.canceled -= MovementInput;
+
+        pInput.Player.Look.performed -= StickTurn;
+        pInput.Player.Look.canceled -= EndStickTurn;
+
+        pInput.Player.Point.performed -= MouseInput;
+        pInput.Player.Point.canceled -= MouseStopInput;
+
+        pInput.Player.Dash.performed -= DashInput;
+
+        pInput.Disable();*/
+    }
+
+    public void DisableMovement()
+    {
+        isInputDisabled = true;
+        pInput.Player.Move.performed -= MovementInput;
+        pInput.Player.Move.canceled -= MovementInput;
+
+        pInput.Player.Look.performed -= StickTurn;
+        pInput.Player.Look.canceled -= EndStickTurn;
+
+        pInput.Player.Point.performed -= MouseInput;
+        pInput.Player.Point.canceled -= MouseStopInput;
+
+        pInput.Player.Dash.performed -= DashInput;
+
+        pInput.Disable();
+    }
+
+    public void EnableMovement()
+    {
+        isInputDisabled = false;
         pInput.Enable();
 
         pInput.Player.Move.performed += MovementInput;
@@ -74,21 +133,12 @@ public class CharacterMovement : MonoBehaviour
         pInput.Player.Dash.performed += DashInput;
     }
 
-    private void OnDisable()
+    public void SetTurning(bool Active)
     {
-        pInput.Player.Move.performed -= MovementInput;
-        pInput.Player.Move.canceled -= MovementInput;
-
-        pInput.Player.Look.performed -= StickTurn;
-        pInput.Player.Look.canceled -= EndStickTurn;
-
-        pInput.Player.Point.performed -= MouseInput;
-        pInput.Player.Point.canceled -= MouseStopInput;
-
-        pInput.Player.Dash.performed -= DashInput;
-
-        pInput.Disable();
+        //function that disables turning without disabling other controls
+        _CanTurn = Active;
     }
+
     private void Awake()
     {
         _RB = GetComponent<Rigidbody>();
@@ -162,6 +212,7 @@ public class CharacterMovement : MonoBehaviour
     void Rotationforce()
     {
         if (isMovePaused) return;
+        if (_CanTurn == false) return;
         Quaternion targetRotation =
         Quaternion.LookRotation(m_turnGoal);
 

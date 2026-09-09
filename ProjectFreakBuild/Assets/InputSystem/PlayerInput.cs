@@ -125,6 +125,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RadialMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""7a518533-6320-438a-9a2a-d9c69a78ad12"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -477,6 +486,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OptionsMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e5799669-094c-4534-81ae-bd5dd62afab5"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""RadialMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f1b2208d-c687-4337-892e-9e16a663ae59"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RadialMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1420,6 +1451,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Trigger = m_Player.FindAction("Trigger", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_OptionsMenu = m_Player.FindAction("OptionsMenu", throwIfNotFound: true);
+        m_Player_RadialMenu = m_Player.FindAction("RadialMenu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1514,6 +1546,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Trigger;
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_OptionsMenu;
+    private readonly InputAction m_Player_RadialMenu;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -1529,6 +1562,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Trigger => m_Wrapper.m_Player_Trigger;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @OptionsMenu => m_Wrapper.m_Player_OptionsMenu;
+        public InputAction @RadialMenu => m_Wrapper.m_Player_RadialMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1571,6 +1605,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @OptionsMenu.started += instance.OnOptionsMenu;
             @OptionsMenu.performed += instance.OnOptionsMenu;
             @OptionsMenu.canceled += instance.OnOptionsMenu;
+            @RadialMenu.started += instance.OnRadialMenu;
+            @RadialMenu.performed += instance.OnRadialMenu;
+            @RadialMenu.canceled += instance.OnRadialMenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1608,6 +1645,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @OptionsMenu.started -= instance.OnOptionsMenu;
             @OptionsMenu.performed -= instance.OnOptionsMenu;
             @OptionsMenu.canceled -= instance.OnOptionsMenu;
+            @RadialMenu.started -= instance.OnRadialMenu;
+            @RadialMenu.performed -= instance.OnRadialMenu;
+            @RadialMenu.canceled -= instance.OnRadialMenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1925,6 +1965,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnTrigger(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnOptionsMenu(InputAction.CallbackContext context);
+        void OnRadialMenu(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
