@@ -63,7 +63,6 @@ public class RadialMenuManager : MonoBehaviour
     {
         _SelectionVector = context.ReadValue<Vector2>();
         DebugSelectionVector(_SelectionVector);
-        print("beep");
         CalculateBottonVector();
     }
 
@@ -78,7 +77,6 @@ public class RadialMenuManager : MonoBehaviour
 
         _SelectionVector = (mousePosition - centerPosition).normalized;
         DebugSelectionVector(_SelectionVector);
-        print("boop");
         CalculateBottonVector();
     }
 
@@ -129,25 +127,25 @@ public class RadialMenuManager : MonoBehaviour
     #endregion
 
     #region Button Build
-    public void UpdateRadialButtonSetUp(int ButtonCount)
+    public void UpdateRadialButtonSetUp(int ButtonCount, List<AbilitySO> buttonData)
     {
         if (_SpawnedButtons == null) _SpawnedButtons = new List<GameObject>();
         _ButtonCount = ButtonCount;
-        if (_SpawnedButtons.Count > ButtonCount) RemoveExtraButtons(ButtonCount);
+        if (_SpawnedButtons.Count > ButtonCount) RemoveExtraButtons(ButtonCount, buttonData);
 
-        UpdateOldRadialButtons(_SpawnedButtons.Count);
+        UpdateOldRadialButtons(_SpawnedButtons.Count, buttonData);
 
         for (int i = _SpawnedButtons.Count; i < ButtonCount; i++)
         {
             _SpawnedButtons.Add(Instantiate(_DialPrefab, transform.position, Quaternion.identity, _radialButtonHolder.transform));
             _SpawnedButtons[i].name += $" : {i}";
-            SetUpRadialDialButton(i);
+            SetUpRadialDialButton(i, buttonData[i]);
         }
         
         CalculateBottonVector();
     }
 
-    void RemoveExtraButtons(int ButtonCount)
+    void RemoveExtraButtons(int ButtonCount, List<AbilitySO> buttonData)
     {
         for (int i = _SpawnedButtons.Count-1; i >= ButtonCount; i--)
         {
@@ -156,15 +154,15 @@ public class RadialMenuManager : MonoBehaviour
         }
     }
 
-    void UpdateOldRadialButtons(int count)
+    void UpdateOldRadialButtons(int count, List<AbilitySO> buttonData)
     {
         for (int i = 0; i < count; i++)
         {
-            SetUpRadialDialButton(i);
+            SetUpRadialDialButton(i, buttonData[i]);
         }
     }
 
-    void SetUpRadialDialButton(int index)
+    void SetUpRadialDialButton(int index, AbilitySO buttonData)
     {
         float tempSpacing = _DialButtonSpacing;
         if (_ButtonCount < 2) tempSpacing = 0;
@@ -174,9 +172,17 @@ public class RadialMenuManager : MonoBehaviour
         _SpawnedButtons[index].transform.localEulerAngles = radialPArtEulerAngle;
         _SpawnedButtons[index].GetComponent<Image>().fillAmount = 1 / (float)_ButtonCount - (tempSpacing / 360);
         _SpawnedButtons[index].GetComponent<Image>().color = _colorPalette._PrimaryColor;
+
+        _SpawnedButtons[index].GetComponent<RadialButton>()._AbilityActivation = buttonData;
     }
 
     #endregion
+
+    public void UseButton()
+    {
+        print($"using button {_LastSelectedButton.name}...");
+        _LastSelectedButton.GetComponent<RadialButton>().Activation(Player.player.gameObject);
+    }
 
     void DebugSelectionVector(Vector2 inputVector)
     {

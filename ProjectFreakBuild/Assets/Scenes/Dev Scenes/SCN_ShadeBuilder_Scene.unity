@@ -4017,16 +4017,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PFB_HUD Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 3853598113052411832, guid: c78e959b2e28e0a4bbfffc46ea7a31e5,
-        type: 3}
-      propertyPath: _DialButtonSpacing
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 5121947477626088261, guid: c78e959b2e28e0a4bbfffc46ea7a31e5,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10780,6 +10770,7 @@ MonoBehaviour:
   isUsingMouse: 0
   OnDebugDrawLines: 0
   lineLength: 2
+  _CanTurn: 1
 --- !u!54 &2080427417
 Rigidbody:
   m_ObjectHideFlags: 0
