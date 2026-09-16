@@ -31,6 +31,11 @@ public class ShadeManager : MonoBehaviour
     }
 
     #region ShadeControl
+    public void summonShade(GameObject source)
+    {
+        print($"{source.name} has used an ability! Hazzah!");
+    }
+
     [Button("Control Shade")]
 
     public void ShadeControlAbility(GameObject controlTarget)

@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 753683252311642273}
   - component: {fileID: 5949827839321499019}
   - component: {fileID: 6597945903533169669}
+  - component: {fileID: 9135253987976147868}
   m_Layer: 0
   m_Name: Player Character_PFB
   m_TagString: Player
@@ -131,6 +132,7 @@ MonoBehaviour:
   isUsingMouse: 0
   OnDebugDrawLines: 0
   lineLength: 2
+  _CanTurn: 1
 --- !u!114 &937096811905754345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +210,8 @@ MonoBehaviour:
     _InventorySize: 10
     _EquippedWeapons: []
   _TamerAbilities:
+  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
+  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
   - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
   - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
   _StandardAbilities: []
@@ -475,6 +479,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 739c8f543eee65749bc86425c894bf8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9135253987976147868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648769780060643362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 946327bef45605f4dbb699c746c86b62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5035668622668642745

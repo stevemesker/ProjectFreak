@@ -12,5 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd3089071ac57a748a1694e25af4fae4, type: 3}
   m_Name: SO_Ability_SummonShade
   m_EditorClassIdentifier: 
-  _AbilityName: 
+  _AbilityName: Summon Shade
   _AbilityCooldown: 0.5
+  _steps:
+  - rid: 190815126375104512
+  - rid: 190815126375104514
+  references:
+    version: 2
+    RefIds:
+    - rid: 190815126375104512
+      type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
+      data:
+        Timing: 1
+        _Functions:
+        - rid: 190815126375104513
+    - rid: 190815126375104513
+      type: {class: TestAbility, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 190815126375104514
+      type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
+      data:
+        Timing: 1
+        _Functions:
+        - rid: 190815126375104515
+    - rid: 190815126375104515
+      type: {class: TestAbility, ns: , asm: Assembly-CSharp}
+      data: 

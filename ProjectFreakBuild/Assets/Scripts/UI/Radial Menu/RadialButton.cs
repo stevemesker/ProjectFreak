@@ -18,8 +18,10 @@ public class RadialButton : MonoBehaviour
         gameObject.GetComponent<Image>().color = _colorPalette._PrimaryColor;
     }
 
-    public void Activation()
+    public void Activation(GameObject Source)
     {
         Debug.Log($"Now activating {_AbilityActivation.name}");
+        Source.GetComponent<AbilityInterpreter>().InitializeAbility(_AbilityActivation);
+        //_AbilityActivation.InvokeAbility(Source);
     }
 }
