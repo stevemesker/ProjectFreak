@@ -31,9 +31,9 @@ public class ShadeManager : MonoBehaviour
     }
 
     #region ShadeControl
-    public void summonShade(GameObject source)
+    public void summonShade(Vector3 position)
     {
-        print($"{source.name} has used an ability! Hazzah!");
+        print($"Now summoning {_ShadeSlots[currentShadeSelected].name} at location {position}! Hazzah!");
     }
 
     [Button("Control Shade")]

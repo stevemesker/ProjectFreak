@@ -85,6 +85,15 @@ public class AbilityInterpreter : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         AdvanceAbilityStep();
     }
+
+    public void summonUnit(Vector3 position, Quaternion rotation)
+    {
+        GameObject instancedUnit = Instantiate(_CurrentAbility._steps[_currentAbilityStep]._StepObject, position, rotation);
+        if (instancedUnit.TryGetComponent<ISummonUnit>(out ISummonUnit summonedUnit))
+        {
+            Debug.Log($"{instancedUnit.name} has been summoned and contains summoning interface");
+        }
+    }
     #endregion
 
     #region Debugging
