@@ -34,7 +34,10 @@ public class AbilitySO : ScriptableObject
 [System.Serializable]
 public class AbilityStep
 {
+    [SerializeField] string DevNotes;
     public float Timing;
+    [Tooltip("Used for any object spawning for this step")]
+    public GameObject _StepObject;
     [SerializeReference]
     public List<AbilityFunction> _Functions;
 

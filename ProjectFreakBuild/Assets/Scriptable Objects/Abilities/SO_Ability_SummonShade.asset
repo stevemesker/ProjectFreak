@@ -16,25 +16,16 @@ MonoBehaviour:
   _AbilityCooldown: 0.5
   _steps:
   - rid: 190815126375104512
-  - rid: 190815126375104514
   references:
     version: 2
     RefIds:
     - rid: 190815126375104512
       type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
       data:
-        Timing: 1
+        Timing: 0
+        _StepObject: {fileID: 0}
         _Functions:
         - rid: 190815126375104513
     - rid: 190815126375104513
-      type: {class: TestAbility, ns: , asm: Assembly-CSharp}
-      data: 
-    - rid: 190815126375104514
-      type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
-      data:
-        Timing: 1
-        _Functions:
-        - rid: 190815126375104515
-    - rid: 190815126375104515
       type: {class: TestAbility, ns: , asm: Assembly-CSharp}
       data: 

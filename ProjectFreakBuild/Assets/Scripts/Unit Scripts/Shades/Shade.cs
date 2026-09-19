@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class Shade : MonoBehaviour
+public class Shade : MonoBehaviour, ISummonUnit
 {
     //the current shade on the field
     public static Shade shade;
@@ -15,6 +15,7 @@ public class Shade : MonoBehaviour
     [FoldoutGroup("Pointers")]
     [Header("Script pointers")]
     public CharacterMovement _movement;
+    public GameObject PlayerRef;
 
     private void OnEnable()
     {
@@ -31,6 +32,18 @@ public class Shade : MonoBehaviour
     public void EnableShadeControl()
     {
         _movement.DisableMovement();
+    }
+    #endregion
+
+    #region Isummon
+    public void AssignSummoner(GameObject Summoner)
+    {
+        PlayerRef = Summoner;
+    }
+
+    public void UpdateStats(CoreStats summonerStats)
+    {
+
     }
     #endregion
 }
