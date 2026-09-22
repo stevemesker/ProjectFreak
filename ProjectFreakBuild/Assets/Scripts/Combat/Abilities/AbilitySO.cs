@@ -11,6 +11,7 @@ public class AbilitySO : ScriptableObject
 
     [Header("Ability Information")]
     public string _AbilityName;
+    public Sprite _AbilitySprite;
 
     [Header("Ability Stats")]
     public float _AbilityCooldown = 0.5f;

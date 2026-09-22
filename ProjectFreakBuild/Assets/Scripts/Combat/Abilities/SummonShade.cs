@@ -14,6 +14,8 @@ public class SummonShade : AbilityFunction
             Debug.Log("Warning! Could not find suitable position to summon shade...");
             return;
         }
+        Debug.LogWarning($"{source.name} is summoning a shade | Player location: {source.transform.position} | Shade location: {source.transform.position + summonPosition}");
+        Debug.LogWarning($"Correct numbers on a flat plane should be : {source.transform.position + (source.transform.forward * 5)}");
         SpawnShade(summonPosition);
     }
 
@@ -24,16 +26,14 @@ public class SummonShade : AbilityFunction
         float shadeBuffer = 0.5f;
         float searchAngle = 2f;
 
+        Vector3 finalPosition = Vector3.zero;
+        float smallestDistance = searchDistance;
+
+
         // Find the surface the player is standing on
         Vector3 groundOrigin = source.transform.position + Vector3.up * 0.5f;
 
-        if (!Physics.Raycast(
-            groundOrigin,
-            Vector3.down,
-            out RaycastHit groundHit,
-            5f,
-            Physics.DefaultRaycastLayers,
-            QueryTriggerInteraction.Ignore))
+        if (!Physics.Raycast(groundOrigin,Vector3.down,out RaycastHit groundHit,5f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
         {
             return Vector3.zero;
         }
@@ -42,26 +42,51 @@ public class SummonShade : AbilityFunction
 
         for (float angle = 0f; angle < 360f; angle += searchAngle)
         {
-            Vector3 direction = Vector3.ProjectOnPlane(Quaternion.Euler(0f, angle, 0f) * source.transform.forward,groundHit.normal).normalized;
+            Vector3 direction = Quaternion.AngleAxis(angle, groundHit.normal) * source.transform.forward;
 
-            if (Physics.Raycast(
-                origin,
-                direction,
-                out RaycastHit hit,
-                searchDistance,
-                Physics.DefaultRaycastLayers,
-                QueryTriggerInteraction.Ignore))
+            direction = Vector3.ProjectOnPlane(direction,groundHit.normal).normalized;
+
+            RaycastHit[] hits = Physics.RaycastAll(origin, direction, searchDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            RaycastHit finalHit;
+            Debug.Log($"Hit count: {hits.Length}");
+            foreach(RaycastHit hit in hits)
+            {
+                if (hit.transform.gameObject == source) { Debug.LogWarning("Found Myself..."); continue; }
+                if (hit.distance < smallestDistance)
+                {
+                    smallestDistance = hit.distance;
+                }
+                    //return Vector3.zero;
+            }
+            if (smallestDistance < minimumSpace)
+            {
+                Debug.LogWarning($"Warning! Not enough room to summon shade! Range: {smallestDistance}");
+                continue;
+            }
+
+            Debug.Log($"Final distance: {smallestDistance}");
+            finalPosition = direction * (smallestDistance - shadeBuffer);
+
+            return finalPosition;
+            //return direction * searchDistance;
+            /*
+            if (Physics.Raycast(origin + source.transform.forward,direction,out RaycastHit hit,searchDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
             {
                 if (hit.distance < minimumSpace)
                     continue;
 
-                return origin + direction * (hit.distance - shadeBuffer);
+                Vector3 worldPosition = origin + direction * (hit.distance - shadeBuffer);
+                Debug.LogWarning($"Direction: {direction} | WorldPosition: {worldPosition}");
+                // Convert the world position to a position relative to the source
+                return source.transform.InverseTransformPoint(worldPosition);
             }
+            
 
-            //return origin + direction * searchDistance;
-            Vector3 openPosition = origin + direction * searchDistance;
+            Vector3 openWorldPosition = origin + direction * searchDistance;
 
-            return source.transform.InverseTransformPoint(openPosition);
+            // Convert the world position to a position relative to the source
+            return source.transform.InverseTransformPoint(openWorldPosition);
+            */
         }
 
         return Vector3.zero;

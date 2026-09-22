@@ -29,7 +29,7 @@ public class PlayerMenuInputs : MonoBehaviour
 
     void ToggleRadialMenu(InputAction.CallbackContext context)
     {
-        print("Opening Radial Menu");
+        print("Toggling Radial Menu");
         HUDManager._HUD.toggleRadialMenu();
     }
 }

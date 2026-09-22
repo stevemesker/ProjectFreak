@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class RadialMenuManager : MonoBehaviour
 {
     [SerializeField] GameObject _DialPrefab;
+    [SerializeField] GameObject _ButtonDescriptionText;
     [SerializeField, Range(1,12)] int _DialButtonCount;
     [SerializeField, Range(0, 180)] float _DialButtonSpacing;
     [SerializeField] GameObject _radialButtonHolder;
@@ -21,6 +23,7 @@ public class RadialMenuManager : MonoBehaviour
 
     //local variables
     private PlayerInput pInput;
+    private bool mouse;
 
     private void OnEnable()
     {
@@ -43,6 +46,7 @@ public class RadialMenuManager : MonoBehaviour
 
         pInput.Player.Point.performed += GetMouseVector;
         pInput.Player.Point.canceled += GetMouseVector;
+        mouse = true;
     }
 
     private void DisableRadial()
@@ -68,6 +72,7 @@ public class RadialMenuManager : MonoBehaviour
 
     void GetMouseVector(InputAction.CallbackContext context)
     {
+        if (mouse == false) return;
         Vector2 mousePosition = context.ReadValue<Vector2>();
 
         Vector2 centerPosition = RectTransformUtility.WorldToScreenPoint(
@@ -107,6 +112,7 @@ public class RadialMenuManager : MonoBehaviour
                 _LastSelectedButton.GetComponent<RadialButton>().OnDeselction(_colorPalette);
                 _LastSelectedButton = null;
             }
+            _ButtonDescriptionText.GetComponent<TMP_Text>().text = "---";
             return;
         }
         if (_LastSelectedButton != selectedButton)
@@ -117,6 +123,7 @@ public class RadialMenuManager : MonoBehaviour
                 _LastSelectedButton.GetComponent<RadialButton>().OnDeselction(_colorPalette);
             }
             print(selectedButton.name + " will now activate");
+            _ButtonDescriptionText.GetComponent <TMP_Text>().text = selectedButton.GetComponent<RadialButton>()._AbilityActivation._AbilityName;
             selectedButton.GetComponent<RadialButton>().OnSelection(_colorPalette);
             _LastSelectedButton = selectedButton;
             return;
@@ -173,13 +180,16 @@ public class RadialMenuManager : MonoBehaviour
         _SpawnedButtons[index].GetComponent<Image>().fillAmount = 1 / (float)_ButtonCount - (tempSpacing / 360);
         _SpawnedButtons[index].GetComponent<Image>().color = _colorPalette._PrimaryColor;
 
-        _SpawnedButtons[index].GetComponent<RadialButton>()._AbilityActivation = buttonData;
+        RadialButton btn = _SpawnedButtons[index].GetComponent<RadialButton>();
+        btn.SetUpDial(buttonData, tempSpacing/2);
+        btn.SetUpDialIcon(_ButtonCount, index);
     }
 
     #endregion
 
     public void UseButton()
     {
+        if (_LastSelectedButton == null) { print("Nothing was selected. Closing radial menu..."); return; }
         print($"using button {_LastSelectedButton.name}...");
         _LastSelectedButton.GetComponent<RadialButton>().Activation(Player.player.gameObject);
     }
