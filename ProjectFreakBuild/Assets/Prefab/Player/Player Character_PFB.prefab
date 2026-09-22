@@ -210,9 +210,7 @@ MonoBehaviour:
     _InventorySize: 10
     _EquippedWeapons: []
   _TamerAbilities:
-  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
-  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
-  - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
+  - {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}
   - {fileID: 11400000, guid: d062d47e397605846a648af2dfccacd4, type: 2}
   _StandardAbilities: []
 --- !u!114 &4226439366264996839

@@ -81,12 +81,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   managerScriptableObject: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530,
     type: 2}
+  _ShadePrefab: {fileID: 5828660845402572805, guid: 345767b28b2d2404190bd012b07a7e56,
+    type: 3}
   _ShadeSlots:
   - {fileID: 11400000, guid: c2a5cbd993cf42d418a6b7db80df3cce, type: 2}
   - {fileID: 11400000, guid: aa6dc390da24f3146899eaae6d3ebbcd, type: 2}
   tamerSlotLevel: 1
   currentShadeSelected: 0
   shadeAlterPackages: []
+  _switchTimeIn: 0.5
+  _switchTimeOut: 0.3
+  isBusy: 0
 --- !u!114 &9061649919952316187
 MonoBehaviour:
   m_ObjectHideFlags: 0

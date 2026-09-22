@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd3089071ac57a748a1694e25af4fae4, type: 3}
-  m_Name: SO_Ability_SummonShade
+  m_Name: SO_Ability_ControlShade
   m_EditorClassIdentifier: 
-  _AbilityName: Summon Shade
-  _AbilitySprite: {fileID: 21300000, guid: 71aa56ec46903084eabe2a46ca53a1b9, type: 3}
+  _AbilityName: Control Shade
+  _AbilitySprite: {fileID: 21300000, guid: 4994ee40fff67d448ade424f5a690847, type: 3}
   _AbilityCooldown: 0.5
   _steps:
   - rid: 190815126375104512
@@ -37,10 +37,9 @@ MonoBehaviour:
       data:
         DevNotes: Spawn Shade
         Timing: 1
-        _StepObject: {fileID: 5828660845402572805, guid: 345767b28b2d2404190bd012b07a7e56,
-          type: 3}
+        _StepObject: {fileID: 0}
         _Functions:
-        - rid: 190815189735571457
-    - rid: 190815189735571457
-      type: {class: SummonShade, ns: , asm: Assembly-CSharp}
+        - rid: 190815189735571458
+    - rid: 190815189735571458
+      type: {class: ControlShade, ns: , asm: Assembly-CSharp}
       data: 

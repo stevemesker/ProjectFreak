@@ -9,6 +9,9 @@ public class ShadeManager : MonoBehaviour
 {
     [Header("Pointer")]
     [SerializeField]ElementManagerSO managerScriptableObject;
+    [SerializeField] GameObject _ShadePrefab;
+    [SerializeField] GameObject _CurrentShade;
+
 
     [Header("All possible shade slots")]
     public List<ShadeSO> _ShadeSlots;
@@ -34,15 +37,20 @@ public class ShadeManager : MonoBehaviour
     public void summonShade(Vector3 position)
     {
         print($"Now summoning {_ShadeSlots[currentShadeSelected].name} at location {position}! Hazzah!");
+        if (isBusy) return;
+        if (_CurrentShade != null) _CurrentShade.transform.position = Player.player.transform.position + position;
+        else _CurrentShade = Instantiate(_ShadePrefab, Player.player.transform.position+position, Quaternion.identity);
+        ControlShade(false);
     }
 
     [Button("Control Shade")]
 
-    public void ShadeControlAbility(GameObject controlTarget)
+    public void ShadeControlAbility()
     {
         if (isBusy) return;
+        if (_CurrentShade == null) return;
         isBusy = true;
-        _transferTimer = StartCoroutine(ShadeControlSwitch(_switchTimeIn, _switchTimeOut, controlTarget));
+        _transferTimer = StartCoroutine(ShadeControlSwitch(_switchTimeIn, _switchTimeOut, _CurrentShade));
     }
 
     public void ControlShade(bool control)
