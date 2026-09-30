@@ -129,7 +129,29 @@ Stores the scene associated with this dungeon map node.
 
 This allows the node to identify the gameplay scene that should be loaded when the player selects or enters the node.
 
-The field is currently data storage only; scene loading is handled elsewhere.
+The field is currently data storage only; scene loading is handled by the [[Dungeon Manager]].
+
+The entrance and boss nodes get their scene names from the `DungeonSO` when they're created. Normal nodes start empty, and the [[Dungeon Manager]] picks a random floor scene for them when the player enters.
+
+---
+
+## `_ColorSwatch`
+
+**Type:** `ColorPaletteSO`
+
+The color palette assigned to this node by the [[Dungeon Map Manager]]. It's shown on the map icon and used by the [[Dungeon Door]]s that lead to this node, so the player can match a door to its map node.
+
+---
+
+# References
+
+## `_IconPointer`
+
+UI object whose `Image` shows the node's type icon. Set with `SetIcon()`.
+
+## `_IconColorChanger`
+
+UI object whose `Image` is tinted with the node's primary color. Set with `SetColorPaletteSwatch()`. *The code notes this is temporary until the node visuals are finished.*
 
 ---
 
@@ -500,6 +522,30 @@ A future implementation could use saved node IDs to restore:
 
 ---
 
+# Icons and Colors
+
+## `SetIcon(Sprite icon)`
+
+Sets the node's type icon on `_IconPointer`. Called by the [[Dungeon Map Manager]] after the node's type is chosen.
+
+## `SetColorPaletteSwatch(ColorPaletteSO colorSwatch)`
+
+Stores the palette in `_ColorSwatch` and tints `_IconColorChanger` with its primary color.
+
+## Color Checks
+
+Used by the [[Dungeon Map Manager]] to keep nearby nodes from sharing a color.
+
+| Function                                  | Checks                                                              |
+| :---------------------------------------- | :------------------------------------------------------------------ |
+| `TestColor(color)`                        | This node only                                                      |
+| `testNeighborColor(color)`                | This node and its direct connections                                |
+| `TestSelfAndNeighborColor(color)`         | This node, its connections, and their connections (two steps out)   |
+
+Each returns `true` if the color is already in use.
+
+---
+
 # Debug Visualization
 
 ## `OnDrawGizmosSelected()`
@@ -608,6 +654,7 @@ The division of responsibilities is intentionally:
 | `NodeBridge`        | Provides the visual representation of a connection |
 | `DungeonSO`         | Provides dungeon generation configuration          |
 | `POIType`           | Defines the gameplay role of a node                |
+| `ColorPaletteSO`    | Gives the node (and its doors) a matching color    |
 
 This architecture allows the map manager to remain relatively high-level while individual nodes handle the details of determining and maintaining their own connectivity.
 

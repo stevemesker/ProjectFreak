@@ -12,3 +12,6 @@ When a powered [[Element Rune]] overlaps am [[Ability Node]] it can potentially 
 
 
 
+
+---
+*For how this works in code see [[Rune Field System]].*

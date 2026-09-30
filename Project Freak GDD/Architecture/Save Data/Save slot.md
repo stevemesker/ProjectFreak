@@ -1,47 +1,49 @@
-The save slot is a scriptable object that holds the save data while the game is actively running and is the go between for the actual save file and the game's visual access. An example would be the load selection card that displays data such as chapters, player level, and current scene.
+The save slot is a scriptable object (`SaveSlotSO`) that holds the save data while the game is actively running and is the go between for the actual save file and the game's visual access. An example would be the load selection card that displays data such as chapters, player level, and current scene.
+
+Save slots are managed by the [[Save Manager]]. The **In Code** column shows which fields exist in `SaveSlotSO` right now and which are still planned. `ResetData()` sets every existing field back to its empty default.
 
 ---
 **Game Data**
 General data related to the game
 
 
-| Type       | Description                                                                              |
-| :--------- | :--------------------------------------------------------------------------------------- |
-| Empty save | Boolean that knows if this slot is either an unused save slot or if the slot was deleted |
+| Type       | Variable   | In Code | Description                                                                              |
+| :--------- | :--------- | :------ | :--------------------------------------------------------------------------------------- |
+| Empty save | `_IsEmpty` | Yes     | Boolean that knows if this slot is either an unused save slot or if the slot was deleted |
 
 ---
 **Player Data**
 Save slots need to track the player's various data and save it to the save file when necessary. Most of this is accessed when the game manager has to spawn in a new player pawn, typically at the launch of the game. The following is tracked by the save slot:
 
-| Type          | Description                                                        |
-| :------------ | :----------------------------------------------------------------- |
-| Tamer Level   | current tamer level of the player                                  |
-| Game Chapter  | What major chapter the player is on (used for opening scene stuff) |
-| Quest Chapter | What sub-chapter the player is on per quest                        |
+| Type          | Variable            | In Code | Description                                                        |
+| :------------ | :------------------ | :------ | :----------------------------------------------------------------- |
+| Tamer Level   | `_PlayerTamerLevel` | Yes     | current tamer level of the player                                  |
+| Game Chapter  | `_SaveChapter`      | Yes     | What major chapter the player is on (used for opening scene stuff) |
+| Quest Chapter |                     | Planned | What sub-chapter the player is on per quest                        |
 
 
 ---
 **Shade Data**
 
 
-| Type                   | Description                                         |
-| :--------------------- | :-------------------------------------------------- |
-| Shade Slot Selection   | What the player's current active shade slot is      |
-| Shade Stats            |                                                     |
-| Rune field data        | position and activated state of all runes and nodes |
-| Shade active abilities |                                                     |
+| Type                   | Variable              | In Code | Description                                         |
+| :--------------------- | :-------------------- | :------ | :-------------------------------------------------- |
+| Shade Slot Selection   | `_ShadeSlotSelection` | Yes     | What the player's current active shade slot is      |
+| Shade Stats            |                       | Planned |                                                     |
+| Rune field data        |                       | Planned | position and activated state of all runes and nodes |
+| Shade active abilities |                       | Planned |                                                     |
 
 ---
 
 **Scene Data**
 
 
-| Type                   | Description                                                                                              |
-| :--------------------- | :------------------------------------------------------------------------------------------------------- |
-| Last Door Used ID      |                                                                                                          |
-| Current Scene Readable | Last player facing name for the scene they're currently on. This is for readability on save slots in ui. |
-| Current Scene          | Actual scene last entered by the player, used for loading the scene                                      |
+| Type                   | Variable                | In Code | Description                                                                                              |
+| :--------------------- | :---------------------- | :------ | :------------------------------------------------------------------------------------------------------- |
+| Last Door Used ID      |                         | Planned |                                                                                                          |
+| Current Scene Readable | `_CurrentSceneReadable` | Yes     | Last player facing name for the scene they're currently on. This is for readability on save slots in ui. |
+| Current Scene          | `_CurrentScene`         | Yes     | Actual scene last entered by the player, used for loading the scene                                      |
 
 ---
 **Entity States**
-Some entities need to retain their current state when saving/loading such as chests or npc's that change state/position due to cutscene changes.
+*Planned.* Some entities need to retain their current state when saving/loading such as chests or npc's that change state/position due to cutscene changes.

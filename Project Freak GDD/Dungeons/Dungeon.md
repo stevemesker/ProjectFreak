@@ -22,17 +22,19 @@ The player's [[Shade]] is severely damaged by the end of the dungeon. It is hard
 
 Dungeons are the primary gameplay spaces where the player explores, fights enemies, discovers rewards, and progresses toward a final objective.
 
-Rather than generating an entire dungeon from scratch, the dungeon system uses a **hybrid approach** that combines hand-authored level structure with procedurally selected Points of Interest ([[POI]]s).
+Rather than generating an entire dungeon from scratch, the dungeon system uses a **hybrid approach** that combines hand-authored floor layouts with a procedurally generated map and procedurally selected Points of Interest ([[POI]]s).
 
-The overall dungeon structure is intentionally controlled by the designer. The game determines which rooms the player will encounter, how those rooms are connected, and which POIs are placed within them. This allows the dungeon to retain a deliberate sense of pacing and progression while still providing variation between runs.
+The designer controls the rules: map size, how often each node type appears, which floor layouts exist, and which POIs are available. The game then generates the map, picks a layout for each floor, and fills it with POIs. This keeps a deliberate sense of pacing and progression while still providing variation between runs.
 
 The dungeon system is built around several layers:
 
-1. **Dungeon** — Defines the overall dungeon and its floors
-2. **Floor** — Represents an individual level within the dungeon
-3. **Dungeon Map** — Defines the progression and connections between rooms
-4. **Point of Interest (POI)** — The gameplay content occupying a room or section of a room
-5. **Doors** — Connect rooms together and control progression between them
+1. **Dungeon** — Defines the overall dungeon and its rules (`DungeonSO`)
+2. **Dungeon Map** — A generated web of nodes. **Each node is one floor**
+3. **Floor** — A hand-built scene layout used by a node
+4. **Point of Interest (POI)** — The gameplay content placed into a floor
+5. **Doors** — Connect floors together and control progression between them
+
+For how this is built in code see [[Dungeon Architecture]].
 
 The dungeon system therefore separates **where the player goes** from **what the player finds there**.
 
@@ -40,32 +42,23 @@ The dungeon system therefore separates **where the player goes** from **what the
 
 ## Dungeon Structure
 
-A dungeon is composed of one or more floors.
+A dungeon is a web of floors. Each floor is a self-contained gameplay space, and floors are connected to each other through doors.
 
-Each floor represents a self-contained gameplay space and contains a collection of rooms connected through doors.
-
-A simplified hierarchy is:
+A simplified structure is:
 
 ```text
 Dungeon
 │
-├── Floor
-│   ├── Entrance
-│   ├── Room
-│   ├── Room
-│   ├── Room
-│   └── Boss / Exit
-│
-├── Floor
-│   ├── Entrance
-│   ├── Room
-│   ├── Room
-│   └── Boss / Exit
-│
-└── ...
+└── Map
+    ├── Entrance floor
+    ├── Column 1: Floor → Floor → Floor → ...
+    ├── Column 2: Floor → Floor → Floor → ...
+    ├── Column 3: Floor → Floor → Floor → ...
+    │     (plus extra cross connections between nearby floors)
+    └── Boss floor
 ```
 
-The exact number and arrangement of rooms can vary depending on the dungeon.
+The entrance connects to the start of every column and the boss connects to the end of every column. The number of columns and floors per column is set per dungeon.
 
 The dungeon itself is responsible for maintaining the overall progression, while individual floors handle the physical spaces the player explores.
 
@@ -184,6 +177,8 @@ Common room types may include:
 
 These categories describe the **purpose of a room**, rather than necessarily describing its physical appearance.
 
+*Current types in code (`POIType.Type`):* Basic, Boss, MiniBoss, Entrance, Treasure, Vault, Enemy, Safehouse, Unique. Each column of the map draws types from a weighted deck set in the `DungeonSO`. See [[Dungeon Map Manager]].
+
 A combat room could contain a small arena, a ruined courtyard, a series of corridors, or another appropriate POI.
 
 This allows the same logical room type to support many different visual and gameplay implementations.
@@ -260,6 +255,8 @@ Possible POIs:
 
 The player still experiences a combat room, but the physical space can vary.
 
+*Current implementation:* a POI spawner in the floor requests a size. The node's type is turned into a tag using a weighted lookup table, then a random POI with that size and tag is picked. See [[POI System]].
+
 ---
 
 # POI Tags
@@ -299,6 +296,8 @@ Tags:
 Both are combat POIs, but they can be selected for different circumstances.
 
 Tags therefore act as a flexible filtering system for POI selection.
+
+*Current tags in code (`POIType.Tag`):* chests, gold, easyEnemies, MediumEnemies, HardEnemies, Structure, Security, healing, special. The examples above (Indoor, Ambush, etc.) are ideas, not tags that exist yet.
 
 ---
 
@@ -380,6 +379,8 @@ Each floor can have its own:
 
 This allows progression to occur at multiple levels.
 
+*Current implementation:* POI pools, node type weights, and the floor layout list are set per dungeon, not per floor. Per-floor rules aren't built yet.
+
 ---
 
 # Door System
@@ -434,32 +435,32 @@ This keeps room construction independent from the higher-level dungeon graph.
 At a high level, creating a dungeon follows this sequence:
 
 ```text
-Dungeon Selected
+Dungeon Selected (EnterDungeon)
        ↓
 Dungeon Data Loaded
        ↓
-Floor Selected
-       ↓
 Dungeon Map Generated
        ↓
-Room Nodes Established
+Floor Nodes + Connections Established
        ↓
-Room Types Determined
+Node Types + Colors Assigned
        ↓
-POI Requirements Determined
+Player Sent to Entrance Floor
        ↓
-POIs Selected
+─── every time a floor is entered ───
        ↓
-Physical Floor Loaded
+Floor Layout Picked (random, first visit)
+       ↓
+Floor Scene Loaded
+       ↓
+Doors Connected to the Node's Connections
+       ↓
+POI Spawners Request POIs (by node type + size)
        ↓
 POIs Spawned
-       ↓
-Doors Connected
-       ↓
-Player Enters Dungeon
 ```
 
-The important distinction is that **logical generation occurs before physical population**.
+The important distinction is that **logical generation occurs before physical population**. The whole map is generated up front, while each floor's physical content is filled in when the player enters it.
 
 The system first determines what the dungeon should contain, then constructs the physical environment that represents that information.
 
