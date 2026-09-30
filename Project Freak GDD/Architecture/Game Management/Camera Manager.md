@@ -20,6 +20,10 @@ The `CameraManager` is responsible for:
 * Setting the player as the camera's Follow and LookAt target.
 * Providing the gameplay camera to the player's movement system.
 * Controlling the gameplay camera's Cinemachine priority.
+* Switching the camera to follow another target (used by [[Control Shade]]).
+* Camera shake through a Cinemachine Impulse Source.
+
+Scene objects should call the Camera Manager through `CameraManagerWrapper` (see [[Manager Wrappers]]).
 
 ---
 
@@ -206,6 +210,33 @@ This keeps camera selection centralized within Cinemachine rather than requiring
 
 ---
 
+# Following Other Targets
+
+`setCamTargetToTarget(GameObject target)` points the gameplay camera's `Follow` and `LookAt` at any object.
+
+The current target is stored in `_currentFollowTarget`. Other systems check this to know who the camera is watching. For example, [[Damage Receivers & Projectiles|PlayerDamegable]] only shakes the camera when the camera is following the player.
+
+This is used by [[Shade Manager]] when the player uses [[Control Shade]]: the screen fades out, the camera is moved to the shade, and the screen fades back in.
+
+`setCamTargetToPlayer()` switches back to the player.
+
+---
+
+# Camera Shake
+
+Camera shake uses a `CinemachineImpulseSource` found on the gameplay camera prefab (`_impulseSource`).
+
+| Function                                  | Description                                                                                         |
+| :---------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| `CameraShake(force, impulseSource)`       | Fires an impulse with the given force. If `impulseSource` is null, the gameplay camera's source is used |
+| `CombatCameraShake(force, impulseSource)` | Combat version of the shake. Currently just calls `CameraShake`, with a spot reserved for dampening |
+
+Combat shake strength is dampened by the unit's current danger level before it's sent here. See [[Damage Receivers & Projectiles]] for how `DangerLevel` works.
+
+An Odin **Test Shake** button is available in the inspector.
+
+---
+
 # Inspector Data
 
 ## Settings
@@ -247,6 +278,14 @@ Used to control:
 Reference to the camera's `CinemachineTransposer`.
 
 Used to control the camera's positional offset from the player.
+
+### `_currentFollowTarget`
+
+The object the gameplay camera is currently following. Usually the player, or the shade during [[Control Shade]].
+
+### `_impulseSource`
+
+The `CinemachineImpulseSource` on the gameplay camera, used for camera shake.
 
 ---
 

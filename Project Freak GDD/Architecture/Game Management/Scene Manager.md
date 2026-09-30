@@ -4,6 +4,8 @@ The **Scene Manager** is responsible for controlling scene transitions, opening/
 
 It acts as the central point for scene-changing operations so that other systems do not need to directly interact with Unity's `SceneManager`. It also coordinates with the `SaveManager`, `GameManager`, `HUDManager`, and `Player` systems when necessary.
 
+The script is named `SceneManagerObject` so it doesn't clash with Unity's own `SceneManager` class. Scene objects and UnityEvents should call it through `SceneManagerWrapper` (see [[Manager Wrappers]]). The [[Dungeon Manager]] calls it directly when moving between floors.
+
 ---
 
 ## Responsibilities
@@ -357,6 +359,44 @@ Stores a world-space player destination.
 ### `_PlayerMoveTarget`
 
 Stores the `SceneLocationSO` that the player is attempting to reach after a scene transition.
+
+---
+
+# Scene-Side Objects
+
+These components live in scenes and work with the Scene Manager when a scene loads.
+
+## `SceneLocationObject`
+
+Placed at doors and entrances. Holds a `SceneLocationSO` (`_LocationData`).
+
+In `Awake()` it asks the Scene Manager `TestDoorEntranceTarget(_LocationData)`. If this is the location the player was travelling to, the player is moved here:
+
+* to `_spawnLocator`'s position and rotation if one is assigned
+* otherwise to `_spawnLocationPosition` with this object's rotation
+
+## `SceneLocationSO`
+
+| Variable        | Description                                                                 |
+| :-------------- | :-------------------------------------------------------------------------- |
+| `_Name`         | Readable name                                                               |
+| `_Scene`        | Scene this location leads to                                                |
+| `_IsLinked`     | If true, this location links to another `SceneLocationSO` in `_Scene`       |
+| `_Link`         | The destination location (shown when linked)                                |
+| `_LinkLocation` | World position to move to inside the current scene (shown when not linked)  |
+
+The **SceneGetter** dev script (see [[Utility Scripts]]) has a button that writes a scene asset's name into a `SceneLocationSO`.
+
+## `PlayerSpawnPointObject`
+
+A simpler spawn point. In `Awake()` it moves the player to its own position and rotation if the player exists. Used for scenes with a single start point, like dungeon floors, where [[Dungeon Door]]s may move the player again afterwards.
+
+---
+
+# Known Limitations
+
+* `changeScene()` uses a normal (blocking) `LoadScene`, not an async load.
+* The two `Debug.Log` calls in `OnSceneLoaded()` print on every scene load.
 
 ---
 

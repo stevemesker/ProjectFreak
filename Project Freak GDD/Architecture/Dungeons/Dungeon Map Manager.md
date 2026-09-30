@@ -12,6 +12,11 @@ The manager takes a `DungeonSO` containing the configuration for the current dun
 6. Connect the boss node to the final row of floor nodes.
 7. Detect additional nearby nodes that can be connected.
 8. Create and position the visual bridge objects representing node connections.
+9. Assign each node a gameplay type (`POIType.Type`) and matching icon.
+10. Assign each node a color palette so neighboring nodes never share a color.
+11. Send the player to the entrance node through the [[Dungeon Manager]].
+
+The map is spawned by the [[Dungeon Manager]] when a dungeon starts and stays alive for the whole dungeon run.
 
 The manager primarily handles **map construction and orchestration**. Individual nodes are responsible for maintaining their own connection data and determining which nearby nodes they can connect to.
 
@@ -96,6 +101,28 @@ Each dungeon path maintains its own runtime **Floor Node Type Pool**, populated 
 
 This system provides controlled randomness while maintaining the intended overall distribution of node types. Designers can adjust the percentages and pool size during balancing without changing the underlying generation logic.
 
+In code, "path" means **column**. The pools are stored in `_FloorPool` (one list per column), built by `getFloorNodeTypePool(column)` from `DungeonSO._DungeonFloorPoolTypes[column]`, and drawn from by `setNodeType(column)` as each node is spawned.
+
+### Node Icons
+
+After a node gets its type, its icon is set with:
+
+```csharp
+mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Type));
+```
+
+`DungeonTypeTranslatorSO` maps each `POIType.Type` to a sprite (see [[POI System]]).
+
+### Node Colors
+
+`setNodeColorPalettes()` runs after all connections are made. It walks through every node and gives it a `ColorPaletteSO` from `_ColorSwatches`, cycling through the list.
+
+A color is skipped if the node or any of its neighbors (or their neighbors) already use it. This keeps nearby nodes visually distinct. The same color is used by the [[Dungeon Door]]s that lead to that node, so the player can match doors to the map.
+
+### Map Visibility
+
+`ToggleMap()` turns `_MapVisuals` on and off. The [[Dungeon Manager]] calls it when the player presses the map/options input.
+
 ---
 
 # Inspector Data
@@ -149,6 +176,14 @@ The UI zone used as the parent and spawn location for the entrance node.
 
 The UI zone used as the parent for generated `NodeBridge` objects.
 
+## `_LocatorZone`
+
+The UI zone used as the parent for the "you are here" map locator and other player info on the map.
+
+## `_MapVisuals`
+
+The root of the map's visuals. Toggled by `ToggleMap()`.
+
 ---
 
 # Runtime Data
@@ -179,6 +214,12 @@ Direct reference to the generated entrance node.
 
 This is assigned during `SpawnKeyNodes()`.
 
+## `_FloorPool`
+
+**Type:** `List<List<POIType.Type>>`
+
+The runtime node type pools, one per column. See **Floor Node Type Pool** above.
+
 ---
 
 # Prefab Settings
@@ -203,6 +244,10 @@ Prefab used to visually represent connections between map nodes.
 
 The instantiated object is expected to contain a `NodeBridge` component.
 
+## `_ColorSwatches`
+
+List of `ColorPaletteSO` assets a node can be given. Used on the map and by the [[Dungeon Door]]s leading to that node.
+
 ---
 
 # Generation Flow
@@ -218,23 +263,25 @@ StartNewMap()
     |       |
     |       +-- Create floor node grid
     |       +-- Assign IDs
+    |       +-- Build a type pool per column
     |       +-- Assign column numbers
     |       +-- Position nodes
     |       +-- Create vertical connections
     |       +-- Create NodeBridge objects
+    |       +-- Draw node type from the column pool + set icon
     |       +-- SpawnKeyNodes()
     |               |
-    |               +-- Create Entrance
+    |               +-- Create Entrance (+ map locator)
     |               +-- Create Boss
-    |               +-- Connect Entrance to first column
-    |               +-- Connect Boss to final column
-    |
-    +-- connectNodes()
+    |               +-- Connect Entrance to the first node of each column
+    |               +-- Connect Boss to the last node of each column
     |
     +-- detectNodeRange()
             |
             +-- Wait one frame
             +-- connectNodes()
+            +-- setNodeColorPalettes()
+            +-- DungeonManager.MoveToFloor(entrance)
 ```
 
 ---
@@ -368,8 +415,12 @@ IEnumerator detectNodeRange()
 {
     yield return null;
     connectNodes();
+    setNodeColorPalettes();
+    DungeonManager._DM.MoveToFloor(_FloorNodes.Count - 2);
 }
 ```
+
+Once connections and colors are done, the player is sent to the entrance node (the second to last entry in `_FloorNodes`).
 
 The delay gives Unity an opportunity to complete the initialization and positioning of all generated map objects before the nodes perform their range checks.
 
@@ -459,21 +510,15 @@ This separation allows the map manager to remain focused on **generation and orc
 
 # Future Extension Points
 
-The manager currently contains an empty `setNodeType()` method.
+Node types are now assigned during generation through the weighted column pools (see **Floor Node Type Pool**).
 
-This is the intended location for assigning gameplay types to generated nodes once map generation determines which locations should contain specific POIs.
+Possible future additions:
 
-Potential future responsibilities include:
-
-* Assigning combat nodes.
-* Assigning treasure nodes.
-* Assigning rest nodes.
-* Assigning event nodes.
-* Assigning special POIs.
-* Controlling node rarity/distribution.
 * Ensuring required POI types appear in the generated map.
+* Validating the map (for example, no dead ends or unreachable nodes).
+* Saving/loading the generated map (see `LoadReconnect()` in [[Dungeon Map Node]]).
 
-The generation pipeline can therefore eventually become:
+The generation pipeline could eventually become:
 
 ```text
 Generate Layout

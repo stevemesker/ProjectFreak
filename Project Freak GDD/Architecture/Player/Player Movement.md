@@ -2,6 +2,24 @@
 
 The player uses a physics-driven character controller inspired by the locomotion system used in [Toyful Games' controllers](https://www.youtube.com/watch?v=qdskE8PJy6Q). Movement, facing, and standing are handled as separate systems which operate simultaneously.
 
+**Script:** `CharacterMovement`. The same script is used by the player and by [[Shade (Runtime)|shades]], so the shade moves the same way when the player takes control of it. *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
+
+The camera used for camera-relative movement (`_MainCamera`) is assigned by the [[Camera Manager]].
+
+---
+
+## Turning Control On and Off
+
+| Function                 | Description                                                                                          |
+| :----------------------- | :--------------------------------------------------------------------------------------------------- |
+| `EnableMovement()`       | Subscribes to move, look, aim, and dash input                                                        |
+| `DisableMovement()`      | Unsubscribes from all movement input. Used to hand control between the player and a shade (see [[Shade Manager]]) |
+| `SetTurning(bool)`       | Turns aiming rotation on/off without affecting movement. Turned off while the [[Radial Menu]] is open |
+| `DeactivateMovement()`   | Pauses the rigidbody and saves its velocity (for pausing)                                            |
+| `ReactivateMovement()`   | Restores the saved velocity                                                                          |
+
+The dash input calls `DashCharacter` on the unit's [[Unit Dash Script|UnitDash]] with the current movement direction.
+
 The controller is designed to support:
 
 * Camera-relative movement
