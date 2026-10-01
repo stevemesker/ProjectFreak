@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7872299941947586419}
   - component: {fileID: 6392860718488940342}
+  - component: {fileID: 4268300971814713367}
   - component: {fileID: 937096811905754345}
   - component: {fileID: 8785431862165512943}
   - component: {fileID: 4226439366264996839}
@@ -62,18 +63,22 @@ MonoBehaviour:
   goalVel: {x: 0, y: 0, z: 0}
   _RB: {fileID: 8968569201919797380}
   _MainCamera: {fileID: 0}
-  _rayDidHit: 0
   isMovePaused: 0
   isInputDisabled: 0
-  RayLength: 3
-  RideHeight: 1.5
-  RideSpringStrength: 100
-  RideSpringDamper: 6
   maxSpeed: 8
   acceleration: 200
   AccelerationFactorFromDot:
     serializedVersion: 2
     m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     - serializedVersion: 3
       time: 0
       value: 1
@@ -85,7 +90,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.0013465881
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -100,6 +105,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
+      time: -1
+      value: 2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
       time: 0
       value: 1
       inSlope: 0
@@ -110,7 +124,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.0013465881
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -133,6 +147,25 @@ MonoBehaviour:
   OnDebugDrawLines: 0
   lineLength: 2
   _CanTurn: 1
+--- !u!114 &4268300971814713367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4648769780060643362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c35fede087b0413aa87931b2f6eeadde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _RayLength: 3
+  _RideHeight: 1.5
+  _RideSpringStrength: 100
+  _RideSpringDamper: 6
+  _RB: {fileID: 8968569201919797380}
+  _OnDebugDrawLines: 0
+  _IsGrounded: 0
 --- !u!114 &937096811905754345
 MonoBehaviour:
   m_ObjectHideFlags: 0

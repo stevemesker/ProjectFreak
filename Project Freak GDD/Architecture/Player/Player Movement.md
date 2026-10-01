@@ -2,7 +2,14 @@
 
 The player uses a physics-driven character controller inspired by the locomotion system used in [Toyful Games' controllers](https://www.youtube.com/watch?v=qdskE8PJy6Q). Movement, facing, and standing are handled as separate systems which operate simultaneously.
 
-**Script:** `CharacterMovement`. The same script is used by the player and by [[Shade (Runtime)|shades]], so the shade moves the same way when the player takes control of it. *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
+**Scripts:** split into two components that sit side by side on the unit. Both are used by the player and by [[Shade (Runtime)|shades]], so the shade moves the same way when the player takes control of it.
+
+| Script              | Job                                                                                          |
+| :------------------ | :------------------------------------------------------------------------------------------- |
+| `UnitHover`         | Idle floating / standing spring (see [[#Standing System]]). Always runs, no matter who is steering |
+| `CharacterMovement` | Directional controls: movement force, turning, player input and dash input                   |
+
+Keeping the float separate means the movement side can be swapped or driven by AI without touching the physics that keeps the unit standing. *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
 
 The camera used for camera-relative movement (`_MainCamera`) is assigned by the [[Camera Manager]].
 
@@ -100,6 +107,20 @@ Lower acceleration
 ```
 
 The acceleration curves are used to control movement feel without modifying code.
+
+### Curve shape
+
+Both curves (`AccelerationFactorFromDot` and `MaxAccelerationForceFactorFromDot`) take the dot product on the **X axis from -1 to 1**:
+
+| Dot | Meaning                 | Current value |
+| :-- | :---------------------- | :------------ |
+| -1  | Full reverse            | 2             |
+| 0   | 90° turn / from a stop  | 1             |
+| 1   | Same direction          | 1             |
+
+So reversing gets double acceleration and a double force cap, and running straight uses the base values. Raise the -1 value for snappier turnarounds, or lower `acceleration` / `maxAccelForce` for a heavier feel.
+
+*Oct 2026 fix:* the curves used to only cover 0 to 1 and dropped to almost 0 at 1, so once the unit was moving the way it wanted, its acceleration almost switched off. It never reached `maxSpeed`, and building speed after a reverse crawled. The force cap is also now applied after converting to acceleration (divide by `fixedDeltaTime`, then clamp), the same as Toyful's controller.
 
 ---
 
@@ -223,6 +244,8 @@ This creates camera-relative aiming behavior consistent with movement controls.
 
 The character uses a spring-based hovering system rather than relying solely on gravity and collider contact.
 
+**Script:** `UnitHover` (`Assets/Scripts/Unit Scripts/UnitHover.cs`)
+
 A downward raycast measures the distance between the player and the ground.
 
 A spring force is then applied to maintain the desired ride height.
@@ -245,18 +268,26 @@ This creates:
 * Stable platform interaction
 * Predictable movement behavior
 
+| Inspector field         | Description                                                              |
+| :---------------------- | :----------------------------------------------------------------------- |
+| `_RayLength`            | How far down to look for the floor (m). Must be longer than ride height  |
+| `_RideHeight`           | How high above the floor the unit floats (m)                             |
+| `_RideSpringStrength`   | How hard the spring pushes back to ride height                           |
+| `_RideSpringDamper`     | How much the spring resists bouncing                                     |
+| `_RB`                   | The unit's rigidbody (auto-filled from the same object if empty)         |
+| `_OnDebugDrawLines`     | Draws the spring force in the scene view                                 |
+
+`IsGrounded()` returns whether the floor was found this physics step, for AI, animation or abilities to check.
+
 ---
 
 # Update Order
 
-The controller executes the following systems during each physics step:
+Each physics step, `UnitHover` applies the standing force and `CharacterMovement` applies the movement and rotation forces. They are separate components, so Unity doesn't guarantee which runs first, but forces add together so the order doesn't matter.
 
 ```text
-Standing Force
-    ↓
-Movement Force
-    ↓
-Rotation Force
+UnitHover          → Standing Force
+CharacterMovement  → Movement Force → Rotation Force
 ```
 
 Each system is independent and can be tuned separately.

@@ -227,7 +227,13 @@ Since the hit list is a `HashSet`, each target is damaged at most once per dash.
 
 ### startDashEvent
 
-Reserved for logic that should occur when a dash begins.
+Invoked in `DashCharacter` right before the dash movement starts. On the player and shade prefabs it calls `CharacterMovement.DeactivateMovement` (saves velocity and pauses movement), which `endDashEvent` undoes with `ReactivateMovement`.
+
+**Chained dashes:** if a new dash starts while one is still running, the old dash coroutine is stopped and the new one starts from the current position. `startDashEvent` only fires for the first dash in the chain, so start and end events always come in pairs.
+
+**Disabled mid-dash:** `OnDisable` stops the running dash and fires `endDashEvent` so the unit isn't left with its movement paused.
+
+Other uses:
 
 Examples:
 

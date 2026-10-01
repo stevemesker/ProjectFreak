@@ -12,26 +12,19 @@ public class CharacterMovement : MonoBehaviour
     public Rigidbody _RB;
     public GameObject _MainCamera;
     private PlayerInput pInput;
-    Vector3 DownDir;
-    RaycastHit _rayHit;
-    [Tooltip("True if floor was detected under gameobject")]public bool _rayDidHit;
 
     [Header("State Variables")]
     [SerializeField, Tooltip("When true, turn off the ability to move and turn the character")] bool isMovePaused;
     [Tooltip("Tells if the input has been disabled but all other functions still run")] public bool isInputDisabled;
 
-    [Header("Standing")]
-    [SerializeField, Tooltip("How far to cast the ray to find the standing upright position")] float RayLength;
-    [SerializeField, Tooltip("The desired height of the character")] float RideHeight;
-    [SerializeField, Tooltip("Strength of the spring force")] float RideSpringStrength;
-    [SerializeField, Tooltip("Resistance strength of the spring force")] float RideSpringDamper;
-
     [Header("Locomotion")]
     [SerializeField] float maxSpeed = 8;
-    [SerializeField] float acceleration = 200;
-    [SerializeField] AnimationCurve AccelerationFactorFromDot;
-    [SerializeField] float maxAccelForce = 150;
-    [SerializeField] AnimationCurve MaxAccelerationForceFactorFromDot;
+    [SerializeField, Tooltip("How fast the target speed ramps up toward max speed, in m/s per second")] float acceleration = 200;
+    [SerializeField, Tooltip("Multiplies acceleration based on how the new direction compares to the current one. X axis: -1 = full reverse, 0 = 90 degree turn, 1 = same direction. Values above 1 make turning/reversing snappier")]
+    AnimationCurve AccelerationFactorFromDot = new AnimationCurve(new Keyframe(-1, 2), new Keyframe(0, 1), new Keyframe(1, 1));
+    [SerializeField, Tooltip("Cap on how hard the rigidbody can be pushed toward the target speed, in m/s per second")] float maxAccelForce = 150;
+    [SerializeField, Tooltip("Multiplies the max force cap using the same -1 to 1 direction comparison as above. Higher at -1 lets the unit stop and turn around faster")]
+    AnimationCurve MaxAccelerationForceFactorFromDot = new AnimationCurve(new Keyframe(-1, 2), new Keyframe(0, 1), new Keyframe(1, 1));
     [SerializeField] Vector3 forceScale;
     [SerializeField] float maxAccelForceFactor = 1;
     [SerializeField] float speedFactor = 1;
@@ -142,55 +135,18 @@ public class CharacterMovement : MonoBehaviour
     private void Awake()
     {
         _RB = GetComponent<Rigidbody>();
-        DownDir = Vector3.down;
     }
     #endregion
 
     private void FixedUpdate()
     {
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _rayHit, RayLength,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)) _rayDidHit = true;
-        else _rayDidHit = false;
-        StandingForce();
+        //the floating/standing spring force now lives in UnitHover so it keeps running no matter who is steering this unit
         MovementForce();
         Rotationforce();
 
         if (OnDebugDrawLines) DebugLineDraw();
     }
 
-
-    private void StandingForce()
-    {
-        if (_rayDidHit)
-        {
-            Vector3 vel = _RB.velocity;
-            Vector3 rayDir = transform.TransformDirection(DownDir);
-
-            Vector3 otherVel = Vector3.zero;
-            Rigidbody hitBody = _rayHit.rigidbody;
-            if (hitBody != null)
-            {
-                otherVel = hitBody.velocity;
-            }
-
-            float rayDirVel = Vector3.Dot(rayDir, vel);
-            float otherDirVel = Vector3.Dot(rayDir, otherVel);
-
-            float relVel = rayDirVel - otherDirVel;
-
-            float x = _rayHit.distance - RideHeight;
-
-            float springForce = (x * RideSpringStrength) - (relVel * RideSpringDamper);
-
-            Debug.DrawLine(transform.position, transform.position + (rayDir * springForce), Color.yellow);
-
-            _RB.AddForce(rayDir * springForce);
-
-            if (hitBody != null)
-            {
-                hitBody.AddForceAtPosition(rayDir * -springForce, _rayHit.point);
-            }
-        }
-    }
 
     void MovementForce()
     {
@@ -202,10 +158,12 @@ public class CharacterMovement : MonoBehaviour
 
         m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel*Time.fixedDeltaTime);
 
-        Vector3 neededAccel = (m_GoalVel - _RB.velocity);
+        //turn the speed difference into an acceleration (m/s per second) FIRST, then cap it
+        //(this matches Toyful's controller. Capping before dividing put the cap in the wrong units)
+        Vector3 neededAccel = (m_GoalVel - _RB.velocity) / Time.fixedDeltaTime;
 
         float maxAccel = maxAccelForce * MaxAccelerationForceFactorFromDot.Evaluate(velDot) * maxAccelForceFactor;
-        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel)/Time.fixedDeltaTime;
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
         _RB.AddForce(Vector3.Scale(neededAccel * _RB.mass, forceScale));
     }
 

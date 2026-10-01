@@ -24,7 +24,7 @@ Reached with the static `Shade.shade` (the first shade enabled sets it).
 | :--------------- | :--------------------------------------------------- |
 | `_shadeSlotData` | The `ShadeSO` this shade uses                        |
 | `_shadeEvoData`  | Its evolution data                                   |
-| `_movement`      | Its `CharacterMovement` (same script as the player, see [[Player Movement]]) |
+| `_movement`      | Its `CharacterMovement` (same script as the player, see [[Player Movement]]). Floating is handled separately by `UnitHover` on the same prefab |
 | `PlayerRef`      | The unit that summoned it                            |
 
 ### Control
