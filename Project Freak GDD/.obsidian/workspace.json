@@ -45,12 +45,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Combat/Unit Dash Script.md",
+                "file": "Architecture/AI Movement & Dungeon Loading Plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Unit Dash Script"
+              "title": "AI Movement & Dungeon Loading Plan"
             }
           }
         ],
@@ -110,7 +110,7 @@
               "type": "search",
               "state": {
                 "query": "",
-                "matchingCase": false,
+                "matchingCase": true,
                 "explainSearch": false,
                 "collapseAll": false,
                 "extraContext": false,
@@ -242,6 +242,9 @@
   },
   "active": "ecc4a37c8f083c41",
   "lastOpenFiles": [
+    "Architecture/Dungeons/Dungeon Floor Object.md",
+    "Architecture/Combat/Unit Dash Script.md",
+    "Architecture/AI Movement & Dungeon Loading Plan.md",
     "Architecture/AI Info/Known Issues.md",
     "Architecture/AI Info/Code Style Rules.md",
     "Architecture/AI Info/AA - AI Info.md",
@@ -269,9 +272,6 @@
     "Architecture/Combat/Ability System.md",
     "Architecture/AI Info",
     "Architecture/Architecture Atlas.md",
-    "Architecture/Player/Player.player.md",
-    "Architecture/Player/Player Movement.md",
-    "Architecture/Game Management/Camera Manager.md",
     "Architecture/Player",
     "Architecture/Dungeons",
     "Dungeons",

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 5949827839321499019}
   - component: {fileID: 6597945903533169669}
   - component: {fileID: 9135253987976147868}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player Character_PFB
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6862942547520636180}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Temp Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -622,6 +622,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Mesh_Hazen_Cloaked_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8b8a9d92d19c9f64dad232d4978e4304,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

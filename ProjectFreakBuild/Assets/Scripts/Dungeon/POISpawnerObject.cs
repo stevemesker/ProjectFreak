@@ -15,18 +15,38 @@ public class POISpawnerObject : MonoBehaviour
     void Start()
     {
         SetVolumeActive(false);
+
+        //if this floor has a DungeonFloorObject, register with it and let it call SpawnPOI() at the right time
+        //otherwise spawn right away like before, so scenes without a floor object still work
+        //(Start is used instead of Awake/OnEnable because every Awake in the scene has run by now, so the floor singleton is already set)
+        if (DungeonFloorObject._Floor != null && DungeonFloorObject._Floor.gameObject.scene == gameObject.scene) //same scene check so we never register with a floor left over from the last scene
+        {
+            DungeonFloorObject._Floor.RegisterPOISpawner(this);
+            return;
+        }
+        SpawnPOI();
+    }
+
+    #region Spawning
+    public void SpawnPOI()
+    {
+        //function that asks the Dungeon Manager for a POI that fits this spot and spawns it here
         //will probably want a catch here for loading POIs on floors the player has already visited...
+        if (_SpawnedPOI != null) return; //already spawned, don't double up
+        if (DungeonManager._DM == null) { Debug.LogWarning($"Warning! No Dungeon Manager found for {gameObject.name}, spawning nothing...", this); return; }
+        if (DungeonManager._DM._CurrentDungeon == null) { Debug.LogWarning($"Warning! Not inside a dungeon so {gameObject.name} has no POIs to pick from, spawning nothing...", this); return; } //happens when playing a floor scene directly
 
         _CurrentPOI = DungeonManager._DM.GetPOIFromCurrentRoom(_SpawnerSize);
 
         if (_CurrentPOI == null)
         {
-            Debug.LogWarning($"No POI object found for {gameObject.name}...");
+            Debug.LogWarning($"Warning! No POI found for {gameObject.name}, spawning nothing...", this);
             return;
         }
 
         _SpawnedPOI = Instantiate(_CurrentPOI._POI_Prefab, transform.position, Quaternion.identity);
     }
+    #endregion
 
     #region Tools
 

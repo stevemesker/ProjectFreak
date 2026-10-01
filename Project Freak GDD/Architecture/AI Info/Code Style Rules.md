@@ -55,6 +55,8 @@ Back to [[AA - AI Info]]
 - **Singleton setup** in `Awake`: destroy duplicates, then assign the static
 - **Input**: create `PlayerInput`, enable and subscribe in `OnEnable`, unsubscribe and disable in `OnDisable`
 - **Wrappers** check the manager exists before forwarding a call
+- **Registration over searching**: scene objects announce themselves to a manager or scene singleton (e.g. `POISpawnerObject` → `DungeonFloorObject._Floor.RegisterPOISpawner(this)`) instead of the manager using `FindObjectsOfType`. Register in `Start()` (every `Awake()` has run by then, so the singleton is set), and have the receiver wait a frame if it needs the full list
+- **Scene singletons** (one per scene, like `DungeonFloorObject._Floor`) clear themselves in `OnDestroy` and only treat a second copy *in the same scene* as a mistake, since the old scene's copy can briefly overlap during a scene change
 - **Interfaces** for cross-system contracts, checked with `TryGetComponent`
 - **Polymorphic data** (like ability steps) uses `[SerializeReference]` lists of a base class
 - **Coroutines** are stored in a `Coroutine` field, then stopped and nulled on disable or interrupt

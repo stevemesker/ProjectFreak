@@ -81,7 +81,11 @@ Placed in floor scenes where a POI should appear.
 | `_CellSizePerMeter`   | Size of one cell in meters (default 4)                                 |
 | `_ScaleFactorByIndex` | How many cells wide each size is, starting with Tiny at index 0        |
 
-On `Start` it hides the preview box, asks the [[Dungeon Manager]] for a POI, and spawns it at its position (no rotation). If no POI is found, it logs a warning.
+On `Start` it hides the preview box. Spawning happens in `SpawnPOI()`, which asks the [[Dungeon Manager]] for a POI and spawns it at its position (no rotation):
+- **On a floor with a [[Dungeon Floor Object]]**, the spawner registers with `DungeonFloorObject._Floor` in its `Start()`, and the floor calls `SpawnPOI()` during loading so the NavMesh can be built right after.
+- **Without one**, the spawner calls `SpawnPOI()` in its own `Start()` like before.
+
+`SpawnPOI()` logs a warning and spawns nothing if there's no Dungeon Manager, no current dungeon (e.g. playing the floor scene directly) or no matching POI. It won't spawn twice.
 
 Editor buttons: **UpdateSizeVolume** resizes the preview box for the current size; **ToggleVolume** shows/hides it.
 

@@ -191,6 +191,16 @@ HUDManager._HUD.FadeIn(_fadeInTransitionSpeed);
 
 The flag is then reset so that subsequent scene loads do not automatically trigger another fade.
 
+### Waiting for Dungeon Floors
+
+Dungeon floors still need to spawn POIs and build a NavMesh after Unity says the scene loaded. A [[Dungeon Floor Object]] registers itself in `Awake()` with `RegisterLoadingFloor()` (and `UnregisterLoadingFloor()` when destroyed).
+
+When a fade was requested, `OnSceneLoaded()`:
+- **If the loaded scene has a floor that isn't ready yet**, starts `WaitForFloorThenFade()`. That waits until `IsFloorReady()` is true, then fades in.
+- **Otherwise** (any non-dungeon scene), fades in right away like before.
+
+`_FloorLoadTimeout` (Floor Loading foldout, default 10 seconds) caps the wait. If it runs out, an `Error!` naming the scene and the stuck phase is logged and the screen fades in anyway. The fade goes through `FadeInHUD()`, which logs an error instead of throwing if the HUD Manager is missing.
+
 ### Intended Transition Flow
 
 ```text
@@ -396,7 +406,6 @@ A simpler spawn point. In `Awake()` it moves the player to its own position and 
 # Known Limitations
 
 * `ChangeScene()` uses a normal (blocking) `LoadScene`, not an async load.
-* The two `Debug.Log` calls in `OnSceneLoaded()` print on every scene load.
 
 ---
 

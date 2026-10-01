@@ -1995,17 +1995,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8785431862165512943, guid: d269be6f3bbf142458507a7ebb403b84,
-        type: 3}
-      propertyPath: _TamerAbilities.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785431862165512943, guid: d269be6f3bbf142458507a7ebb403b84,
-        type: 3}
-      propertyPath: _TamerAbilities.Array.data[2]
-      value: 
-      objectReference: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1,
-        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
