@@ -78,11 +78,11 @@ The manager also creates a `NodeBridge` object for each initial connection.
 
 ### Connection Detection
 
-After node generation, `connectNodes()` asks each node to determine which other nodes are within its valid connection range.
+After node generation, `ConnectNodes()` asks each node to determine which other nodes are within its valid connection range.
 
 The actual connection rules are handled by [[Dungeon Map Node]]. The manager simply coordinates the process.
 
-The detection is intentionally delayed by one frame through `detectNodeRange()`.
+The detection is intentionally delayed by one frame through `DetectNodeRange()`.
 
 This allows the generated map objects to finish initialization before connection detection begins.
 
@@ -101,7 +101,7 @@ Each dungeon path maintains its own runtime **Floor Node Type Pool**, populated 
 
 This system provides controlled randomness while maintaining the intended overall distribution of node types. Designers can adjust the percentages and pool size during balancing without changing the underlying generation logic.
 
-In code, "path" means **column**. The pools are stored in `_FloorPool` (one list per column), built by `getFloorNodeTypePool(column)` from `DungeonSO._DungeonFloorPoolTypes[column]`, and drawn from by `setNodeType(column)` as each node is spawned.
+In code, "path" means **column**. The pools are stored in `_FloorPool` (one list per column), built by `GetFloorNodeTypePool(column)` from `DungeonSO._DungeonFloorPoolTypes[column]`, and drawn from by `SetNodeType(column)` as each node is spawned.
 
 ### Node Icons
 
@@ -115,7 +115,7 @@ mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Typ
 
 ### Node Colors
 
-`setNodeColorPalettes()` runs after all connections are made. It walks through every node and gives it a `ColorPaletteSO` from `_ColorSwatches`, cycling through the list.
+`SetNodeColorPalettes()` runs after all connections are made. It walks through every node and gives it a `ColorPaletteSO` from `_ColorSwatches`, cycling through the list.
 
 A color is skipped if the node or any of its neighbors (or their neighbors) already use it. This keeps nearby nodes visually distinct. The same color is used by the [[Dungeon Door]]s that lead to that node, so the player can match doors to the map.
 
@@ -150,7 +150,7 @@ This value is assigned when `StartNewMap()` is called.
 
 Controls how node position offsets are distributed across the columns of the dungeon map.
 
-The curve is evaluated by `curveEval()` using the node's column position.
+The curve is evaluated by `CurveEval()` using the node's column position.
 
 This allows the map to have controlled horizontal/vertical variation rather than applying completely uniform random offsets.
 
@@ -276,11 +276,11 @@ StartNewMap()
     |               +-- Connect Entrance to the first node of each column
     |               +-- Connect Boss to the last node of each column
     |
-    +-- detectNodeRange()
+    +-- DetectNodeRange()
             |
             +-- Wait one frame
-            +-- connectNodes()
-            +-- setNodeColorPalettes()
+            +-- ConnectNodes()
+            +-- SetNodeColorPalettes()
             +-- DungeonManager.MoveToFloor(entrance)
 ```
 
@@ -297,13 +297,13 @@ X = Floor Width / (Column Count + 1) * Column Position
 Y = Floor Height / (Row Count - 1) * Row Position
 ```
 
-A procedural offset is then added using `curveEval()`.
+A procedural offset is then added using `CurveEval()`.
 
 The resulting position provides a mostly grid-based layout while allowing the map to visually bend and shift between columns.
 
-## `curveEval()`
+## `CurveEval()`
 
-`curveEval()` generates a random positional offset for a column.
+`CurveEval()` generates a random positional offset for a column.
 
 The direction of the offset is randomized between positive and negative values, while the magnitude is controlled by:
 
@@ -334,7 +334,7 @@ The bridge itself is then configured through:
 
 ```text
 NodeBridge.BuildConnection()
-NodeBridge.updatePosition()
+NodeBridge.UpdatePosition()
 ```
 
 This separation allows the map's logical navigation data and its visual representation to remain distinct.
@@ -384,11 +384,11 @@ Additional connections can then be created based on node proximity.
 
 # Connection Detection
 
-## `connectNodes()`
+## `ConnectNodes()`
 
 Iterates through every generated node and checks whether it is capable of creating bridges.
 
-Nodes that return `false` from `IBridgeable.canBridge()` are skipped.
+Nodes that return `false` from `IBridgeable.CanBridge()` are skipped.
 
 For nodes that can create connections:
 
@@ -406,16 +406,16 @@ This keeps the manager focused on **when** connection detection occurs rather th
 
 # Delayed Detection
 
-## `detectNodeRange()`
+## `DetectNodeRange()`
 
-`detectNodeRange()` is a coroutine used to delay the final connection detection by one frame.
+`DetectNodeRange()` is a coroutine used to delay the final connection detection by one frame.
 
 ```csharp
-IEnumerator detectNodeRange()
+IEnumerator DetectNodeRange()
 {
     yield return null;
-    connectNodes();
-    setNodeColorPalettes();
+    ConnectNodes();
+    SetNodeColorPalettes();
     DungeonManager._DM.MoveToFloor(_FloorNodes.Count - 2);
 }
 ```
@@ -432,15 +432,15 @@ This is particularly important because the connection system relies on the gener
 
 The manager contains Odin Inspector buttons for manually testing map generation.
 
-## `test()`
+## `Test()`
 
 Clears the existing map and generates a new floor-node layout.
 
-The current implementation intentionally omits `connectNodes()` from the immediate test sequence and instead relies on `detectNodeRange()` to perform the delayed connection detection.
+The current implementation intentionally omits `ConnectNodes()` from the immediate test sequence and instead relies on `DetectNodeRange()` to perform the delayed connection detection.
 
 This provides a convenient way to repeatedly test map generation directly from the Unity Inspector.
 
-## `clear()`
+## `Clear()`
 
 Destroys all currently generated nodes and clears `_FloorNodes`.
 
@@ -470,7 +470,7 @@ The manager uses:
 
 * `ConnectNode()`
 * `BridgeNode()`
-* `canBridge()`
+* `CanBridge()`
 
 ### `NodeBridge`
 

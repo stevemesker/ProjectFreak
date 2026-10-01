@@ -52,7 +52,7 @@ Controls how much camera shake is dampened based on how hurt a unit is. Stored i
 | `_Percentage`           | Health % threshold for this level                                        |
 | `_ShakeDampenMultiplier` | Multiplier applied to camera shake at this level                        |
 
-`getCurrentDangerType(health, maxHealth)` returns the first level whose percentage the unit's health is above. The list must be ordered as described in its tooltip.
+`GetCurrentDangerType(health, maxHealth)` returns the first level whose percentage the unit's health is above. The list must be ordered as described in its tooltip.
 
 ---
 ## Other

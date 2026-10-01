@@ -5,7 +5,7 @@ The POI system fills [[Dungeon Floor]] scenes with [[POI]]s that fit the current
 POISpawnerObject (in floor scene)
     │  "I need a Medium POI"
     ▼
-DungeonManager.getPOIFromCurrentRoom(size)
+DungeonManager.GetPOIFromCurrentRoom(size)
     │  adds the current node's type
     ▼
 DungeonSO.GetPOI(type, size)

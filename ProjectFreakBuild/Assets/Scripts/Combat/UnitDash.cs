@@ -142,7 +142,6 @@ public class UnitDash : MonoBehaviour
         foreach(GameObject hits in hitList)
         {
             hits.GetComponent<IDamagable>().TakeDamage(Damage);
-            print(hits + "Takes " + Damage._Entries[0]._Damage + " " + Damage._Entries[0]._atkType + " damage from " + Damage._Source.name);
         }
     }
 

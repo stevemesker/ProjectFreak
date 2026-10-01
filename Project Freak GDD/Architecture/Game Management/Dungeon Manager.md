@@ -64,10 +64,10 @@ The manager listens to the `OptionsMenu` input and calls `ToggleMap()` on the [[
 
 | Function                        | Description                                                                          |
 | :------------------------------ | :----------------------------------------------------------------------------------- |
-| `getMapNode(int ID)`            | Returns the [[Dungeon Map Node]] with that ID (clamps to the last node if too high)  |
-| `getCurrentDungeonFloorID()`    | Returns `_CurrentRoomID`                                                             |
-| `setDungeonLocator(GameObject)` | Sets the map locator object                                                          |
-| `getPOIFromCurrentRoom(size)`   | Asks the current `DungeonSO` for a POI that fits the current node's type and the requested size. Used by `POISpawnerObject` |
+| `GetMapNode(int ID)`            | Returns the [[Dungeon Map Node]] with that ID (clamps to the last node if too high)  |
+| `GetCurrentDungeonFloorID()`    | Returns `_CurrentRoomID`                                                             |
+| `SetDungeonLocator(GameObject)` | Sets the map locator object                                                          |
+| `GetPOIFromCurrentRoom(size)`   | Asks the current `DungeonSO` for a POI that fits the current node's type and the requested size. Used by `POISpawnerObject` |
 
 ---
 ## Related

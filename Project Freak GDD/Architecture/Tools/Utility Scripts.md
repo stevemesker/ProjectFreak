@@ -20,7 +20,7 @@ Small general-purpose scripts. Most live in `Scripts/Common`.
 | :----------------- | :--------------------------------------------------------------------------------------------- |
 | `ColorPaletteSO`   | Primary, secondary, and tertiary colors. Used by map nodes, [[Dungeon Door]]s, and the [[Radial Menu]]. Created from **Create → Color → ColorPalette** |
 | `SceneReference`   | Lets a scene asset be dragged into the inspector and stores its path. *Doesn't appear to be used yet*  |
-| `RarityType`, `CraftingBenchType`, `ElementMaterialType`, `DamageType`, `StatNameType`, `ElementType` | Enum files |
+| `RarityType`, `CraftingBenchType`, `ElementMaterialType`, `DamageType` | Enum files |
 
 ---
 ## Editor Tools

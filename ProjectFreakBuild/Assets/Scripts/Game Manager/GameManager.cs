@@ -26,14 +26,14 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Shade Data
-    public List<ShadeSO> getShadeList()
+    public List<ShadeSO> GetShadeList()
     {
         return (shade._ShadeSlots);
     }
 
-    public ShadeManager getShadeManager()
+    public ShadeManager GetShadeManager()
     {
-        return GetComponent<ShadeManager>();
+        return ShadeManager._ShadeManager;
     }
     #endregion
 

@@ -135,7 +135,7 @@ The initial priority of `0` keeps the gameplay camera from automatically becomin
 
 # Player Camera Target
 
-The `setCamTargetToPlayer()` function assigns the player as both the camera's `Follow` and `LookAt` target.
+The `SetCamTargetToPlayer()` function assigns the player as both the camera's `Follow` and `LookAt` target.
 
 ```csharp
 _followCam.Follow = Player.player.transform;
@@ -179,10 +179,10 @@ The Camera Manager is therefore responsible for ensuring that the movement syste
 
 # Camera Priority
 
-The `setGameplayCameraPriority()` function provides a simple interface for changing the gameplay camera's Cinemachine priority:
+The `SetGameplayCameraPriority()` function provides a simple interface for changing the gameplay camera's Cinemachine priority:
 
 ```csharp
-public void setGameplayCameraPriority(int priority)
+public void SetGameplayCameraPriority(int priority)
 ```
 
 The Camera Manager does not directly determine which camera should be active.
@@ -212,13 +212,13 @@ This keeps camera selection centralized within Cinemachine rather than requiring
 
 # Following Other Targets
 
-`setCamTargetToTarget(GameObject target)` points the gameplay camera's `Follow` and `LookAt` at any object.
+`SetCamTargetToTarget(GameObject target)` points the gameplay camera's `Follow` and `LookAt` at any object.
 
 The current target is stored in `_currentFollowTarget`. Other systems check this to know who the camera is watching. For example, [[Damage Receivers & Projectiles|PlayerDamegable]] only shakes the camera when the camera is following the player.
 
 This is used by [[Shade Manager]] when the player uses [[Control Shade]]: the screen fades out, the camera is moved to the shade, and the screen fades back in.
 
-`setCamTargetToPlayer()` switches back to the player.
+`SetCamTargetToPlayer()` switches back to the player.
 
 ---
 

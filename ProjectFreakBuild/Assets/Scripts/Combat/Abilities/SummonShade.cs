@@ -11,7 +11,7 @@ public class SummonShade : AbilityFunction
         Vector3 summonPosition = FindSummonSpot(source);
         if (summonPosition == Vector3.zero)
         {
-            Debug.Log("Warning! Could not find suitable position to summon shade...");
+            Debug.LogWarning("Warning! Could not find suitable position to summon shade, skipping the summon...");
             return;
         }
         Debug.LogWarning($"{source.name} is summoning a shade | Player location: {source.transform.position} | Shade location: {source.transform.position + summonPosition}");
@@ -48,7 +48,6 @@ public class SummonShade : AbilityFunction
 
             RaycastHit[] hits = Physics.RaycastAll(origin, direction, searchDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             RaycastHit finalHit;
-            Debug.Log($"Hit count: {hits.Length}");
             foreach(RaycastHit hit in hits)
             {
                 if (hit.transform.gameObject == source) { Debug.LogWarning("Found Myself..."); continue; }
@@ -64,7 +63,6 @@ public class SummonShade : AbilityFunction
                 continue;
             }
 
-            Debug.Log($"Final distance: {smallestDistance}");
             finalPosition = direction * (smallestDistance - shadeBuffer);
 
             return finalPosition;
@@ -94,6 +92,8 @@ public class SummonShade : AbilityFunction
 
     public void SpawnShade(Vector3 location)
     {
-        GameManager._GameManager.GetComponent<ShadeManager>().summonShade(location);
+        //spawns the shade through the shade manager singleton
+        if (ShadeManager._ShadeManager == null) { Debug.LogError("Error! Shade Manager not found, can't summon a shade"); return; }
+        ShadeManager._ShadeManager.SummonShade(location);
     }
 }

@@ -23,8 +23,8 @@ In `Awake` it:
 
 | Function                        | Description                                         |
 | :------------------------------ | :-------------------------------------------------- |
-| `getShadeList()`                | Returns the [[Shade Manager]]'s shade slot list     |
-| `getShadeManager()`             | Returns the [[Shade Manager]] component             |
+| `GetShadeList()`                | Returns the [[Shade Manager]]'s shade slot list     |
+| `GetShadeManager()`             | Returns the [[Shade Manager]] component             |
 | `GetPlayerCurrentLevel()`       | Returns `PlayerLevel`                               |
 | `SetPlayerCurrentLevel(int)`    | Sets `PlayerLevel`                                  |
 | `IncrementPlayerLevel(int)`     | Adds to `PlayerLevel`                               |

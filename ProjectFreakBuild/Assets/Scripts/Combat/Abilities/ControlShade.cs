@@ -7,6 +7,7 @@ public class ControlShade : AbilityFunction
     public override void ActivateAbility(GameObject source, AbilityInterpreter interpreter)
     {
         interpreter.AbilIntLog($"{source.name} successfully used the ability ControlShade!");
-        GameManager._GameManager.GetComponent<ShadeManager>().ShadeControlAbility();
+        if (ShadeManager._ShadeManager == null) { Debug.LogError("Error! Shade Manager not found, can't use ControlShade", source); return; }
+        ShadeManager._ShadeManager.ShadeControlAbility();
     }
 }

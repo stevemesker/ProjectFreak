@@ -42,7 +42,7 @@ public class FreakCharacter : MonoBehaviour
                 chargeAmount = _Inventory._FreakEquippedWeapons[weaponSelection].chargeMaxAmount;
                 if (_Inventory._FreakEquippedWeapons[weaponSelection].ChargeAutoAttack)
                 {
-                    fireWeapon(chargeAmount);
+                    FireWeapon(chargeAmount);
                     chargeAmount = 0;
                 }
                 return;
@@ -55,7 +55,7 @@ public class FreakCharacter : MonoBehaviour
     {
         _Inventory._FreakBackpackInventory = new Dictionary<ItemSO, int>();
         UpdateEquippedWeaponSlotSize();
-        updateCurrentWeapon();
+        UpdateCurrentWeapon();
     }
 
     private void OnEnable()
@@ -81,7 +81,7 @@ public class FreakCharacter : MonoBehaviour
 
         if (item is WeaponItem && slotsAvailable > 0)
         {
-            if (drop != null) drop.removeItemInventory(amount);
+            if (drop != null) drop.RemoveItemInventory(amount);
         }
     }
     #endregion
@@ -112,14 +112,14 @@ public class FreakCharacter : MonoBehaviour
     public void EquippedWeaponScrollSelection(int direction)
     {
         weaponSelection += direction;
-        if (weaponSelection < 0) { weaponSelection += _Inventory._FreakEquipmentSize; updateCurrentWeapon(); return; }
+        if (weaponSelection < 0) { weaponSelection += _Inventory._FreakEquipmentSize; UpdateCurrentWeapon(); return; }
         if (weaponSelection >= _Inventory._FreakEquipmentSize) weaponSelection -= _Inventory._FreakEquipmentSize;
 
         //update current equipped weapon art here
-        updateCurrentWeapon();
+        UpdateCurrentWeapon();
     }
 
-    void updateCurrentWeapon()
+    void UpdateCurrentWeapon()
     {
         if (handPointer == null) { Debug.LogError("Error! Hand bone has not been selected to allow weapon swapping"); return; }
         if (_Inventory._FreakEquippedWeapons[weaponSelection] == null || _Inventory._FreakEquippedWeapons[weaponSelection].weaponPrefab == null)
@@ -156,24 +156,24 @@ public class FreakCharacter : MonoBehaviour
             isCharging = true;
             return;
         }
-        fireWeapon(1f);
+        FireWeapon(1f);
     }
-    public void releaseCurrentWeapon()
+    public void ReleaseCurrentWeapon()
     {
         if (_Inventory._FreakEquippedWeapons[weaponSelection].isChargedShot == false)
         {
             wpn.GetComponent<ITriggerable>().ReleaseAttack();
             return;
         }
-        if (_Inventory._FreakEquippedWeapons[weaponSelection].ChargeAutoAttack == false) fireWeapon(chargeAmount);
+        if (_Inventory._FreakEquippedWeapons[weaponSelection].ChargeAutoAttack == false) FireWeapon(chargeAmount);
         isCharging = false;
         chargeAmount = 0;
     }
 
-    void fireWeapon(float multiplier)
+    void FireWeapon(float multiplier)
     {
         //print("Firing weapon");
-        //wpn.GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), getElementalDamage());
+        //wpn.GetComponent<ITriggerable>().TriggerAttack(CalculateDamage(multiplier), GetElementalDamage());
     }
 
     int CalculateDamage(float multiplier)
@@ -181,9 +181,9 @@ public class FreakCharacter : MonoBehaviour
 
         return 0;
     }
-    List<ElementType.Element> getElementalDamage()
+    List<DamageType.ElementType> GetElementalDamage()
     {
-        List<ElementType.Element> eleOut = new List<ElementType.Element>();
+        List<DamageType.ElementType> eleOut = new List<DamageType.ElementType>();
         eleOut.Add(_Inventory._FreakEquippedWeapons[weaponSelection].element);
 
         //add other bonuses here

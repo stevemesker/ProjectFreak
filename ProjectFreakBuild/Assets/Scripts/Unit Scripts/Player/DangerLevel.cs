@@ -8,7 +8,7 @@ public class DangerLevel
     [Tooltip("List of the danger levels and what percentage the unit's health must be compared to its max health in order to enter this level. Must be in descending order from smallest to largest danger level percentages")]
     public List<DangerSetting> _DangerLevels;
 
-    public DangerType getCurrentDangerType(int currentHealth, int maxHealth)
+    public DangerType GetCurrentDangerType(int currentHealth, int maxHealth)
     {
         //function that figures out what danger type the unit falls under given their current vs max health
         float temp = ((float)currentHealth/(float)maxHealth*100);
@@ -22,11 +22,10 @@ public class DangerLevel
                 i = _DangerLevels.Count;
             }
         }
-        Debug.Log($"Current health percentage is {temp} | Multiplier will be in the {tempType} category");
         return tempType;
     }
 
-    public int getCurrentDangerIndex(DangerType type)
+    public int GetCurrentDangerIndex(DangerType type)
     {
         for (int i = 0; i < _DangerLevels.Count; i++)
         {

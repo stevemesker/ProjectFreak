@@ -37,10 +37,10 @@ It's reached anywhere with the static `Player.player`. In `Awake` it destroys du
 
 | Function                       | Description                                                                                 |
 | :----------------------------- | :------------------------------------------------------------------------------------------ |
-| `updateCurrentWeapon()`        | Destroys the held weapon and spawns the selected one under `handPointer`, then calls `SetUpWeapon` (see [[Weapon usage]]) |
+| `UpdateCurrentWeapon()`        | Destroys the held weapon and spawns the selected one under `handPointer`, then calls `SetUpWeapon` (see [[Weapon usage]]) |
 | `UpdateEquippedWeaponSlotSize()` | Grows/shrinks the equipped weapon list to match `_EquipmentSize`                         |
-| `getActiveWeaponIndex()`       | Returns `weaponSelection`                                                                   |
-| `UseCurrentWeapon()` / `releaseCurrentWeapon()` | Calls `TriggerAttack` / `ReleaseAttack` on the held weapon                 |
+| `GetActiveWeaponIndex()`       | Returns `weaponSelection`                                                                   |
+| `UseCurrentWeapon()` / `ReleaseCurrentWeapon()` | Calls `TriggerAttack` / `ReleaseAttack` on the held weapon                 |
 
 **Control**
 

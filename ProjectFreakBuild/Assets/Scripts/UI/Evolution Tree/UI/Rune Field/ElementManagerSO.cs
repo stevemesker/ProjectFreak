@@ -9,18 +9,18 @@ public class ElementManagerSO : ScriptableObject
     public ShadeManager manager;
 
     #region runefield Functions
-    public void boostStats(ElementItemSO source)
+    public void BoostStats(ElementItemSO source)
     {
-        List<statBoostPackage> temp = source.getStatBoostPackage();
+        List<statBoostPackage> temp = source.GetStatBoostPackage();
         //Debug.Log(source.name + " is boosting " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
-        manager.receiveStatBoostPackage(temp);
+        manager.ReceiveStatBoostPackage(temp);
     }
 
-    public void reduceStats(ElementItemSO source)
+    public void ReduceStats(ElementItemSO source)
     {
-        List<statBoostPackage> temp = source.getStatBoostPackage();
+        List<statBoostPackage> temp = source.GetStatBoostPackage();
         //Debug.Log(source.name + " is reducing " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
-        manager.removeStatBoostPackage(temp);
+        manager.RemoveStatBoostPackage(temp);
     }
     #endregion
 }
@@ -30,6 +30,6 @@ public class statBoostPackage
 {
     public ElementItemSO _linkedElement;
     public GameObject _ElementConnect;
-    public StatNameType.Stat _statToChange;
+    public DamageType.StatType _statToChange;
     public int _ChangeAmount;
 }

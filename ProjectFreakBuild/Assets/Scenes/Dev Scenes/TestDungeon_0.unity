@@ -773,7 +773,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 6239195618284494864}
           m_TargetAssemblyTypeName: SceneManagerWrapper, Assembly-CSharp
-          m_MethodName: changeLocation
+          m_MethodName: ChangeLocation
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 11400000, guid: bc96d9975a1ef6b42aa2e1d02c895acc,

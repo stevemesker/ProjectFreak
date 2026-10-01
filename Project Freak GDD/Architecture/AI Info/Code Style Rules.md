@@ -33,7 +33,7 @@ Back to [[AA - AI Info]]
 | `Entry`   | Serializable item in a list                               | `TypeEntry`        |
 
 ### Other naming
-- Enums are grouped in a namespace used as a category, in a file named `<Category>Type.cs` (`POIType.Size`, `StatNameType.Stat`)
+- Enums are grouped in a namespace used as a category, in a file named `<Category>Type.cs` (`POIType.Size`, `DamageType.StatType`)
 - Interfaces for one system can share a file named `<System>Interface.cs`
 - `CreateAssetMenu` uses the asset naming convention and a system menu: `fileName = "SO_Dungeon_Name", menuName = "Dungeon/Dungeon"`
 - Asset names follow [[File Naming Conventions]]

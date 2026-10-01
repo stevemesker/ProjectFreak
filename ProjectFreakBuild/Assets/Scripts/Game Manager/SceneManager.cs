@@ -43,9 +43,8 @@ public class SceneManagerObject : MonoBehaviour
     #endregion
 
     #region Opening Scripts
-    public void loadStartScene()
+    public void LoadStartScene()
     {
-        Debug.Log("Testing: " + _loadSceneOpeningByChapterIndex.Count);
         //this should never happen but just in case
         if (_loadSceneOpeningByChapterIndex.Count == 0 || GameManager._GameManager == null) return;
 
@@ -55,14 +54,14 @@ public class SceneManagerObject : MonoBehaviour
         int _loadIndex;
 
         //make sure the chapter is in the list, else default to original load
-        if (_loadSceneOpeningByChapterIndex.Count - 1 < _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter) _loadIndex = 0;
-        else _loadIndex = _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter;
+        if (_loadSceneOpeningByChapterIndex.Count - 1 < _sm._saveSlotList[_sm.GetCurrentActiveSaveSlot()]._SaveChapter) _loadIndex = 0;
+        else _loadIndex = _sm._saveSlotList[_sm.GetCurrentActiveSaveSlot()]._SaveChapter;
 
 
-        StartCoroutine(loadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex]));
+        StartCoroutine(LoadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex]));
     }
 
-    private IEnumerator loadOpeningScene(string _sceneName)
+    private IEnumerator LoadOpeningScene(string _sceneName)
     {
         //Load the scene additively so the initial scene stays loaded
         AsyncOperation _operation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(
@@ -88,7 +87,7 @@ public class SceneManagerObject : MonoBehaviour
         }
     }
 
-    public void activateOpeningScene()
+    public void ActivateOpeningScene()
     {
         if (!_currentOpeningScene.IsValid())
         {
@@ -108,29 +107,27 @@ public class SceneManagerObject : MonoBehaviour
     #region Scene Selection
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"Scene loaded: {scene.name}");
-        Debug.Log($"Loading mode: {mode}");
         if (_fadeInTransition == false) return;
         HUDManager._HUD.FadeIn(_fadeInTransitionSpeed);
         _fadeInTransition = false;
     }
 
-    public void changeScene(string sceneName)
+    public void ChangeScene(string sceneName)
     {
         _currentSceneName = sceneName;
         SceneManager.LoadScene(_currentSceneName);
     }
 
-    public void sceneLocationDataChange(SceneLocationSO data)
+    public void SceneLocationDataChange(SceneLocationSO data)
     {
         if (data._IsLinked)
         {
             _PlayerMoveTarget = data._Link;
-            changeScene(data._Scene);
+            ChangeScene(data._Scene);
         }
         else
         {
-            movePlayerToLocation(data._LinkLocation, Player.player.gameObject.transform.rotation);
+            MovePlayerToLocation(data._LinkLocation, Player.player.gameObject.transform.rotation);
         }
         
     }
@@ -147,13 +144,12 @@ public class SceneManagerObject : MonoBehaviour
     {
         if (data == _PlayerMoveTarget)
         {
-            print("Found matching door!");
             return true;
         }
         return false;
     }
 
-    public void movePlayerToLocation(Vector3 location, Quaternion rotation)
+    public void MovePlayerToLocation(Vector3 location, Quaternion rotation)
     {
         Player.player.gameObject.transform.position = location;
         Player.player.gameObject.transform.rotation = rotation;

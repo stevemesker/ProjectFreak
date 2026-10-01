@@ -16,11 +16,9 @@ public class CraftingManager : MonoBehaviour
     {
         if (_craftingManager != null)
         {
-            print("Game manager already exists, deleting " + gameObject.name);
             Destroy(gameObject);
             return;
         }
         _craftingManager = this;
-        print("Setting Game Manager to " + gameObject.name);
     }
 }

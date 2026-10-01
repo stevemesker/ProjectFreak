@@ -28,7 +28,7 @@ Fires a projectile on a timer for as long as it's enabled.
 | `_minimumFireSpeed`       | Lowest allowed fire delay (default 0.25)       |
 
 ### Flow
-1. `OnEnable` starts the `fireCountdown` coroutine
+1. `OnEnable` starts the `FireCountdown` coroutine
 2. After `_fireSpeed` seconds, it spawns a projectile, sets its speed, and gives it a [[Damage Package]] built from the inspector values (source = the trap)
 3. It starts the countdown again
 4. `OnDisable` stops the timer

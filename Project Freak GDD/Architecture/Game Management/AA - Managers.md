@@ -21,8 +21,8 @@ The game runs off of a set of managers that each keep track of their own task. A
 | [[Scene Manager]]     | `SceneManagerObject`    | `SceneManagerObject._SceneManager`  | Scene loading, opening scenes, and moving the player between scene locations             |
 | [[Dungeon Manager]]   | `DungeonManager`        | `DungeonManager._DM`                | Runs the current dungeon: map creation, moving between floors, and POI lookups            |
 | [[HUD Manager]]       | `HUDManager`            | `HUDManager._HUD`                   | Screen fades and the [[Radial Menu]]                                                       |
+| [[Shade Manager]]     | `ShadeManager`          | `ShadeManager._ShadeManager`        | Shade slot data, summoning the shade, and switching control between player and shade      |
 
 ---
 ## Notes
-- [[Shade Manager]] has no singleton yet. Other scripts reach it with `GameManager._GameManager.GetComponent<ShadeManager>()`
 - Singleton setup isn't consistent yet. Some managers destroy duplicates in `Awake`, others just skip assigning. See [[Known Issues]]

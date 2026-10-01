@@ -43,7 +43,7 @@ public class ActivateObject : MonoBehaviour
             _ActivateVolumeRadius
             );
 
-        IInteractable interactor = interactTest(hits);
+        IInteractable interactor = InteractTest(hits);
         if (interactor == null) return;
         interactor.Interact(gameObject);
     }
@@ -53,7 +53,7 @@ public class ActivateObject : MonoBehaviour
         CanActivate = set;
     }
 
-    IInteractable interactTest(Collider[] hits)
+    IInteractable InteractTest(Collider[] hits)
     {
         //function that finds available interactable objects
 

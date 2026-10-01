@@ -36,10 +36,10 @@ An item lying in the world. Needs a collider and the **Item** tag.
 | `ItemLootAmount` | How many                                        |
 | `_ArtParent`     | Child object the item's art spawns under        |
 
-- `fillDrop(item)` spawns the art. Weapons get offset and turn on `ItemFloatAndSpin`
+- `FillDrop(item)` spawns the art. Weapons get offset and turn on `ItemFloatAndSpin`
 - `MoveArc(location, height, speed)` launches it with [[ArcMover]] (used by [[Chest Content]])
 - Implements `IPickup`: `GetObject`, `GetAmount`, `TakeObjectAmount` (destroys the drop when empty)
-- `pickupItem()` and `removeItemInventory()` are the older event channel path, marked deprecated
+- `PickupItem()` and `RemoveItemInventory()` are the older event channel path, marked deprecated
 
 ---
 ## PlayerPickup

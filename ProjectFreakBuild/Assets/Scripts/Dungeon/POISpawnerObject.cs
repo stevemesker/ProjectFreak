@@ -17,7 +17,7 @@ public class POISpawnerObject : MonoBehaviour
         SetVolumeActive(false);
         //will probably want a catch here for loading POIs on floors the player has already visited...
 
-        _CurrentPOI = DungeonManager._DM.getPOIFromCurrentRoom(_SpawnerSize);
+        _CurrentPOI = DungeonManager._DM.GetPOIFromCurrentRoom(_SpawnerSize);
 
         if (_CurrentPOI == null)
         {

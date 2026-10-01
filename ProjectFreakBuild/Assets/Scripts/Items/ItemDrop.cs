@@ -21,14 +21,14 @@ public class ItemDrop : MonoBehaviour, IPickup
     public void OnEnable()
     {
         if (ItemLootDrop == null) { Debug.LogError("null item spawn"); return; }
-        fillDrop(ItemLootDrop);
+        FillDrop(ItemLootDrop);
     }
 
-    public void fillDrop(ItemSO itm)
+    public void FillDrop(ItemSO itm)
     {
         ItemLootDrop = itm;
         GameObject art = Instantiate(ItemLootDrop.dropArt, _ArtParent.transform.position, _ArtParent.transform.rotation, _ArtParent.transform);
-        if (checkForWeapon())
+        if (CheckForWeapon())
         {
             WeaponObject wpn = art.GetComponent<WeaponObject>(); //quick grab the instanced weapon prefab
 
@@ -40,7 +40,7 @@ public class ItemDrop : MonoBehaviour, IPickup
         }
     }
 
-    [Button("Test for Waapon")]private bool checkForWeapon()
+    [Button("Test for Waapon")]private bool CheckForWeapon()
     {
         //fucntion that tests if item is a weapon to handle turning on the spin and offset stuff. Could possibly make this an interface later but probably won't need to
         if (ItemLootDrop is WeaponItem weapon) return true;
@@ -76,7 +76,7 @@ public class ItemDrop : MonoBehaviour, IPickup
     }
 
     #region Interaction
-    public void pickupItem()
+    public void PickupItem()
     {
         //depreciated
         if (ItemLootDrop == null)
@@ -90,7 +90,7 @@ public class ItemDrop : MonoBehaviour, IPickup
         //add pickup effects here
     }
     
-    public void removeItemInventory(int amount)
+    public void RemoveItemInventory(int amount)
     {
         //print("Removing " + amount + " " + ItemLootDrop.ItemName);
         ItemLootAmount -= amount;

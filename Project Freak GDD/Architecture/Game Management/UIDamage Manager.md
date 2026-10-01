@@ -15,7 +15,7 @@ Reached with `ScreenDamageUIManager._UIdamage`. In `Awake` it sets the singleton
 
 ```csharp
 if (ScreenDamageUIManager._UIdamage != null)
-    ScreenDamageUIManager._UIdamage._damageCanvas.displayDamage(worldPosition, amount, isCrit);
+    ScreenDamageUIManager._UIdamage._damageCanvas.DisplayDamage(worldPosition, amount, isCrit);
 ```
 
 Negative amounts display as healing.

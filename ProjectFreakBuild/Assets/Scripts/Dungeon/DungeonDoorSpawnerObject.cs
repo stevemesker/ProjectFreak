@@ -30,14 +30,12 @@ public class DungeonDoorSpawnerObject : MonoBehaviour
         }
         if (_currentRoomData._NodeConnections.Count < _CurrentDoors.Count)
         {
-            print($"Not enough connections for door {gameObject.name}. Adding Null door...");
             _CurrentDoorSpawned = Instantiate(_NullDoorSpawn, transform.position, transform.rotation, gameObject.transform);
             return;
         }
 
         //get data
         _nextRoomData = _DMWrapper.GetCurrentMapNode()._NodeConnections[_CurrentDoors.IndexOf(this)].GetComponent<DungeonMapNode>();
-        print($"{_nextRoomData.gameObject.name} contains all the data I need for the room {gameObject.name} requires...");
         _CurrentDoorSpawned = Instantiate(_DoorSpawn, transform.position, transform.rotation, gameObject.transform);
         _CurrentDoorSpawned.GetComponent<DungeonDoor>().ApplyNodeData(_nextRoomData);
     }

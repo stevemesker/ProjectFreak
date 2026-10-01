@@ -12,13 +12,13 @@ public class ShadeSlotManager : MonoBehaviour
     {
         if (GameManager._GameManager == null) return;
 
-        checkList();
+        CheckList();
     }
-    public void checkList()
+    public void CheckList()
     {
         //function that makes sure the list of enabled slots matches the player's shade slot number
 
-        List<ShadeSO> temp = GameManager._GameManager.getShadeList();
+        List<ShadeSO> temp = GameManager._GameManager.GetShadeList();
         for (int i = 0; i < slotList.Count; i++)
         {
             //check player level to make sure you can click this slot
@@ -29,7 +29,7 @@ public class ShadeSlotManager : MonoBehaviour
         }
     }
 
-    public void loadShadeSlectionIndex(GameObject origin)
+    public void LoadShadeSelectionIndex(GameObject origin)
     {
         if (GameManager._GameManager == null) return;
         if (slotList.Contains(origin) == false) { Debug.LogError("Error loading shade! Button " + origin.name + " is trying to load a shade but is not referenced in slotList"); return; }
@@ -37,9 +37,9 @@ public class ShadeSlotManager : MonoBehaviour
         
         //may need to add some catch for loading a rune field that's already selected
 
-        _runeField.loadRuneField(index);
+        _runeField.LoadRuneField(index);
         /*
-        if (GameManager._GameManager.GetComponent<ShadeManager>().getShadeSelectionIndex() == index)
+        if (GameManager._GameManager.GetComponent<ShadeManager>().GetShadeSelectionIndex() == index)
         {
             //print("already selected this shade...");
             return;
@@ -47,14 +47,13 @@ public class ShadeSlotManager : MonoBehaviour
 
         _runeField.ClearRuneField();
         
-        selectShadeSlot(index);
+        SelectShadeSlot(index);
         _runeField.LoadRuneFieldFromPackage(GameManager._GameManager.GetComponent<ShadeManager>()._ShadeSlots[index]);*/
     }
 
-    public void selectShadeSlot(int index)
+    public void SelectShadeSlot(int index)
     {
-        if (GameManager._GameManager == null) return;
-        GameManager._GameManager.GetComponent<ShadeManager>().setShadeSelection(index);
-        print("Now selecting shade slot " + index);
+        if (ShadeManager._ShadeManager == null) return;
+        ShadeManager._ShadeManager.SetShadeSelection(index);
     }
 }

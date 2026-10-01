@@ -40,11 +40,11 @@ The interfaces used here (`IBridgeable`, `IConnectable`, `ICoreNode`, `iEvolutio
 
 | Function                         | Description                                                                   |
 | :------------------------------- | :---------------------------------------------------------------------------- |
-| `addRuneList` / `removeRuneList` | Track placed runes                                                            |
+| `AddRuneList` / `RemoveRuneList` | Track placed runes                                                            |
 | `ResetRunePower()`               | Sets every rune's power to 0                                                  |
 | `ResetRuneChecked()`             | Clears the "already checked" flag used while passing power around             |
 | `UpdateScaler()`                 | Resizes colliders when the field is zoomed out                               |
-| `loadRuneField(index)`           | Clears the field, selects that shade slot, and loads its saved layout         |
+| `LoadRuneField(index)`           | Clears the field, selects that shade slot, and loads its saved layout         |
 | `SaveRuneSlot()`                 | Saves the current layout onto the active shade slot (Odin **Save Current Field** button) |
 | `ClearRuneField()`               | Removes all runes, resets the core and every ability node (Odin **Test Clear** button) |
 
@@ -88,23 +88,23 @@ If the core runs out, runes further down the chain stay unpowered.
 
 **Dragging**
 - While dragging, the rune looks for nearby runes/nodes it can bridge to
-- If it's already bridged, it can only move within reach of its connections. `calculatePointerPosition` clamps the position
+- If it's already bridged, it can only move within reach of its connections. `CalculatePointerPosition` clamps the position
 - Pulling past that reach starts **tearing** the bridge (see below)
 - Hovering an ability node snaps the rune onto it
 - On release it builds bridges to what's in range and, if over an ability node, plugs in and tries to activate it
 - Starting a drag unplugs it from any ability node
 
-**Element effects:** when powered it calls `triggerElementEffects` on its `ElementItemSO`, which fires the SO's `statusEffectEnable` UnityEvent (usually hooked to `ElementManagerSO.boostStats`). Losing power fires `statusEffectDisable`.
+**Element effects:** when powered it calls `TriggerElementEffects` on its `ElementItemSO`, which fires the SO's `statusEffectEnable` UnityEvent (usually hooked to `ElementManagerSO.BoostStats`). Losing power fires `statusEffectDisable`.
 
 *Note:* `ElementItemSO` has `connectionsAllowed`, `connectionDistance`, and `powerNeeded`, but they aren't copied onto the rune yet, so every rune uses the prefab's values.
 
 ---
 ## NodeBridge
 The visual line between two pieces.
-- `BuildConnection(a, b)` and `updatePosition(length)` place and stretch it
+- `BuildConnection(a, b)` and `UpdatePosition(length)` place and stretch it
 - **Tearing:** while a rune is pulled past its reach, `StartTearing` ticks a timer that fills faster the harder it's pulled. When it fills, `SeverConnection` disconnects both sides, re-checks power (see above), and destroys the bridge. Letting go calls `StopTearing`
 - Settings: `PullTearRequiredTime`, `MaxPullStrength`, `pullTickTimeLength`, `pullStrengthModifierDampening`
-- `clearConnections()` removes the bridge without the power checks (used when clearing the field)
+- `ClearConnections()` removes the bridge without the power checks (used when clearing the field)
 
 ---
 ## EvolutionNode (ability nodes)
@@ -125,9 +125,9 @@ A plugged node activates if the rune has power, it isn't locked out, and every n
 ---
 ## ElementManagerSO
 A ScriptableObject both the UI and the [[Shade Manager]] can reference. The Shade Manager registers itself in `manager` on enable.
-- `boostStats(ElementItemSO)` / `reduceStats(ElementItemSO)` send the element's `statBoostPackage` list to the Shade Manager
+- `BoostStats(ElementItemSO)` / `ReduceStats(ElementItemSO)` send the element's `statBoostPackage` list to the Shade Manager
 
-`statBoostPackage`: the linked element, the rune object, which stat (`StatNameType.Stat`), and the amount.
+`statBoostPackage`: the linked element, the rune object, which stat (`DamageType.StatType`), and the amount.
 
 ---
 ## Inventory Side Panel
@@ -136,7 +136,7 @@ A ScriptableObject both the UI and the [[Shade Manager]] can reference. The Shad
 - `SideWindowManager.CloseWindow(window)` slides the side panel open/closed and switches windows
 
 ## Shade Slots
-`ShadeSlotManager` shows one button per unlocked slot and calls `loadRuneField(index)` when one is clicked. It currently uses the player's level from [[Game Manager]] to decide how many slots are unlocked.
+`ShadeSlotManager` shows one button per unlocked slot and calls `LoadRuneField(index)` when one is clicked. It currently uses the player's level from [[Game Manager]] to decide how many slots are unlocked.
 
 ---
 ## Leftovers

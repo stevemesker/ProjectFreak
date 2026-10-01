@@ -27,7 +27,7 @@ public class ScreenFadeOut : MonoBehaviour
             StopCoroutine(_fadeTimer);
             _fadeTimer = null;
         }
-        _fadeTimer = StartCoroutine(fadeTimer(fadeTime, 1));
+        _fadeTimer = StartCoroutine(FadeTimer(fadeTime, 1));
     }
 
     public void FadeIn(float fadeTime)
@@ -38,7 +38,7 @@ public class ScreenFadeOut : MonoBehaviour
             StopCoroutine(_fadeTimer);
             _fadeTimer = null;
         }
-        _fadeTimer = StartCoroutine(fadeTimer(fadeTime, 0));
+        _fadeTimer = StartCoroutine(FadeTimer(fadeTime, 0));
     }
 
     public float GetFadeStatus()
@@ -46,7 +46,7 @@ public class ScreenFadeOut : MonoBehaviour
         return _canvasImage.color.a;
     }
 
-    private IEnumerator fadeTimer(float fadeTime, float fadeValueGoal)
+    private IEnumerator FadeTimer(float fadeTime, float fadeValueGoal)
     {
         float startAlpha = _canvasImage.color.a;
         float timer = 0f;

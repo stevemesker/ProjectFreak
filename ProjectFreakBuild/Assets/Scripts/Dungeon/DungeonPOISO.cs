@@ -12,14 +12,14 @@ public class DungeonPOISO : ScriptableObject
     public List<POIType.Tag> _POI_Tags;
 
     [Button("Fill tags with all")]
-    void fillList()
+    void FillList()
     {
         //function that fills the poi with all of the tags because sometimes adding them takes longer than deleteing them...
         _POI_Tags.Clear();
         _POI_Tags.AddRange((POIType.Tag[])Enum.GetValues(typeof(POIType.Tag)));
     }
     [Button("Clear all tags")]
-    void clearList()
+    void ClearList()
     {
         _POI_Tags.Clear();
     }

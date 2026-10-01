@@ -16,11 +16,10 @@ public class PlayerDamegable : MonoBehaviour
     #region Damage
     public void TakeDamage(DamagePackage dmg)
     {
-        print(dmg._Source.name + " hit " + gameObject.name);
         int damageTakenTotal = 0;
         for (int i = 0; i < dmg._Entries.Count; i++)
         {
-            if (ScreenDamageUIManager._UIdamage != null) ScreenDamageUIManager._UIdamage._damageCanvas.displayDamage(transform.position + _damageTextOffset, (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier), false);
+            if (ScreenDamageUIManager._UIdamage != null) ScreenDamageUIManager._UIdamage._damageCanvas.DisplayDamage(transform.position + _damageTextOffset, (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier), false);
             damageTakenTotal += (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier);
         }
         Player.player.pData.pStats._Health -= damageTakenTotal;
@@ -34,8 +33,7 @@ public class PlayerDamegable : MonoBehaviour
         if (CameraManager._CamManager._currentFollowTarget == gameObject)
         {
             DangerLevel temp = GetComponent<IUnitData>().GetDangerLevelSettings();
-            float dangerMultiplier = temp._DangerLevels[temp.getCurrentDangerIndex(temp.getCurrentDangerType(Player.player.pData.pStats._Health, Player.player.pData.pStats._HP))]._ShakeDampenMultiplier;
-            print($"current shake dampen is {dangerMultiplier} with a final strength of {dmg._DamageImpactStrength * dangerMultiplier}");
+            float dangerMultiplier = temp._DangerLevels[temp.GetCurrentDangerIndex(temp.GetCurrentDangerType(Player.player.pData.pStats._Health, Player.player.pData.pStats._HP))]._ShakeDampenMultiplier;
             CameraManager._CamManager.CombatCameraShake(dmg._DamageImpactStrength*dangerMultiplier, null);
         }
     }
@@ -51,7 +49,6 @@ public class PlayerDamegable : MonoBehaviour
     public void Death()
     {
         //temp stuff for now
-        print("Ope I died");
         Player.player.pData.pStats._Health = Player.player.pData.pStats._HP;
     }
 }

@@ -154,7 +154,7 @@ public class CharacterMovement : MonoBehaviour
         MovementForce();
         Rotationforce();
 
-        if (OnDebugDrawLines) debugLineDraw();
+        if (OnDebugDrawLines) DebugLineDraw();
     }
 
 
@@ -280,14 +280,12 @@ public class CharacterMovement : MonoBehaviour
         isMovePaused = true;
         savedVel = _RB.velocity;
         _RB.velocity = Vector3.zero;
-        print("On");
     }
     public void ReactivateMovement()
     {
         //function that turns back on the movement/rotation of the character after it had been paused
         isMovePaused = false;
         _RB.velocity = savedVel;
-        print("Off");
     }
 
     Vector3 ConvertMovementScreenSpace(Vector3 input)
@@ -329,7 +327,7 @@ public class CharacterMovement : MonoBehaviour
         //m_turnGoal = transform.forward;
     }
 
-    void debugLineDraw()
+    void DebugLineDraw()
     {
         //forward vector
         Debug.DrawLine(transform.position, transform.forward * lineLength + transform.position, Color.blue);

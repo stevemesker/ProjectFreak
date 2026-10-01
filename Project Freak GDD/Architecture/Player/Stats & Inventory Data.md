@@ -58,7 +58,7 @@ The player's carried equipment, stored on `PlayerData.pInventory`.
 | `_EquippedWeapons`   | Equipped weapon slots (empty slots are `null`)      |
 | `_BackpackInventory` | `Dictionary<ItemSO, int>`                           |
 
-Functions: `checkInventoryFits`, `checkEquippedWeaponFits`, `addBackpackInventory`, `addEquipmentInventory`.
+Functions: `CheckInventoryFits`, `CheckEquippedWeaponFits`, `AddBackpackInventory`, `AddEquipmentInventory`.
 
 *Ingredients and element runes are stored separately in the [[Inventory Manager]].*
 

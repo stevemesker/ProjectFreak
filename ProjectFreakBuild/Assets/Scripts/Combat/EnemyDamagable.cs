@@ -1,4 +1,3 @@
-using ElementType;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,7 +22,6 @@ public class EnemyDamagable : MonoBehaviour, IDamagable
 
     public bool TakeDamage(DamagePackage dmgPackage)
     {
-        print(dmgPackage._Source.name);
         //used when something should happen when hit but does not need damage packages
         onHit?.Invoke();
 

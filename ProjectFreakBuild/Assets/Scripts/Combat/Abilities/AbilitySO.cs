@@ -22,7 +22,6 @@ public class AbilitySO : ScriptableObject
 
     public void InvokeAbility (int index, GameObject source, AbilityInterpreter interpreter)
     {
-        Debug.Log($"Now launching ability step {index} out of {_steps.Count-1}");
         _steps[index].InvokeStep(source, interpreter);
     }
 

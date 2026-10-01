@@ -13,7 +13,7 @@ public interface ITriggerable
     void TriggerAttack();
     void ReleaseAttack();
     //DamageType.StatType GetStatType();
-    bool isRange();
+    bool IsRange();
 }
 
 public interface IUnitData

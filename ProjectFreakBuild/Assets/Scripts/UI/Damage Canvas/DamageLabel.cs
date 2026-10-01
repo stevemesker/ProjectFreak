@@ -44,14 +44,14 @@ public class DamageLabel : MonoBehaviour
         }
 
         //set damage transform
-        _rect.position = screenPositionStart - new Vector2(randomOffsetRange(xRandomRange), _textStartOffset);
+        _rect.position = screenPositionStart - new Vector2(RandomOffsetRange(xRandomRange), _textStartOffset);
 
         //set damage number and font size
         damageText.text = Damage.ToString();
         damageText.fontSize = fontSize;
 
         //set color type
-        updateColorType(gradColor);
+        UpdateColorType(gradColor);
         //_group.alpha = 0;
 
         //start movement coroutine here
@@ -71,7 +71,7 @@ public class DamageLabel : MonoBehaviour
         yield return FadeOut();
 
         // Return to pool
-        _poolManager.release(this);
+        _poolManager.Release(this);
     }
 
     IEnumerator FadeIn()
@@ -116,12 +116,12 @@ public class DamageLabel : MonoBehaviour
     #endregion
 
     #region Tools
-    float randomOffsetRange(float amount)
+    float RandomOffsetRange(float amount)
     {
         float ran = Random.Range(amount * -1, amount);
         return ran;
     }
-    public void updateColorType(TMP_ColorGradient gradColor)
+    public void UpdateColorType(TMP_ColorGradient gradColor)
     {
         damageText.enableVertexGradient = true;
         damageText.colorGradientPreset = gradColor;

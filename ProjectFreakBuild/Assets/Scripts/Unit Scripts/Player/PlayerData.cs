@@ -37,21 +37,20 @@ public class PlayerData : MonoBehaviour, IUnitData, IInventory
         switch(item)
         {
             case WeaponItem weapon:
-                Debug.Log($"Item {item.ItemName} is a weapon...");
-                if (pInventory.checkEquippedWeaponFits(item as WeaponItem))
+                if (pInventory.CheckEquippedWeaponFits(item as WeaponItem))
                 {
-                    pInventory.addEquipmentInventory(item as WeaponItem);
-                    Player.player.updateCurrentWeapon();
+                    pInventory.AddEquipmentInventory(item as WeaponItem);
+                    Player.player.UpdateCurrentWeapon();
                     //need to figure out if weapons can stack...
                     return amount - 1;
                 }
                 else
                 {
-                    print("Add inventory functionality here...");
+                    //todo: add inventory functionality here
                 }
                 break;
             default:
-                Debug.Log($"Item {item.ItemName} is a mysterious type of item...");
+                Debug.LogWarning($"Warning! Item {item.ItemName} is a type PlayerData doesn't handle yet, ignoring it...");
                 break;
         }
 
