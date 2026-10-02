@@ -45,8 +45,13 @@ GameObject:
   - component: {fileID: 3251184708494489510}
   - component: {fileID: 1451976497953319450}
   - component: {fileID: 5519027813046118202}
+  - component: {fileID: 6630184457302915101}
+  - component: {fileID: 6630184457302915102}
   - component: {fileID: 3780734230097471674}
   - component: {fileID: 5711896037558335143}
+  - component: {fileID: 7412093385526611202}
+  - component: {fileID: 7412093385526611206}
+  - component: {fileID: 7412093385526611207}
   m_Layer: 8
   m_Name: PFB_Shade
   m_TagString: Untagged
@@ -113,6 +118,7 @@ MonoBehaviour:
   _shadeEvoData: {fileID: 0}
   _movement: {fileID: 1451976497953319450}
   _InputDriver: {fileID: 5519027813046118202}
+  _AIDriver: {fileID: 6630184457302915102}
   PlayerRef: {fileID: 0}
 --- !u!114 &1451976497953319450
 MonoBehaviour:
@@ -224,6 +230,46 @@ MonoBehaviour:
   _Movement: {fileID: 1451976497953319450}
   _IsTurnSnapped: 1
   _IsUsingMouse: 0
+--- !u!195 &6630184457302915101
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828660845402572805}
+  m_Enabled: 0
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 8
+  m_Acceleration: 40
+  avoidancePriority: 50
+  m_AngularSpeed: 720
+  m_StoppingDistance: 1.5
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &6630184457302915102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828660845402572805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 678c67c7cb6c449a9d0b76bb4ba901ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _StoppingDistance: 1.5
+  _NavMeshSnapDistance: 3
+  _FaceMoveThreshold: 0.1
+  _Movement: {fileID: 1451976497953319450}
+  _IsGuiding: 0
+  _IsOffNavMesh: 0
 --- !u!114 &3780734230097471674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,3 +477,85 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7412093385526611202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828660845402572805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9743825469f4379827cbd976a07e9ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Team: 0
+  _Role: 1
+  _TargetPriority: 1
+  _InputDriver: {fileID: 0}
+--- !u!114 &7412093385526611206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828660845402572805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbb6a8b898743c39e8580451e615a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _DetectionRange: 15
+  _LoseTargetRange: 25
+  _AggroDuration: 5
+  _RetargetInterval: 0.25
+  _SwitchMargin: 0.2
+  _NeedsLineOfSight: 1
+  _EyeHeight: 1
+  _SightBlockers:
+    serializedVersion: 2
+    m_Bits: 4294966847
+  _CurrentTarget: {fileID: 0}
+  _CurrentTier: 0
+  _Attackers: []
+--- !u!114 &7412093385526611207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5828660845402572805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5082bf57efb54eb08922f48d54beb5e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PersonalitySetup:
+    _Preset: {fileID: 11400000, guid: 67b901cebc89410194b64526acd20805, type: 2}
+    _OverrideAggression: 0
+    _Aggression: 0.6
+    _OverrideFear: 0
+    _Fear: 0.3
+    _OverrideRoam: 0
+    _Roam: 0.3
+    _OverrideLoyalty: 0
+    _Loyalty: 0.7
+    _OverrideCommitTime: 0
+    _CommitTime: 1
+  _Actions: []
+  _ThinkInterval: 0.2
+  _InterruptMargin: 0.15
+  _FightRange: 2
+  _Targeting: {fileID: 7412093385526611206}
+  _Personality:
+    _Aggression: 0.6
+    _Fear: 0.3
+    _Roam: 0.3
+    _Loyalty: 0.7
+    _CommitTime: 1
+  _CurrentActionName: None
+  _IsPaused: 0
+  _Scores: []
+  references:
+    version: 2
+    RefIds: []

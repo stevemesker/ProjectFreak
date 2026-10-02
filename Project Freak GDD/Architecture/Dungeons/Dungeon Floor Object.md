@@ -88,7 +88,7 @@ The console should also show `BuildingNavMesh took ___ms`. If there's an `Error!
 - **Prefer Box Colliders** for flat floors and walls. They don't need Read/Write and they bake faster than Mesh Colliders.
 
 ## Layers
-- **Units** (layer 8): player and shades. Must be **unticked** in `_NavMeshLayers` or they get baked in as obstacles. *(Oct 2026: the player is on Units, the shade prefab still needs moving.)* [[Notes for the future]]
+- **Units** (layer 8): player and shades. Must be **unticked** in `_NavMeshLayers` or they get baked in as obstacles. *(Oct 2026: the player and shade prefabs are both on Units.)*
 - **Projectile / Item**: should usually be unticked too, so bullets and pickups lying around don't cut holes.
 - Floors and walls stay on Default (or any ticked layer).
 

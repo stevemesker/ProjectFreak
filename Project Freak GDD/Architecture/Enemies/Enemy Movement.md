@@ -1,5 +1,7 @@
 ## Overview
-How enemies move and get knocked back. Normal enemies move with a plain **NavMeshAgent**: the agent finds the path and moves the enemy directly, with no physics. Something else (a "brain", later the AI decision layer) decides *where* to go and calls `SetDestination`.
+How enemies move and get knocked back. Normal enemies move with a plain **NavMeshAgent**: the agent finds the path and moves the enemy directly, with no physics. Its [[Unit Brain]] decides *where* to go and calls `SetDestination`.
+
+**Making a new enemy?** Follow [[How To - Create Enemies & Shades#Part 1 - Make a New Enemy]].
 
 Part of step 4 of the [[AI Movement & Dungeon Loading Plan]].
 
@@ -9,7 +11,7 @@ Part of step 4 of the [[AI Movement & Dungeon Loading Plan]].
 | `EnemyType`           | `Scripts/Enemies/EnemyType.cs`               | `EnemyType.Rank` and `EnemyType.SizeClass` enums           |
 | `SizeClassRulesSO`    | `Scripts/Enemies/SizeClassRulesSO.cs`        | Shared rules for how each size class reacts to hits        |
 | `EnemyMovement`       | `Scripts/Enemies/EnemyMovement.cs`           | Drives the NavMeshAgent, waits for the floor, handles knockback |
-| `EnemyChaseTestBrain` | `Scripts/Dev Scripts/EnemyChaseTestBrain.cs` | *Temp.* Chases the player so movement can be tested [[Notes for the future]] |
+| `UnitBrain`           | `Scripts/AI/UnitBrain.cs`                    | Decides what the enemy does and gives `EnemyMovement` its orders. See [[Unit Brain]] |
 
 **Test enemy:** `Prefab/Dev/PFB_Enemy_ChaseTest_Dev` (uses `Scriptable Objects/Enemies/SO_Enemy_ChaseTest_Dev`).
 
@@ -42,7 +44,13 @@ Always visible:
 | `_KnockbackDuration`  | 0.25    | How long the slide lasts, seconds                          |
 | `_KnockbackCurve`     | ease-out| Shape of the slide over its duration                       |
 
-*Stats, loot and AI personality sections get added as those systems are built.*
+**AI** foldout (starts closed):
+
+| Field          | Description                                                                 |
+| :------------- | :-------------------------------------------------------------------------- |
+| `_Personality` | A personality preset plus optional overrides. The enemy's [[Unit Brain]] builds its personality from this when the game starts. See [[How To - Create Enemies & Shades#Make a Personality Preset]] |
+
+*Stats and loot sections get added as those systems are built.* [[Notes for the future]]
 
 ---
 ## Ranks
@@ -84,8 +92,11 @@ If any damage entry in a hit uses one of the "full knockback" attack types, that
 | :------------------------ | :------------------------------------------------------------------------- |
 | `SetDestination(Vector3)` | Go here. Remembered if the enemy can't move yet or is mid-knockback        |
 | `StopMoving()`            | Stop and forget the destination                                            |
-| `IsActive()`              | True once it's on a NavMesh and able to move                               |
+| `HasArrived()`            | True when it reached its destination (or has none)                         |
+| `IsActive()`              | True when it can take orders: on a NavMesh and not mid-knockback           |
 | `TakeKnockback(DamagePackage)` | From `IKnockbackable`. Pushes away from the package's `_Source`       |
+
+The movement functions come from `IUnitMover`, so the same AI brain can steer enemies and shades (see [[Unit Targeting#IUnitMover]]).
 
 ### Knockback
 Hits carry `_KnockbackDistance` (meters) on the [[Damage Package]]. When an enemy is hit, `EnemyDamagable` finds its `IKnockbackable` and calls `TakeKnockback`:
@@ -99,7 +110,9 @@ A new hit during a slide replaces it. **Test Knockback** (Odin button, play mode
 *Planned:* knocking enemies over edges into hazards like lava pits for instant kills. That needs to be decided along with how hazards are built (see the plan's To Do). [[Notes for the future]]
 
 ### Targets
-Enemies don't pick targets yet. The temp chase brain always goes after the player, even while the player is controlling a shade. **Target priorities** (player vs shade vs others, and switching when control changes) belong with the AI decision layer. [[Notes for the future]]
+Enemies pick targets with `UnitTargeting` (see [[Unit Targeting]]), and their [[Unit Brain]] decides what to do about it (chase, hold, flee, wander). The shade hitting an enemy pulls it off the player's body. Enemy agents should steer around the shade while it's AI-controlled, since its `NavGuideDriver` agent takes part in avoidance.
+
+Enemy prefabs need a `UnitTeam` (Team: Enemy, Role: Enemy), `UnitTargeting` and `UnitBrain`. `PFB_Enemy_ChaseTest_Dev` already has all three.
 
 ---
 ## Layers

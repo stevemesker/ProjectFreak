@@ -15,7 +15,9 @@ GameObject:
   - component: {fileID: 494046753337041394}
   - component: {fileID: 8240119936502187711}
   - component: {fileID: 8240119936502187712}
-  - component: {fileID: 8240119936502187713}
+  - component: {fileID: 7412093385526611203}
+  - component: {fileID: 7412093385526611204}
+  - component: {fileID: 7412093385526611205}
   m_Layer: 8
   m_Name: PFB_Enemy_ChaseTest_Dev
   m_TagString: Untagged
@@ -180,21 +182,6 @@ MonoBehaviour:
   _NavMeshSnapDistance: 3
   _IsActive: 0
   _IsKnockedBack: 0
---- !u!114 &8240119936502187713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5078544813263492176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 896b8ba813d3478682667d47855b766d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _RepathInterval: 0.25
-  _ChaseRange: 20
-  _Movement: {fileID: 8240119936502187712}
 --- !u!1001 &3116855252906575070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -274,3 +261,85 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3116855252906575070}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7412093385526611203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9743825469f4379827cbd976a07e9ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Team: 1
+  _Role: 2
+  _TargetPriority: 1
+  _InputDriver: {fileID: 0}
+--- !u!114 &7412093385526611204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbb6a8b898743c39e8580451e615a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _DetectionRange: 15
+  _LoseTargetRange: 25
+  _AggroDuration: 5
+  _RetargetInterval: 0.25
+  _SwitchMargin: 0.2
+  _NeedsLineOfSight: 1
+  _EyeHeight: 1
+  _SightBlockers:
+    serializedVersion: 2
+    m_Bits: 4294966847
+  _CurrentTarget: {fileID: 0}
+  _CurrentTier: 0
+  _Attackers: []
+--- !u!114 &7412093385526611205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5082bf57efb54eb08922f48d54beb5e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _PersonalitySetup:
+    _Preset: {fileID: 0}
+    _OverrideAggression: 0
+    _Aggression: 0.6
+    _OverrideFear: 0
+    _Fear: 0.3
+    _OverrideRoam: 0
+    _Roam: 0.3
+    _OverrideLoyalty: 0
+    _Loyalty: 0.7
+    _OverrideCommitTime: 0
+    _CommitTime: 1
+  _Actions: []
+  _ThinkInterval: 0.2
+  _InterruptMargin: 0.15
+  _FightRange: 2
+  _Targeting: {fileID: 7412093385526611204}
+  _Personality:
+    _Aggression: 0.6
+    _Fear: 0.3
+    _Roam: 0.3
+    _Loyalty: 0.7
+    _CommitTime: 1
+  _CurrentActionName: None
+  _IsPaused: 0
+  _Scores: []
+  references:
+    version: 2
+    RefIds: []

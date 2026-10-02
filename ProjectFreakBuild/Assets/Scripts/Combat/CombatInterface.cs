@@ -22,6 +22,18 @@ public interface IKnockbackable
     void TakeKnockback(DamagePackage dmgPackage);
 }
 
+public interface IAggroReceiver
+{
+    //anything that wants to know who hit it, so its AI can go after the attacker (see UnitTargeting)
+    void AddAggro(DamagePackage dmgPackage);
+}
+
+public interface IUnitHealth
+{
+    //anything that can report how healthy it is, so AI can react to being hurt (like fleeing)
+    float GetHealthPercent(); //0 = dead, 1 = full health
+}
+
 public interface IUnitData
 {
     DangerLevel GetDangerLevelSettings();

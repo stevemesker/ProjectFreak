@@ -19,7 +19,20 @@ public class EnemySO : ScriptableObject
     [Tooltip("How big this enemy is. Decides how far knockback pushes it, using the shared Size Class Rules on the Game Manager")]
     public EnemyType.SizeClass _SizeClass = EnemyType.SizeClass.Medium;
 
-    //todo: stats, loot and AI personality sections get added here as those systems are built
+    //todo: stats and loot sections get added here as those systems are built
+
+    [FoldoutGroup("AI", false)]
+    [Tooltip("This enemy's personality: a preset plus any overrides. Its UnitBrain reads this when the game starts")]
+    public PersonalitySetup _Personality = new PersonalitySetup();
+
+    [FoldoutGroup("AI", false)]
+    [Button("Reload All Units")]
+    void ReloadAllUnits()
+    {
+        //editor button (play mode only): after changing the personality during play, every unit picks up its personality again
+        if (Application.isPlaying == false) return;
+        UnitBrain.ReloadAllPersonalities();
+    }
 
     [FoldoutGroup("Movement", false)]
     [Tooltip("Top running speed, in meters per second. The player runs at about 8")]

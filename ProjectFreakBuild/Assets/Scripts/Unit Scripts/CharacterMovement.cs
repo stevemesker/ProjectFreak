@@ -125,6 +125,12 @@ public class CharacterMovement : MonoBehaviour
         return m_UnitGoal;
     }
 
+    public float GetMaxSpeed()
+    {
+        //function for checking the unit's top speed in meters per second (used by the AI driver so its steering matches)
+        return maxSpeed * speedFactor;
+    }
+
     public void Dash()
     {
         //function drivers use to dash in the current move direction

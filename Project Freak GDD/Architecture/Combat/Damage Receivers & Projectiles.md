@@ -26,7 +26,11 @@ Implements `IDamagable` for enemies. It doesn't calculate damage itself. Instead
 | `onHit`    | Fires on any hit. For effects that don't need the damage data                |
 | `onDamage` | Fires with the `DamagePackage`. Functions hooked here must take a `DamagePackage` as their first parameter |
 
-After the events, if the object has an `IKnockbackable` component (like `EnemyMovement`), it calls `TakeKnockback(package)`. No inspector hookup needed. See [[Enemy Movement]].
+After the events, it checks the object for two optional components (no inspector hookup needed):
+- `IAggroReceiver` (like `UnitTargeting`): calls `AddAggro(package)` so the unit's AI turns on whoever hit it. See [[Unit Targeting]]
+- `IKnockbackable` (like `EnemyMovement`): calls `TakeKnockback(package)`. See [[Enemy Movement]]
+
+*Note:* the player prefab also uses `EnemyDamagable` (forwarding to `PlayerDamegable`), so these checks run on the player too. The player has neither component, so nothing changes for it.
 
 ---
 ## PlayerDamegable

@@ -5,7 +5,7 @@ using UnityEngine.AI;
 using Sirenix.OdinInspector;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyMovement : MonoBehaviour, IKnockbackable
+public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
 {
     //Moves an enemy with a NavMeshAgent. Something else (a brain/AI script) decides WHERE to go and calls SetDestination.
     //Waits for the dungeon floor's NavMesh before moving, and handles knockback by sliding the agent along the NavMesh.
@@ -46,8 +46,7 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable
     private void Start()
     {
         //if this scene is a dungeon floor that's still loading, wait for its NavMesh before moving
-        DungeonFloorObject floor = DungeonFloorObject._Floor;
-        if (floor != null && floor.gameObject.scene == gameObject.scene && floor.IsFloorReady() == false)
+        if (NavMeshTools.IsWaitingOnFloor(gameObject, out DungeonFloorObject floor))
         {
             _waitingOnFloor = floor;
             _waitingOnFloor.FloorReady += OnFloorReady; //"+=" subscribes our function to the floor's event
@@ -84,15 +83,15 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable
     void ActivateMovement()
     {
         //function that puts the enemy onto the NavMesh and turns the agent on
-        //SamplePosition finds the closest point on the NavMesh, so an enemy placed a little above the floor still snaps down
-        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, _NavMeshSnapDistance, NavMesh.AllAreas) == false)
+        //finds the closest point on the NavMesh, so an enemy placed a little above the floor still snaps down
+        if (NavMeshTools.TryGetNavMeshPoint(transform.position, _NavMeshSnapDistance, out Vector3 groundPoint) == false)
         {
             Debug.LogWarning($"Warning! No NavMesh found within {_NavMeshSnapDistance}m of {gameObject.name}, it won't move. If this scene was built by hand, it needs a baked NavMesh", this);
             return;
         }
 
         _agent.enabled = true;
-        _agent.Warp(hit.position); //Warp teleports the agent without it trying to walk there
+        _agent.Warp(groundPoint); //Warp teleports the agent without it trying to walk there
         _IsActive = true;
 
         if (_hasDestination) _agent.SetDestination(_savedDestination);
@@ -127,10 +126,24 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable
         _agent.ResetPath();
     }
 
+    public bool HasArrived()
+    {
+        //function for checking if the enemy made it to its destination (or has nowhere to go)
+        if (_hasDestination == false) return true;
+        if (IsActive() == false || _agent.pathPending) return false; //pathPending = the agent is still working out the route
+        return _agent.remainingDistance <= _agent.stoppingDistance;
+    }
+
+    public EnemySO GetEnemyData()
+    {
+        //function that gives this enemy's template (other scripts like the UnitBrain read their settings from it)
+        return _EnemyData;
+    }
+
     public bool IsActive()
     {
-        //function for checking if the enemy is on a NavMesh and able to move
-        return _IsActive;
+        //function for checking if the enemy can take orders right now: on a NavMesh and not mid-knockback
+        return _IsActive && _IsKnockedBack == false;
     }
     #endregion
 
