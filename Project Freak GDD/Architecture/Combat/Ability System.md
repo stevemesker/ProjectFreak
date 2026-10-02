@@ -21,7 +21,7 @@ Created from **Create → Ability** (default name `SO_Ability_`).
 | :----------------- | :--------------------------------------------- |
 | `_AbilityName`     | Name shown in the radial menu                  |
 | `_AbilitySprite`   | Icon shown in the radial menu                  |
-| `_AbilityCooldown` | *Not used yet*                                 |
+| `_AbilityCooldown` | *Not used yet* [[Notes for the future]] |
 | `_steps`           | The ordered list of `AbilityStep`s             |
 
 ## AbilityStep
@@ -30,7 +30,7 @@ Created from **Create → Ability** (default name `SO_Ability_`).
 | :------------ | :----------------------------------------------------------------------------------- |
 | `DevNotes`    | Notes for yourself in the inspector                                                  |
 | `Timing`      | How long to wait after this step before moving on. 0 means move on right away        |
-| `_StepObject` | Object this step can spawn (used by `summonUnit`)                                    |
+| `_StepObject` | Object this step can spawn (used by `SummonUnit`)                                    |
 | `_Functions`  | The functions this step runs, in order                                               |
 
 ## AbilityFunction
@@ -77,10 +77,10 @@ AdvanceAbilityStep() — next step, or EndAbility() when out of steps
 | `AdvanceAbilityStep()`            | Moves to the next step                                             |
 | `EndAbility()`                    | Clears the current ability                                         |
 | `InterruptAbility()`              | Stops the ability and any running timer                            |
-| `summonUnit(position, rotation)`  | Spawns the current step's `_StepObject`                            |
+| `SummonUnit(position, rotation)`  | Spawns the current step's `_StepObject`                            |
 | `AbilIntLog(message)`             | Logs a message tagged with the unit's name                         |
 
-*Known issue:* the wait always uses the **first** step's `Timing` instead of the current step's. See [[Known Issues]].
+*Known issue:* the wait always uses the **first** step's `Timing` instead of the current step's. See [[Known Issues]]. [[Notes for the future]]
 
 ---
 ## Related

@@ -7,6 +7,8 @@ using Sirenix.OdinInspector;
 
 public class ShadeManager : MonoBehaviour
 {
+    public static ShadeManager _ShadeManager;
+
     [Header("Pointer")]
     [SerializeField]ElementManagerSO managerScriptableObject;
     [SerializeField] GameObject _ShadePrefab;
@@ -28,15 +30,20 @@ public class ShadeManager : MonoBehaviour
     Coroutine _transferTimer;
     [SerializeField] bool isBusy;
 
+    private void Awake()
+    {
+        //sets up the singleton so other scripts can reach this manager with ShadeManager._ShadeManager
+        if (_ShadeManager == null) _ShadeManager = this;
+    }
+
     private void OnEnable()
     {
         managerScriptableObject.manager = this;
     }
 
     #region ShadeControl
-    public void summonShade(Vector3 position)
+    public void SummonShade(Vector3 position)
     {
-        print($"Now summoning {_ShadeSlots[currentShadeSelected].name} at location {position}! Hazzah!");
         if (isBusy) return;
         if (_CurrentShade != null) _CurrentShade.transform.position = Player.player.transform.position + position;
         else _CurrentShade = Instantiate(_ShadePrefab, Player.player.transform.position+position, Quaternion.identity);
@@ -70,13 +77,12 @@ public class ShadeManager : MonoBehaviour
 
     IEnumerator ShadeControlSwitch(float easeOutTime, float easeInTime, GameObject controlTarget)
     {
-        print($"Transfering focus to {controlTarget}");
         HUDManager._HUD.FadeOut(easeOutTime);
         yield return new WaitForSeconds(easeOutTime + .5f);
 
-        CameraManager._CamManager.setCamTargetToTarget(controlTarget);
-        if (controlTarget == Player.player.gameObject) { print($"Player is controlling their body"); ControlShade(false); }
-        else { print($"Player is controlling the body of {controlTarget.name}"); ControlShade(true); }
+        CameraManager._CamManager.SetCamTargetToTarget(controlTarget);
+        if (controlTarget == Player.player.gameObject) ControlShade(false); //player is back in their own body
+        else ControlShade(true); //player is controlling the shade
 
         HUDManager._HUD.FadeIn(easeInTime);
         yield return new WaitForSeconds(easeInTime + .1f);
@@ -86,19 +92,19 @@ public class ShadeManager : MonoBehaviour
     #endregion
 
     #region get shade info
-    public ShadeSO getCurrentShade()
+    public ShadeSO GetCurrentShade()
     {
         return _ShadeSlots[currentShadeSelected];
     }
 
-    public ShadeSO getShadeOfIndex(int index)
+    public ShadeSO GetShadeOfIndex(int index)
     {
         return _ShadeSlots[index];
     }
     #endregion
 
     #region stat change
-    public void receiveStatBoostPackage(List<statBoostPackage> input)
+    public void ReceiveStatBoostPackage(List<statBoostPackage> input)
     {
         for (int i = 0; i < input.Count; i++)
         {
@@ -106,7 +112,7 @@ public class ShadeManager : MonoBehaviour
         }
     }
 
-    public void removeStatBoostPackage(List<statBoostPackage> input)
+    public void RemoveStatBoostPackage(List<statBoostPackage> input)
     {
         for (int i = 0; i < input.Count; i++)
         {
@@ -118,32 +124,32 @@ public class ShadeManager : MonoBehaviour
     {
         switch (input._statToChange)
         {
-            case (StatNameType.Stat.Health):
+            case (DamageType.StatType.Health):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._HP += input._ChangeAmount * multiplier;
                 _ShadeSlots[currentShadeSelected]._AlteredStats._Health += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Strength):
+            case (DamageType.StatType.Strength):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._STR += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Defense):
+            case (DamageType.StatType.Defense):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._DEF += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Agility):
+            case (DamageType.StatType.Agility):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._AGI += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Intelect):
+            case (DamageType.StatType.Intelect):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._INT += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Spirit):
+            case (DamageType.StatType.Spirit):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._SPR += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Wisdom):
+            case (DamageType.StatType.Wisdom):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._WIS += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Discipline):
+            case (DamageType.StatType.Discipline):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._DIS += input._ChangeAmount * multiplier;
                 break;
-            case (StatNameType.Stat.Wild):
+            case (DamageType.StatType.Wild):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._WILD += input._ChangeAmount * multiplier;
                 break;
             default:
@@ -155,18 +161,18 @@ public class ShadeManager : MonoBehaviour
     #endregion
 
     #region Save Rune Field Package
-    public void saveCurrentShadeRuneFieldPackage(RuneFieldPackage package)
+    public void SaveCurrentShadeRuneFieldPackage(RuneFieldPackage package)
     {
         _ShadeSlots[currentShadeSelected]._RuneFieldPackage = package;
     }
     #endregion
 
     #region Shade Selection Querry
-    public void setShadeSelection(int Selection)
+    public void SetShadeSelection(int Selection)
     {
         currentShadeSelected = Selection;
     }
-    public int getShadeSelectionIndex()
+    public int GetShadeSelectionIndex()
     {
         return currentShadeSelected;
     }

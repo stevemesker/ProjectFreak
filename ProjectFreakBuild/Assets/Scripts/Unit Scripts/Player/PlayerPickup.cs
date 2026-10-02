@@ -32,7 +32,6 @@ public class PlayerPickup : MonoBehaviour
         ItemSO itm = other.gameObject.GetComponent<ItemDrop>().ItemLootDrop;
 
         if (itm is WeaponItem) { InRangePickup.Add(other.gameObject); /*print("Adding weapon to gatherables");*/ return; }
-        print("Adding ingredient to inventory automatically");
 
     }
     private void OnTriggerExit(Collider other)
@@ -63,7 +62,6 @@ public class PlayerPickup : MonoBehaviour
 
         //GameObject tempObj = InRangePickup[index];
         IPickup temp = InRangePickup[index].GetComponent<IPickup>();
-        Debug.Log($"Picking up item | {temp.GetObject().ItemName}");
         if (!TryGetComponent<IInventory>(out IInventory inv))
         {
             Debug.LogError(
@@ -72,11 +70,11 @@ public class PlayerPickup : MonoBehaviour
             return;
         }
 
-        handlePickupToInventory(temp, inv);
+        HandlePickupToInventory(temp, inv);
         InRangePickup.RemoveAt(index);
     }
 
-    void handlePickupToInventory(IPickup pickup, IInventory inv)
+    void HandlePickupToInventory(IPickup pickup, IInventory inv)
     {
         ItemSO itm = pickup.GetObject();
         int amount = pickup.GetAmount();

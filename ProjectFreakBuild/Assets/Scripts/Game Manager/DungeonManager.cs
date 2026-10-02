@@ -39,12 +39,12 @@ public class DungeonManager : MonoBehaviour
         pInput = new PlayerInput();
         pInput.Enable();
 
-        pInput.Player.OptionsMenu.performed += toggleMap;
+        pInput.Player.OptionsMenu.performed += ToggleMap;
     }
 
     private void OnDisable()
     {
-        pInput.Player.OptionsMenu.performed -= toggleMap;
+        pInput.Player.OptionsMenu.performed -= ToggleMap;
         pInput.Disable();
     }
 
@@ -61,7 +61,7 @@ public class DungeonManager : MonoBehaviour
         _map.StartNewMap(_CurrentDungeon);
 
         //SceneManagerObject._SceneManager.HudFadeOnOpen(1);
-        //SceneManagerObject._SceneManager.changeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
+        //SceneManagerObject._SceneManager.ChangeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
     }
 
     public void CompleteDungeon(string ReturnMap)
@@ -74,16 +74,15 @@ public class DungeonManager : MonoBehaviour
         _map = null;
 
         //migth need a better system for returning to previous areas
-        SceneManagerObject._SceneManager.changeScene(ReturnMap);
+        SceneManagerObject._SceneManager.ChangeScene(ReturnMap);
     }
 
     public void MoveToFloor(int floorID)
     {
-        DungeonMapNode temp = getMapNode(floorID);
+        DungeonMapNode temp = GetMapNode(floorID);
         string floorToEnter;
         if (temp._FloorSceneName == "")
         {
-            print("Need to generate new floor...");
             floorToEnter = _CurrentDungeon._DungeonFloorList[Random.Range(0, _CurrentDungeon._DungeonFloorList.Count)];
         }
         else floorToEnter = temp._FloorSceneName;
@@ -92,29 +91,29 @@ public class DungeonManager : MonoBehaviour
         _CurrentMapLocator.transform.position = temp.gameObject.transform.position;
 
         SceneManagerObject._SceneManager.HudFadeOnOpen(1);
-        SceneManagerObject._SceneManager.changeScene(floorToEnter);
+        SceneManagerObject._SceneManager.ChangeScene(floorToEnter);
     }
 
     #endregion
 
-    void toggleMap(InputAction.CallbackContext context)
+    void ToggleMap(InputAction.CallbackContext context)
     {
         _CurrentDungeonMap.GetComponent<DungeonMapManager>().ToggleMap();
     }
 
     #region Tools
-    public DungeonMapNode getMapNode(int ID)
+    public DungeonMapNode GetMapNode(int ID)
     {
         if (ID >= _map._FloorNodes.Count) return _map._FloorNodes[_map._FloorNodes.Count - 1].GetComponent<DungeonMapNode>();
         return _map._FloorNodes[ID].GetComponent<DungeonMapNode>();
     }
 
-    public int getCurrentDungeonFloorID()
+    public int GetCurrentDungeonFloorID()
     {
         return _CurrentRoomID;
     }
 
-    public void setDungeonLocator(GameObject target)
+    public void SetDungeonLocator(GameObject target)
     {
         _CurrentMapLocator = target;
     }
@@ -130,10 +129,9 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    public DungeonPOISO getPOIFromCurrentRoom(POIType.Size size)
+    public DungeonPOISO GetPOIFromCurrentRoom(POIType.Size size)
     {
-        print($"Getting POI for currentroom {getMapNode(_CurrentRoomID).gameObject.name}...");
-        return _CurrentDungeon.GetPOI(getMapNode(_CurrentRoomID)._Type, size);
+        return _CurrentDungeon.GetPOI(GetMapNode(_CurrentRoomID)._Type, size);
     }
     #endregion
 }

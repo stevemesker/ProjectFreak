@@ -15,11 +15,11 @@ public class SaveManager : MonoBehaviour
     }
 
     #region Set Data
-    public SaveSlotSO getSaveSlotData()
+    public SaveSlotSO GetSaveSlotData()
     {
         return _saveSlotList[_ActiveSaveSlotIndex];
     }
-    public void clearSave(int index)
+    public void ClearSave(int index)
     {
         _saveSlotList[index].ResetData();
         SaveDataAll(index);
@@ -30,18 +30,18 @@ public class SaveManager : MonoBehaviour
     #region Load Data
     public void LoadSaveDataToSlot()
     {
-        Debug.Log("Load save file data here...");
+        //todo: load save file data here
     }
 
     #endregion
 
     #region Save Slot Tools
-    public int getCurrentActiveSaveSlot ()
+    public int GetCurrentActiveSaveSlot ()
     {
         return _ActiveSaveSlotIndex;
     }
 
-    public void setCurrentActiveSaveSlot(int SlotIndex)
+    public void SetCurrentActiveSaveSlot(int SlotIndex)
     {
         SlotIndex = Mathf.Abs(SlotIndex);
         if (_saveSlotList.Count - 1 > SlotIndex)

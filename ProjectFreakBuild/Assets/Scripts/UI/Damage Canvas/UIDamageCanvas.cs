@@ -34,24 +34,23 @@ public class UIDamageCanvas : MonoBehaviour
     {
         _damageLabelPopupPool = new ObjectPool<DamageLabel>(CreateDamageLabel,OnGetDamageLabel,OnReleaseDamageLabel,OnDestroyDamageLabel,true,20,100);
     }
-    public void displayDamage(Vector3 damageLocation, int dmg, bool isCritDisplay)
+    public void DisplayDamage(Vector3 damageLocation, int dmg, bool isCritDisplay)
     {
-        Debug.Log("Damage taken at location " + damageLocation + "| damage dealt " + dmg + "| crit state: " + isCritDisplay);
-        if (isOnScreen(damageLocation) == false) return;
+        if (IsOnScreen(damageLocation) == false) return;
 
         DamageLabel label = _damageLabelPopupPool.Get();
         Vector2 screenPos = Camera.main.WorldToScreenPoint(damageLocation);
 
-        label.Initialize(screenPos, _textXStartRange , Mathf.Abs(dmg), getDamageColor(isCritDisplay, dmg), getDamageSize(isCritDisplay));
+        label.Initialize(screenPos, _textXStartRange , Mathf.Abs(dmg), GetDamageColor(isCritDisplay, dmg), GetDamageSize(isCritDisplay));
     }
 
-    public void release(DamageLabel label)
+    public void Release(DamageLabel label)
     {
         _damageLabelPopupPool.Release(label);
     }
 
     #region Tools
-    bool isOnScreen(Vector3 damageLocation)
+    bool IsOnScreen(Vector3 damageLocation)
     {
         Vector3 viewportPos = Camera.main.WorldToViewportPoint(damageLocation);
 
@@ -62,7 +61,7 @@ public class UIDamageCanvas : MonoBehaviour
                viewportPos.y <= 1f;
     }
 
-    TMPro.TMP_ColorGradient getDamageColor(bool crit, int dmg)
+    TMPro.TMP_ColorGradient GetDamageColor(bool crit, int dmg)
     {
         if (dmg < 0) return _ColorHealing;
         if (crit) return _ColorCrit;
@@ -70,7 +69,7 @@ public class UIDamageCanvas : MonoBehaviour
         return _ColorBasic;
     }
 
-    float getDamageSize(bool isCrit)
+    float GetDamageSize(bool isCrit)
     {
         if (isCrit) return _CritFontSize;
         else return _FontSize;
@@ -104,7 +103,7 @@ public class UIDamageCanvas : MonoBehaviour
     [Button("Test")]
     void UpdateTextColor(DamageLabel label)
     {
-        label.updateColorType(_ColorBasic);
+        label.UpdateColorType(_ColorBasic);
     }
     #endregion
 }

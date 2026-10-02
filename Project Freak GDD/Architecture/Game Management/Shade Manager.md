@@ -1,11 +1,13 @@
 ## Overview
 `ShadeManager` holds the data for each of the player's [[Shade Slot]]s, summons the [[Shade]] into the world, and handles switching control between the player and the shade ([[Summon Shade]] and [[Control Shade]]).
 
-It lives on the Game Manager object (see [[AA - Managers]]). It doesn't have a singleton yet, so it's reached with:
+It lives on the Game Manager object (see [[AA - Managers]]) and is reached through its singleton:
 
 ```csharp
-GameManager._GameManager.GetComponent<ShadeManager>()
+ShadeManager._ShadeManager
 ```
+
+`GameManager.GetShadeManager()` also returns this singleton.
 
 ---
 ## Inspector Data
@@ -35,7 +37,7 @@ GameManager._GameManager.GetComponent<ShadeManager>()
 | `isBusy`         | True while a switch is happening. Blocks summoning/switching   |
 
 ---
-## Summoning — `summonShade(Vector3 offset)`
+## Summoning — `SummonShade(Vector3 offset)`
 Called by the `SummonShade` ability (see [[Ability System]]) with an offset from the player.
 - If a shade already exists, it's moved to the new spot
 - Otherwise `_ShadePrefab` is spawned there
@@ -60,7 +62,7 @@ Fade screen back in
 - `true` - player movement off, shade movement on
 - `false` - player movement on, shade movement off
 
-*Currently the switch always goes to the current shade. Switching back to the player isn't hooked up to an input yet.*
+*Currently the switch always goes to the current shade. Switching back to the player isn't hooked up to an input yet.* [[Notes for the future]]
 
 ---
 ## Stat Boosts
@@ -68,16 +70,16 @@ Fade screen back in
 
 | Function                          | Description                                                           |
 | :-------------------------------- | :-------------------------------------------------------------------- |
-| `receiveStatBoostPackage(list)`   | Adds every boost in the list                                           |
-| `removeStatBoostPackage(list)`    | Removes every boost in the list                                        |
-| `ChangeStat(package, multiplier)` | Adds `amount × multiplier` to the matching stat on `_AlteredStats`. Uses the old `StatNameType.Stat` enum (see [[Notes for the future]]) |
+| `ReceiveStatBoostPackage(list)`   | Adds every boost in the list                                           |
+| `RemoveStatBoostPackage(list)`    | Removes every boost in the list                                        |
+| `ChangeStat(package, multiplier)` | Adds `amount × multiplier` to the matching stat on `_AlteredStats`. Uses `DamageType.StatType`; `None` falls into the warning default |
 
 ---
 ## Other Functions
 
 | Function                                  | Description                                          |
 | :---------------------------------------- | :--------------------------------------------------- |
-| `getCurrentShade()`                       | Returns the active `ShadeSO`                         |
-| `getShadeOfIndex(int)`                    | Returns the `ShadeSO` in that slot                   |
-| `saveCurrentShadeRuneFieldPackage(pkg)`   | Stores the [[Rune Field]] layout on the active slot  |
-| `setShadeSelection(int)` / `getShadeSelectionIndex()` | Set/get the active slot              |
+| `GetCurrentShade()`                       | Returns the active `ShadeSO`                         |
+| `GetShadeOfIndex(int)`                    | Returns the `ShadeSO` in that slot                   |
+| `SaveCurrentShadeRuneFieldPackage(pkg)`   | Stores the [[Rune Field]] layout on the active slot  |
+| `SetShadeSelection(int)` / `GetShadeSelectionIndex()` | Set/get the active slot              |

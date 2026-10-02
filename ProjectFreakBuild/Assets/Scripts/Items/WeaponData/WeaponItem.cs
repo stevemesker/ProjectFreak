@@ -51,7 +51,7 @@ public class WeaponItem : ItemSO
     [Tooltip("Raw damage per projectile")] 
     public int baseDamage;
     [Tooltip("elemental damage type hitting the opponent (see element types for list)")] 
-    public ElementType.Element element;
+    public DamageType.ElementType element;
     [Tooltip("knockback strength hitting the enemy")] 
     public float knockbackHitAmount;
 

@@ -189,7 +189,7 @@ Maximum number of logical connections the node can have.
 
 The default value is `3`.
 
-This value is enforced by `canBridge()` and `ConnectNodesInRange()`.
+This value is enforced by `CanBridge()` and `ConnectNodesInRange()`.
 
 Once the node reaches the maximum number of connections, it will no longer attempt to create additional bridges.
 
@@ -366,7 +366,7 @@ Because detected objects are sorted by distance, this means the node keeps its c
 
 ## Target Bridge Availability
 
-The target node's `IBridgeable.canBridge()` method is checked before creating the connection.
+The target node's `IBridgeable.CanBridge()` method is checked before creating the connection.
 
 This prevents a node that has already reached its own connection limit from accepting another connection.
 
@@ -426,7 +426,7 @@ Register Bridge with Target Node
         ↓
 BuildConnection()
         ↓
-updatePosition()
+UpdatePosition()
 ```
 
 The bridge therefore serves as the visual representation of the logical connection stored in `_NodeConnections`.
@@ -455,7 +455,7 @@ Other Node → Bridge
 
 ---
 
-## `canBridge()`
+## `CanBridge()`
 
 Determines whether the node can accept another connection.
 
@@ -481,7 +481,7 @@ The method does not perform validation itself; validation is expected to occur b
 
 ---
 
-## `disconnectNodes()`
+## `DisconnectNodes()`
 
 Currently not implemented.
 
@@ -489,7 +489,7 @@ Currently not implemented.
 throw new System.NotImplementedException();
 ```
 
-This is a future extension point for removing an existing node connection and its associated bridge.
+This is a future extension point for removing an existing node connection and its associated bridge. [[Notes for the future]]
 
 A complete implementation will likely need to:
 
@@ -500,7 +500,7 @@ A complete implementation will likely need to:
 
 ---
 
-## `getMaxRange()`
+## `GetMaxRange()`
 
 Returns the node's current `_DetectionRange`.
 
@@ -539,7 +539,7 @@ Used by the [[Dungeon Map Manager]] to keep nearby nodes from sharing a color.
 | Function                                  | Checks                                                              |
 | :---------------------------------------- | :------------------------------------------------------------------ |
 | `TestColor(color)`                        | This node only                                                      |
-| `testNeighborColor(color)`                | This node and its direct connections                                |
+| `TestNeighborColor(color)`                | This node and its direct connections                                |
 | `TestSelfAndNeighborColor(color)`         | This node, its connections, and their connections (two steps out)   |
 
 Each returns `true` if the color is already in use.
@@ -660,13 +660,13 @@ This architecture allows the map manager to remain relatively high-level while i
 
 ---
 
-# Current Limitations / Future Work
+# Current Limitations / Future Work [[Notes for the future]]
 
 Several methods and settings currently provide extension points for the dungeon map system.
 
 ### Connection Removal
 
-`disconnectNodes()` is not implemented.
+`DisconnectNodes()` is not implemented.
 
 This will be required if connections can be modified after generation or reconstructed from saved data.
 

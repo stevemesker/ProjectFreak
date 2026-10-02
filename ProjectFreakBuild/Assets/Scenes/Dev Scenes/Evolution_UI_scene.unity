@@ -1289,7 +1289,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 334365067}
@@ -2393,7 +2393,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 547122020}
@@ -3012,7 +3012,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 693099935}
@@ -5970,7 +5970,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1578675631}
@@ -7080,7 +7080,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1769430791}
@@ -7505,7 +7505,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1801580267}
@@ -7686,7 +7686,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1857516852}
@@ -8007,7 +8007,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1985937660}
@@ -8349,7 +8349,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1397403652}
         m_TargetAssemblyTypeName: ShadeSlotManager, Assembly-CSharp
-        m_MethodName: loadShadeSlectionIndex
+        m_MethodName: LoadShadeSelectionIndex
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 2124202296}

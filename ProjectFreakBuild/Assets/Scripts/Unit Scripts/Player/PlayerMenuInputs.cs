@@ -14,7 +14,6 @@ public class PlayerMenuInputs : MonoBehaviour
 
     private void OnEnable()
     {
-        print("boop");
         pInput.Enable();
         pInput.Player.RadialMenu.performed += ToggleRadialMenu;
         pInput.Player.RadialMenu.canceled += ToggleRadialMenu;
@@ -29,7 +28,6 @@ public class PlayerMenuInputs : MonoBehaviour
 
     void ToggleRadialMenu(InputAction.CallbackContext context)
     {
-        print("Toggling Radial Menu");
-        HUDManager._HUD.toggleRadialMenu();
+        HUDManager._HUD.ToggleRadialMenu();
     }
 }

@@ -1,4 +1,4 @@
-Bugs and cleanup tasks Claude has noticed while reading the code. Nothing here has been changed yet. Check items off or delete them as they get fixed.
+Bugs and cleanup tasks Claude has noticed while reading the code. Nothing here has been changed yet. Check items off or delete them as they get fixed. Unchecked items count as [[Notes for the future]].
 
 Back to [[AA - AI Info]]
 
@@ -24,14 +24,16 @@ Back to [[AA - AI Info]]
 - [ ] `RuneFieldManager.SaveRuneFieldPackage` creates one `NodePackage` outside the loop and adds it for every node, so every saved node entry ends up with the last node's values
 - [ ] Dropping an element from the inventory list onto the field spawns a rune but doesn't give it the element's data or reduce the inventory count
 - [ ] `ElementItemSO`'s `connectionsAllowed`, `connectionDistance`, and `powerNeeded` aren't applied to the rune
-- [ ] `ElementItemSO.triggerElementEffects` only tags the first stat boost package with the rune object
+- [ ] `ElementItemSO.TriggerElementEffects` only tags the first stat boost package with the rune object
 - [ ] `ShadeSlotManager` unlocks slots by player level instead of the shade slot count (`_SHA` / `tamerSlotLevel`)
 
 **Save**
-- [ ] `SaveManager.setCurrentActiveSaveSlot` has its range check backwards (`Count - 1 > index` should be `index > Count - 1`)
+- [ ] `SaveManager.SetCurrentActiveSaveSlot` has its range check backwards (`Count - 1 > index` should be `index > Count - 1`)
 
 **Player**
-- [ ] `Player.UseCurrentWeapon` / `releaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted
+- [x] `UnitDash.startDashEvent` is never invoked (only `endDashEvent` is). *Fixed Oct 2026: start event now fires, dashes are tracked in `_dashRoutine` so chained dashes don't overlap, and `OnDisable` ends a running dash*
+- [ ] `UnitDash` keeps one shared `hitList`, so chaining a second dash before the first finishes throws away the first dash's hits (they never take damage)
+- [ ] `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted
 
 ---
 ## Cleanup
@@ -48,9 +50,10 @@ Back to [[AA - AI Info]]
 - [ ] `DraggableItem`, `ElementObject`, `ShadeSlotDataObject` (early Rune Field leftovers)
 
 **Consistency**
-- [ ] Swap `StatNameType.Stat` and `ElementType.Element` over to the `DamageType` enums (see [[Notes for the future]])
-- [ ] Rename lowercase methods to PascalCase (see [[Code Style Rules]])
-- [ ] Give `ShadeManager` a singleton like the other managers
-- [ ] Make manager singleton setup consistent (destroy duplicates in `Awake`)
-- [ ] Add null checks to `SceneManagerWrapper` and `CameraManagerWrapper`
-- [ ] Remove leftover debug prints (`print("boop")` in `PlayerMenuInputs`, scene load logs in `SceneManagerObject`, etc.)
+- [x] Swap `StatNameType.Stat` and `ElementType.Element` over to the `DamageType` enums (see [[Notes for the future]]). *Done Oct 2026. `StatNameType.cs` and `ElementType.cs` can now be deleted in Unity*
+- [x] Rename lowercase methods to PascalCase (see [[Code Style Rules]]). *Done Oct 2026, including the UnityEvent hookups in scenes, prefabs and element assets. `loadShadeSlectionIndex` also had its typo fixed (`LoadShadeSelectionIndex`)*
+- [x] Give `ShadeManager` a singleton like the other managers. *Done Oct 2026 (`ShadeManager._ShadeManager`)*
+- [ ] Make manager singleton setup consistent (destroy duplicates in `Awake`). *Skipped for now: all managers live on the one Game Manager object*
+- [x] Add null checks to `SceneManagerWrapper` and `CameraManagerWrapper`. *Done Oct 2026*
+- [x] Remove leftover debug prints (`print("boop")` in `PlayerMenuInputs`, scene load logs in `SceneManagerObject`, etc.). *Done Oct 2026. Kept `AbilityInterpreter.AbilIntLog` and the Odin test buttons. The legacy scripts above were left alone since they're getting deleted*
+- [ ] A few classes still have lowercase names: `statBoostPackage` (in `ElementManagerSO.cs`) and `cameraScript` (legacy). Renaming `statBoostPackage` is safe for saved data since it's a plain serializable class

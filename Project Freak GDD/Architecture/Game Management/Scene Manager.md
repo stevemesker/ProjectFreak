@@ -60,7 +60,7 @@ List Index 2 → Chapter 2
 ...
 ```
 
-When `loadStartScene()` is called, the Scene Manager retrieves the current save slot from the `SaveManager` and checks its saved chapter.
+When `LoadStartScene()` is called, the Scene Manager retrieves the current save slot from the `SaveManager` and checks its saved chapter.
 
 If the chapter has a corresponding entry in the opening scene list, that scene is loaded.
 
@@ -124,13 +124,13 @@ Disable Opening Scene Root Objects
 Opening / Timeline Sequence
       │
       ▼
-activateOpeningScene()
+ActivateOpeningScene()
       │
       ▼
 Opening Scene Becomes Visible
 ```
 
-`activateOpeningScene()` re-enables all root objects in the stored opening scene.
+`ActivateOpeningScene()` re-enables all root objects in the stored opening scene.
 
 If no valid opening scene has been loaded, the function logs a warning and exits safely.
 
@@ -140,10 +140,10 @@ If no valid opening scene has been loaded, the function logs a warning and exits
 
 ## Changing Scenes
 
-The `changeScene()` function provides the primary method for loading a new gameplay scene.
+The `ChangeScene()` function provides the primary method for loading a new gameplay scene.
 
 ```csharp
-public void changeScene(string sceneName)
+public void ChangeScene(string sceneName)
 ```
 
 The requested scene name is stored in `_currentSceneName` and then loaded using Unity's standard scene loading system.
@@ -191,6 +191,16 @@ HUDManager._HUD.FadeIn(_fadeInTransitionSpeed);
 
 The flag is then reset so that subsequent scene loads do not automatically trigger another fade.
 
+### Waiting for Dungeon Floors
+
+Dungeon floors still need to spawn POIs and build a NavMesh after Unity says the scene loaded. A [[Dungeon Floor Object]] registers itself in `Awake()` with `RegisterLoadingFloor()` (and `UnregisterLoadingFloor()` when destroyed).
+
+When a fade was requested, `OnSceneLoaded()`:
+- **If the loaded scene has a floor that isn't ready yet**, starts `WaitForFloorThenFade()`. That waits until `IsFloorReady()` is true, then fades in.
+- **Otherwise** (any non-dungeon scene), fades in right away like before.
+
+`_FloorLoadTimeout` (Floor Loading foldout, default 10 seconds) caps the wait. If it runs out, an `Error!` naming the scene and the stuck phase is logged and the screen fades in anyway. The fade goes through `FadeInHUD()`, which logs an error instead of throwing if the HUD Manager is missing.
+
 ### Intended Transition Flow
 
 ```text
@@ -231,7 +241,7 @@ A location can represent destinations such as:
 * Scene transition points
 * Other designated player spawn locations
 
-The `sceneLocationDataChange()` function determines whether the supplied location exists in another scene or within the current scene.
+The `SceneLocationDataChange()` function determines whether the supplied location exists in another scene or within the current scene.
 
 ---
 
@@ -308,10 +318,10 @@ This allows scene-local objects to identify the specific door or entrance that t
 
 # Player Relocation
 
-The `movePlayerToLocation()` function directly sets the player's position and rotation.
+The `MovePlayerToLocation()` function directly sets the player's position and rotation.
 
 ```csharp
-public void movePlayerToLocation(Vector3 location, Quaternion rotation)
+public void MovePlayerToLocation(Vector3 location, Quaternion rotation)
 ```
 
 This is used to place the player at the correct entrance after a scene transition or when moving between locations within the same scene.
@@ -395,8 +405,7 @@ A simpler spawn point. In `Awake()` it moves the player to its own position and 
 
 # Known Limitations
 
-* `changeScene()` uses a normal (blocking) `LoadScene`, not an async load.
-* The two `Debug.Log` calls in `OnSceneLoaded()` print on every scene load.
+* `ChangeScene()` uses a normal (blocking) `LoadScene`, not an async load.
 
 ---
 

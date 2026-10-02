@@ -25,6 +25,12 @@
 **Shades**
 [[Shade (Runtime)]]
 
+**AI & Movement**
+[[AI Movement & Dungeon Loading Plan]]
+
+**Enemies**
+[[Enemy Movement]]
+
 **Combat**
 [[Ability System]]
 [[Damage Package]]
@@ -39,6 +45,7 @@
 [[Dungeon Map Manager]]
 [[Dungeon Map Node]]
 [[Dungeon Door]]
+[[Dungeon Floor Object]]
 [[POI System]]
 [[Traps]]
 

@@ -51,9 +51,8 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
         var hit = hits.FirstOrDefault(t => t.gameObject.CompareTag("UI Drag Field"));
         if (hit.isValid)
         {
-            Debug.Log("Dropping onto field");
             temp = Instantiate(NodePrefabToSpawn, eventData.position, Quaternion.identity, hit.gameObject.transform);
-            hit.gameObject.GetComponent<RuneFieldManager>().addRuneList(temp);
+            hit.gameObject.GetComponent<RuneFieldManager>().AddRuneList(temp);
             transform.position = _startPosition;
         }
 

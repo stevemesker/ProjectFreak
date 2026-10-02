@@ -86,6 +86,8 @@ All of these must be added to **Build Settings**, since they're loaded by name.
 
 Each floor scene needs a player spawn point (`PlayerSpawnPointObject`, see [[Scene Manager]]).
 
+Each floor scene (including the entrance and boss) also needs the `PFB_Dungeon Floor` prefab. It spawns the POIs, builds the NavMesh, and holds the fade-in until the floor is ready. See [[Dungeon Floor Object]].
+
 ---
 
 # 5. Add Door Spawners
@@ -139,7 +141,7 @@ See [[POI System]] for how the lookup works.
 - **Floor scenes:** drag the floor scene assets into `_SceneAdd`, press **Fill Floor List**. This copies their names into `_DungeonFloorList` and clears `_SceneAdd`
 - **POIs:** add every `DungeonPOISO` for this dungeon to `POIList`
 - **LUT:** assign the `TypeTagLookUpSO` to `POILUT`
-- **Tables:** `LootTable` and `EnemyTable` exist but those systems aren't built yet
+- **Tables:** `LootTable` and `EnemyTable` exist but those systems aren't built yet [[Notes for the future]]
 
 **Clear All Lists** empties the floor list and POI list.
 
@@ -176,6 +178,7 @@ To leave, call `DungeonManagerWrapper.EndDungeon(returnScene)`.
 ### Scenes
 - [ ] All scenes in Build Settings
 - [ ] Each floor has a player spawn point
+- [ ] Each floor has the `PFB_Dungeon Floor` prefab
 - [ ] Each floor has at least 3 door spawners
 - [ ] POI spawners have sizes set
 

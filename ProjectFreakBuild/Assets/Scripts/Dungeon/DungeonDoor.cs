@@ -28,7 +28,6 @@ public class DungeonDoor : MonoBehaviour
 
         if (DungeonManager._DM._PreviousRoomNode == _NextRoomNode)
         {
-            print($"Player just came from room behind {gameObject.name}, now teleportying to front of door...");
             Player.player.transform.position = _TpLocator.transform.position;
             Player.player.transform.rotation = _TpLocator.transform.rotation;
         }

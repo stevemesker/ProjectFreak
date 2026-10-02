@@ -31,7 +31,7 @@ public class EvolutionNode : MonoBehaviour, iEvolutionNode
     
     [SerializeField] private List<GameObject> nodeStateBackground; //which background states need to be activated based on node's current activation state
 
-    public bool isPlugged()
+    public bool IsPlugged()
     {
         if (PluggedInNode == null) return false;
         return true;
@@ -87,7 +87,7 @@ public class EvolutionNode : MonoBehaviour, iEvolutionNode
         return true;
     }
 
-    public void resetNode()
+    public void ResetNode()
     {
         //resets node to factory settings
         _ActivationState = false;
@@ -103,7 +103,6 @@ public class EvolutionNode : MonoBehaviour, iEvolutionNode
         if (NodeEnabled == false || Nodelocked == true)return;
 
         //the node does things here
-        print("the node is doin stuff");
     }
 
     [Button("Enable node")]

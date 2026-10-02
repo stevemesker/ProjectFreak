@@ -65,7 +65,6 @@ public class DungeonSO : ScriptableObject
         for (int i = 0; i < POIList.Count; i++)
         {
             //adding poi to dictionary by size
-            Debug.Log($"Now adding {POIList[i].name} to dictionaries. It has {POIList[i]._POI_Tags.Count} tags associated with it...");
             if (!_POISizeDictionary.TryGetValue(POIList[i]._POI_Size, out List<DungeonPOISO> sizeList))
             {
                 sizeList = new List<DungeonPOISO>();

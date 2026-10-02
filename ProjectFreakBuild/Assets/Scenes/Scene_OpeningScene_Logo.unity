@@ -4368,7 +4368,7 @@ MonoBehaviour:
           m_CallState: 2
         - m_Target: {fileID: 1944286188}
           m_TargetAssemblyTypeName: SceneManagerWrapper, Assembly-CSharp
-          m_MethodName: changeScene
+          m_MethodName: ChangeScene
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

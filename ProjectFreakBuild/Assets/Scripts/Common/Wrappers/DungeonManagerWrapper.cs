@@ -25,19 +25,19 @@ public class DungeonManagerWrapper : MonoBehaviour
     public DungeonMapNode GetCurrentMapNode()
     {
         if (ManagerTester("GetCurrentMapNode") == false) return null;
-        return DungeonManager._DM.getMapNode(DungeonManager._DM.getCurrentDungeonFloorID());
+        return DungeonManager._DM.GetMapNode(DungeonManager._DM.GetCurrentDungeonFloorID());
     }
 
     public int GetCurrentFloorID()
     {
         if (ManagerTester("GetCurrentFloorID") == false) return 0;
-        return DungeonManager._DM.getCurrentDungeonFloorID();
+        return DungeonManager._DM.GetCurrentDungeonFloorID();
     }
 
     public DungeonMapNode GetMapNodeByID(int ID)
     {
         if (ManagerTester("GetMapNodeByID") == false) return null;
-        return DungeonManager._DM.getMapNode(ID);
+        return DungeonManager._DM.GetMapNode(ID);
     }
 
     bool ManagerTester(string type)

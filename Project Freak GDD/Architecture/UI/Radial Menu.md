@@ -13,7 +13,7 @@ Scripts:
 ```text
 Press radial button
     ↓
-PlayerMenuInputs → HUDManager.toggleRadialMenu()
+PlayerMenuInputs → HUDManager.ToggleRadialMenu()
     ↓
 Menu turns on, gets filled with PlayerData._TamerAbilities
 Player aiming is turned off
@@ -22,7 +22,7 @@ Mouse / right stick picks a slice
     ↓
 Release radial button
     ↓
-HUDManager.toggleRadialMenu() → RadialMenuManager.UseButton()
+HUDManager.ToggleRadialMenu() → RadialMenuManager.UseButton()
     ↓
 Selected RadialButton → AbilityInterpreter.InitializeAbility()
 ```

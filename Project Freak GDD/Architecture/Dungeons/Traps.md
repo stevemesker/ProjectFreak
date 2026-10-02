@@ -15,7 +15,7 @@ Fires a projectile on a timer for as long as it's enabled.
 | :---------------- | :---------------------------------------------------------- |
 | `_fireSpeed`      | Seconds between shots (clamped to `_minimumFireSpeed`)      |
 | `_projectileSpeed` | How fast the projectile travels                            |
-| `_CritMultiplier` | *Not used yet, the package always uses 1*                   |
+| `_CritMultiplier` | *Not used yet, the package always uses 1* [[Notes for the future]] |
 | `_ImpactStrength` | Camera shake strength when it hits                          |
 | `_DamageStats`    | List of `DamageEntry` the projectile carries                |
 
@@ -28,7 +28,7 @@ Fires a projectile on a timer for as long as it's enabled.
 | `_minimumFireSpeed`       | Lowest allowed fire delay (default 0.25)       |
 
 ### Flow
-1. `OnEnable` starts the `fireCountdown` coroutine
+1. `OnEnable` starts the `FireCountdown` coroutine
 2. After `_fireSpeed` seconds, it spawns a projectile, sets its speed, and gives it a [[Damage Package]] built from the inspector values (source = the trap)
 3. It starts the countdown again
 4. `OnDisable` stops the timer

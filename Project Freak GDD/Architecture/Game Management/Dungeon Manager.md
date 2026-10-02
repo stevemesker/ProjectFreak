@@ -48,13 +48,13 @@ For the bigger picture see [[Dungeon Architecture]]. For making a new dungeon se
 
 ### Moving between floors — `MoveToFloor(int floorID)`
 1. Gets the target [[Dungeon Map Node]]
-2. If the node has no `_FloorSceneName` yet, a random scene is picked from the dungeon's `_DungeonFloorList`. *Note: the picked scene isn't saved back onto the node yet, so revisiting may give a different floor*
+2. If the node has no `_FloorSceneName` yet, a random scene is picked from the dungeon's `_DungeonFloorList`. *Note: the picked scene isn't saved back onto the node yet, so revisiting may give a different floor* [[Notes for the future]]
 3. Stores the current node as `_PreviousRoomNode` and updates `_CurrentRoomID`
 4. Moves the map locator to the new node
 5. Requests a HUD fade-in and changes scene through the [[Scene Manager]]
 
 ### Finishing — `CompleteDungeon(string returnMap)`
-Clears the current dungeon, destroys the map, and loads `returnMap`. Rewards are still a TODO.
+Clears the current dungeon, destroys the map, and loads `returnMap`. Rewards are still a TODO. [[Notes for the future]]
 
 ### Map toggle
 The manager listens to the `OptionsMenu` input and calls `ToggleMap()` on the [[Dungeon Map Manager]].
@@ -64,10 +64,10 @@ The manager listens to the `OptionsMenu` input and calls `ToggleMap()` on the [[
 
 | Function                        | Description                                                                          |
 | :------------------------------ | :----------------------------------------------------------------------------------- |
-| `getMapNode(int ID)`            | Returns the [[Dungeon Map Node]] with that ID (clamps to the last node if too high)  |
-| `getCurrentDungeonFloorID()`    | Returns `_CurrentRoomID`                                                             |
-| `setDungeonLocator(GameObject)` | Sets the map locator object                                                          |
-| `getPOIFromCurrentRoom(size)`   | Asks the current `DungeonSO` for a POI that fits the current node's type and the requested size. Used by `POISpawnerObject` |
+| `GetMapNode(int ID)`            | Returns the [[Dungeon Map Node]] with that ID (clamps to the last node if too high)  |
+| `GetCurrentDungeonFloorID()`    | Returns `_CurrentRoomID`                                                             |
+| `SetDungeonLocator(GameObject)` | Sets the map locator object                                                          |
+| `GetPOIFromCurrentRoom(size)`   | Asks the current `DungeonSO` for a POI that fits the current node's type and the requested size. Used by `POISpawnerObject` |
 
 ---
 ## Related

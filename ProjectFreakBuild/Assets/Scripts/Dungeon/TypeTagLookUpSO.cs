@@ -49,7 +49,7 @@ public class POITypeEntry
 
     public POIType.Tag GetPoolTag(int PoolSize)
     {
-        if (_EntryPool.Count == 0) fillpool(PoolSize);
+        if (_EntryPool.Count == 0) FillPool(PoolSize);
         int tempInt = Random.Range(0, _EntryPool.Count);
         POIType.Tag temp = _EntryPool[tempInt];
         _EntryPool.RemoveAt(tempInt);
@@ -57,7 +57,7 @@ public class POITypeEntry
         return temp;
     }
 
-    public void fillpool(int PoolSize)
+    public void FillPool(int PoolSize)
     {
         _EntryPool = new List<POIType.Tag>();
         int poolMin = PoolSize;

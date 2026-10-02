@@ -1,4 +1,3 @@
-using ElementType;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,7 +32,6 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     private Coroutine currentTimer;
 
     private int currentPower;
-    List<ElementType.Element> currentElement;
 
     private int projectileIndexer; //used tyo cycle through projectiles in case there are multiple types
 
@@ -55,17 +53,17 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
 
         dmgPackage._Source = Wielder;
         dmgPackage._CritMultiplier = 1; //figure this out later, it'll probably come from the weapon data? but maybe not it might be a stat thing I dunno man I just work here
-        int dmg = stats.TypeToStatFinder(stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType));
+        int dmg = stats.TypeToStatFinder(stats.GetAttackStatType(IsRange(), _WeaponObject.weaponAttackType));
         
-        DamageEntry tempEntry = CreateDamageEntry(dmg, _WeaponObject.weaponAttackType, stats.GetAttackStatType(isRange(), _WeaponObject.weaponAttackType), elementType);
+        DamageEntry tempEntry = CreateDamageEntry(dmg, _WeaponObject.weaponAttackType, stats.GetAttackStatType(IsRange(), _WeaponObject.weaponAttackType), elementType);
 
         //Debug.LogWarning($"testing package builder: Damage {tempEntry._Damage} | Atk Type {tempEntry._atkType}");
         //Debug.LogWarning($"Attack stat type {tempEntry._statType} | element type {tempEntry._elementType}");
 
-        addDamageEntryToPackage(tempEntry);
+        AddDamageEntryToPackage(tempEntry);
     }
     
-    public void addDamageEntryToPackage(DamageEntry entry)
+    public void AddDamageEntryToPackage(DamageEntry entry)
     {
         dmgPackage._Entries.Add(entry);
     }
@@ -87,7 +85,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         projectile._Damage = dmgPackage;
     }
 
-    public bool isRange()
+    public bool IsRange()
     {
         return true;
     }
@@ -98,13 +96,12 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     {
         if (_WeaponObject.isChargedShot == true)
         {
-            print("Charging has begun...");
 
             chargeTimeInitiated = Time.time;
             chargeTime = StartCoroutine(ChargeTimer(_WeaponObject.chargeMaxAmount));
             return;
         }
-        fireWeapon(1);
+        FireWeapon(1);
     }
 
     public void ReleaseAttack()
@@ -127,12 +124,11 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     #endregion
 
     #region Weapon Firing
-    void fireWeapon(float multiplier)
+    void FireWeapon(float multiplier)
     {
-        print("Bang! X " + multiplier);
         CameraManager._CamManager.CameraShake(_WeaponObject.activationShake, null);
 
-        if (_WeaponObject.shotNumber > 1) multishot();
+        if (_WeaponObject.shotNumber > 1) Multishot();
         else SingleShot();
 
         if (_WeaponObject.isAutomatic)
@@ -146,23 +142,22 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         GameObject spawnedProjectile;
         if (projectileIndex >= _WeaponObject.ProjectilePrefab.Count) projectileIndex = 0;
 
-        spawnedProjectile = spawnProjectile(projectileIndex, transform.position, transform.rotation);
+        spawnedProjectile = SpawnProjectile(projectileIndex, transform.position, transform.rotation);
         FillProjectileStats(spawnedProjectile.GetComponent<ProjectileObject>());
 
         projectileIndex++;
 
     }
 
-    void multishot()
+    void Multishot()
     {
         GameObject spawnedProjectile;
         for (int i = 0; i < _WeaponObject.shotNumber; i++)
         {
-            print("bang!");
             if (projectileIndex >= _WeaponObject.ProjectilePrefab.Count) projectileIndex = 0;
 
-            if (_WeaponObject.isRandomSpread) spawnedProjectile = spawnProjectile(projectileIndex, SpawnOrigin(i, _WeaponObject.shotNumber, _WeaponObject.originSpread), SpawnRandomRotation(_WeaponObject.fireSpread));
-            else spawnedProjectile = spawnProjectile(projectileIndex, SpawnOrigin(i, _WeaponObject.shotNumber, _WeaponObject.originSpread), SpawnRotation(i, _WeaponObject.shotNumber, _WeaponObject.fireSpread));
+            if (_WeaponObject.isRandomSpread) spawnedProjectile = SpawnProjectile(projectileIndex, SpawnOrigin(i, _WeaponObject.shotNumber, _WeaponObject.originSpread), SpawnRandomRotation(_WeaponObject.fireSpread));
+            else spawnedProjectile = SpawnProjectile(projectileIndex, SpawnOrigin(i, _WeaponObject.shotNumber, _WeaponObject.originSpread), SpawnRotation(i, _WeaponObject.shotNumber, _WeaponObject.fireSpread));
 
             FillProjectileStats(spawnedProjectile.GetComponent<ProjectileObject>());
 
@@ -170,7 +165,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         }
     }
 
-    GameObject spawnProjectile(int projectileIndex, Vector3 position, Quaternion rotation)
+    GameObject SpawnProjectile(int projectileIndex, Vector3 position, Quaternion rotation)
     {
         GameObject spawnedProjectile;
         spawnedProjectile = Instantiate(_WeaponObject.ProjectilePrefab[projectileIndex], position, rotation);
@@ -185,13 +180,13 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         yield return new WaitForSeconds(amount);
         if (_WeaponObject.isAutomatic)
         {
-            fireWeapon(amount);
+            FireWeapon(amount);
         }
     }
     IEnumerator CycleTimer(float cycleTime, float bonus)
     {
         yield return new WaitForSeconds(cycleTime);
-        fireWeapon(bonus);
+        FireWeapon(bonus);
     }
     #endregion
 

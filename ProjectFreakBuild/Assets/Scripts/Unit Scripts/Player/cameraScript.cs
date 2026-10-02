@@ -53,7 +53,7 @@ public class cameraScript : MonoBehaviour
     void Update()
     {
         cam.m_YAxis.Value = Mathf.Lerp(cam.m_YAxis.Value, zoomCounter * targetZoom, zoomSpeed * Time.deltaTime); //sets the progress of the zooming
-        zoomCamera();
+        ZoomCamera();
 
         if (canRotate)
         {
@@ -61,7 +61,7 @@ public class cameraScript : MonoBehaviour
         }
     }
 
-    private void zoomCamera()
+    private void ZoomCamera()
     {
         //gameObject.transform.rotation = new Quaternion(transform.rotation.w, transform.rotation.x + rStickInput.x*cameraSpeed, 0,0);
         if (Mathf.Abs(rStickInput.y) >= stickYSensitivity)
@@ -69,8 +69,8 @@ public class cameraScript : MonoBehaviour
             if (click == false)
             {
                 click = true;
-                zoomSnap(rStickInput.y);
-                StartCoroutine(snapTimer());
+                ZoomSnap(rStickInput.y);
+                StartCoroutine(SnapTimer());
             }
         }
         else
@@ -95,17 +95,17 @@ public class cameraScript : MonoBehaviour
         if (Mathf.Abs(rStickInput.y) <= stickYSensitivity)
         {
             click = false;
-            StopCoroutine(snapTimer());
+            StopCoroutine(SnapTimer());
         }
     }
 
-    private IEnumerator snapTimer()
+    private IEnumerator SnapTimer()
     {
         yield return new WaitForSeconds(snapPauseTime);
         click = false;
     }
 
-    public void zoomSnap(float direction)
+    public void ZoomSnap(float direction)
     {
         if (direction < 0)
         {

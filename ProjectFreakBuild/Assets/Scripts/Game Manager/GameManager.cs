@@ -11,6 +11,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] ShadeManager shade;
     [SerializeField] int PlayerLevel;
 
+    [Header("Shared Data")]
+    [Tooltip("Size class rules for knockback, shared by every enemy so they don't each need it assigned")]
+    [SerializeField] SizeClassRulesSO _SizeClassRules;
+
     #region initializing
     private void Awake()
     {
@@ -26,14 +30,23 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Shade Data
-    public List<ShadeSO> getShadeList()
+    public List<ShadeSO> GetShadeList()
     {
         return (shade._ShadeSlots);
     }
 
-    public ShadeManager getShadeManager()
+    public ShadeManager GetShadeManager()
     {
-        return GetComponent<ShadeManager>();
+        return ShadeManager._ShadeManager;
+    }
+    #endregion
+
+    #region Shared Data
+    public SizeClassRulesSO GetSizeClassRules()
+    {
+        //function enemies use to get the shared size class rules
+        if (_SizeClassRules == null) Debug.LogError($"Error! No Size Class Rules assigned on the Game Manager", this);
+        return _SizeClassRules;
     }
     #endregion
 

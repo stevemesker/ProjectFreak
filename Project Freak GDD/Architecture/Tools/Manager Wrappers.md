@@ -16,27 +16,26 @@ Calls the [[Dungeon Manager]]. Every function checks the manager exists first an
 | `MoveToDungeonRoom(id)`   | `MoveToFloor`                  |
 | `GetCurrentMapNode()`     | The current [[Dungeon Map Node]] (null if no manager) |
 | `GetCurrentFloorID()`     | Current room ID (0 if no manager) |
-| `GetMapNodeByID(id)`      | `getMapNode`                   |
+| `GetMapNodeByID(id)`      | `GetMapNode`                   |
 
 ## SceneManagerWrapper
-Calls the [[Scene Manager]].
+Calls the [[Scene Manager]]. Every function checks the manager exists first and logs an error naming the function if it doesn't. `ChangeLocation` also errors on missing scene data, and `ChangeScene` on a blank scene name.
 
 | Function                  | Description                                            |
 | :------------------------ | :----------------------------------------------------- |
-| `changeLocation(SceneLocationSO)` | Travel using scene location data               |
-| `changeScene(name)`       | Load a scene by name                                   |
+| `ChangeLocation(SceneLocationSO)` | Travel using scene location data               |
+| `ChangeScene(name)`       | Load a scene by name                                   |
 | `HudFadeOnOpen(speed)`    | Fade the HUD in after the next scene loads             |
 | `ActiveOpeningScene()`    | Show the loaded opening scene                          |
 | `LoadOpeningScene()`      | Load the opening scene for the current chapter         |
-| `testSingleton()`         | Odin **Test** button that checks the manager exists    |
+| `TestSingleton()`         | Odin **Test** button that checks the manager exists    |
 
 ## HUDWrapper
 Calls the [[HUD Manager]]. `FadeHudIn(speed)` and `FadeHudOut(speed)`.
 
 ## CameraManagerWrapper
-Calls the [[Camera Manager]]. `setCamTargetToPlayer()` and `setGameplayCameraPriority(priority)`.
+Calls the [[Camera Manager]]. `SetCamTargetToPlayer()` and `SetGameplayCameraPriority(priority)`. Both check the manager exists first.
 
 ---
 ## Notes
-- Only `DungeonManagerWrapper` and `HUDWrapper` check that their manager exists. `SceneManagerWrapper` and `CameraManagerWrapper` don't yet
 - New wrappers should follow the `DungeonManagerWrapper` pattern

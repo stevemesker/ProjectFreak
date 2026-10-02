@@ -28,6 +28,9 @@ public class Player : MonoBehaviour
 
     [FoldoutGroup("Script Pointers")]
     public CharacterMovement _movement;
+    [FoldoutGroup("Script Pointers")]
+    [Tooltip("Reads the player's controls and steers _movement. Turned off while the player controls a shade. Grabbed from this object if left empty")]
+    public PlayerInputDriver _InputDriver;
 
 
     //Private/Unserialized Variables
@@ -41,16 +44,16 @@ public class Player : MonoBehaviour
     {
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
-        Debug.Log("Player set");
         DontDestroyOnLoad(gameObject);
+        if (_InputDriver == null) _InputDriver = GetComponent<PlayerInputDriver>();
         UpdateEquippedWeaponSlotSize();
-        updateCurrentWeapon();
-        CameraManager._CamManager.setCamTargetToPlayer();
+        UpdateCurrentWeapon();
+        CameraManager._CamManager.SetCamTargetToPlayer();
     }
     
     #region Equipment
 
-    public void updateCurrentWeapon()
+    public void UpdateCurrentWeapon()
     {
         if (handPointer == null) { Debug.LogError("Error! Hand bone has not been selected to allow weapon swapping"); return; }
 
@@ -70,7 +73,6 @@ public class Player : MonoBehaviour
         wpn.name = pData.pInventory._EquippedWeapons[weaponSelection].ItemName;
 
         wpn.GetComponent<ITriggerable>().SetUpWeapon(pData.pInventory._EquippedWeapons[weaponSelection], gameObject, pData.pStats);
-        print(pData.pStats.GetAttackStatType(wpn.GetComponent<ITriggerable>().isRange(), pData.pInventory._EquippedWeapons[weaponSelection].weaponAttackType));
     }
     public void UpdateEquippedWeaponSlotSize()
     {
@@ -94,7 +96,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public int getActiveWeaponIndex()
+    public int GetActiveWeaponIndex()
     {
         return weaponSelection;
     }
@@ -103,18 +105,16 @@ public class Player : MonoBehaviour
     #region Use Weapon
     public void UseCurrentWeapon()
     {
-        print("Using weapon");
-        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
-        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
+        if (handPointer.transform.childCount == 0) return; //todo: add unarmed strike
+        if (handPointer.GetComponent<ITriggerable>() != null) return; //held item does not have the ITriggerable interface (see Known Issues)
 
         //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
         handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack();
     }
-    public void releaseCurrentWeapon()
+    public void ReleaseCurrentWeapon()
     {
-        print("Releasing weapon");
-        if (handPointer.transform.childCount == 0) { print("Need to add unarmed strike"); return; }
-        if (handPointer.GetComponent<ITriggerable>() != null) { print("Held item does not have itriggerable interface"); return; }
+        if (handPointer.transform.childCount == 0) return; //todo: add unarmed strike
+        if (handPointer.GetComponent<ITriggerable>() != null) return; //held item does not have the ITriggerable interface (see Known Issues)
 
         handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
     }
@@ -124,12 +124,16 @@ public class Player : MonoBehaviour
     #region Disabling Player Character
     public void EnablePlayerControl()
     {
-        _movement.EnableMovement();
+        //gives the controls back to the player's body by turning its input driver on
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}, can't give it control", this); return; }
+        _InputDriver.enabled = true;
     }
 
     public void DisablePlayerControl()
     {
-        _movement.DisableMovement();
+        //takes the controls away from the player's body (it stops and keeps floating, see PlayerInputDriver.OnDisable)
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}, can't take its control away", this); return; }
+        _InputDriver.enabled = false;
     }
 
     public void SetPlayerTurning(bool Active)

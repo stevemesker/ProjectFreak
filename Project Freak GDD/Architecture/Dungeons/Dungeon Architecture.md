@@ -43,7 +43,7 @@ The data definition for a single dungeon. It holds:
 - The list of floor scenes normal nodes can use
 - Per-column node type weights (how often each `POIType.Type` shows up)
 - The POI list and the type → tag lookup table (see [[POI System]])
-- Enemy and loot tables (*not built yet*)
+- Enemy and loot tables (*not built yet*) [[Notes for the future]]
 
 ---
 ## Dungeon Map

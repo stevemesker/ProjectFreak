@@ -22,6 +22,14 @@ public class SceneManagerObject : MonoBehaviour
     [FoldoutGroup("Location Change")]
     [SerializeField] SceneLocationSO _PlayerMoveTarget;
 
+    [FoldoutGroup("Floor Loading")]
+    [SerializeField, Min(1f), Tooltip("Longest the fade-in will wait for a dungeon floor to finish loading, in seconds. If it runs out, an error is logged and the screen fades in anyway so the player is never stuck on black")]
+    float _FloorLoadTimeout = 10f;
+
+    //local variables
+    DungeonFloorObject _loadingFloor; //the dungeon floor that registered itself in the scene being loaded, null in non-dungeon scenes
+    Coroutine _floorWaitTimer;
+
     public static SceneManagerObject _SceneManager;
 
     private UnityEngine.SceneManagement.Scene _currentOpeningScene;
@@ -43,9 +51,8 @@ public class SceneManagerObject : MonoBehaviour
     #endregion
 
     #region Opening Scripts
-    public void loadStartScene()
+    public void LoadStartScene()
     {
-        Debug.Log("Testing: " + _loadSceneOpeningByChapterIndex.Count);
         //this should never happen but just in case
         if (_loadSceneOpeningByChapterIndex.Count == 0 || GameManager._GameManager == null) return;
 
@@ -55,14 +62,14 @@ public class SceneManagerObject : MonoBehaviour
         int _loadIndex;
 
         //make sure the chapter is in the list, else default to original load
-        if (_loadSceneOpeningByChapterIndex.Count - 1 < _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter) _loadIndex = 0;
-        else _loadIndex = _sm._saveSlotList[_sm.getCurrentActiveSaveSlot()]._SaveChapter;
+        if (_loadSceneOpeningByChapterIndex.Count - 1 < _sm._saveSlotList[_sm.GetCurrentActiveSaveSlot()]._SaveChapter) _loadIndex = 0;
+        else _loadIndex = _sm._saveSlotList[_sm.GetCurrentActiveSaveSlot()]._SaveChapter;
 
 
-        StartCoroutine(loadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex]));
+        StartCoroutine(LoadOpeningScene(_loadSceneOpeningByChapterIndex[_loadIndex]));
     }
 
-    private IEnumerator loadOpeningScene(string _sceneName)
+    private IEnumerator LoadOpeningScene(string _sceneName)
     {
         //Load the scene additively so the initial scene stays loaded
         AsyncOperation _operation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(
@@ -88,7 +95,7 @@ public class SceneManagerObject : MonoBehaviour
         }
     }
 
-    public void activateOpeningScene()
+    public void ActivateOpeningScene()
     {
         if (!_currentOpeningScene.IsValid())
         {
@@ -108,31 +115,79 @@ public class SceneManagerObject : MonoBehaviour
     #region Scene Selection
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"Scene loaded: {scene.name}");
-        Debug.Log($"Loading mode: {mode}");
         if (_fadeInTransition == false) return;
-        HUDManager._HUD.FadeIn(_fadeInTransitionSpeed);
         _fadeInTransition = false;
+
+        //dungeon floors still have to spawn POIs and build their NavMesh, so wait for them before fading in
+        //any other scene (no floor object) is ready as soon as it loads, same as before
+        if (_loadingFloor != null && _loadingFloor.gameObject.scene == scene && _loadingFloor.IsFloorReady() == false)
+        {
+            if (_floorWaitTimer != null) StopCoroutine(_floorWaitTimer);
+            _floorWaitTimer = StartCoroutine(WaitForFloorThenFade(_loadingFloor, _fadeInTransitionSpeed));
+            return;
+        }
+
+        FadeInHUD(_fadeInTransitionSpeed);
     }
 
-    public void changeScene(string sceneName)
+    IEnumerator WaitForFloorThenFade(DungeonFloorObject floor, float fadeSpeed)
+    {
+        //function that waits for a dungeon floor to finish loading, then fades in. Gives up after the timeout so the player isn't stuck on a black screen
+        float timer = 0f;
+        string sceneName = floor.gameObject.scene.name; //saved now in case the floor gets destroyed while we wait
+
+        while (floor != null && floor.IsFloorReady() == false)
+        {
+            timer += Time.unscaledDeltaTime; //unscaled so pausing the game doesn't stop the timeout
+            if (timer >= _FloorLoadTimeout)
+            {
+                Debug.LogError($"Error! {sceneName} didn't finish loading within {_FloorLoadTimeout}s (stuck on {floor.GetCurrentPhase()}), fading in anyway", floor);
+                break;
+            }
+            yield return null;
+        }
+
+        _floorWaitTimer = null;
+        FadeInHUD(fadeSpeed);
+    }
+
+    void FadeInHUD(float fadeSpeed)
+    {
+        //function that fades the screen in, with a check so a missing HUD doesn't throw an error
+        if (HUDManager._HUD == null) { Debug.LogError("Error! HUD Manager not found, can't fade the screen in", this); return; }
+        HUDManager._HUD.FadeIn(fadeSpeed);
+    }
+
+    public void ChangeScene(string sceneName)
     {
         _currentSceneName = sceneName;
         SceneManager.LoadScene(_currentSceneName);
     }
 
-    public void sceneLocationDataChange(SceneLocationSO data)
+    public void SceneLocationDataChange(SceneLocationSO data)
     {
         if (data._IsLinked)
         {
             _PlayerMoveTarget = data._Link;
-            changeScene(data._Scene);
+            ChangeScene(data._Scene);
         }
         else
         {
-            movePlayerToLocation(data._LinkLocation, Player.player.gameObject.transform.rotation);
+            MovePlayerToLocation(data._LinkLocation, Player.player.gameObject.transform.rotation);
         }
         
+    }
+
+    public void RegisterLoadingFloor(DungeonFloorObject floor)
+    {
+        //called by a DungeonFloorObject when its scene loads so the fade-in knows to wait for it
+        _loadingFloor = floor;
+    }
+
+    public void UnregisterLoadingFloor(DungeonFloorObject floor)
+    {
+        //called when a DungeonFloorObject is destroyed so we don't hold on to a floor from an old scene
+        if (_loadingFloor == floor) _loadingFloor = null;
     }
 
     public void HudFadeOnOpen(float timing)
@@ -147,13 +202,12 @@ public class SceneManagerObject : MonoBehaviour
     {
         if (data == _PlayerMoveTarget)
         {
-            print("Found matching door!");
             return true;
         }
         return false;
     }
 
-    public void movePlayerToLocation(Vector3 location, Quaternion rotation)
+    public void MovePlayerToLocation(Vector3 location, Quaternion rotation)
     {
         Player.player.gameObject.transform.position = location;
         Player.player.gameObject.transform.rotation = rotation;

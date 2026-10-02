@@ -21,7 +21,7 @@ Fades are done by `ScreenFadeOut`, which lives on a full screen UI `Image`.
 | :----------------------- | :--------------------------------------------------------------------------- |
 | `FadeOut(float speed)`   | Fades the screen to black over `speed` seconds                               |
 | `FadeIn(float speed)`    | Fades the black away over `speed` seconds                                    |
-| `getCurrentFadeValue()`  | Returns the current alpha (0 = clear, 1 = black)                             |
+| `GetCurrentFadeValue()`  | Returns the current alpha (0 = clear, 1 = black)                             |
 
 **ScreenFadeOut details**
 - The fade follows `_fadeCurve` (an Animation Curve) so the feel can be tuned in the inspector
@@ -32,7 +32,7 @@ Fades are used by the [[Scene Manager]] (fade in after a scene loads) and the [[
 
 ---
 ## Radial Menu
-`toggleRadialMenu()` is called by `PlayerMenuInputs` when the radial menu button is pressed or released:
+`ToggleRadialMenu()` is called by `PlayerMenuInputs` when the radial menu button is pressed or released:
 
 1. If the menu was open, use the selected button
 2. Flip the menu on/off
@@ -44,4 +44,4 @@ See [[Radial Menu]] for how the menu itself works.
 ---
 ## Other
 - `ToggleHud(bool)` turns the whole HUD object on/off
-- `ToggleBattleHUD(bool)` is a placeholder and does nothing yet
+- `ToggleBattleHUD(bool)` is a placeholder and does nothing yet [[Notes for the future]]

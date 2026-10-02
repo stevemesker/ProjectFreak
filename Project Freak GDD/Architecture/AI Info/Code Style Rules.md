@@ -6,7 +6,9 @@ Back to [[AA - AI Info]]
 ## Project Layout
 - Unity project: `Build\ProjectFreak\ProjectFreakBuild` (scripts in `Assets\Scripts\<System>\`)
 - GDD: `Build\ProjectFreak\Project Freak GDD`. Claude checks the system's note in Architecture before working on it
+- In the GDD, any line about something unfinished, temporary or planned ends with `[[Notes for the future]]`. When it gets done, the tag comes off and the line is updated
 - `Art` folders are reference only. Claude doesn't change them unless asked
+- **GDD notes outside `Architecture`** (design, narrative, shade ideas, etc.) are treated the same way: Claude reads them for reference when building systems but doesn't change them unless asked. The one exception is the `[[Notes for the future]]` hub note at the GDD root, which the tagging system uses
 - Packages: Odin Inspector, new Input System (`PlayerInput`), Cinemachine 2.x, TextMeshPro
 
 ---
@@ -33,7 +35,7 @@ Back to [[AA - AI Info]]
 | `Entry`   | Serializable item in a list                               | `TypeEntry`        |
 
 ### Other naming
-- Enums are grouped in a namespace used as a category, in a file named `<Category>Type.cs` (`POIType.Size`, `StatNameType.Stat`)
+- Enums are grouped in a namespace used as a category, in a file named `<Category>Type.cs` (`POIType.Size`, `DamageType.StatType`)
 - Interfaces for one system can share a file named `<System>Interface.cs`
 - `CreateAssetMenu` uses the asset naming convention and a system menu: `fileName = "SO_Dungeon_Name", menuName = "Dungeon/Dungeon"`
 - Asset names follow [[File Naming Conventions]]
@@ -55,6 +57,8 @@ Back to [[AA - AI Info]]
 - **Singleton setup** in `Awake`: destroy duplicates, then assign the static
 - **Input**: create `PlayerInput`, enable and subscribe in `OnEnable`, unsubscribe and disable in `OnDisable`
 - **Wrappers** check the manager exists before forwarding a call
+- **Registration over searching**: scene objects announce themselves to a manager or scene singleton (e.g. `POISpawnerObject` → `DungeonFloorObject._Floor.RegisterPOISpawner(this)`) instead of the manager using `FindObjectsOfType`. Register in `Start()` (every `Awake()` has run by then, so the singleton is set), and have the receiver wait a frame if it needs the full list
+- **Scene singletons** (one per scene, like `DungeonFloorObject._Floor`) clear themselves in `OnDestroy` and only treat a second copy *in the same scene* as a mistake, since the old scene's copy can briefly overlap during a scene change
 - **Interfaces** for cross-system contracts, checked with `TryGetComponent`
 - **Polymorphic data** (like ability steps) uses `[SerializeReference]` lists of a base class
 - **Coroutines** are stored in a `Coroutine` field, then stopped and nulled on disable or interrupt

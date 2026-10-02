@@ -21,7 +21,6 @@ public class RadialButton : MonoBehaviour
 
     public void Activation(GameObject Source)
     {
-        Debug.Log($"Now activating {_AbilityActivation.name}");
         Source.GetComponent<AbilityInterpreter>().InitializeAbility(_AbilityActivation);
         //_AbilityActivation.InvokeAbility(Source);
     }

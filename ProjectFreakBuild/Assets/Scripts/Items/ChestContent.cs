@@ -40,12 +40,11 @@ public class ChestContent : MonoBehaviour
     {
         director.Play();
     }
-    public void openChest()
+    public void OpenChest()
     {
         if (_isOpened) return;
         _isOpened = true;
 
-        Debug.Log("Opening chest " + gameObject.name);
 
         _TLine.PlayTimeline();
     }
@@ -54,21 +53,20 @@ public class ChestContent : MonoBehaviour
     #region Loot
     public void SpawnLootDrop()
     {
-        print("Now spawning loot X" + _Content.Count);
-        lootTimer = StartCoroutine(spawnTimer());
+        lootTimer = StartCoroutine(SpawnTimer());
     }
 
-    IEnumerator spawnTimer()
+    IEnumerator SpawnTimer()
     {
         for (int i = 0; i < _Content.Count; i++)
         {
             GameObject itemInstance = Instantiate(_itemHolderPrefab, transform.position, Quaternion.identity);
 
             ItemDrop spawn = itemInstance.GetComponent<ItemDrop>();
-            spawn.fillDrop(_Content[i]);
+            spawn.FillDrop(_Content[i]);
 
             spawn.MoveArc(
-                lootTargetPosition(i, _Content.Count),
+                LootTargetPosition(i, _Content.Count),
                 _LootArcHeight,
                 _LootArcDuration);
 
@@ -76,7 +74,7 @@ public class ChestContent : MonoBehaviour
         }
     }
 
-    Vector3 lootTargetPosition (int index, int totalLoot)
+    Vector3 LootTargetPosition (int index, int totalLoot)
     {
         //return transform.position + transform.forward;
         // Single item? Just drop directly in front.

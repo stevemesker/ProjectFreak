@@ -13,11 +13,10 @@ public class EnemyStats : MonoBehaviour
 
     public void TakeDamage(DamagePackage dmg)
     {
-        print(dmg._Source.name + " hit " + gameObject.name);
         int damageTakenTotal = 0;
         for (int i = 0; i < dmg._Entries.Count; i++)
         {
-            if (ScreenDamageUIManager._UIdamage != null) ScreenDamageUIManager._UIdamage._damageCanvas.displayDamage(transform.position, (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier), false);
+            if (ScreenDamageUIManager._UIdamage != null) ScreenDamageUIManager._UIdamage._damageCanvas.DisplayDamage(transform.position, (int)(DamageCalculation(dmg._Entries[i]) * dmg._CritMultiplier), false);
             damageTakenTotal += (int)(DamageCalculation(dmg._Entries[i])*dmg._CritMultiplier);
         }
         eStats._Health -= damageTakenTotal;

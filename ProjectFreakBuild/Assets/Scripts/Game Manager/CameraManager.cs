@@ -28,49 +28,45 @@ public class CameraManager : MonoBehaviour
         {
             _currentGameplayCamera = Instantiate(_gameplayCameraPrefab);
             
-            print("Spawning gameplay camera... Camera name" + _currentGameplayCamera.name);
         }
         _impulseSource = _currentGameplayCamera.GetComponent<CinemachineImpulseSource>();
-        print(_impulseSource);
     }
 
     private void Start()
     {
-        print("enableing virtual camera");
         _followCam = _currentGameplayCamera.GetComponent<CinemachineVirtualCamera>();
         _transposer = _followCam.GetCinemachineComponent<CinemachineTransposer>();
 
         _followCam.Priority = 0;
         _transposer.m_FollowOffset = _followOffset;
-        setCamTargetToPlayer();
+        SetCamTargetToPlayer();
     }
 
-    public void setCamTargetToPlayer()
+    public void SetCamTargetToPlayer()
     {
         if (Player.player != null)
         {
             _followCam.Follow = Player.player.transform;
             _followCam.LookAt = Player.player.transform;
-            Player.player.GetComponent<CharacterMovement>()._MainCamera = _currentGameplayCamera;
             _currentFollowTarget = Player.player.gameObject;
         }
     }
 
-    public void setCamTargetToTarget(GameObject target)
+    public void SetCamTargetToTarget(GameObject target)
     {
         _followCam.Follow = target.transform;
         _followCam.LookAt = target.transform;
         _currentFollowTarget = target;
     }
 
-    public void setGameplayCameraPriority(int priority)
+    public void SetGameplayCameraPriority(int priority)
     {
         _followCam.Priority = priority;
     }
 
     #region Camera Shake
     [Button("Test Shake")]
-    void testShake(float force)
+    void TestShake(float force)
     {
         CombatCameraShake(force, null);
     }
@@ -79,7 +75,6 @@ public class CameraManager : MonoBehaviour
     {
         CinemachineImpulseSource temp = impulseSource;
         if (temp == null) temp = _impulseSource;
-        print(temp);
         //dampen force here
         CameraShake(force, temp);
     }

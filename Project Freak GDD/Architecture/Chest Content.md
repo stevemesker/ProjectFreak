@@ -286,7 +286,7 @@ The chest calculates the desired landing position using:
 
 This creates deterministic and evenly distributed loot placement.
 
-Future versions will extend this calculation to validate landing positions using raycasts before launching the item.
+Future versions will extend this calculation to validate landing positions using raycasts before launching the item. [[Notes for the future]]
 
 ---
 
@@ -317,7 +317,7 @@ Future versions will extend this calculation to validate landing positions using
 |----------|----------|
 | `_LootArc` | Total spread angle of the loot fan. |
 | `_LootDistance` | Distance each item attempts to travel. |
-| `_maxLootHeight` | Reserved for future landing validation (maximum vertical drop). |
+| `_maxLootHeight` | Reserved for future landing validation (maximum vertical drop). [[Notes for the future]] |
 | `_LootDisperseWaitTime` | Delay between spawning consecutive items. |
 | `_LootArcHeight` | Height of each loot arc. |
 | `_LootArcDuration` | Time required for each arc movement. |

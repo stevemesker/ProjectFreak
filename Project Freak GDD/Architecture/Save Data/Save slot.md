@@ -19,7 +19,7 @@ Save slots need to track the player's various data and save it to the save file 
 | :------------ | :------------------ | :------ | :----------------------------------------------------------------- |
 | Tamer Level   | `_PlayerTamerLevel` | Yes     | current tamer level of the player                                  |
 | Game Chapter  | `_SaveChapter`      | Yes     | What major chapter the player is on (used for opening scene stuff) |
-| Quest Chapter |                     | Planned | What sub-chapter the player is on per quest                        |
+| Quest Chapter |                     | Planned | What sub-chapter the player is on per quest [[Notes for the future]] |
 
 
 ---
@@ -29,9 +29,9 @@ Save slots need to track the player's various data and save it to the save file 
 | Type                   | Variable              | In Code | Description                                         |
 | :--------------------- | :-------------------- | :------ | :-------------------------------------------------- |
 | Shade Slot Selection   | `_ShadeSlotSelection` | Yes     | What the player's current active shade slot is      |
-| Shade Stats            |                       | Planned |                                                     |
-| Rune field data        |                       | Planned | position and activated state of all runes and nodes |
-| Shade active abilities |                       | Planned |                                                     |
+| Shade Stats            |                       | Planned | [[Notes for the future]] |
+| Rune field data        |                       | Planned | position and activated state of all runes and nodes [[Notes for the future]] |
+| Shade active abilities |                       | Planned | [[Notes for the future]] |
 
 ---
 
@@ -40,10 +40,10 @@ Save slots need to track the player's various data and save it to the save file 
 
 | Type                   | Variable                | In Code | Description                                                                                              |
 | :--------------------- | :---------------------- | :------ | :------------------------------------------------------------------------------------------------------- |
-| Last Door Used ID      |                         | Planned |                                                                                                          |
+| Last Door Used ID      |                         | Planned | [[Notes for the future]] |
 | Current Scene Readable | `_CurrentSceneReadable` | Yes     | Last player facing name for the scene they're currently on. This is for readability on save slots in ui. |
 | Current Scene          | `_CurrentScene`         | Yes     | Actual scene last entered by the player, used for loading the scene                                      |
 
 ---
 **Entity States**
-*Planned.* Some entities need to retain their current state when saving/loading such as chests or npc's that change state/position due to cutscene changes.
+*Planned.* Some entities need to retain their current state when saving/loading such as chests or npc's that change state/position due to cutscene changes. [[Notes for the future]]

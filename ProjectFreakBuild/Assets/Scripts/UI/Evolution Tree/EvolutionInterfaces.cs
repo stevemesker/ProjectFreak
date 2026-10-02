@@ -4,10 +4,10 @@ using UnityEngine;
 
 public interface IBridgeable
 {
-    float getMaxRange();
-    bool canBridge();
+    float GetMaxRange();
+    bool CanBridge();
     void BridgeNode(GameObject origin, GameObject bridge);
-    void disconnectNodes(GameObject nodeToDisconnect);
+    void DisconnectNodes(GameObject nodeToDisconnect);
     void LoadReconnect();
     void ConnectNode(GameObject connectTo);
 }
@@ -26,12 +26,12 @@ public interface IConnectable
 
     bool SearchCore(GameObject Origin);
 
-    bool testLength(Vector3 position, Vector3 originPosition);
+    bool TestLength(Vector3 position, Vector3 originPosition);
 }
 
 public interface ICoreNode
 {
-    bool hasPower();
+    bool HasPower();
 
     int CoreNodePowerConsume(int AmountToTake);
 
@@ -40,9 +40,9 @@ public interface ICoreNode
 
 public interface iEvolutionNode
 {
-    bool isPlugged();
+    bool IsPlugged();
     void PlugElement(GameObject ElementToPlug);
 
-    void resetNode();
+    void ResetNode();
 }
 

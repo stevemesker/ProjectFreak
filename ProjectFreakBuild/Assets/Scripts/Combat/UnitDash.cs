@@ -45,6 +45,18 @@ public class UnitDash : MonoBehaviour
 
     private Coroutine refreshTimer = null;
     private Vector3 dashOriginPoint;
+
+    //local variables
+    Coroutine _dashRoutine; //the dash that's currently running, null when not dashing
+
+    private void OnDisable()
+    {
+        //if the unit gets turned off mid-dash, end the dash properly so its movement isn't left paused when it comes back
+        if (_dashRoutine == null) return;
+        StopCoroutine(_dashRoutine);
+        _dashRoutine = null;
+        endDashEvent?.Invoke();
+    }
     
     //private ColliderHit 
     
@@ -72,7 +84,12 @@ public class UnitDash : MonoBehaviour
             finalDashDistance = hits[stopIndex].distance;
         }
 
-        StartCoroutine(DashRoutine(_RB.position, _RB.position+(dashDirection*finalDashDistance)));
+        //chaining a dash while one is still running: stop the old one and start the new one from here
+        //the start event only fires for the first dash in a chain, so start/end events always come in pairs
+        if (_dashRoutine != null) StopCoroutine(_dashRoutine);
+        else startDashEvent?.Invoke();
+
+        _dashRoutine = StartCoroutine(DashRoutine(_RB.position, _RB.position+(dashDirection*finalDashDistance)));
 
     }
 
@@ -131,6 +148,7 @@ public class UnitDash : MonoBehaviour
             ApplyDashDamage();
         }
 
+        _dashRoutine = null; //clear before the event so anything listening sees the dash as finished
         endDashEvent?.Invoke();
     }
     #endregion
@@ -142,7 +160,6 @@ public class UnitDash : MonoBehaviour
         foreach(GameObject hits in hitList)
         {
             hits.GetComponent<IDamagable>().TakeDamage(Damage);
-            print(hits + "Takes " + Damage._Entries[0]._Damage + " " + Damage._Entries[0]._atkType + " damage from " + Damage._Source.name);
         }
     }
 

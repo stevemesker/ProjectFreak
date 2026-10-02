@@ -30,13 +30,11 @@ public class ProjectileObject : MonoBehaviour
         IDamagable damagable = other.GetComponent<IDamagable>();
         if (damagable == null) 
         { 
-            print("Detecting hit " + other.gameObject.name); 
             Destroy(gameObject); 
             return; 
         }
 
         //spawn hit effects here
-        print("Detecting hit " + other.gameObject.name);
         damagable.TakeDamage(_Damage);
         Destroy(gameObject);
         

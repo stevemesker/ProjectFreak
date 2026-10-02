@@ -56,7 +56,7 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
         foreach (Collider2D hit in hits)
         {
             if (_NodeConnections.Contains(hit.gameObject) == true || hit.gameObject == gameObject || _NodeConnections.Count >= _ConnectionsMax) continue;
-            if (hit.GetComponent<IBridgeable>().canBridge() == false) continue;
+            if (hit.GetComponent<IBridgeable>().CanBridge() == false) continue;
 
             //might need to make sure no node is in the way of adding the node
             _NodeConnections.Add(hit.gameObject);
@@ -66,7 +66,7 @@ public class DungeonMapNode : MonoBehaviour, IBridgeable
             bridgeInstance.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
             hit.GetComponent<IBridgeable>().BridgeNode(gameObject, bridgeInstance);
             bridgeInstance.GetComponent<NodeBridge>().BuildConnection(hit.gameObject, gameObject);
-            bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(transform.position, hit.transform.position));
+            bridgeInstance.GetComponent<NodeBridge>().UpdatePosition(Vector2.Distance(transform.position, hit.transform.position));
         }
         
     }
@@ -93,13 +93,13 @@ public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
         //print($"{gameObject.name} does not have color assigned, checking neighbors...");
         for (int i = 0; i < _NodeConnections.Count; i++)
         {
-            if (_NodeConnections[i].GetComponent<DungeonMapNode>().testNeighborColor(colorToTest)) { /*print($"Cannot chose color {colorToTest.name} as that has been assigned to node: {_NodeConnections[i].name}");*/ return true; }
+            if (_NodeConnections[i].GetComponent<DungeonMapNode>().TestNeighborColor(colorToTest)) { /*print($"Cannot chose color {colorToTest.name} as that has been assigned to node: {_NodeConnections[i].name}");*/ return true; }
         }
         //print($"Neighborbeors of {gameObject.name} do not have color {colorToTest.name}...");
         return false;
     }
 
-    public bool testNeighborColor(ColorPaletteSO colorToTest)
+    public bool TestNeighborColor(ColorPaletteSO colorToTest)
     {
         if (TestColor(colorToTest)) return true;
         for (int i = 0; i < _NodeConnections.Count; i++)
@@ -126,7 +126,7 @@ public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
         _BridgeConnections.Add(origin, bridge);
     }
 
-    public bool canBridge()
+    public bool CanBridge()
     {
         if (_NodeConnections.Count >= _ConnectionsMax) return false;
         return true;
@@ -137,12 +137,12 @@ public bool TestSelfAndNeighborColor(ColorPaletteSO colorToTest)
         _NodeConnections.Add(connectTo);
     }
 
-    public void disconnectNodes(GameObject nodeToDisconnect)
+    public void DisconnectNodes(GameObject nodeToDisconnect)
     {
         throw new System.NotImplementedException();
     }
 
-    public float getMaxRange()
+    public float GetMaxRange()
     {
         return _DetectionRange;
     }

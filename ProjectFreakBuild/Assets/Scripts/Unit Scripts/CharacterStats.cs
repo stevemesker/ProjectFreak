@@ -137,7 +137,7 @@ public class PartyStats : CoreStats
 
     public void SetCurrentDangerType()
     {
-        _CurrentDangerType = _Danger.getCurrentDangerType(_Health, _HP);
+        _CurrentDangerType = _Danger.GetCurrentDangerType(_Health, _HP);
     }
 }
 
@@ -183,7 +183,7 @@ public class Inventory
     [SerializeField]public List<WeaponItem> _EquippedWeapons;
     public Dictionary<ItemSO, int> _BackpackInventory;
 
-    public bool checkInventoryFits(ItemSO item, int amount)
+    public bool CheckInventoryFits(ItemSO item, int amount)
     {
         if (_BackpackInventory.ContainsKey(item))
         {
@@ -197,20 +197,20 @@ public class Inventory
         return false;
     }
 
-    public bool checkEquippedWeaponFits(WeaponItem x)
+    public bool CheckEquippedWeaponFits(WeaponItem x)
     {
         for (int i = 0; i < _EquippedWeapons.Count; i++)
             if (_EquippedWeapons[i] == null) return true;
         return false;
     }
 
-    public void addBackpackInventory (ItemSO x, int y)
+    public void AddBackpackInventory (ItemSO x, int y)
     {
         Debug.LogWarning($"Adding inventory: {x.name} x {y}");
         _BackpackInventory.Add(x, y);
     }
 
-    public void addEquipmentInventory(WeaponItem x)
+    public void AddEquipmentInventory(WeaponItem x)
     {
         Debug.LogWarning($"Adding equipped inventory {x.name}");
         for (int i = 0; i < _EquippedWeapons.Count; i++)

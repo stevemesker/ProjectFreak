@@ -34,8 +34,8 @@ public class IngredientListWindow : MonoBehaviour
         //pull in the manager's source of truth for elements
         var elements = InventoryManager._PlayerInventory.Elements;
 
-        if (elements.Count < currentListAssets.Count) removeUnusedBoxes(currentListAssets.Count - elements.Count);
-        if (elements.Count > currentListAssets.Count) spawnMoreButtons(elements.Count - currentListAssets.Count);
+        if (elements.Count < currentListAssets.Count) RemoveUnusedBoxes(currentListAssets.Count - elements.Count);
+        if (elements.Count > currentListAssets.Count) SpawnMoreButtons(elements.Count - currentListAssets.Count);
 
         int index = 0;
         foreach (var entry in InventoryManager._PlayerInventory.Elements)
@@ -51,8 +51,8 @@ public class IngredientListWindow : MonoBehaviour
         //pull in the manager's source of truth for ingredients
         var ingredients = InventoryManager._PlayerInventory.Ingredients;
 
-        if (ingredients.Count < currentListAssets.Count) removeUnusedBoxes(currentListAssets.Count - ingredients.Count);
-        if (ingredients.Count > currentListAssets.Count) spawnMoreButtons(ingredients.Count - currentListAssets.Count);
+        if (ingredients.Count < currentListAssets.Count) RemoveUnusedBoxes(currentListAssets.Count - ingredients.Count);
+        if (ingredients.Count > currentListAssets.Count) SpawnMoreButtons(ingredients.Count - currentListAssets.Count);
 
         int index = 0;
         foreach (var entry in InventoryManager._PlayerInventory.Ingredients)
@@ -65,18 +65,16 @@ public class IngredientListWindow : MonoBehaviour
         }*/
     }
 
-    private void spawnMoreButtons(int amount)
+    private void SpawnMoreButtons(int amount)
     {
-        print("Make " + amount + "more boxes");
         for (int i = 0; i<amount; i++)
         {
             currentListAssets.Add(Instantiate(ButtonListPrefab, ListHolderPointer.transform));
         }
     }
 
-    private void removeUnusedBoxes(int amount)
+    private void RemoveUnusedBoxes(int amount)
     {
-        print("Too many boxes, deleting " + amount);
         for (int i = 0; i < amount; i++)
         {
             currentListAssets[currentListAssets.Count -1 - i].SetActive(false);
@@ -91,7 +89,7 @@ public class IngredientListWindow : MonoBehaviour
 
     //var ingredients = InventoryManager._PlayerInventory.Ingredients;
     [Button("Test")]
-    public void test()
+    public void Test()
     {
         var ingredients = InventoryManager._PlayerInventory.Ingredients;
         print("Found ingredient data count" + ingredients.Count);

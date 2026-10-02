@@ -30,7 +30,7 @@ MonoBehaviour:
   chargeScaling: 0
   ChargeAutoAttack: 0
   baseDamage: 20
-  element: 8
+  element: 9
   knockbackHitAmount: 10
   isHitScan: 1
   shotsPerBurst: 1

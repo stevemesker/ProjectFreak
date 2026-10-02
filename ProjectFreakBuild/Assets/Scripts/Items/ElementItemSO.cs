@@ -17,7 +17,7 @@ public class ElementItemSO : ItemSO
     [SerializeField] public UnityEvent statusEffectDisable;
 
     [Header("Physical Settings")]
-    public ElementType.Element element;
+    public DamageType.ElementType element;
     public ElementMaterialType.Type materialType;
 
     [Header("Grid Settings")]
@@ -25,19 +25,19 @@ public class ElementItemSO : ItemSO
     public float connectionDistance = 150;
     public int powerNeeded = 1;
 
-    public void triggerElementEffects(GameObject ElementCarrier)
+    public void TriggerElementEffects(GameObject ElementCarrier)
     {
         mypackage[0]._ElementConnect = ElementCarrier;
         statusEffectEnable?.Invoke();
     }
 
-    public void deactivateElementEffects(GameObject ElementCarrier)
+    public void DeactivateElementEffects(GameObject ElementCarrier)
     {
         mypackage[0]._ElementConnect = ElementCarrier;
         statusEffectDisable?.Invoke();
     }
 
-    public List<statBoostPackage> getStatBoostPackage()
+    public List<statBoostPackage> GetStatBoostPackage()
     {
         return mypackage;
     }

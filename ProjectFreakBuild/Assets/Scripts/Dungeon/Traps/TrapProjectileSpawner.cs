@@ -23,7 +23,7 @@ public class TrapProjectileSpawner : MonoBehaviour
     private void OnEnable()
     {
         if (_fireSpeed < _minimumFireSpeed) _fireSpeed = _minimumFireSpeed;
-        _fireCountdown = StartCoroutine(fireCountdown());
+        _fireCountdown = StartCoroutine(FireCountdown());
     }
     private void OnDisable()
     {
@@ -31,13 +31,13 @@ public class TrapProjectileSpawner : MonoBehaviour
         _fireCountdown = null;
     }
 
-    IEnumerator fireCountdown()
+    IEnumerator FireCountdown()
     {
         yield return new WaitForSeconds(_fireSpeed);
         GameObject temp = Instantiate(_projectilePrefab, _projectileSpawnLocator.transform.position, _projectileSpawnLocator.transform.rotation);
         temp.GetComponent<ProjectileObject>()._Speed = _projectileSpeed;
         temp.GetComponent<ProjectileObject>()._Damage = FillProjectileDamage();
-        _fireCountdown = StartCoroutine(fireCountdown());
+        _fireCountdown = StartCoroutine(FireCountdown());
     }
 
     DamagePackage FillProjectileDamage ()

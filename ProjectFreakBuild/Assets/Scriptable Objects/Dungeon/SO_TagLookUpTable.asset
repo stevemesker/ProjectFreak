@@ -76,7 +76,7 @@ MonoBehaviour:
       _EntryChance: 0
     - _Tag: 8
       _EntryChance: 100
-    _EntryPool: 
+    _EntryPool: 0000000000000000000000000000000000000000000000000000000000000000000000000100000005000000040000000600000007000000080000000800000008000000080000000800000008000000080000000800000008000000
   - _Type: 5
     _Entry:
     - _Tag: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
       _EntryChance: 0
     - _Tag: 6
       _EntryChance: 0
-    _EntryPool: 
+    _EntryPool: 020000000300000004000000
   - _Type: 7
     _Entry:
     - _Tag: 7

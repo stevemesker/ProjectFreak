@@ -33,7 +33,7 @@ public class HUDManager : MonoBehaviour
 
     #region RadialMenu
     [Button("Activate")]
-    public void toggleRadialMenu()
+    public void ToggleRadialMenu()
     {
         if (_RadialMenu == null) return;
         if (_RadialMenu.activeSelf) _RadialMenu.GetComponent<RadialMenuManager>().UseButton();
@@ -56,7 +56,7 @@ public class HUDManager : MonoBehaviour
 
     #region Fades
 
-    public float getCurrentFadeValue ()
+    public float GetCurrentFadeValue ()
     {
         return FadeOutCanvasObject.GetFadeStatus();
     }

@@ -18,50 +18,50 @@ public class FreakInput : MonoBehaviour
     private void OnEnable()
     {
         pInput.Enable();
-        pInput.Freak.FreakWeaponSelect.performed += switchSelection;
-        pInput.Freak.FreakWeaponScroll.performed += scrollSelection;
-        pInput.Freak.FreakWeaponActivation.performed += useWeapon;
-        pInput.Freak.FreakWeaponActivation.canceled += releaseWeapon;
+        pInput.Freak.FreakWeaponSelect.performed += SwitchSelection;
+        pInput.Freak.FreakWeaponScroll.performed += ScrollSelection;
+        pInput.Freak.FreakWeaponActivation.performed += UseWeapon;
+        pInput.Freak.FreakWeaponActivation.canceled += ReleaseWeapon;
     }
 
     private void OnDisable()
     {
-        pInput.Freak.FreakWeaponSelect.performed -= switchSelection;
-        pInput.Freak.FreakWeaponScroll.performed -= scrollSelection;
-        pInput.Freak.FreakWeaponActivation.performed -= useWeapon;
-        pInput.Freak.FreakWeaponActivation.canceled -= releaseWeapon;
+        pInput.Freak.FreakWeaponSelect.performed -= SwitchSelection;
+        pInput.Freak.FreakWeaponScroll.performed -= ScrollSelection;
+        pInput.Freak.FreakWeaponActivation.performed -= UseWeapon;
+        pInput.Freak.FreakWeaponActivation.canceled -= ReleaseWeapon;
         pInput.Disable();
     }
 
     #region WeaponSelecting
 
-    private void switchSelection(InputAction.CallbackContext context)
+    private void SwitchSelection(InputAction.CallbackContext context)
     {
         print(context.ReadValue<float>());
-        selectWeaponSlot((int)Mathf.Sign(context.ReadValue<float>()));
-        //selectWeaponSlot(context.ReadValue<int>());
+        SelectWeaponSlot((int)Mathf.Sign(context.ReadValue<float>()));
+        //SelectWeaponSlot(context.ReadValue<int>());
     }
 
-    private void scrollSelection(InputAction.CallbackContext context)
+    private void ScrollSelection(InputAction.CallbackContext context)
     {
         print("Still need to add mouse scrolling");
         print(context);
     }
 
-    private void selectWeaponSlot(int amount)
+    private void SelectWeaponSlot(int amount)
     {
         characterData.EquippedWeaponScrollSelection(amount);
     }
     #endregion
 
     #region Weapon Usage
-    private void useWeapon(InputAction.CallbackContext context)
+    private void UseWeapon(InputAction.CallbackContext context)
     {
         characterData.UseCurrentWeapon();
     }
-    private void releaseWeapon(InputAction.CallbackContext context)
+    private void ReleaseWeapon(InputAction.CallbackContext context)
     {
-        characterData.releaseCurrentWeapon();
+        characterData.ReleaseCurrentWeapon();
     }
     #endregion
 }

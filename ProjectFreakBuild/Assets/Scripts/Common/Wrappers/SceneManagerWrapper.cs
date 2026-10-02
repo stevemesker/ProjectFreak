@@ -6,49 +6,63 @@ using Sirenix.OdinInspector;
 public class SceneManagerWrapper : MonoBehaviour
 {
     //Script that accesses changing scenes from the game manager singleton
-    public void changeLocation(SceneLocationSO data)
+    public void ChangeLocation(SceneLocationSO data)
     {
         //change scenes based on scenelocationSO data
         //must have that scriptable object to work
+        if (ManagerTester("ChangeLocation") == false) return;
         if (data == null)
         {
-            Debug.LogError("Error! No scene data was used. Use alternative scene changing, this one ain't it good sir");
+            Debug.LogError($"Error! No scene data was given to ChangeLocation on {gameObject.name}. Use alternative scene changing, this one ain't it good sir", this);
             return;
         }
-        SceneManagerObject._SceneManager.sceneLocationDataChange(data);
+        SceneManagerObject._SceneManager.SceneLocationDataChange(data);
     }
 
-    public void changeScene(string sceneName)
+    public void ChangeScene(string sceneName)
     {
         //changes scene based on input string
-        SceneManagerObject._SceneManager.changeScene(sceneName);
+        if (ManagerTester("ChangeScene") == false) return;
+        if (string.IsNullOrEmpty(sceneName)) { Debug.LogError($"Error! No scene name was given to ChangeScene on {gameObject.name}", this); return; } //stops a blank inspector field from trying to load a scene called ""
+        SceneManagerObject._SceneManager.ChangeScene(sceneName);
     }
 
     public void HudFadeOnOpen(float speed)
     {
         //ensures the hud will fade in when scene is loaded
+        if (ManagerTester("HudFadeOnOpen") == false) return;
         SceneManagerObject._SceneManager.HudFadeOnOpen(speed);
     }
+
     public void ActiveOpeningScene()
     {
-        SceneManagerObject._SceneManager.activateOpeningScene();
+        //turns on the opening scene that was loaded in the background
+        if (ManagerTester("ActiveOpeningScene") == false) return;
+        SceneManagerObject._SceneManager.ActivateOpeningScene();
     }
 
     public void LoadOpeningScene()
     {
-        SceneManagerObject._SceneManager.loadStartScene();
+        //starts loading the opening scene
+        if (ManagerTester("LoadOpeningScene") == false) return;
+        SceneManagerObject._SceneManager.LoadStartScene();
     }
 
-    [Button("Test")]
-    public void testSingleton()
+    #region Tools
+    bool ManagerTester(string type)
     {
-        if (SceneManagerObject._SceneManager != null)
-        {
-            print("Pow");
-        }
-        else
-        {
-            print("Hmmmmm");
-        }
+        //checks the scene manager exists before forwarding a call to it
+        if (SceneManagerObject._SceneManager == null) { Debug.LogError($"Error! {type} wrapper on {gameObject.name} couldn't find the Scene Manager", this); return false; }
+        return true;
     }
+    #endregion
+
+    #region Test Tools
+    [Button("Test")]
+    public void TestSingleton()
+    {
+        //editor button that checks if the scene manager can be found
+        if (ManagerTester("TestSingleton")) Debug.Log("Scene Manager found");
+    }
+    #endregion
 }

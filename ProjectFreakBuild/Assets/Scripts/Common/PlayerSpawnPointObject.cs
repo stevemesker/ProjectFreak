@@ -7,10 +7,10 @@ public class PlayerSpawnPointObject : MonoBehaviour
     private void Awake()
     {
         if (Player.player == null) return;
-        movePlayerToSpawner();
+        MovePlayerToSpawner();
     }
 
-    public void movePlayerToSpawner()
+    public void MovePlayerToSpawner()
     {
         Player.player.transform.position = gameObject.transform.position;
         Player.player.transform.rotation = gameObject.transform.rotation;

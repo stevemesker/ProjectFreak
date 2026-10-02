@@ -70,7 +70,7 @@ public class InventoryManager : MonoBehaviour
 
     #region Pickup
 
-    [Button] private void pickupTest(ItemSO item, int amount, GameObject source)
+    [Button] private void PickupTest(ItemSO item, int amount, GameObject source)
     {
         HandlePickup(item, amount, source);
     }
@@ -81,16 +81,13 @@ public class InventoryManager : MonoBehaviour
         switch(item)
         {
             case IngredientItem ingredient:
-                print("Ingredient" + item.ItemName + " picked up and added " + amount + " to inventory!");
-                addIngredient(item as IngredientItem, amount);
+                AddIngredient(item as IngredientItem, amount);
                 break;
 
             case WeaponItem weapon:
-                print("Weapon Picked up and added to inventory!");
                 break;
             case ElementItemSO element:
-                print("Adding element to inventory!");
-                addElement(item as ElementItemSO, amount);
+                AddElement(item as ElementItemSO, amount);
                 break;
 
             default:
@@ -102,21 +99,18 @@ public class InventoryManager : MonoBehaviour
     #endregion
 
     #region Ingredient Pickup
-    public bool addIngredient (IngredientItem item, int amountAdded)
+    public bool AddIngredient (IngredientItem item, int amountAdded)
     {
         if (item == null || amountAdded < 1) return false; //checks to make sure inputs are valid (should probably do this earlier up the chain but works fine for now
         if (playerIngredients.TryGetValue(item, out int current))
         {
-            print("Inventory slot exists, current count " + current);
             if ((current + amountAdded) > ItemStackSizeMax)
             {
                 Debug.LogWarning("Warning! Maximum item amount has been surpassed for item " + item.ItemName);
                 playerIngredients[item] = ItemStackSizeMax;
                 return false;
             }
-            print(" new inventory amount should be " + (current+amountAdded));
             playerIngredients[item] = current + amountAdded;
-            print("Current count is " + playerIngredients[item]);
             return true;
         }
         else
@@ -127,7 +121,6 @@ public class InventoryManager : MonoBehaviour
                 return false;
             }
             if (amountAdded > ItemStackSizeMax) amountAdded = ItemStackSizeMax;
-            print("New Inventory adding: " + item.ItemName + " X " + amountAdded);
             
             playerIngredients.Add(item, amountAdded);
             return true;
@@ -135,22 +128,19 @@ public class InventoryManager : MonoBehaviour
     }
 
     [Button]
-    public bool removeIngredient(IngredientItem item, int amountRemoved)
+    public bool RemoveIngredient(IngredientItem item, int amountRemoved)
     {
         if (item == null || amountRemoved < 1) return false; //checks to make sure inputs are valid (should probably do this earlier up the chain but works fine for now
         if (playerIngredients.TryGetValue(item, out int current))
         {
-            print("Inventory slot exists, current count " + current);
             if ((current - amountRemoved) <= 0)
             {
-                print("Emptying out ingredient inventory");
                 playerIngredients.Remove(item);
                 OnInventoryChanged?.Invoke();
                 //print("Boop");
                 return true;
             }
             playerIngredients[item] = playerIngredients[item] - amountRemoved;
-            print("Removal Complete! Current amount: " + playerIngredients[item]);
             OnInventoryChanged?.Invoke();
             return true;
         }
@@ -164,7 +154,7 @@ public class InventoryManager : MonoBehaviour
     }
 
     [Button]
-    public int checkIngredient(IngredientItem item)
+    public int CheckIngredient(IngredientItem item)
     {
         if (item == null) return 0;
         if (playerIngredients.TryGetValue(item, out int current))
@@ -182,21 +172,18 @@ public class InventoryManager : MonoBehaviour
 
     #region Element Pickup
     [Button]
-    public bool addElement(ElementItemSO item, int amountAdded)
+    public bool AddElement(ElementItemSO item, int amountAdded)
     {
         if (item == null || amountAdded < 1) return false; //checks to make sure inputs are valid (should probably do this earlier up the chain but works fine for now
         if (playerElements.TryGetValue(item, out int current))
         {
-            print("Inventory slot exists, current count " + current);
             if ((current + amountAdded) > ItemStackSizeMax)
             {
                 Debug.LogWarning("Warning! Maximum item amount has been surpassed for item " + item.ItemName);
                 playerElements[item] = ItemStackSizeMax;
                 return false;
             }
-            print(" new inventory amount should be " + (current + amountAdded));
             playerElements[item] = current + amountAdded;
-            print("Current count is " + playerElements[item]);
             return true;
         }
         else
@@ -207,7 +194,6 @@ public class InventoryManager : MonoBehaviour
                 return false;
             }
             if (amountAdded > ItemStackSizeMax) amountAdded = ItemStackSizeMax;
-            print("New Inventory adding: " + item.ItemName + " X " + amountAdded);
 
             playerElements.Add(item, amountAdded);
             return true;

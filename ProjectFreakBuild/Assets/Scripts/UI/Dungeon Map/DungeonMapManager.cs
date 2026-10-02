@@ -65,21 +65,21 @@ public class DungeonMapManager : MonoBehaviour
         if (_LocatorZone == null) { Debug.LogError("Error! Selection zone not assigned!"); return; }
 
         SpawnFloorNodes();
-        //connectNodes();
-        StartCoroutine(detectNodeRange());
+        //ConnectNodes();
+        StartCoroutine(DetectNodeRange());
     }
     #region Test Tools
     [Button("test")]
-    public void test()
+    public void Test()
     {
-        clear();
+        Clear();
         SpawnFloorNodes();
-        StartCoroutine(detectNodeRange());
-        //connectNodes();
+        StartCoroutine(DetectNodeRange());
+        //ConnectNodes();
     }
 
     [Button("Clear")]
-    public void clear()
+    public void Clear()
     {
         if (_FloorNodes.Count > 0)
         {
@@ -115,7 +115,7 @@ public class DungeonMapManager : MonoBehaviour
             _FloorPool.Add(new List<POIType.Type>());
             _FloorPool[x] = new List<POIType.Type>();
             //print(_FloorPool[x].Count);
-            getFloorNodeTypePool(x);
+            GetFloorNodeTypePool(x);
             //print(_FloorPool[x].Count);
         }
 
@@ -136,8 +136,8 @@ public class DungeonMapManager : MonoBehaviour
                 RectTransform instanceTrans = instance.GetComponent<RectTransform>();
 
                 Vector3 instancePosition = new Vector3(
-                    (zoneTrans.rect.width / (_CurrentDungeonData._DungeonColumnCount + 1) * (i+1)) + curveEval(i, _CurrentDungeonData._DungeonRowCount),
-                    (zoneTrans.rect.height / (_CurrentDungeonData._DungeonRowCount-1) * (j)) + (+curveEval(i, _CurrentDungeonData._DungeonRowCount)/ _CurrentDungeonData._DungeonColumnCount),
+                    (zoneTrans.rect.width / (_CurrentDungeonData._DungeonColumnCount + 1) * (i+1)) + CurveEval(i, _CurrentDungeonData._DungeonRowCount),
+                    (zoneTrans.rect.height / (_CurrentDungeonData._DungeonRowCount-1) * (j)) + (+CurveEval(i, _CurrentDungeonData._DungeonRowCount)/ _CurrentDungeonData._DungeonColumnCount),
                     0);
 
                 instanceTrans.transform.position += instancePosition;
@@ -160,9 +160,9 @@ public class DungeonMapManager : MonoBehaviour
                     bridgeInstance.GetComponent<NodeBridge>().BuildConnection(_FloorNodes[counter - 1], instance);
 
                     _FloorNodes[counter - 1].GetComponent<DungeonMapNode>().SetInitialDetectionRange();
-                    bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(_FloorNodes[counter - 1].transform.position, instance.transform.position));
+                    bridgeInstance.GetComponent<NodeBridge>().UpdatePosition(Vector2.Distance(_FloorNodes[counter - 1].transform.position, instance.transform.position));
                 }
-                mapNode._Type = setNodeType(i);
+                mapNode._Type = SetNodeType(i);
                 //mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(temptype));
                 mapNode.SetIcon(DungeonManager._DM._DungeonTypeTranslator.GetSprite(mapNode._Type));
 
@@ -234,7 +234,7 @@ public class DungeonMapManager : MonoBehaviour
             _FloorNodes[i * rows].GetComponent<IBridgeable>().BridgeNode(_FloorNodes[_FloorNodes.Count - 2], bridgeInstance);
 
             bridgeInstance.GetComponent<NodeBridge>().BuildConnection(_FloorNodes[_FloorNodes.Count - 2], _FloorNodes[i * rows]);
-            bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(_FloorNodes[_FloorNodes.Count - 2].transform.position, _FloorNodes[i * rows].transform.position));
+            bridgeInstance.GetComponent<NodeBridge>().UpdatePosition(Vector2.Distance(_FloorNodes[_FloorNodes.Count - 2].transform.position, _FloorNodes[i * rows].transform.position));
 
             _FloorNodes[_FloorNodes.Count - 1].GetComponent<DungeonMapNode>()._NodeConnections.Add(_FloorNodes[i * rows + rows-1]);
             _FloorNodes[i * rows + rows - 1].GetComponent<DungeonMapNode>()._NodeConnections.Add(_FloorNodes[_FloorNodes.Count - 1]);
@@ -249,11 +249,11 @@ public class DungeonMapManager : MonoBehaviour
             _FloorNodes[i * rows + rows - 1].GetComponent<IBridgeable>().BridgeNode(_FloorNodes[_FloorNodes.Count - 1], bridgeInstance);
 
             bridgeInstance.GetComponent<NodeBridge>().BuildConnection(_FloorNodes[_FloorNodes.Count - 1], _FloorNodes[i * rows + rows - 1]);
-            bridgeInstance.GetComponent<NodeBridge>().updatePosition(Vector2.Distance(_FloorNodes[_FloorNodes.Count - 1].transform.position, _FloorNodes[i * rows + rows - 1].transform.position));
+            bridgeInstance.GetComponent<NodeBridge>().UpdatePosition(Vector2.Distance(_FloorNodes[_FloorNodes.Count - 1].transform.position, _FloorNodes[i * rows + rows - 1].transform.position));
         }
     }
 
-    float curveEval(int location, int max)
+    float CurveEval(int location, int max)
     {
         bool randomBool = UnityEngine.Random.value > 0.5f;
         float switcher = -1;
@@ -262,11 +262,11 @@ public class DungeonMapManager : MonoBehaviour
         return offset;
     }
     
-    void connectNodes()
+    void ConnectNodes()
     {
         for (int i = 0; i < _FloorNodes.Count; i++)
         {
-            if (_FloorNodes[i].GetComponent<IBridgeable>().canBridge() == false) { /*print(_FloorNodes[i].name + " returned false");*/ continue; }
+            if (_FloorNodes[i].GetComponent<IBridgeable>().CanBridge() == false) { /*print(_FloorNodes[i].name + " returned false");*/ continue; }
             _FloorNodes[i].GetComponent<DungeonMapNode>().ConnectNodesInRange();
             //print(i);
         }
@@ -276,7 +276,7 @@ public class DungeonMapManager : MonoBehaviour
     #endregion
 
     #region Set Node Type
-    void getFloorNodeTypePool(int index)
+    void GetFloorNodeTypePool(int index)
     {
         //function that refills the type pool of index
         //index represents the column the pool is supposed to handle
@@ -291,7 +291,6 @@ public class DungeonMapManager : MonoBehaviour
             tempInt = (int)temp;
             if (tempInt <= 0) tempInt = 1;
 
-            print($"Now adding {(int)temp} notes of { data[i]._EntryType } to the pool");
             for (int j = 0; j < tempInt; j++)
             {
                 _FloorPool[index].Add(data[i]._EntryType);
@@ -307,14 +306,14 @@ public class DungeonMapManager : MonoBehaviour
             }
         }
     }
-    POIType.Type setNodeType(int index)
+    POIType.Type SetNodeType(int index)
     {
         int rand = Random.Range(0, _FloorPool[index].Count);
         POIType.Type temp = _FloorPool[index][rand];
         _FloorPool[index].RemoveAt(rand);
         //print($"now assigning {temp} to node");
 
-        if (_FloorPool[index].Count <= 0) getFloorNodeTypePool(index);
+        if (_FloorPool[index].Count <= 0) GetFloorNodeTypePool(index);
 
         return temp;
     }
@@ -322,7 +321,7 @@ public class DungeonMapManager : MonoBehaviour
     #endregion
 
     #region NodeColor
-    void setNodeColorPalettes()
+    void SetNodeColorPalettes()
     {
         int colorPalletCount = 0;
         //print($" <-----Now starting color assign, current floor node count: {_FloorNodes.Count} with possible swatch count: {_ColorSwatches.Count}----->");
@@ -350,12 +349,12 @@ public class DungeonMapManager : MonoBehaviour
         _MapVisuals.SetActive(!_MapVisuals.activeSelf);
     }
 
-    IEnumerator detectNodeRange()
+    IEnumerator DetectNodeRange()
     {
         //yield return new WaitForSeconds(.01f);
         yield return null;
-        connectNodes();
-        setNodeColorPalettes();
+        ConnectNodes();
+        SetNodeColorPalettes();
         DungeonManager._DM.MoveToFloor(_FloorNodes.Count - 2);
     }
 }

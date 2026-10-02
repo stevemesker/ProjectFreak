@@ -2,23 +2,47 @@
 
 The player uses a physics-driven character controller inspired by the locomotion system used in [Toyful Games' controllers](https://www.youtube.com/watch?v=qdskE8PJy6Q). Movement, facing, and standing are handled as separate systems which operate simultaneously.
 
-**Script:** `CharacterMovement`. The same script is used by the player and by [[Shade (Runtime)|shades]], so the shade moves the same way when the player takes control of it. *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
+**Scripts:** three components that sit side by side on the unit. All three are used by the player and by [[Shade (Runtime)|shades]], so the shade moves the same way when the player takes control of it.
 
-The camera used for camera-relative movement (`_MainCamera`) is assigned by the [[Camera Manager]].
+| Script              | Layer   | Job                                                                                          |
+| :------------------ | :------ | :------------------------------------------------------------------------------------------- |
+| `UnitHover`         | Stance  | Idle floating / standing spring (see [[#Standing System]]). Always on                        |
+| `CharacterMovement` | Engine  | Turns a move direction and a look direction into physics forces. Always on. Reads no controls |
+| `PlayerInputDriver` | Driver  | Reads the player's controls and feeds directions into the engine. Turned on/off to switch control |
+
+**Rule: switch drivers, never the engine.** Turning `CharacterMovement` off would also turn off its braking (the unit slides), and turning `UnitHover` off drops the unit. Later the shade gets an AI driver that feeds the same engine (see [[AI Movement & Dungeon Loading Plan]]). *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
 
 ---
 
-## Turning Control On and Off
+## CharacterMovement (engine) functions
 
-| Function                 | Description                                                                                          |
-| :----------------------- | :--------------------------------------------------------------------------------------------------- |
-| `EnableMovement()`       | Subscribes to move, look, aim, and dash input                                                        |
-| `DisableMovement()`      | Unsubscribes from all movement input. Used to hand control between the player and a shade (see [[Shade Manager]]) |
-| `SetTurning(bool)`       | Turns aiming rotation on/off without affecting movement. Turned off while the [[Radial Menu]] is open |
-| `DeactivateMovement()`   | Pauses the rigidbody and saves its velocity (for pausing)                                            |
-| `ReactivateMovement()`   | Restores the saved velocity                                                                          |
+| Function                  | Description                                                                                          |
+| :------------------------ | :--------------------------------------------------------------------------------------------------- |
+| `SetMoveDirection(Vector3)` | Which way to move, length 0 to 1 (1 = full speed). Up/down is ignored                              |
+| `SetLookDirection(Vector3)` | Which way to face. A zero direction is ignored, so the unit keeps its facing                       |
+| `GetMoveDirection()`      | The current move direction                                                                           |
+| `Dash()`                  | Dashes in the current move direction using the unit's [[Unit Dash Script|UnitDash]]                  |
+| `SetTurning(bool)`        | Turns rotation on/off without affecting movement. Turned off while the [[Radial Menu]] is open       |
+| `DeactivateMovement()`    | Pauses the rigidbody and saves its velocity (used by dashes)                                         |
+| `ReactivateMovement()`    | Restores the saved velocity                                                                          |
 
-The dash input calls `DashCharacter` on the unit's [[Unit Dash Script|UnitDash]] with the current movement direction.
+## PlayerInputDriver (player controls)
+
+`Scripts/Unit Scripts/PlayerInputDriver.cs`. On the player (on by default) and the shade prefab (off by default).
+
+- **On enable:** turns the controls on and listens for move, look (right stick), point (mouse) and dash.
+- **On disable:** stops listening and **clears the move direction**, so the body you leave stops instead of walking on by itself. Facing is kept.
+- Converts input to camera-relative directions using the [[Camera Manager]]'s gameplay camera (falls back to `Camera.main`), and works out mouse aim. Both are described below.
+- Dash input calls the engine's `Dash()`.
+
+| Field             | Description                                                                              |
+| :---------------- | :--------------------------------------------------------------------------------------- |
+| `_TurnIdleTime`   | Seconds after aiming stops before the unit faces its move direction again (default 1)    |
+| `_Movement`       | The `CharacterMovement` it drives (auto-filled from the same object)                     |
+| `_IsTurnSnapped`  | Read only. True while facing follows movement                                            |
+| `_IsUsingMouse`   | Read only. True if the last aim came from the mouse                                      |
+
+Switching control: `Player.EnablePlayerControl()` / `DisablePlayerControl()` and `Shade.EnablePlayerControl()` / `EnableShadeControl()` just turn the matching `PlayerInputDriver` on or off (called by the [[Shade Manager]]).
 
 The controller is designed to support:
 
@@ -100,6 +124,20 @@ Lower acceleration
 ```
 
 The acceleration curves are used to control movement feel without modifying code.
+
+### Curve shape
+
+Both curves (`AccelerationFactorFromDot` and `MaxAccelerationForceFactorFromDot`) take the dot product on the **X axis from -1 to 1**:
+
+| Dot | Meaning                 | Current value |
+| :-- | :---------------------- | :------------ |
+| -1  | Full reverse            | 2             |
+| 0   | 90° turn / from a stop  | 1             |
+| 1   | Same direction          | 1             |
+
+So reversing gets double acceleration and a double force cap, and running straight uses the base values. Raise the -1 value for snappier turnarounds, or lower `acceleration` / `maxAccelForce` for a heavier feel.
+
+*Oct 2026 fix:* the curves used to only cover 0 to 1 and dropped to almost 0 at 1, so once the unit was moving the way it wanted, its acceleration almost switched off. It never reached `maxSpeed`, and building speed after a reverse crawled. The force cap is also now applied after converting to acceleration (divide by `fixedDeltaTime`, then clamp), the same as Toyful's controller.
 
 ---
 
@@ -223,6 +261,8 @@ This creates camera-relative aiming behavior consistent with movement controls.
 
 The character uses a spring-based hovering system rather than relying solely on gravity and collider contact.
 
+**Script:** `UnitHover` (`Assets/Scripts/Unit Scripts/UnitHover.cs`)
+
 A downward raycast measures the distance between the player and the ground.
 
 A spring force is then applied to maintain the desired ride height.
@@ -245,18 +285,26 @@ This creates:
 * Stable platform interaction
 * Predictable movement behavior
 
+| Inspector field         | Description                                                              |
+| :---------------------- | :----------------------------------------------------------------------- |
+| `_RayLength`            | How far down to look for the floor (m). Must be longer than ride height  |
+| `_RideHeight`           | How high above the floor the unit floats (m)                             |
+| `_RideSpringStrength`   | How hard the spring pushes back to ride height                           |
+| `_RideSpringDamper`     | How much the spring resists bouncing                                     |
+| `_RB`                   | The unit's rigidbody (auto-filled from the same object if empty)         |
+| `_OnDebugDrawLines`     | Draws the spring force in the scene view                                 |
+
+`IsGrounded()` returns whether the floor was found this physics step, for AI, animation or abilities to check.
+
 ---
 
 # Update Order
 
-The controller executes the following systems during each physics step:
+Each physics step, `UnitHover` applies the standing force and `CharacterMovement` applies the movement and rotation forces. They are separate components, so Unity doesn't guarantee which runs first, but forces add together so the order doesn't matter.
 
 ```text
-Standing Force
-    ↓
-Movement Force
-    ↓
-Rotation Force
+UnitHover          → Standing Force
+CharacterMovement  → Movement Force → Rotation Force
 ```
 
 Each system is independent and can be tuned separately.

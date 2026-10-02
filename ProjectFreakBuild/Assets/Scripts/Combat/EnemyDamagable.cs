@@ -1,4 +1,3 @@
-using ElementType;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,12 +22,14 @@ public class EnemyDamagable : MonoBehaviour, IDamagable
 
     public bool TakeDamage(DamagePackage dmgPackage)
     {
-        print(dmgPackage._Source.name);
         //used when something should happen when hit but does not need damage packages
         onHit?.Invoke();
 
         //special note, functions called here have to recieve a damage package on the first variable of the function. If not use the on hit event instead
         onDamage?.Invoke(dmgPackage);
+
+        //push this unit back if it can be knocked back. TryGetComponent with an interface finds any component that implements it
+        if (TryGetComponent(out IKnockbackable knockbackable)) knockbackable.TakeKnockback(dmgPackage);
         return true;
     }
 }

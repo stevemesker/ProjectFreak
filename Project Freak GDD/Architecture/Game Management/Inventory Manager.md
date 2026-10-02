@@ -3,7 +3,7 @@
 
 Reached with `InventoryManager._PlayerInventory`.
 
-> Weapons are **not** stored here. Equipped weapons live in the player's `Inventory` in `PlayerData` (see [[Stats & Inventory Data]]). The two inventory systems haven't been merged yet.
+> Weapons are **not** stored here. Equipped weapons live in the player's `Inventory` in `PlayerData` (see [[Stats & Inventory Data]]). The two inventory systems haven't been merged yet. [[Notes for the future]]
 
 ---
 ## Data
@@ -25,23 +25,23 @@ Reached with `InventoryManager._PlayerInventory`.
 Something raises PickupEventChannelSO.Raise(item, amount, source)
     ↓
 HandlePickup()
-    ├── IngredientItem → addIngredient()
-    ├── ElementItemSO  → addElement()
+    ├── IngredientItem → AddIngredient()
+    ├── ElementItemSO  → AddElement()
     └── WeaponItem     → (not handled here)
     ↓
 OnInventoryChanged
 ```
 
-*Note:* `ItemDrop.pickupItem()` (which raises this event) is marked deprecated. Player pickups now go through `PlayerPickup` and `IInventory` instead (see [[Items & Pickups]]), so this path is mostly used for testing right now.
+*Note:* `ItemDrop.PickupItem()` (which raises this event) is marked deprecated. Player pickups now go through `PlayerPickup` and `IInventory` instead (see [[Items & Pickups]]), so this path is mostly used for testing right now.
 
 ---
 ## Functions
 
 | Function                                | Description                                                             |
 | :-------------------------------------- | :---------------------------------------------------------------------- |
-| `addIngredient(item, amount)`           | Adds to the stack, capped at `ItemStackSizeMax`                         |
-| `removeIngredient(item, amount)`        | Removes from the stack, deleting it at 0                                |
-| `checkIngredient(item)`                 | Returns how many the player has                                         |
-| `addElement(item, amount)`              | Adds element runes, capped at `ItemStackSizeMax`                        |
+| `AddIngredient(item, amount)`           | Adds to the stack, capped at `ItemStackSizeMax`                         |
+| `RemoveIngredient(item, amount)`        | Removes from the stack, deleting it at 0                                |
+| `CheckIngredient(item)`                 | Returns how many the player has                                         |
+| `AddElement(item, amount)`              | Adds element runes, capped at `ItemStackSizeMax`                        |
 
 Most functions have Odin buttons for testing.

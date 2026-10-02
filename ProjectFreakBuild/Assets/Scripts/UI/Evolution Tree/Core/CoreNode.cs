@@ -17,19 +17,19 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
 
     }
 
-    public bool canBridge()
+    public bool CanBridge()
     {
         return true;
     }
 
-    public float getMaxRange()
+    public float GetMaxRange()
     {
         return GetComponent<RectTransform>().rect.width / 2;
     }
 
     public void ConnectNode(GameObject connectTo)
     {
-        print("This is the core node");
+        //the core node doesn't connect to other nodes itself
         return;
     }
     #endregion
@@ -59,7 +59,7 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         //triggers when a node is linked to the core's chain
         //rField.ResetRuneChecked();
         ResetCheckedData();
-        if (hasPower() == false) return; //make sure core even has power
+        if (HasPower() == false) return; //make sure core even has power
 
         //activate each node connected to core
         for (int i = 0; i < connectionNodes.Count; i++)
@@ -95,7 +95,7 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         return CoreHide;
     }
 
-    public bool hasPower()
+    public bool HasPower()
     {
         if (CoreNodeCurrentPower > 0) return true;
         return false;
@@ -106,7 +106,7 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
         return true;
     }
 
-    public bool testLength(Vector3 position, Vector3 originPosition)
+    public bool TestLength(Vector3 position, Vector3 originPosition)
     {
         return false;
     }
@@ -118,11 +118,10 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
             CoreNodeCurrentPower -= AmountToTake;
             return AmountToTake; 
         }
-        print("Does not have enough power, I only have " + (CoreNodeCurrentPower - AmountToTake));
         return CoreNodeCurrentPower - AmountToTake;
     }
 
-    public void disconnectNodes(GameObject nodeToDisconnect)
+    public void DisconnectNodes(GameObject nodeToDisconnect)
     {
         connectionNodes.Remove(nodeToDisconnect);
     }
@@ -155,14 +154,13 @@ public class CoreNode : MonoBehaviour, IBridgeable, IConnectable, ICoreNode
             //if (ConnectionBridgeList[connectionsCurrent[i]] == null)
             if (connectionNodes.ContainsKey(connectionNodes[i]) == false)
             {
-                print("Need a bridge");
                 temp = Instantiate(BridgePrefabRef, transform.position, Quaternion.identity, transform.parent.transform);
                 temp.transform.SetAsFirstSibling();
                 temp.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
                 ConnectionBridgeList.Add(connectionsCurrent[i], temp);
                 temp.GetComponent<NodeBridge>().BuildConnection(gameObject, connectionsCurrent[i]);
-                temp.GetComponent<NodeBridge>().updatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
-                connectionsCurrent[i].GetComponent<ElementItem>().setBridgeOutside(gameObject, temp);
+                temp.GetComponent<NodeBridge>().UpdatePosition(Vector3.Distance(gameObject.transform.position, connectionsCurrent[i].transform.position) / RuneFieldTransform.localScale.x);
+                connectionsCurrent[i].GetComponent<ElementItem>().SetBridgeOutside(gameObject, temp);
             }*/
         }
     }

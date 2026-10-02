@@ -17,16 +17,18 @@ In `Awake` it:
 | :------------ | :--------------------------------------------------- |
 | `shade`       | Reference to the [[Shade Manager]] on this object    |
 | `PlayerLevel` | The player's current level                           |
+| `_SizeClassRules` | Shared `SizeClassRulesSO` for knockback by size class. See [[Enemy Movement]] |
 
 ---
 ## Functions
 
 | Function                        | Description                                         |
 | :------------------------------ | :-------------------------------------------------- |
-| `getShadeList()`                | Returns the [[Shade Manager]]'s shade slot list     |
-| `getShadeManager()`             | Returns the [[Shade Manager]] component             |
+| `GetShadeList()`                | Returns the [[Shade Manager]]'s shade slot list     |
+| `GetShadeManager()`             | Returns the [[Shade Manager]] component             |
 | `GetPlayerCurrentLevel()`       | Returns `PlayerLevel`                               |
 | `SetPlayerCurrentLevel(int)`    | Sets `PlayerLevel`                                  |
 | `IncrementPlayerLevel(int)`     | Adds to `PlayerLevel`                               |
+| `GetSizeClassRules()`           | Returns `_SizeClassRules` (logs an error if it isn't assigned) |
 
-*`GameManagerEventSO` exists in the same folder but is an empty template.*
+*`GameManagerEventSO` exists in the same folder but is an empty template.* [[Notes for the future]]

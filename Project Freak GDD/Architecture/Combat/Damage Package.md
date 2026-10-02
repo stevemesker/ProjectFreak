@@ -5,6 +5,7 @@ The damage package class is a data holder class used when anything deals damage 
 | `_Source`               | `GameObject`        | Who made the attack. Projectiles ignore hitting their own source            |
 | `_CritMultiplier`       | `float`             | Multiplier applied to every entry's damage                                  |
 | `_DamageImpactStrength` | `float`             | How hard the hit shakes the camera (default 0.25). See [[Camera Manager]]   |
+| `_KnockbackDistance`    | `float`             | How far the hit pushes the target back, in meters (default 0 = none). Shrunk by the target's size class. See [[Enemy Movement]] |
 | `_Entries`              | `List<DamageEntry>` | Each separate chunk of damage in the attack                                 |
 
 ---

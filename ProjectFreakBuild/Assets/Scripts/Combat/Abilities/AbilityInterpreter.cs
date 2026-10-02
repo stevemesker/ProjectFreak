@@ -13,7 +13,6 @@ public class AbilityInterpreter : MonoBehaviour
     public void InitializeAbility(AbilitySO ability)
     {
         //if (_CurrentAbility != null) return;
-        Debug.Log($"Now starting ability {ability._AbilityName}");
         _CurrentAbility = ability;
         _abilityStepCount = _CurrentAbility.GetAbilityStepCount();
         _currentAbilityStep = 0;
@@ -26,12 +25,10 @@ public class AbilityInterpreter : MonoBehaviour
         _CurrentAbility.InvokeAbility(_currentAbilityStep,gameObject, this);
         if (_CurrentAbility._steps[0].Timing > 0)
         {
-            Debug.Log($"Ability {_CurrentAbility._AbilityName} has a wait timer");
             ActivateAdvancementTimer(_CurrentAbility._steps[0].Timing);
         }
         else
         {
-            Debug.Log($"Ability {_CurrentAbility._AbilityName} does not have a wait timer");
             AdvanceAbilityStep();
         }
     }
@@ -39,7 +36,6 @@ public class AbilityInterpreter : MonoBehaviour
     #region state machine
     public void AdvanceAbilityStep()
     {
-        print($"now upping ability step index to {_currentAbilityStep + 1} out of {_abilityStepCount}");
         _currentAbilityStep++;
         if (_currentAbilityStep >= _abilityStepCount)
         {
@@ -53,7 +49,6 @@ public class AbilityInterpreter : MonoBehaviour
 
     public void EndAbility()
     {
-        Debug.Log($"Now ending ability {_CurrentAbility._AbilityName}");
         _abilityStepCount = 0;
         _currentAbilityStep = 0;
         _CurrentAbility = null;
@@ -62,7 +57,6 @@ public class AbilityInterpreter : MonoBehaviour
     public void InterruptAbility()
     {
         //function for completely stopping the ability from happening
-        if (_CurrentAbility != null) Debug.Log($"{_CurrentAbility._AbilityName} has been canceled");
         _CurrentAbility = null;
         _abilityStepCount = 0;
         _currentAbilityStep = 0;
@@ -86,12 +80,12 @@ public class AbilityInterpreter : MonoBehaviour
         AdvanceAbilityStep();
     }
 
-    public void summonUnit(Vector3 position, Quaternion rotation)
+    public void SummonUnit(Vector3 position, Quaternion rotation)
     {
         GameObject instancedUnit = Instantiate(_CurrentAbility._steps[_currentAbilityStep]._StepObject, position, rotation);
         if (instancedUnit.TryGetComponent<ISummonUnit>(out ISummonUnit summonedUnit))
         {
-            Debug.Log($"{instancedUnit.name} has been summoned and contains summoning interface");
+            //todo: set up the summoned unit here
         }
     }
     #endregion

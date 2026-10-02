@@ -25,7 +25,7 @@ public class NodeBridge : MonoBehaviour
         connectionTwo = Y;
     }
 
-    public void updatePosition(float length)
+    public void UpdatePosition(float length)
     {
         //move to position of first connected node
         transform.position = connectionOne.GetComponent<RectTransform>().transform.position;
@@ -43,12 +43,11 @@ public class NodeBridge : MonoBehaviour
 
     #region BreakConnection
 
-    public void clearConnections()
+    public void ClearConnections()
     {
         //used for clearing rune field quickly
-        print("Clearning nodes " + connectionOne.name + " and " + connectionTwo.name);
-        connectionOne.GetComponent<IBridgeable>().disconnectNodes(connectionTwo);
-        connectionTwo.GetComponent<IBridgeable>().disconnectNodes(connectionOne);
+        connectionOne.GetComponent<IBridgeable>().DisconnectNodes(connectionTwo);
+        connectionTwo.GetComponent<IBridgeable>().DisconnectNodes(connectionOne);
         Destroy(gameObject);
     }
 
@@ -77,10 +76,9 @@ public class NodeBridge : MonoBehaviour
 
     public void SeverConnection(GameObject origin)
     {
-        print("Severing connections between " + connectionOne.name + " and " + connectionTwo);
 
-        connectionOne.GetComponent<IBridgeable>().disconnectNodes(connectionTwo);
-        connectionTwo.GetComponent<IBridgeable>().disconnectNodes(connectionOne);
+        connectionOne.GetComponent<IBridgeable>().DisconnectNodes(connectionTwo);
+        connectionTwo.GetComponent<IBridgeable>().DisconnectNodes(connectionOne);
         origin.GetComponent<IDragHandler>().OnDrag(null);
 
         //power handling
@@ -92,7 +90,6 @@ public class NodeBridge : MonoBehaviour
         bool tempX = connectionOne.GetComponent<IConnectable>().SearchCore(connectionOne);
         bool tempY = connectionTwo.GetComponent<IConnectable>().SearchCore(connectionOne);
 
-        print(connectionOne.name + " " + tempX + " | " + connectionTwo.name + " " + tempY);
 
         //both sides are still connected
         if (tempX == true && tempY == true) Destroy(gameObject);

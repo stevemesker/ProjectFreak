@@ -27,7 +27,7 @@ public class RadialMenuManager : MonoBehaviour
 
     private void OnEnable()
     {
-        enableRadial();
+        EnableRadial();
     }
     private void OnDisable()
     {
@@ -35,7 +35,7 @@ public class RadialMenuManager : MonoBehaviour
     }
 
     #region Initialize
-    private void enableRadial()
+    private void EnableRadial()
     {
         pInput = new PlayerInput();
         pInput.Enable();
@@ -108,7 +108,6 @@ public class RadialMenuManager : MonoBehaviour
             //print("No selection");
             if (_LastSelectedButton != null)
             {
-                print($"{_LastSelectedButton.name} will deactivate...");
                 _LastSelectedButton.GetComponent<RadialButton>().OnDeselction(_colorPalette);
                 _LastSelectedButton = null;
             }
@@ -119,10 +118,8 @@ public class RadialMenuManager : MonoBehaviour
         {
             if (_LastSelectedButton != null)
             {
-                print($"{_LastSelectedButton.name} will deactivate...");
                 _LastSelectedButton.GetComponent<RadialButton>().OnDeselction(_colorPalette);
             }
-            print(selectedButton.name + " will now activate");
             _ButtonDescriptionText.GetComponent <TMP_Text>().text = selectedButton.GetComponent<RadialButton>()._AbilityActivation._AbilityName;
             selectedButton.GetComponent<RadialButton>().OnSelection(_colorPalette);
             _LastSelectedButton = selectedButton;
@@ -189,8 +186,7 @@ public class RadialMenuManager : MonoBehaviour
 
     public void UseButton()
     {
-        if (_LastSelectedButton == null) { print("Nothing was selected. Closing radial menu..."); return; }
-        print($"using button {_LastSelectedButton.name}...");
+        if (_LastSelectedButton == null) return; //nothing was selected, so the menu just closes
         _LastSelectedButton.GetComponent<RadialButton>().Activation(Player.player.gameObject);
     }
 

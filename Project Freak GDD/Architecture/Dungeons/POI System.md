@@ -5,7 +5,7 @@ The POI system fills [[Dungeon Floor]] scenes with [[POI]]s that fit the current
 POISpawnerObject (in floor scene)
     │  "I need a Medium POI"
     ▼
-DungeonManager.getPOIFromCurrentRoom(size)
+DungeonManager.GetPOIFromCurrentRoom(size)
     │  adds the current node's type
     ▼
 DungeonSO.GetPOI(type, size)
@@ -29,7 +29,7 @@ All POI enums live in the `POIType` namespace.
 | `POIType.Tag`  | chests, gold, easyEnemies, MediumEnemies, HardEnemies, Structure, Security, healing, special. Describes a POI's content |
 | `POIType.Size` | Tiny, Small, Medium, Large, Huge                                                            |
 
-*`POIShape.Shape` (square, L) also exists but isn't used yet.*
+*`POIShape.Shape` (square, L) also exists but isn't used yet.* [[Notes for the future]]
 
 ---
 ## DungeonPOISO
@@ -67,7 +67,7 @@ When a dungeon starts, `BuildPOIDictionaries()` sorts the dungeon's `POIList` in
 4. If none match, draws another tag and tries again, up to `_EntryPoolSize` times
 5. If nothing ever matches, logs an error and returns null
 
-*If a size or tag has no POIs at all, the lookup currently errors instead of returning null. See [[Known Issues]].*
+*If a size or tag has no POIs at all, the lookup currently errors instead of returning null. See [[Known Issues]].* [[Notes for the future]]
 
 ---
 ## POISpawnerObject
@@ -81,11 +81,15 @@ Placed in floor scenes where a POI should appear.
 | `_CellSizePerMeter`   | Size of one cell in meters (default 4)                                 |
 | `_ScaleFactorByIndex` | How many cells wide each size is, starting with Tiny at index 0        |
 
-On `Start` it hides the preview box, asks the [[Dungeon Manager]] for a POI, and spawns it at its position (no rotation). If no POI is found, it logs a warning.
+On `Start` it hides the preview box. Spawning happens in `SpawnPOI()`, which asks the [[Dungeon Manager]] for a POI and spawns it at its position (no rotation):
+- **On a floor with a [[Dungeon Floor Object]]**, the spawner registers with `DungeonFloorObject._Floor` in its `Start()`, and the floor calls `SpawnPOI()` during loading so the NavMesh can be built right after.
+- **Without one**, the spawner calls `SpawnPOI()` in its own `Start()` like before.
+
+`SpawnPOI()` logs a warning and spawns nothing if there's no Dungeon Manager, no current dungeon (e.g. playing the floor scene directly) or no matching POI. It won't spawn twice.
 
 Editor buttons: **UpdateSizeVolume** resizes the preview box for the current size; **ToggleVolume** shows/hides it.
 
-*Planned:* remembering which POIs were spawned so revisited floors stay the same.
+*Planned:* remembering which POIs were spawned so revisited floors stay the same. [[Notes for the future]]
 
 ---
 ## DungeonTypeTranslatorSO

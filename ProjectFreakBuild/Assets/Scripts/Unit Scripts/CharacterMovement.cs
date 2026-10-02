@@ -1,57 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CharacterMovement : MonoBehaviour
 {
+    //The movement "engine". Turns a move direction and a look direction into physics forces.
+    //It doesn't read any controls: drivers (PlayerInputDriver, and later the shade's AI driver) call SetMoveDirection / SetLookDirection.
+    //Floating is handled separately by UnitHover.
+
     [Header("Debug Stuff for now")]
     [SerializeField] Vector3 goalVel;
 
     [Header("Stats")]
     public Rigidbody _RB;
-    public GameObject _MainCamera;
-    private PlayerInput pInput;
-    Vector3 DownDir;
-    RaycastHit _rayHit;
-    [Tooltip("True if floor was detected under gameobject")]public bool _rayDidHit;
 
     [Header("State Variables")]
     [SerializeField, Tooltip("When true, turn off the ability to move and turn the character")] bool isMovePaused;
-    [Tooltip("Tells if the input has been disabled but all other functions still run")] public bool isInputDisabled;
-
-    [Header("Standing")]
-    [SerializeField, Tooltip("How far to cast the ray to find the standing upright position")] float RayLength;
-    [SerializeField, Tooltip("The desired height of the character")] float RideHeight;
-    [SerializeField, Tooltip("Strength of the spring force")] float RideSpringStrength;
-    [SerializeField, Tooltip("Resistance strength of the spring force")] float RideSpringDamper;
 
     [Header("Locomotion")]
     [SerializeField] float maxSpeed = 8;
-    [SerializeField] float acceleration = 200;
-    [SerializeField] AnimationCurve AccelerationFactorFromDot;
-    [SerializeField] float maxAccelForce = 150;
-    [SerializeField] AnimationCurve MaxAccelerationForceFactorFromDot;
+    [SerializeField, Tooltip("How fast the target speed ramps up toward max speed, in m/s per second")] float acceleration = 200;
+    [SerializeField, Tooltip("Multiplies acceleration based on how the new direction compares to the current one. X axis: -1 = full reverse, 0 = 90 degree turn, 1 = same direction. Values above 1 make turning/reversing snappier")]
+    AnimationCurve AccelerationFactorFromDot = new AnimationCurve(new Keyframe(-1, 2), new Keyframe(0, 1), new Keyframe(1, 1));
+    [SerializeField, Tooltip("Cap on how hard the rigidbody can be pushed toward the target speed, in m/s per second")] float maxAccelForce = 150;
+    [SerializeField, Tooltip("Multiplies the max force cap using the same -1 to 1 direction comparison as above. Higher at -1 lets the unit stop and turn around faster")]
+    AnimationCurve MaxAccelerationForceFactorFromDot = new AnimationCurve(new Keyframe(-1, 2), new Keyframe(0, 1), new Keyframe(1, 1));
     [SerializeField] Vector3 forceScale;
     [SerializeField] float maxAccelForceFactor = 1;
     [SerializeField] float speedFactor = 1;
-    [SerializeField] public Vector3 m_UnitGoal;
+    [SerializeField, Tooltip("The direction the unit is trying to move, set by its driver (read only)")] public Vector3 m_UnitGoal;
     Vector3 m_GoalVel;
     Vector3 savedVel; //used when stopping the unit and restarting at the same speed is necessary, saved to this variable
 
     [Header("Turning")]
-    [SerializeField, Tooltip("When true, the unit's rotation will match their movement vector")] bool isTurnSnapped = true;
-    [SerializeField] float TurnSpeed;
-    [SerializeField] public Vector3 m_turnGoal;
-    [SerializeField] float turnIdleTime = 1;
-    Coroutine IdleTimer;
+    [SerializeField, Tooltip("How fast the unit turns to face its look direction, in degrees per second")] float TurnSpeed;
+    [SerializeField, Tooltip("The direction the unit is trying to face, set by its driver (read only)")] public Vector3 m_turnGoal;
 
     [Header("Dash")]
     [SerializeField] UnitDash _Dash;
-    
-
-    [Header("Mouse Settings")]
-    [SerializeField] bool isUsingMouse;
 
     [Header("Debug")]
     [SerializeField] bool OnDebugDrawLines;
@@ -61,78 +47,6 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] bool _CanTurn = true;
 
     #region Initialize
-    private void OnEnable()
-    {
-        if (CameraManager._CamManager != null) _MainCamera = CameraManager._CamManager._currentGameplayCamera;
-        pInput = new PlayerInput();
-        EnableMovement();
-        /*
-        pInput.Enable();
-
-        pInput.Player.Move.performed += MovementInput;
-        pInput.Player.Move.canceled += MovementInput;
-
-        pInput.Player.Look.performed += StickTurn;
-        pInput.Player.Look.canceled += EndStickTurn;
-
-        pInput.Player.Point.performed += MouseInput;
-        pInput.Player.Point.canceled += MouseStopInput;
-
-        pInput.Player.Dash.performed += DashInput;*/
-    }
-
-    private void OnDisable()
-    {
-        DisableMovement();
-        /*
-        pInput.Player.Move.performed -= MovementInput;
-        pInput.Player.Move.canceled -= MovementInput;
-
-        pInput.Player.Look.performed -= StickTurn;
-        pInput.Player.Look.canceled -= EndStickTurn;
-
-        pInput.Player.Point.performed -= MouseInput;
-        pInput.Player.Point.canceled -= MouseStopInput;
-
-        pInput.Player.Dash.performed -= DashInput;
-
-        pInput.Disable();*/
-    }
-
-    public void DisableMovement()
-    {
-        isInputDisabled = true;
-        pInput.Player.Move.performed -= MovementInput;
-        pInput.Player.Move.canceled -= MovementInput;
-
-        pInput.Player.Look.performed -= StickTurn;
-        pInput.Player.Look.canceled -= EndStickTurn;
-
-        pInput.Player.Point.performed -= MouseInput;
-        pInput.Player.Point.canceled -= MouseStopInput;
-
-        pInput.Player.Dash.performed -= DashInput;
-
-        pInput.Disable();
-    }
-
-    public void EnableMovement()
-    {
-        isInputDisabled = false;
-        pInput.Enable();
-
-        pInput.Player.Move.performed += MovementInput;
-        pInput.Player.Move.canceled += MovementInput;
-
-        pInput.Player.Look.performed += StickTurn;
-        pInput.Player.Look.canceled += EndStickTurn;
-
-        pInput.Player.Point.performed += MouseInput;
-        pInput.Player.Point.canceled += MouseStopInput;
-
-        pInput.Player.Dash.performed += DashInput;
-    }
-
     public void SetTurning(bool Active)
     {
         //function that disables turning without disabling other controls
@@ -142,55 +56,18 @@ public class CharacterMovement : MonoBehaviour
     private void Awake()
     {
         _RB = GetComponent<Rigidbody>();
-        DownDir = Vector3.down;
     }
     #endregion
 
     private void FixedUpdate()
     {
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out _rayHit, RayLength,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)) _rayDidHit = true;
-        else _rayDidHit = false;
-        StandingForce();
+        //the floating/standing spring force now lives in UnitHover so it keeps running no matter who is steering this unit
         MovementForce();
         Rotationforce();
 
-        if (OnDebugDrawLines) debugLineDraw();
+        if (OnDebugDrawLines) DebugLineDraw();
     }
 
-
-    private void StandingForce()
-    {
-        if (_rayDidHit)
-        {
-            Vector3 vel = _RB.velocity;
-            Vector3 rayDir = transform.TransformDirection(DownDir);
-
-            Vector3 otherVel = Vector3.zero;
-            Rigidbody hitBody = _rayHit.rigidbody;
-            if (hitBody != null)
-            {
-                otherVel = hitBody.velocity;
-            }
-
-            float rayDirVel = Vector3.Dot(rayDir, vel);
-            float otherDirVel = Vector3.Dot(rayDir, otherVel);
-
-            float relVel = rayDirVel - otherDirVel;
-
-            float x = _rayHit.distance - RideHeight;
-
-            float springForce = (x * RideSpringStrength) - (relVel * RideSpringDamper);
-
-            Debug.DrawLine(transform.position, transform.position + (rayDir * springForce), Color.yellow);
-
-            _RB.AddForce(rayDir * springForce);
-
-            if (hitBody != null)
-            {
-                hitBody.AddForceAtPosition(rayDir * -springForce, _rayHit.point);
-            }
-        }
-    }
 
     void MovementForce()
     {
@@ -202,10 +79,12 @@ public class CharacterMovement : MonoBehaviour
 
         m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel*Time.fixedDeltaTime);
 
-        Vector3 neededAccel = (m_GoalVel - _RB.velocity);
+        //turn the speed difference into an acceleration (m/s per second) FIRST, then cap it
+        //(this matches Toyful's controller. Capping before dividing put the cap in the wrong units)
+        Vector3 neededAccel = (m_GoalVel - _RB.velocity) / Time.fixedDeltaTime;
 
         float maxAccel = maxAccelForce * MaxAccelerationForceFactorFromDot.Evaluate(velDot) * maxAccelForceFactor;
-        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel)/Time.fixedDeltaTime;
+        neededAccel = Vector3.ClampMagnitude(neededAccel, maxAccel);
         _RB.AddForce(Vector3.Scale(neededAccel * _RB.mass, forceScale));
     }
 
@@ -213,6 +92,7 @@ public class CharacterMovement : MonoBehaviour
     {
         if (isMovePaused) return;
         if (_CanTurn == false) return;
+        if (m_turnGoal.sqrMagnitude < 0.0001f) return; //no look direction yet (LookRotation can't use a zero direction)
         Quaternion targetRotation =
         Quaternion.LookRotation(m_turnGoal);
 
@@ -223,54 +103,34 @@ public class CharacterMovement : MonoBehaviour
                 TurnSpeed * Time.fixedDeltaTime);
     }
 
-    #region Inputs
-    void MovementInput(InputAction.CallbackContext context)
+    #region Driver Controls
+    public void SetMoveDirection(Vector3 direction)
     {
-        Vector2 stickInput = context.ReadValue<Vector2>();
-        Vector3 move = new Vector3(stickInput.x,0, stickInput.y);
-        m_UnitGoal = ConvertMovementScreenSpace(move);
-        if (isTurnSnapped && m_UnitGoal != Vector3.zero) m_turnGoal = m_UnitGoal;
-        else if (isUsingMouse) m_turnGoal = GetMouseAimDirection();
-    }
-    
-    void StickTurn(InputAction.CallbackContext context)
-    {
-        //function for tracking gamepad stick turning input
-        Vector2 stickInput = context.ReadValue<Vector2>();
-        Vector3 roate = new Vector3(stickInput.x, 0, stickInput.y);
-        m_turnGoal = ConvertMovementScreenSpace(roate);
-        isUsingMouse = false;
-        isTurnSnapped = false;
-        IdleTimer = null;
+        //function drivers (player input, AI) use to say which way to move. Length 0 to 1, where 1 is full speed
+        direction.y = 0f; //movement is only ever sideways, UnitHover and gravity handle up and down
+        m_UnitGoal = Vector3.ClampMagnitude(direction, 1f);
     }
 
-    void EndStickTurn(InputAction.CallbackContext context)
+    public void SetLookDirection(Vector3 direction)
     {
-        IdleTimer = StartCoroutine(IdleTimerCoroutine());
+        //function drivers use to say which way to face. A zero direction is ignored so the unit keeps facing the way it was
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f) return;
+        m_turnGoal = direction.normalized;
     }
 
-    void MouseInput(InputAction.CallbackContext context)
+    public Vector3 GetMoveDirection()
     {
-        if (IdleTimer != null) StopCoroutine(IdleTimer);
-        IdleTimer = null;
-        isUsingMouse = true;
-        isTurnSnapped = false;
-        m_turnGoal = GetMouseAimDirection();
+        //function for checking which way the unit is currently trying to move
+        return m_UnitGoal;
     }
 
-    void MouseStopInput(InputAction.CallbackContext context)
+    public void Dash()
     {
-        //when the mouse clicks outside of the window apparently
-        IdleTimer = StartCoroutine(IdleTimerCoroutine());
-    }
-
-    void DashInput(InputAction.CallbackContext context)
-    {
-        //Vector3 direction = new Vector3();
-        //print("Boop");
+        //function drivers use to dash in the current move direction
+        if (_Dash == null) { Debug.LogWarning($"Warning! No UnitDash assigned on {gameObject.name}, can't dash...", this); return; }
         _Dash.DashCharacter(m_UnitGoal);
     }
-
     #endregion
 
     #region Tools
@@ -280,56 +140,15 @@ public class CharacterMovement : MonoBehaviour
         isMovePaused = true;
         savedVel = _RB.velocity;
         _RB.velocity = Vector3.zero;
-        print("On");
     }
     public void ReactivateMovement()
     {
         //function that turns back on the movement/rotation of the character after it had been paused
         isMovePaused = false;
         _RB.velocity = savedVel;
-        print("Off");
     }
 
-    Vector3 ConvertMovementScreenSpace(Vector3 input)
-    {
-        Quaternion cameraRotation = Quaternion.Euler(
-        0f,
-        _MainCamera.transform.eulerAngles.y,
-        0f);
-
-        return (cameraRotation * input);
-    }
-
-    Vector3 GetMouseAimDirection()
-    {
-        Ray mouseRay = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-        // Plane at player's height
-        Plane playerPlane = new Plane(
-            Vector3.up,
-            transform.position);
-
-        if (playerPlane.Raycast(mouseRay, out float distance))
-        {
-            Vector3 hitPoint = mouseRay.GetPoint(distance);
-
-            Vector3 direction = hitPoint - transform.position;
-            direction.y = 0f;
-
-            return direction.normalized;
-        }
-
-        return transform.forward;
-    }
-
-    private IEnumerator IdleTimerCoroutine()
-    {
-        yield return new WaitForSeconds(turnIdleTime);
-        if (IdleTimer != null) isTurnSnapped = true;
-        //m_turnGoal = transform.forward;
-    }
-
-    void debugLineDraw()
+    void DebugLineDraw()
     {
         //forward vector
         Debug.DrawLine(transform.position, transform.forward * lineLength + transform.position, Color.blue);
@@ -338,14 +157,7 @@ public class CharacterMovement : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + m_UnitGoal * lineLength, Color.green);
 
         //rotation direction vector
-        if (isTurnSnapped) Debug.DrawLine(transform.position, m_turnGoal * lineLength + transform.position, Color.black);
-        else
-        {
-            if (isUsingMouse)
-                Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.red);
-            else
-                Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.yellow);
-        }
+        Debug.DrawLine(transform.position, transform.position + m_turnGoal * lineLength, Color.yellow);
     }
     #endregion
 }

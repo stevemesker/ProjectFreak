@@ -17,9 +17,8 @@ public class SceneLocationObject : MonoBehaviour
         if (SceneManagerObject._SceneManager == null) return;
         if (SceneManagerObject._SceneManager.TestDoorEntranceTarget(_LocationData))
         {
-            print(gameObject.name + " is where we need to enter from!");
-            if (_spawnLocator == null) SceneManagerObject._SceneManager.movePlayerToLocation(_spawnLocationPosition, gameObject.transform.rotation);
-            else SceneManagerObject._SceneManager.movePlayerToLocation(_spawnLocator.transform.position, _spawnLocator.transform.rotation);
+            if (_spawnLocator == null) SceneManagerObject._SceneManager.MovePlayerToLocation(_spawnLocationPosition, gameObject.transform.rotation);
+            else SceneManagerObject._SceneManager.MovePlayerToLocation(_spawnLocator.transform.position, _spawnLocator.transform.rotation);
         }
     }
 }

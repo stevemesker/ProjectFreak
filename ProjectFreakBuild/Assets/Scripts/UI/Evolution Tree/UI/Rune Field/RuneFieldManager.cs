@@ -12,12 +12,12 @@ public class RuneFieldManager : MonoBehaviour
     
 
     #region rune field editing
-    public void addRuneList(GameObject rune)
+    public void AddRuneList(GameObject rune)
     {
         ListOfRunes.Add(rune);
     }
 
-    public void removeRuneList(GameObject rune)
+    public void RemoveRuneList(GameObject rune)
     {
         ListOfRunes.Remove(rune);
     }
@@ -66,22 +66,21 @@ public class RuneFieldManager : MonoBehaviour
     
 
     #region rune field saving
-    public void loadRuneField(int index)
+    public void LoadRuneField(int index)
     {
         //shade slot manager under shade selection object notifies of loading
-        print("Now loading shade of slot " + index);
+        if (ShadeManager._ShadeManager == null) { Debug.LogError($"Error! Shade Manager not found, can't load rune field on {gameObject.name}", this); return; }
         ClearRuneField();
 
-        ShadeManager SM = GameManager._GameManager.getShadeManager();
-        SM.setShadeSelection(index); //changes the current selected shade slot
-        LoadRuneFieldFromPackage(SM.getCurrentShade());
+        ShadeManager._ShadeManager.SetShadeSelection(index); //changes the current selected shade slot
+        LoadRuneFieldFromPackage(ShadeManager._ShadeManager.GetCurrentShade());
     }
 
     [Button("Save Current Field")]
     public void SaveRuneSlot()
     {
-        if (GameManager._GameManager == null) return;
-        GameManager._GameManager.getShadeManager().saveCurrentShadeRuneFieldPackage(SaveRuneFieldPackage());
+        if (ShadeManager._ShadeManager == null) return;
+        ShadeManager._ShadeManager.SaveCurrentShadeRuneFieldPackage(SaveRuneFieldPackage());
     }
 
     public RuneFieldPackage SaveRuneFieldPackage()
@@ -101,7 +100,6 @@ public class RuneFieldManager : MonoBehaviour
         for (int i = 0; i < CorePointer.GetComponent<CoreNode>().connectionNodes.Count; i++)
         {
             //Core._ConnectionIndexRef.Add(CorePointer.GetComponent<CoreNode>().connectionNodes[i]);
-            print(CorePointer.GetComponent<CoreNode>().connectionNodes[i].name);
             index = ListOfRunes.IndexOf(CorePointer.GetComponent<CoreNode>().connectionNodes[i]);
             Core._ConnectionIndexRef.Add(index);
         }
@@ -113,7 +111,7 @@ public class RuneFieldManager : MonoBehaviour
             currentElement = ListOfRunes[i].GetComponent<ElementItem>();
 
             //get element data SO
-            tempElement._elementDataPointer = currentElement.getElementSOAttachment();
+            tempElement._elementDataPointer = currentElement.GetElementSOAttachment();
             //get element position without zoom scale factor
             tempElement._elementPosition = (ListOfRunes[i].GetComponent<RectTransform>().position - gameObject.GetComponent<RectTransform>().position) / gameObject.GetComponent<RectTransform>().localScale.x;
             //get current power
@@ -176,7 +174,7 @@ public class RuneFieldManager : MonoBehaviour
             GameObject temp = Instantiate(elementPrefab, gameObject.GetComponent<RectTransform>().position + currentPackage._Runes[i]._elementPosition * gameObject.GetComponent<RectTransform>().localScale.x, Quaternion.identity, transform);
             ListOfRunes.Add(temp);
             currentElement = temp.GetComponent<ElementItem>();
-            currentElement.setElementSOAttachment(currentPackage._Runes[i]._elementDataPointer);
+            currentElement.SetElementSOAttachment(currentPackage._Runes[i]._elementDataPointer);
             currentElement.CurrentPower = currentPackage._Runes[i]._currentPower;
         }
 
@@ -223,7 +221,7 @@ public class RuneFieldManager : MonoBehaviour
 
         for (int j = 0; j < ListOfNodes.Count; j++)
         {
-            ListOfNodes[j].GetComponent<iEvolutionNode>().resetNode();
+            ListOfNodes[j].GetComponent<iEvolutionNode>().ResetNode();
         }
     }
 

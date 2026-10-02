@@ -26,8 +26,8 @@ public class BaseStats
     public int _Intelect;
 
 
-    [FoldoutGroup("Elemental Effectiveness")] public List<ElementType.Element> _ElementResistance;
-    [FoldoutGroup("Elemental Effectiveness")] public List<ElementType.Element> _ElementWeakness;
+    [FoldoutGroup("Elemental Effectiveness")] public List<DamageType.ElementType> _ElementResistance;
+    [FoldoutGroup("Elemental Effectiveness")] public List<DamageType.ElementType> _ElementWeakness;
     [FoldoutGroup("Elemental Effectiveness")] public float _ElementResitanceMultiplier = 1;
     [FoldoutGroup("Elemental Effectiveness")] public float _ElementWeaknessMultiplier = 1;
 

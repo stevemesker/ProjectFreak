@@ -32,7 +32,7 @@ CoreStats           (every unit that can fight)
 | `TypeToStatFinder(StatType)`          | Returns the value of a stat                                          |
 | `GetDefensiveStatType(StatType)`      | Which defense stat blocks an attack that used this stat              |
 | `GetAttackStatType(isRanged, AttackType)` | Which stat an attack uses (primary for melee, secondary for ranged) |
-| `GetAttackResistanceModifier(atk, element)` | 0.5 if resistant, otherwise 1. *Immunities aren't checked yet* |
+| `GetAttackResistanceModifier(atk, element)` | 0.5 if resistant, otherwise 1. *Immunities aren't checked yet* [[Notes for the future]] |
 
 ---
 ## PartyStats
@@ -58,7 +58,7 @@ The player's carried equipment, stored on `PlayerData.pInventory`.
 | `_EquippedWeapons`   | Equipped weapon slots (empty slots are `null`)      |
 | `_BackpackInventory` | `Dictionary<ItemSO, int>`                           |
 
-Functions: `checkInventoryFits`, `checkEquippedWeaponFits`, `addBackpackInventory`, `addEquipmentInventory`.
+Functions: `CheckInventoryFits`, `CheckEquippedWeaponFits`, `AddBackpackInventory`, `AddEquipmentInventory`.
 
 *Ingredients and element runes are stored separately in the [[Inventory Manager]].*
 
@@ -75,6 +75,6 @@ The component on the player that holds all of this.
 
 It implements:
 - **`IUnitData`** - returns `pStats._Danger`
-- **`IInventory`** - `AddItem` equips weapons into an empty slot and refreshes the held weapon. Other item types and `GetItemAmount`/`RemoveItem` aren't built yet
+- **`IInventory`** - `AddItem` equips weapons into an empty slot and refreshes the held weapon. Other item types and `GetItemAmount`/`RemoveItem` aren't built yet [[Notes for the future]]
 
 `EnemyStats` is the enemy-side stats component.
