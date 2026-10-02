@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3ac21c574b4454eb07e15ba762f9447, type: 3}
+  m_Name: SO_AIPersonality_Shade_Berserk
+  m_EditorClassIdentifier: 
+  _Notes: An out-of-control shade. Runs off to find something to kill the moment it's summoned and never comes back on its own.
+  _Values:
+    _Aggression: 1
+    _Fear: 0
+    _Roam: 1
+    _Loyalty: 0
+    _CommitTime: 1

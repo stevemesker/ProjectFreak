@@ -1,3 +1,6 @@
+**Guides**
+[[How To - Create Enemies & Shades]]
+
 **Game Management**
 [[AA - Managers]]
 [[Game Manager]]
@@ -27,6 +30,8 @@
 
 **AI & Movement**
 [[AI Movement & Dungeon Loading Plan]]
+[[Unit Targeting]]
+[[Unit Brain]]
 
 **Enemies**
 [[Enemy Movement]]

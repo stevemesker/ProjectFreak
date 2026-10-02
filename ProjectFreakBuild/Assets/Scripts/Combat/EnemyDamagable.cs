@@ -28,6 +28,9 @@ public class EnemyDamagable : MonoBehaviour, IDamagable
         //special note, functions called here have to recieve a damage package on the first variable of the function. If not use the on hit event instead
         onDamage?.Invoke(dmgPackage);
 
+        //let this unit's AI know who hit it, so it can turn on the attacker
+        if (TryGetComponent(out IAggroReceiver aggroReceiver)) aggroReceiver.AddAggro(dmgPackage);
+
         //push this unit back if it can be knocked back. TryGetComponent with an interface finds any component that implements it
         if (TryGetComponent(out IKnockbackable knockbackable)) knockbackable.TakeKnockback(dmgPackage);
         return true;

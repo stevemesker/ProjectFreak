@@ -5154,6 +5154,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PFB_Enemy_ChaseTest_Dev
       objectReference: {fileID: 0}
+    - target: {fileID: 7412093385526611204, guid: 35ed899f290a4dcda806419e39d47ba0,
+        type: 3}
+      propertyPath: _SightBlockers.m_Bits
+      value: 55
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

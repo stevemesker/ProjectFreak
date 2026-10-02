@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class EnemyStats : MonoBehaviour
+public class EnemyStats : MonoBehaviour, IUnitHealth
 {
     public EnemyCoreStats eStats;
 
@@ -24,6 +24,13 @@ public class EnemyStats : MonoBehaviour
 
         if (eStats._Health <= 0) onDeath?.Invoke();
         if (eStats._Health > eStats._HP) eStats._Health = eStats._HP;
+    }
+
+    public float GetHealthPercent()
+    {
+        //function that gives how healthy this enemy is, 0 to 1. Used by the AI brain (like deciding when to flee)
+        if (eStats == null || eStats._HP <= 0) return 1f; //no max health set, treat it as healthy instead of dividing by 0
+        return Mathf.Clamp01((float)eStats._Health / eStats._HP); //(float) so the division keeps decimals instead of rounding to 0
     }
 
     public int DamageCalculation(DamageEntry entry)

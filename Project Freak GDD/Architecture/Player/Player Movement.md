@@ -9,8 +9,9 @@ The player uses a physics-driven character controller inspired by the locomotion
 | `UnitHover`         | Stance  | Idle floating / standing spring (see [[#Standing System]]). Always on                        |
 | `CharacterMovement` | Engine  | Turns a move direction and a look direction into physics forces. Always on. Reads no controls |
 | `PlayerInputDriver` | Driver  | Reads the player's controls and feeds directions into the engine. Turned on/off to switch control |
+| `NavGuideDriver`    | Driver  | *Shade only.* AI steering along the NavMesh, see [[#NavGuideDriver (AI steering)]] |
 
-**Rule: switch drivers, never the engine.** Turning `CharacterMovement` off would also turn off its braking (the unit slides), and turning `UnitHover` off drops the unit. Later the shade gets an AI driver that feeds the same engine (see [[AI Movement & Dungeon Loading Plan]]). *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
+**Rule: switch drivers, never the engine.** Turning `CharacterMovement` off would also turn off its braking (the unit slides), and turning `UnitHover` off drops the unit. The shade also has an AI driver, `NavGuideDriver`, that feeds the same engine (see below and [[AI Movement & Dungeon Loading Plan]]). *(The older `PlayerMovement.cs` is from a previous version and is no longer used.)*
 
 ---
 
@@ -42,7 +43,39 @@ The player uses a physics-driven character controller inspired by the locomotion
 | `_IsTurnSnapped`  | Read only. True while facing follows movement                                            |
 | `_IsUsingMouse`   | Read only. True if the last aim came from the mouse                                      |
 
-Switching control: `Player.EnablePlayerControl()` / `DisablePlayerControl()` and `Shade.EnablePlayerControl()` / `EnableShadeControl()` just turn the matching `PlayerInputDriver` on or off (called by the [[Shade Manager]]).
+Switching control: `Player.EnablePlayerControl()` / `DisablePlayerControl()` and `Shade.EnablePlayerControl()` / `EnableShadeControl()` just turn the matching drivers on or off (called by the [[Shade Manager]]).
+
+## NavGuideDriver (AI steering)
+
+`Scripts/Unit Scripts/NavGuideDriver.cs`. On the shade prefab, turned on while the shade acts on its own.
+
+A NavMeshAgent on the same object plans the route and steps around other agents, but **never moves the unit**: `updatePosition` and `updateRotation` are off. Every frame the driver:
+1. Finds the NavMesh point under the floating unit (`NavMeshTools.TryGetNavMeshPoint`) and sets `agent.nextPosition` to it, so the agent always knows where the unit really is.
+2. Reads `agent.desiredVelocity` (the direction the agent wants to go, already including path corners, slowing down near the end and avoidance).
+3. Passes it to the engine: `SetMoveDirection(direction × speed fraction)` and `SetLookDirection(direction)`.
+
+So knockback, dashing and hovering work the same whether the player or the AI is steering.
+
+**Starting up:** waits for the dungeon floor's NavMesh like enemies do (`NavMeshTools.IsWaitingOnFloor`), then turns the agent on and warps it under the unit. If there's no NavMesh nearby it logs a warning and stays put. The agent's speed is set to the engine's top speed (`CharacterMovement.GetMaxSpeed()`) so the slowdown lines up.
+
+**Off the NavMesh** (mid-air, knocked off an edge): the unit stops being steered until it's back over the NavMesh, then the agent is warped back under it and carries on to its destination.
+
+| Function                  | Description                                                              |
+| :------------------------ | :----------------------------------------------------------------------- |
+| `SetDestination(Vector3)` | Go here. Remembered if the driver can't steer yet                        |
+| `StopMoving()`            | Stop and forget the destination. Does nothing to movement while the driver is off |
+| `HasArrived()`            | True when within `_StoppingDistance` of the destination (or no destination) |
+| `IsGuiding()`             | True while the agent is on the NavMesh and steering                      |
+| `IsActive()`              | From `IUnitMover`: true while guiding and over the NavMesh, so it can take AI orders (false while the player drives the shade) |
+
+| Field                   | Description                                                                        |
+| :---------------------- | :--------------------------------------------------------------------------------- |
+| `_StoppingDistance`     | How close to the destination it stops, m (default 1.5)                              |
+| `_NavMeshSnapDistance`  | How far to look for the NavMesh under the unit, m. Must be more than the float height (default 3) |
+| `_FaceMoveThreshold`    | Below this fraction of full speed it stops turning toward its path, to avoid jitter (default 0.1) |
+| `_Movement`             | The `CharacterMovement` it drives (auto-filled)                                     |
+
+**Keep the NavMeshAgent turned off in the prefab.** The driver turns it on once there's a NavMesh (the inspector warns if it's on).
 
 The controller is designed to support:
 

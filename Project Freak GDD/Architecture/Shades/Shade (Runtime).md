@@ -26,15 +26,18 @@ Reached with the static `Shade.shade` (the first shade enabled sets it).
 | `_shadeEvoData`  | Its evolution data                                   |
 | `_movement`      | Its `CharacterMovement` (same script as the player, see [[Player Movement]]). Floating is handled separately by `UnitHover` on the same prefab |
 | `_InputDriver`   | Its `PlayerInputDriver` (off by default). Auto-filled from the same object if empty |
+| `_AIDriver`      | Its `NavGuideDriver`, the AI steering (see [[Player Movement#NavGuideDriver (AI steering)]]). Auto-filled from the same object if empty |
 | `PlayerRef`      | The unit that summoned it                            |
 
 ### Control
 | Function                | Description                                               |
 | :---------------------- | :-------------------------------------------------------- |
-| `EnablePlayerControl()` | Turns the shade's `PlayerInputDriver` on (player controls it) |
-| `EnableShadeControl()`  | Turns the `PlayerInputDriver` off (shade acts on its own). Will turn the AI driver on once step 6 is built [[Notes for the future]] |
+| `EnablePlayerControl()` | AI driver off, `PlayerInputDriver` on (player controls it) |
+| `EnableShadeControl()`  | `PlayerInputDriver` off, AI driver on (shade acts on its own) |
 
-*Shade AI doesn't exist yet, so when not player controlled the shade just stands still.* [[Notes for the future]]
+While the shade acts on its own, its [[Unit Brain]] decides what it does (to change its personality, see [[How To - Create Enemies & Shades#Part 2 - Set Up How a Shade Behaves]]): follow the player, fight what its [[Unit Targeting|targeting]] picks, wander nearby, or (with a berserk personality) run off looking for a fight. While the player drives it, the brain pauses. The prefab has `UnitTeam` (Player team, Shade role), `UnitTargeting` and `UnitBrain`.
+
+*The shade has no health script yet, so the brain treats it as always at full health.* [[Notes for the future]]
 
 ### ISummonUnit
 The shade implements `ISummonUnit`:
