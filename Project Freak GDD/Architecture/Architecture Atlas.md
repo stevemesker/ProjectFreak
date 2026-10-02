@@ -28,6 +28,9 @@
 **AI & Movement**
 [[AI Movement & Dungeon Loading Plan]]
 
+**Enemies**
+[[Enemy Movement]]
+
 **Combat**
 [[Ability System]]
 [[Damage Package]]

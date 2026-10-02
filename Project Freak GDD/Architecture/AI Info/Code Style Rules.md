@@ -6,7 +6,9 @@ Back to [[AA - AI Info]]
 ## Project Layout
 - Unity project: `Build\ProjectFreak\ProjectFreakBuild` (scripts in `Assets\Scripts\<System>\`)
 - GDD: `Build\ProjectFreak\Project Freak GDD`. Claude checks the system's note in Architecture before working on it
+- In the GDD, any line about something unfinished, temporary or planned ends with `[[Notes for the future]]`. When it gets done, the tag comes off and the line is updated
 - `Art` folders are reference only. Claude doesn't change them unless asked
+- **GDD notes outside `Architecture`** (design, narrative, shade ideas, etc.) are treated the same way: Claude reads them for reference when building systems but doesn't change them unless asked. The one exception is the `[[Notes for the future]]` hub note at the GDD root, which the tagging system uses
 - Packages: Odin Inspector, new Input System (`PlayerInput`), Cinemachine 2.x, TextMeshPro
 
 ---

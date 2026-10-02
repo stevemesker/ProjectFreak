@@ -508,7 +508,7 @@ This separation allows the map manager to remain focused on **generation and orc
 
 ---
 
-# Future Extension Points
+# Future Extension Points [[Notes for the future]]
 
 Node types are now assigned during generation through the weighted column pools (see **Floor Node Type Pool**).
 

@@ -489,7 +489,7 @@ Currently not implemented.
 throw new System.NotImplementedException();
 ```
 
-This is a future extension point for removing an existing node connection and its associated bridge.
+This is a future extension point for removing an existing node connection and its associated bridge. [[Notes for the future]]
 
 A complete implementation will likely need to:
 
@@ -660,7 +660,7 @@ This architecture allows the map manager to remain relatively high-level while i
 
 ---
 
-# Current Limitations / Future Work
+# Current Limitations / Future Work [[Notes for the future]]
 
 Several methods and settings currently provide extension points for the dungeon map system.
 

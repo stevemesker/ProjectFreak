@@ -15,7 +15,14 @@ public class Shade : MonoBehaviour, ISummonUnit
     [FoldoutGroup("Pointers")]
     [Header("Script pointers")]
     public CharacterMovement _movement;
+    [Tooltip("Reads the player's controls and steers _movement while the player controls this shade. Grabbed from this object if left empty")]
+    public PlayerInputDriver _InputDriver;
     public GameObject PlayerRef;
+
+    private void Awake()
+    {
+        if (_InputDriver == null) _InputDriver = GetComponent<PlayerInputDriver>();
+    }
 
     private void OnEnable()
     {
@@ -26,12 +33,17 @@ public class Shade : MonoBehaviour, ISummonUnit
 
     public void EnablePlayerControl()
     {
-        _movement.EnableMovement();
+        //the player takes over this shade: turn its input driver on
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}, the player can't control it", this); return; }
+        _InputDriver.enabled = true;
     }
 
     public void EnableShadeControl()
     {
-        _movement.DisableMovement();
+        //the shade acts on its own: turn the player's input off
+        //todo: turn the shade's AI driver on here (step 6 of the AI plan). For now it just stands still
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}", this); return; }
+        _InputDriver.enabled = false;
     }
     #endregion
 

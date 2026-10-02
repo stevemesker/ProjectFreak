@@ -16,6 +16,12 @@ public interface ITriggerable
     bool IsRange();
 }
 
+public interface IKnockbackable
+{
+    //anything that can be pushed back by a hit. The damage package's _KnockbackDistance says how far
+    void TakeKnockback(DamagePackage dmgPackage);
+}
+
 public interface IUnitData
 {
     DangerLevel GetDangerLevelSettings();

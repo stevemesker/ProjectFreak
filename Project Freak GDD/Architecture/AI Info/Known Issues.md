@@ -1,4 +1,4 @@
-Bugs and cleanup tasks Claude has noticed while reading the code. Nothing here has been changed yet. Check items off or delete them as they get fixed.
+Bugs and cleanup tasks Claude has noticed while reading the code. Nothing here has been changed yet. Check items off or delete them as they get fixed. Unchecked items count as [[Notes for the future]].
 
 Back to [[AA - AI Info]]
 

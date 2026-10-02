@@ -255,7 +255,7 @@ This keeps landing logic separate from movement logic, allowing the same `ArcMov
 
 ---
 
-## Future Expansion Ideas
+## Future Expansion Ideas [[Notes for the future]]
 
 Potential features that can be added without changing the overall architecture:
 

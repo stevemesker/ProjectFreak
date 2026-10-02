@@ -150,13 +150,7 @@ The function first verifies that the player exists before attempting to assign t
 
 ## Movement System Camera Reference
 
-When the player is assigned as the camera target, the Camera Manager also provides the instantiated gameplay camera to the player's `CharacterMovement` component:
-
-```csharp
-Player.player.GetComponent<CharacterMovement>()._MainCamera = _currentGameplayCamera;
-```
-
-This allows the movement system to use the gameplay camera when calculating camera-relative movement.
+The Camera Manager doesn't push the camera to anyone. Whoever needs it reads `_currentGameplayCamera` from `CameraManager._CamManager`. The `PlayerInputDriver` (see [[Player Movement]]) does this to turn stick input into camera-relative directions, on the player and on a controlled shade.
 
 The dependency therefore flows in one direction:
 
@@ -334,8 +328,8 @@ Camera Manager
       │                   Player
       │                      │
       │                      ▼
-      └──────────────► CharacterMovement
-                         Main Camera
+      ◄────────────── PlayerInputDriver
+                         reads _currentGameplayCamera
 ```
 
 ---

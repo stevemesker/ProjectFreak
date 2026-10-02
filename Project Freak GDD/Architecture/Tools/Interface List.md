@@ -8,6 +8,7 @@ All interfaces currently in the project, grouped by the file they live in.
 | `IDamagable`  | Anything that can be affected by damaging projectiles, weapons, spells, and abilities. `TakeDamage(DamagePackage)`. See [[Damage Receivers & Projectiles]] |
 | `ITriggerable` | Any equipment that can be activated via the trigger function in combat. More details in [[Weapon usage]] |
 | `IUnitData`   | Gives access to a unit's `DangerLevel` settings. Used for camera shake dampening                       |
+| `IKnockbackable` | Anything that can be pushed back by a hit. `TakeKnockback(DamagePackage)`, called by `EnemyDamagable`. See [[Enemy Movement]] |
 
 *Spelling note:* the code uses `IDamagable` (one "e").
 

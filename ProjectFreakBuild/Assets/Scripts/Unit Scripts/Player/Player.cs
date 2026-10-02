@@ -28,6 +28,9 @@ public class Player : MonoBehaviour
 
     [FoldoutGroup("Script Pointers")]
     public CharacterMovement _movement;
+    [FoldoutGroup("Script Pointers")]
+    [Tooltip("Reads the player's controls and steers _movement. Turned off while the player controls a shade. Grabbed from this object if left empty")]
+    public PlayerInputDriver _InputDriver;
 
 
     //Private/Unserialized Variables
@@ -42,6 +45,7 @@ public class Player : MonoBehaviour
         if (Player.player != null) { Destroy(gameObject); return; }
         Player.player = this;
         DontDestroyOnLoad(gameObject);
+        if (_InputDriver == null) _InputDriver = GetComponent<PlayerInputDriver>();
         UpdateEquippedWeaponSlotSize();
         UpdateCurrentWeapon();
         CameraManager._CamManager.SetCamTargetToPlayer();
@@ -120,12 +124,16 @@ public class Player : MonoBehaviour
     #region Disabling Player Character
     public void EnablePlayerControl()
     {
-        _movement.EnableMovement();
+        //gives the controls back to the player's body by turning its input driver on
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}, can't give it control", this); return; }
+        _InputDriver.enabled = true;
     }
 
     public void DisablePlayerControl()
     {
-        _movement.DisableMovement();
+        //takes the controls away from the player's body (it stops and keeps floating, see PlayerInputDriver.OnDisable)
+        if (_InputDriver == null) { Debug.LogError($"Error! No PlayerInputDriver on {gameObject.name}, can't take its control away", this); return; }
+        _InputDriver.enabled = false;
     }
 
     public void SetPlayerTurning(bool Active)

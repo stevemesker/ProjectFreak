@@ -141,7 +141,7 @@ See [[POI System]] for how the lookup works.
 - **Floor scenes:** drag the floor scene assets into `_SceneAdd`, press **Fill Floor List**. This copies their names into `_DungeonFloorList` and clears `_SceneAdd`
 - **POIs:** add every `DungeonPOISO` for this dungeon to `POIList`
 - **LUT:** assign the `TypeTagLookUpSO` to `POILUT`
-- **Tables:** `LootTable` and `EnemyTable` exist but those systems aren't built yet
+- **Tables:** `LootTable` and `EnemyTable` exist but those systems aren't built yet [[Notes for the future]]
 
 **Clear All Lists** empties the floor list and POI list.
 

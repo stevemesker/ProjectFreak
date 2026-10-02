@@ -29,7 +29,7 @@ All POI enums live in the `POIType` namespace.
 | `POIType.Tag`  | chests, gold, easyEnemies, MediumEnemies, HardEnemies, Structure, Security, healing, special. Describes a POI's content |
 | `POIType.Size` | Tiny, Small, Medium, Large, Huge                                                            |
 
-*`POIShape.Shape` (square, L) also exists but isn't used yet.*
+*`POIShape.Shape` (square, L) also exists but isn't used yet.* [[Notes for the future]]
 
 ---
 ## DungeonPOISO
@@ -67,7 +67,7 @@ When a dungeon starts, `BuildPOIDictionaries()` sorts the dungeon's `POIList` in
 4. If none match, draws another tag and tries again, up to `_EntryPoolSize` times
 5. If nothing ever matches, logs an error and returns null
 
-*If a size or tag has no POIs at all, the lookup currently errors instead of returning null. See [[Known Issues]].*
+*If a size or tag has no POIs at all, the lookup currently errors instead of returning null. See [[Known Issues]].* [[Notes for the future]]
 
 ---
 ## POISpawnerObject
@@ -89,7 +89,7 @@ On `Start` it hides the preview box. Spawning happens in `SpawnPOI()`, which ask
 
 Editor buttons: **UpdateSizeVolume** resizes the preview box for the current size; **ToggleVolume** shows/hides it.
 
-*Planned:* remembering which POIs were spawned so revisited floors stay the same.
+*Planned:* remembering which POIs were spawned so revisited floors stay the same. [[Notes for the future]]
 
 ---
 ## DungeonTypeTranslatorSO

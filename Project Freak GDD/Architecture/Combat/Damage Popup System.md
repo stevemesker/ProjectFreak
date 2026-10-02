@@ -127,7 +127,7 @@ The movement itself is always vertically upward.
 
 ---
 
-# Future Expansion
+# Future Expansion [[Notes for the future]]
 
 Possible additions:
 

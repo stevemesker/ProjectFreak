@@ -11,5 +11,8 @@ public class DamagePackage
 
     public float _DamageImpactStrength = .25f;
 
+    [Tooltip("How far this hit pushes the target back, in meters. 0 = no knockback. The target's size class can shrink this (see SizeClassRulesSO)")]
+    public float _KnockbackDistance = 0f;
+
     public List<DamageEntry> _Entries;
 }

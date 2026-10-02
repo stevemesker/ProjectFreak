@@ -26,6 +26,8 @@ Implements `IDamagable` for enemies. It doesn't calculate damage itself. Instead
 | `onHit`    | Fires on any hit. For effects that don't need the damage data                |
 | `onDamage` | Fires with the `DamagePackage`. Functions hooked here must take a `DamagePackage` as their first parameter |
 
+After the events, if the object has an `IKnockbackable` component (like `EnemyMovement`), it calls `TakeKnockback(package)`. No inspector hookup needed. See [[Enemy Movement]].
+
 ---
 ## PlayerDamegable
 Handles damage to the player. *(Spelling matches the class name in code.)*
@@ -36,9 +38,9 @@ Handles damage to the player. *(Spelling matches the class name in code.)*
 3. Fires `onDeath` if health hits 0, clamps health to max HP
 4. If the camera is following the player, shakes it using the package's impact strength × the current danger level's dampen value
 
-`Death()` is a placeholder that refills health.
+`Death()` is a placeholder that refills health. [[Notes for the future]]
 
-*Known issues:* `PlayerDamegable` doesn't implement `IDamagable`, so projectiles can't damage the player yet, and the defense math adds defense instead of subtracting it. Both are planned for the damage overhaul. See [[Known Issues]].
+*Known issues:* `PlayerDamegable` doesn't implement `IDamagable`, so projectiles can't damage the player yet, and the defense math adds defense instead of subtracting it. Both are planned for the damage overhaul. See [[Known Issues]]. [[Notes for the future]]
 
 ---
 ## DangerLevel
@@ -56,5 +58,5 @@ Controls how much camera shake is dampened based on how hurt a unit is. Stored i
 
 ---
 ## Other
-- `EnvironmentDamageable` exists but is an empty template. Planned for [[Destructible Objects]]
+- `EnvironmentDamageable` exists but is an empty template. Planned for [[Destructible Objects]] [[Notes for the future]]
 - Pass-through dashes deliver damage packages too. See [[Unit Dash Script]]

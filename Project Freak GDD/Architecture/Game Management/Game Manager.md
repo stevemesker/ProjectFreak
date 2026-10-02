@@ -17,6 +17,7 @@ In `Awake` it:
 | :------------ | :--------------------------------------------------- |
 | `shade`       | Reference to the [[Shade Manager]] on this object    |
 | `PlayerLevel` | The player's current level                           |
+| `_SizeClassRules` | Shared `SizeClassRulesSO` for knockback by size class. See [[Enemy Movement]] |
 
 ---
 ## Functions
@@ -28,5 +29,6 @@ In `Awake` it:
 | `GetPlayerCurrentLevel()`       | Returns `PlayerLevel`                               |
 | `SetPlayerCurrentLevel(int)`    | Sets `PlayerLevel`                                  |
 | `IncrementPlayerLevel(int)`     | Adds to `PlayerLevel`                               |
+| `GetSizeClassRules()`           | Returns `_SizeClassRules` (logs an error if it isn't assigned) |
 
-*`GameManagerEventSO` exists in the same folder but is an empty template.*
+*`GameManagerEventSO` exists in the same folder but is an empty template.* [[Notes for the future]]

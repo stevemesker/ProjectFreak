@@ -47,7 +47,7 @@ MonoBehaviour:
   _BuildNavMesh: 1
   _NavMeshLayers:
     serializedVersion: 2
-    m_Bits: 247
+    m_Bits: 55
   _NavMeshCheckDistance: 3
   _LogPhaseTimes: 1
   _NavMeshSurface: {fileID: 0}

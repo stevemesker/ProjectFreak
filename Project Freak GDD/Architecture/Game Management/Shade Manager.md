@@ -62,7 +62,7 @@ Fade screen back in
 - `true` - player movement off, shade movement on
 - `false` - player movement on, shade movement off
 
-*Currently the switch always goes to the current shade. Switching back to the player isn't hooked up to an input yet.*
+*Currently the switch always goes to the current shade. Switching back to the player isn't hooked up to an input yet.* [[Notes for the future]]
 
 ---
 ## Stat Boosts

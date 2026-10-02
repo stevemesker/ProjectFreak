@@ -25,4 +25,4 @@ The game runs off of a set of managers that each keep track of their own task. A
 
 ---
 ## Notes
-- Singleton setup isn't consistent yet. Some managers destroy duplicates in `Awake`, others just skip assigning. See [[Known Issues]]
+- Singleton setup isn't consistent yet. Some managers destroy duplicates in `Awake`, others just skip assigning. See [[Known Issues]] [[Notes for the future]]

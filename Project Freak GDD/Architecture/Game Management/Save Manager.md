@@ -21,9 +21,9 @@ The Save Manager is in charge of saving and loading game data. It lives on the G
 | `SetCurrentActiveSaveSlot(index)`  | Sets the active slot index                                                            |
 | `ClearSave(index)`                 | Resets a slot's data and saves it                                                     |
 | `SaveDataAll(index)`               | Calls each of the category saves below                                                |
-| `SaveDataGame` / `SaveDataPlayer` / `SaveDataShades` / `SaveDataScene` | One save per data category. *Empty for now*   |
-| `LoadSaveDataToSlot()`             | Will load a save file into a slot. *Empty for now*                                    |
+| `SaveDataGame` / `SaveDataPlayer` / `SaveDataShades` / `SaveDataScene` | One save per data category. *Empty for now* [[Notes for the future]] |
+| `LoadSaveDataToSlot()`             | Will load a save file into a slot. *Empty for now* [[Notes for the future]] |
 
 ---
 ## Notes
-- `SetCurrentActiveSaveSlot` has its range check backwards, so a valid index can trigger the "outside of available save slots" error. See [[Known Issues]]
+- `SetCurrentActiveSaveSlot` has its range check backwards, so a valid index can trigger the "outside of available save slots" error. See [[Known Issues]] [[Notes for the future]]

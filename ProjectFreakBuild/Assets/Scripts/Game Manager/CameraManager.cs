@@ -48,7 +48,6 @@ public class CameraManager : MonoBehaviour
         {
             _followCam.Follow = Player.player.transform;
             _followCam.LookAt = Player.player.transform;
-            Player.player.GetComponent<CharacterMovement>()._MainCamera = _currentGameplayCamera;
             _currentFollowTarget = Player.player.gameObject;
         }
     }

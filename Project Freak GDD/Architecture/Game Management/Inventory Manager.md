@@ -3,7 +3,7 @@
 
 Reached with `InventoryManager._PlayerInventory`.
 
-> Weapons are **not** stored here. Equipped weapons live in the player's `Inventory` in `PlayerData` (see [[Stats & Inventory Data]]). The two inventory systems haven't been merged yet.
+> Weapons are **not** stored here. Equipped weapons live in the player's `Inventory` in `PlayerData` (see [[Stats & Inventory Data]]). The two inventory systems haven't been merged yet. [[Notes for the future]]
 
 ---
 ## Data

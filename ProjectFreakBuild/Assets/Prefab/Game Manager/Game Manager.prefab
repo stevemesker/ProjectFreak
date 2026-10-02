@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shade: {fileID: 7544917852680856100}
   PlayerLevel: 0
+  _SizeClassRules: {fileID: 11400000, guid: 23ca9340838245db959039b8f2f68f8a, type: 2}
 --- !u!114 &2358789497967656618
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,4 +44,4 @@ See [[Radial Menu]] for how the menu itself works.
 ---
 ## Other
 - `ToggleHud(bool)` turns the whole HUD object on/off
-- `ToggleBattleHUD(bool)` is a placeholder and does nothing yet
+- `ToggleBattleHUD(bool)` is a placeholder and does nothing yet [[Notes for the future]]

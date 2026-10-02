@@ -7,7 +7,7 @@ All hand held weapons utilize the `ITriggerable` interface in `CombatInterface.c
 | `ReleaseAttack()`                                 | The trigger button is released, do any final effects and reset the weapon                                    |
 | `IsRange()`                                       | Returns true for ranged weapons. Used to pick the right attack stat (see [[Stats & Inventory Data]])          |
 
-*An `updateStats` function for adding bonuses after equipping was planned but isn't part of the interface yet.*
+*An `updateStats` function for adding bonuses after equipping was planned but isn't part of the interface yet.* [[Notes for the future]]
 
 ---
 ## Equipping

@@ -96,7 +96,7 @@ If the core runs out, runes further down the chain stay unpowered.
 
 **Element effects:** when powered it calls `TriggerElementEffects` on its `ElementItemSO`, which fires the SO's `statusEffectEnable` UnityEvent (usually hooked to `ElementManagerSO.BoostStats`). Losing power fires `statusEffectDisable`.
 
-*Note:* `ElementItemSO` has `connectionsAllowed`, `connectionDistance`, and `powerNeeded`, but they aren't copied onto the rune yet, so every rune uses the prefab's values.
+*Note:* `ElementItemSO` has `connectionsAllowed`, `connectionDistance`, and `powerNeeded`, but they aren't copied onto the rune yet, so every rune uses the prefab's values. [[Notes for the future]]
 
 ---
 ## NodeBridge
@@ -140,6 +140,6 @@ A ScriptableObject both the UI and the [[Shade Manager]] can reference. The Shad
 
 ---
 ## Leftovers
-`DraggableItem`, `ElementObject`, and `ShadeSlotDataObject` are small early scripts that don't appear to do anything now.
+`DraggableItem`, `ElementObject`, and `ShadeSlotDataObject` are small early scripts that don't appear to do anything now. [[Notes for the future]]
 
 See [[Known Issues]] for bugs found in these scripts.

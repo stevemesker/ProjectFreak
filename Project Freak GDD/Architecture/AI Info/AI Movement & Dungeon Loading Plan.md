@@ -1,9 +1,9 @@
 ## Overview
-The plan for giving [[Shade (Runtime)|shades]] and enemies AI movement, and the dungeon floor loading changes that need to come first. Nothing below step 1 is built yet. Update this note as each step lands, then move the finished parts into their own system notes.
+The plan for giving [[Shade (Runtime)|shades]] and enemies AI movement, and the dungeon floor loading changes that need to come first. Update this note as each step lands, then move the finished parts into their own system notes.
 
 Back to [[Architecture Atlas]]
 
-**Status (Oct 2026):** Steps 1 and 2 done. Next up: Step 3.
+**Status (Oct 2026):** Steps 1-4 done, step 5 built and waiting on testing. Next up: Step 6.
 
 ---
 ## Core Ideas
@@ -85,7 +85,7 @@ Floor ready        → Scene Manager fades in
 ### Safeguards
 - **Timeout:** if a floor never reports ready, log an `Error!` naming the floor and fade in anyway, so the player is never stuck on a black screen.
 - **NavMesh check:** after the update, use `NavMesh.SamplePosition` at the player spawn point. If nothing is found, log an `Error!`.
-- **Hand-made scenes:** if a scene has AI in it but no NavMesh, log a `Warning!` instead of failing silently. *(Not built yet: belongs with the AI in steps 4 and 6, since nothing uses the NavMesh until then.)*
+- **Hand-made scenes:** if a scene has AI in it but no NavMesh, log a `Warning!` instead of failing silently. *(Built: enemies log a warning if there's no NavMesh near them, see [[Enemy Movement]].)*
 - **No floor object:** fall back to the current behavior (ready on load).
 
 ---
@@ -103,39 +103,57 @@ Floor ready        → Scene Manager fades in
    - `POISpawnerObject` spawns when the floor object tells it to
    - Scene Manager waits for "floor ready" on dungeon floors and is ready on load everywhere else
    - Safeguards and phase timing logs
-3. **NavMesh prototype**
-   - Biggest floor plus building POIs
-   - Async update, timed
-   - Test on a lower-end machine
-4. **Enemy movement**
-   - Plain NavMeshAgents
-   - Knockback hand-off
-   - Speed tuning
-5. **Drivers**
-   - Add `SetMoveDirection` / `SetLookDirection` to `CharacterMovement`
-   - Move player input out into its own driver component (on the player and the shade)
-   - `ShadeManager` swaps drivers instead of enabling/disabling input inside `CharacterMovement`
-6. **Shade NavGuide driver**
+3. **NavMesh prototype** ✅ *(Oct 2026)*
+   - Tested on a bigger floor with POIs: about 36 ms on Steve's PC. Good enough to move on; the loading screen covers slower machines
+   - *Still worth doing later:* time it on a lower-end machine and in a build [[Notes for the future]]
+   - Findings:
+     - **Only colliders get baked.** A POI piece with just a mesh (like `Art/Dev/Cube.prefab`, which had no collider) is invisible to the NavMesh, and the player can walk through it
+     - **Mesh Collider meshes need Read/Write turned on**, or a built game bakes nothing from them (fixed for `M_Plane_4x4.fbx`)
+     - **Missing triangles / z-fighting in the Scene view is a drawing artifact.** NavMesh corners sit a few cm above or below the real floor. Navigation isn't affected. Use Wireframe draw mode to see the real NavMesh
+     - **Raised areas need ramps/stairs** within the agent's step height (0.4 m) and slope (45°), or they become unreachable islands
+     - **Build Height Mesh** (on the NavMesh Surface) is the fix if agents ever look like they float or sink on stairs
+4. **Enemy movement** ✅ *(Oct 2026, see [[Enemy Movement]])*
+   - `EnemySO` template (rank, size class, Movement and Knockback foldouts that start closed)
+   - `EnemyMovement` drives a plain NavMeshAgent and waits for the floor's NavMesh. Works without a spawner
+   - Knockback by size class through the shared `SizeClassRulesSO` on the Game Manager, slid along the NavMesh and stopped at its edges
+   - `_KnockbackDistance` added to the damage package; `EnemyDamagable` calls `IKnockbackable`
+   - Temp `EnemyChaseTestBrain` + `PFB_Enemy_ChaseTest_Dev` for testing
+5. **Drivers** 🔨 *(built Oct 2026, needs testing. See [[Player Movement]])*
+   - `CharacterMovement` is now just the engine: `SetMoveDirection`, `SetLookDirection`, `GetMoveDirection`, `Dash`
+   - New `PlayerInputDriver` holds all the controls, camera-relative input and mouse/stick aiming. On the player (on) and the shade (off)
+   - Control switching (`Player`/`Shade` functions called by `ShadeManager`) turns drivers on and off. The driver clears the move direction when it turns off
+   - `CameraManager` no longer pushes the camera into the movement script; the driver reads it
+6. **Shade NavGuide driver** [[Notes for the future]]
    - The agent-as-guide setup above
    - AI picks a destination; the driver follows the agent's `desiredVelocity`
    - Add a non-carving `NavMeshObstacle` so enemy agents walk around the shade
-7. **AI decision layer** *(later, separate system)*
+7. **AI decision layer** *(later, separate system)* [[Notes for the future]]
    - Perception → decision → action → state
    - Abilities expose decision info (range, cooldown, role, risk)
    - Personality values (aggression, fear) weight the choices
    - The chosen ability runs through the existing [[Ability System|AbilityInterpreter]]; the chosen destination goes to the driver
 
 ---
-## To Do (later)
+## To Do (later) [[Notes for the future]]
 - **Dungeon scene setup tool.** Creating a floor scene means remembering several pieces (floor prefab, player spawn point, door spawners, POI spawners). Goal: one button that sets up a new dungeon floor scene, or at least checks one and lists what's missing. *Design it once the full system is running, not before.* Ideas to weigh then:
   - an editor window or Odin button that creates a scene from a template with the required prefabs already in it
   - a "validate floor" check that warns about missing pieces
   - the Dungeon Manager adding `PFB_Dungeon Floor` by itself when it loads a floor that doesn't have one
+  - add dungeon door spawners as well
 - **Move the shade prefab to the Units layer** so it's never baked into the NavMesh.
+- **Enemy spawning** (its own step, after enemy movement):
+  - `EnemySpawnerObject`s placed in floors **and** inside POIs, so a floor always has spawners no matter which POIs show up. They register with the floor like POI spawners and spawn during the floor's `SpawningEnemies` step
+  - Each spawner has a **default count per rank** (Popcorn, Basic, Lieutenant)
+  - The dungeon's `DungeonEnemyTableSO` lists which enemies each rank can be, and **per floor type overrides as multipliers** (e.g. Vault: Popcorn ×0, Lieutenant ×2; Treasure: Popcorn only). Floor types it doesn't list use the spawner defaults
+  - MiniBosses and Bosses aren't spawned: they're placed by hand in their arenas
+- **Target priorities.** Enemies always chase the player, even while the player controls a shade. Decide how enemies pick between the player, shades and other targets (and what happens when control switches). Goes with the AI decision layer.
+- **Leash / room volumes** so enemies don't chase the player across the whole floor.
+- **Hazard knockback.** Let units be knocked over NavMesh edges into hazards like lava pits for instant kills. Decide alongside how hazards are built in levels (a NavMesh area type or a trigger volume are the likely options).
+- **Damage pass:** apply the size class bonus damage, and fix the defense math (see [[Known Issues]]).
 
 ---
-## Open Questions
-- How long does the async update take on the biggest floor? Does Unity really only rebuild the changed tiles?
+## Open Questions [[Notes for the future]]
+- If bakes ever get slow: does pre-baking the floor and updating only rebuild the changed tiles? (About 36 ms so far, so not urgent.)
 - What agent radius and height fit both the shade and the doorways in building POIs?
 - Should revisited floors reuse saved POIs (planned in [[POI System]]) and skip the NavMesh update, or always update?
 - Do any enemy types need the physics engine instead of a plain agent?
