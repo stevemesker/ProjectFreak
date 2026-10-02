@@ -12,6 +12,7 @@ Small general-purpose scripts. Most live in `Scripts/Common`.
 | [[ArcMover]]   | Moves an object along an arc                                                                                 |
 | [[Interaction Object]] / `ActivateObject` | Interaction system                                                                |
 | [[Timeline Runner System]] | Runs a list of timed UnityEvents                                                                 |
+| `UINav`        | Pan and zoom for big UI windows (dungeon map, rune field). In `Scripts/UI`. Drag to pan; on release, if an edge has crossed the middle of the parent (the screen) plus `maxDragDistance`, it snaps back. Scroll zooms toward the middle of the screen, so the spot you're looking at stays centered, then snaps the same way. Bounds are measured in the parent's local space with the scaled corners, so they work at any zoom and screen size. If the window is zoomed out too small to reach both limits, it centers. Fires `ScaleEvent` after each zoom |
 
 ---
 ## Data
