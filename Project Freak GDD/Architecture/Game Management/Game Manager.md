@@ -10,6 +10,8 @@ In `Awake` it:
 2. Sets `_GameManager`
 3. Marks the object `DontDestroyOnLoad`, which keeps all the managers on it alive between scenes
 
+The prefab also has the game's only **EventSystem** as a child (with `InputSystemUIInputModule`), so UI clicks and drags work in every scene, including runtime-spawned UI like the dungeon map. Don't add EventSystems to scenes; a second one causes "multiple EventSystems" warnings.
+
 ---
 ## Data
 
