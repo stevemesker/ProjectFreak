@@ -18,11 +18,12 @@ Scene Manager OnSceneLoaded: sees a floor that isn't ready → waits (with timeo
     ▼
 Every Start() in the scene runs
     │  POISpawnerObject.Start: _Floor exists → RegisterPOISpawner(this) instead of spawning
+    │  EnemySpawnerObject.Start: _Floor exists → RegisterEnemySpawner(this)
     ▼
 DungeonFloorObject.Start → LoadFloor() → waits 1 frame so every spawner has registered
     ├── SpawningPOIs      every registered POISpawnerObject.SpawnPOI(), then wait 1 frame
     ├── BuildingNavMesh   async NavMesh build, then NavMesh check   (skipped if _BuildNavMesh is off)
-    ├── SpawningEnemies   todo, the enemy system doesn't exist yet
+    ├── SpawningEnemies   every registered EnemySpawnerObject.SpawnEnemies(shared taken spots)
     └── Ready             _OnFloorReady (UnityEvent), then FloorReady (C# event)
     ▼
 Scene Manager sees the floor is ready → HUD fades in
@@ -30,7 +31,7 @@ Scene Manager sees the floor is ready → HUD fades in
 
 The steps are listed in `FloorLoadType.Phase` (`NotStarted, SpawningPOIs, BuildingNavMesh, SpawningEnemies, Ready`).
 
-*`SpawningEnemies` is empty until enemy spawning is built.* [[Notes for the future]]
+Enemy spawners inside POIs register a frame after their POI spawns (during `SpawningPOIs` or `BuildingNavMesh`), so they're ready in time. The floor keeps one list of taken enemy spots and hands it to every spawner, so enemies from overlapping spawners still keep their spacing. See [[Enemy Spawners]].
 
 ---
 ## Inspector
@@ -46,12 +47,14 @@ The steps are listed in `FloorLoadType.Phase` (`NotStarted, SpawningPOIs, Buildi
 | `_OnFloorReady`          | UnityEvent called once the floor finishes loading, right before the fade-in                      |
 | `_CurrentPhase`          | Read only. Which step the floor is on, useful when a load gets stuck                             |
 | `_POISpawners`           | Read only. Spawners that registered with this floor. Fills in during play                        |
+| `_EnemySpawners`         | Read only. Enemy spawners that registered with this floor, including ones inside POIs            |
 
 ---
 ## Registration
 - **POI spawners** register in their own `Start()`. Every `Awake()` in a scene runs before any `Start()`, so `_Floor` is always set by then. Spawners also check the floor is in their own scene, so they never register with a floor left over from the last scene.
 - The floor waits **one frame** before spawning. Unity doesn't promise the floor's `Start()` runs after the spawners', but all of them are done by the next frame.
 - **A spawner that registers late** (after the POI step) spawns right away with a warning, since it missed the NavMesh build.
+- **Enemy spawners** register the same way (`RegisterEnemySpawner`). One that registers after the enemy step spawns right away with a warning. The NavMesh already exists then, so its enemies still work.
 - **Two floors in one scene:** the second one logs an error and turns itself off.
 
 ---

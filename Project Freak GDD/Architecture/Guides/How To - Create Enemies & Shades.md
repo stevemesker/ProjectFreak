@@ -161,7 +161,8 @@ Actions are the things the brain can choose between (chase, flee, wander...). Se
 ✅ **When this step is done:** the enemy feels the way you planned in Step 1, and the final values are saved in its SO and preset.
 
 ### Step 9 - Put it in the game
-- **Popcorn, Basic and Lieutenant enemies:** for now, drag the prefab into floor scenes by hand. *An enemy spawner will place them automatically later. Then you'll add the enemy to the dungeon's enemy table instead.* [[Notes for the future]]
+- **Popcorn, Basic and Lieutenant enemies:** add the prefab to the dungeon's enemy table (the `DungeonEnemyTableSO` in its `DungeonSO`'s **Enemy Table** slot) and give it a weight. Enemy spawners on the floors place it automatically. Its rank comes from its SO, so there's nothing else to set. See [[Enemy Spawners]].
+- **Testing on a single floor:** set a **Test Enemy Table** on the floor's enemy spawners (Testing foldout), or drag the prefab in by hand.
 - **MiniBosses and Bosses:** always placed by hand in their arena scenes.
 
 ✅ **When this step is done:** the enemy is placed where it belongs, and its prefab and SO are saved in their folders.
@@ -263,7 +264,6 @@ These will change the steps above when they're built. [[Notes for the future]]
 - **Attacks.** Enemies and shades can't attack yet. The **ability overhaul** will let you give an enemy abilities that its brain chooses between, and Engage will be replaced. Expect a new step: "Give it its abilities".
 - **Death and loot.** Enemy Stats has an **On Death** event, but nothing happens on death yet.
 - **Stats on the SO.** Health and other stats live on the prefab's Enemy Stats for now. A stats pass will move them into the enemy SO, so Step 5.4 will move into Step 2.
-- **Enemy spawner.** Enemies will be spawned automatically on dungeon floors from the dungeon's enemy table, so Step 9 will become "add it to the enemy table".
 - **Leash / room volumes.** Enemies will stay in their own area instead of chasing the player across the whole floor.
 - **New kinds of shades** (shade overhaul pass). Each shade will get its own look, abilities and commands, and training will change its personality during play (Digimon World style). Expect a full "Make a New Shade" walkthrough to replace Part 2.
 - **Shade health.** The shade has no health script yet, so its brain always treats it as unhurt (it never flees from low health).

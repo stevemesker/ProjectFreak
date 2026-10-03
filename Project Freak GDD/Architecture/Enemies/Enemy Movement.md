@@ -54,7 +54,7 @@ Always visible:
 
 ---
 ## Ranks
-- **Popcorn, Basic, Lieutenant** - spread around floors by enemy spawners and events
+- **Popcorn, Basic, Lieutenant** - spread around floors by [[Enemy Spawners]] (and later, emitters)
 - **MiniBoss, Boss** - placed by hand in their own arenas (lots of art integration)
 
 Because bosses are placed by hand, movement never depends on a spawner. Spawners only instantiate enemies.

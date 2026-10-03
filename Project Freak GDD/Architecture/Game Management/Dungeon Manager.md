@@ -1,5 +1,5 @@
 ## Overview
-`DungeonManager` runs the current [[Dungeon]] at runtime. It starts dungeons, builds the dungeon map, moves the player between [[Dungeon Floor]]s, and answers "what POI goes here?" questions for spawners in the floor scene.
+`DungeonManager` runs the current [[Dungeon]] at runtime. It starts dungeons, builds the dungeon map, moves the player between [[Dungeon Floor]]s, and answers "what POI goes here?" and "which enemies can spawn here?" questions for spawners in the floor scene.
 
 It lives on the Game Manager object (see [[AA - Managers]]) and is reached with `DungeonManager._DM`. Scene objects should use `DungeonManagerWrapper` instead (see [[Manager Wrappers]]).
 
@@ -68,10 +68,13 @@ The manager listens to the `OptionsMenu` input and calls `ToggleMap()` on the [[
 | `GetCurrentDungeonFloorID()`    | Returns `_CurrentRoomID`                                                             |
 | `SetDungeonLocator(GameObject)` | Sets the map locator object                                                          |
 | `GetPOIFromCurrentRoom(size)`   | Asks the current `DungeonSO` for a POI that fits the current node's type and the requested size. Used by `POISpawnerObject` |
+| `GetCurrentEnemyTable()`        | Returns the current `DungeonSO`'s `DungeonEnemyTableSO`, or null if not in a dungeon. Used by [[Enemy Spawners]] |
+| `GetCurrentRoomType()`          | Returns the current node's `POIType.Type` (for the enemy table's floor type multipliers). Falls back to Basic with a warning if there's no map |
 
 ---
 ## Related
 - [[Dungeon Map Manager]] / [[Dungeon Map Node]]
 - [[Dungeon Door]]s
 - [[POI System]]
+- [[Enemy Spawners]]
 - [[Manager Wrappers]]

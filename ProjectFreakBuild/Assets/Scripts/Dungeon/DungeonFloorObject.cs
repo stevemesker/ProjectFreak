@@ -45,6 +45,9 @@ public class DungeonFloorObject : MonoBehaviour
     [Tooltip("The POI spawners that registered with this floor (read only, fills in during play)")]
     [SerializeField, ReadOnly] List<POISpawnerObject> _POISpawners = new List<POISpawnerObject>();
 
+    [Tooltip("The enemy spawners that registered with this floor, including ones inside POIs (read only, fills in during play)")]
+    [SerializeField, ReadOnly] List<EnemySpawnerObject> _EnemySpawners = new List<EnemySpawnerObject>();
+
     //"event" is a C# feature: other scripts can subscribe a function to it and get called when the floor finishes
     public event System.Action FloorReady;
 
@@ -52,6 +55,7 @@ public class DungeonFloorObject : MonoBehaviour
     Coroutine _loadRoutine;
     NavMeshData _runtimeNavMeshData; //the NavMesh we build at runtime, kept so it can be cleaned up when the floor unloads
     float _phaseStartTime;
+    List<Vector3> _takenEnemySpots = new List<Vector3>(); //every spot an enemy was placed on this floor, shared by all spawners so their enemies keep apart
 
     private void Awake()
     {
@@ -113,7 +117,7 @@ public class DungeonFloorObject : MonoBehaviour
 
         //Step 3 - Enemies
         StartPhase(FloorLoadType.Phase.SpawningEnemies);
-        //todo: spawn or wake enemies here once the enemy system exists (step 4 of the AI plan)
+        SpawnEnemies();
 
         //Done
         StartPhase(FloorLoadType.Phase.Ready);
@@ -129,6 +133,16 @@ public class DungeonFloorObject : MonoBehaviour
         {
             if (_POISpawners[i] == null) continue; //spawner was deleted after we found it, skip it
             _POISpawners[i].SpawnPOI();
+        }
+    }
+
+    void SpawnEnemies()
+    {
+        //function that tells every enemy spawner on this floor to place its enemies. Runs after the NavMesh is built so they have somewhere to stand
+        for (int i = 0; i < _EnemySpawners.Count; i++)
+        {
+            if (_EnemySpawners[i] == null) continue; //spawner was deleted after it registered, skip it
+            _EnemySpawners[i].SpawnEnemies(_takenEnemySpots);
         }
     }
 
@@ -209,6 +223,23 @@ public class DungeonFloorObject : MonoBehaviour
         }
 
         _POISpawners.Add(spawner);
+    }
+
+    public void RegisterEnemySpawner(EnemySpawnerObject spawner)
+    {
+        //called by an enemy spawner when it loads in (spawners inside POIs register a frame after their POI spawns), so the floor spawns it after the NavMesh is built
+        if (spawner == null || _EnemySpawners.Contains(spawner)) return;
+
+        //a spawner that shows up after the enemy step already ran spawns right away. The NavMesh is built by then, so it still works
+        if (_CurrentPhase == FloorLoadType.Phase.SpawningEnemies || _CurrentPhase == FloorLoadType.Phase.Ready)
+        {
+            Debug.LogWarning($"Warning! {spawner.gameObject.name} registered after the enemy step on {gameObject.scene.name}, spawning its enemies now...", spawner);
+            _EnemySpawners.Add(spawner);
+            spawner.SpawnEnemies(_takenEnemySpots);
+            return;
+        }
+
+        _EnemySpawners.Add(spawner);
     }
     #endregion
 

@@ -18,6 +18,7 @@ Back to [[Architecture Atlas]]
 | `EnemySO`, `EnemyMovement`, `SizeClassRulesSO` | Enemy templates, NavMesh movement, knockback by size | [[Enemy Movement]] |
 | `UnitTeam`, `UnitRegistry`, `UnitTargeting` | Teams, the list of active units, and who each AI unit goes after | [[Unit Targeting]] |
 | `UnitBrain`, AI actions, personality presets | Decides what each AI unit does | [[Unit Brain]] |
+| `EnemySpawnerObject`, `DungeonEnemyTableSO` | Places enemies on floors during loading, spread out on the NavMesh | [[Enemy Spawners]] |
 
 ---
 ## Core Ideas
@@ -81,6 +82,7 @@ AI:
    - **7b. Brain and movement actions:** Chase, Engage (placeholder), Keep Distance, Flee, Wander, Follow Leader, Seek Fight. See [[Unit Brain]].
    - **7c. Personality presets:** 6 starter presets, overrides, Reload buttons. See [[Unit Brain#Personality]].
    - **7d. Tuning tools:** debug labels, slower thinking for far-away and Popcorn enemies. See [[Unit Brain#Performance]].
+8. **Enemy spawning** ✅: box spawners pick spread-out, reachable NavMesh spots and spawn during the floor's `SpawningEnemies` step, from the dungeon's enemy table (weights + floor type multipliers). See [[Enemy Spawners]].
 
 ---
 ## To Do
@@ -88,11 +90,7 @@ Everything still open from this work, roughly in the order it's likely to come u
 
 **Next phases**
 - **Ability overhaul → AI attacks.** Give `AbilitySO` an **AI Use** section (range, role, risk, weight, needs line of sight), per-unit cooldowns using `_AbilityCooldown`, `AbilityInterpreter.IsBusy()`, and a target or aim point handed to abilities. Fix the step Timing bug ([[Known Issues]]). Brains then add a unit's abilities as scored actions, and Engage goes away.
-- **Enemy spawning.**
-  - `EnemySpawnerObject`s placed in floors and inside POIs. They register with the floor like POI spawners and spawn during its `SpawningEnemies` step.
-  - Each spawner has a default count per rank (Popcorn, Basic, Lieutenant).
-  - The dungeon's `DungeonEnemyTableSO` lists which enemies each rank can be, with per floor type multipliers (e.g. Vault: Popcorn ×0, Lieutenant ×2).
-  - MiniBosses and Bosses aren't spawned. They're placed by hand in their arenas.
+- **Enemy emitters.** A separate system from [[Enemy Spawners]] for enemies that pour out of something (burrow, doorway) during play and fan out to their spots.
 - **Shade overhaul.** New kinds of shades (own look, abilities, commands), training that changes personality during play (Digimon World style), and shade health so its brain can react to being hurt.
 
 **Smaller items**

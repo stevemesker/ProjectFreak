@@ -240,10 +240,11 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "ecc4a37c8f083c41",
+  "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
-    "Architecture/Enemies/Enemy Movement.md",
+    "Architecture/Dungeons/Enemy Spawners.md",
     "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
+    "Architecture/Enemies/Enemy Movement.md",
     "Architecture/AI/Unit Brain.md",
     "Atlas.md",
     "Architecture/AI Info/Known Issues.md",
@@ -272,7 +273,6 @@
     "Architecture/Items",
     "Architecture/Game Management/UIDamage Manager.md",
     "Architecture/Game Management/Shade Manager.md",
-    "Architecture/Game Management/Inventory Manager.md",
     "Architecture/AI Info",
     "Architecture/Player",
     "Architecture/Dungeons",
