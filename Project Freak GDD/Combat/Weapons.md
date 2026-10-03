@@ -88,7 +88,7 @@ Some weapons should do more than their combo, like a sword that sends out a magi
 V Rising style weapon skills (each weapon type having its own special moves on separate buttons) are something we want, but how the controls would work is still [[undecided]].
 
 ### Blocking
-Not part of melee for now. If the player gets a shield it works more like a Captain America shield, used for hitting and throwing and maybe adding defense, rather than a held block. Enemy shields would most likely be an ability that makes them invulnerable while it's up. Both would be handled through abilities later.
+Not part of melee for now. If the player gets a shield it works more like a Captain America shield, used for hitting and throwing and maybe adding defense, rather than a held block. Enemy shields would most likely be an ability that makes them invulnerable while it's up. Both would be handled through abilities later. [[Notes for the future]]
 
 ---
 ## Ranged

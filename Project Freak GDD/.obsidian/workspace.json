@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Combat/Weapons.md",
+                "file": "Notes for the future.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Weapons"
+              "title": "Notes for the future"
             }
           }
         ]
@@ -238,9 +238,13 @@
   },
   "active": "ecc4a37c8f083c41",
   "lastOpenFiles": [
+    "Architecture/Architecture Atlas.md",
+    "Architecture/AI/Unit Targeting.md",
+    "Notes for the future.md",
+    "Architecture/Dungeons/Dungeon Floor Object.md",
+    "Combat/Weapons.md",
     "Attack Speed.md",
     "Atlas.md",
-    "Combat/Weapons.md",
     "Architecture/AI Info/Known Issues.md",
     "Architecture/AI Info/Code Style Rules.md",
     "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
@@ -252,7 +256,6 @@
     "Architecture/Combat/Ranged Weapon System.md",
     "Architecture/Combat/Melee Weapon System.md",
     "Combat/Damage.md",
-    "Architecture/AI/Unit Targeting.md",
     "Architecture/AI/Unit Brain.md",
     "Architecture/Combat/Damage Package.md",
     "File Naming Conventions.md",
@@ -263,9 +266,6 @@
     "Architecture/Dungeons/Dungeon Architecture.md",
     "Architecture/Game Management/Game Manager.md",
     "Architecture/Enemies",
-    "Architecture/Architecture Atlas.md",
-    "Architecture/Dungeons/Dungeon Floor Object.md",
-    "Architecture/Combat/Unit Dash Script.md",
     "Architecture/UI",
     "Architecture/Shades",
     "Architecture/Items",
