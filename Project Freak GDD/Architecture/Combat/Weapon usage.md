@@ -20,6 +20,8 @@ Weapons are spawned by `Player.UpdateCurrentWeapon()` under the player's hand bo
 - Builds a [[Damage Package]] when firing and hands it to each spawned `ProjectileObject`
 - Supports single shot, multishot spread, charged shots, and automatic fire through coroutines
 
+**`WeaponAttackMelee`** - the melee weapon. Planned, see [[Melee Weapon System]] [[Notes for the future]]
+
 **`WeaponItem`** is the base weapon data (`ItemSO`): attack type, prefab, fire rate, warm up, knockback, camera shake, automatic/charged settings, base damage, and element.
 
 `WeaponItem.element` uses `DamageType.ElementType`.

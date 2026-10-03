@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/Enemies/Enemy Movement.md",
+                "file": "Combat/Weapons.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Enemy Movement"
+              "title": "Weapons"
             }
           }
         ]
@@ -45,12 +45,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
+                "file": "Character Traits/Character Stats.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI Movement & Dungeon Loading Plan"
+              "title": "Character Stats"
             }
           }
         ],
@@ -242,15 +242,22 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
-    "Architecture/Dungeons/Enemy Spawners.md",
-    "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
-    "Architecture/Enemies/Enemy Movement.md",
+    "Architecture/Combat/Melee Weapon System.md",
+    "Combat/Damage.md",
+    "Architecture/AI/Unit Targeting.md",
     "Architecture/AI/Unit Brain.md",
+    "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
+    "Architecture/AI Info/AA - AI Info.md",
+    "Combat/Weapons.md",
+    "Architecture/Combat/Damage Package.md",
+    "File Naming Conventions.md",
+    "Character Traits/Character Stats.md",
+    "Combat/Attack Type.md",
+    "Architecture/Enemies/Enemy Movement.md",
+    "Architecture/Dungeons/Enemy Spawners.md",
     "Atlas.md",
     "Architecture/AI Info/Known Issues.md",
-    "Architecture/AI/Unit Targeting.md",
     "Architecture/AI",
-    "Architecture/AI Info/AA - AI Info.md",
     "Architecture/Dungeons/Dungeon Architecture.md",
     "Architecture/Game Management/Game Manager.md",
     "Architecture/Enemies",
@@ -264,15 +271,8 @@
     "Architecture/Scene Manager.md",
     "Architecture/UI/Radial Menu.md",
     "Architecture/UI",
-    "Architecture/Tools/Utility Scripts.md",
-    "Architecture/Tools/Manager Wrappers.md",
-    "Architecture/Shades/Shade (Runtime).md",
     "Architecture/Shades",
-    "Architecture/Player/Stats & Inventory Data.md",
-    "Architecture/Items/Items & Pickups.md",
     "Architecture/Items",
-    "Architecture/Game Management/UIDamage Manager.md",
-    "Architecture/Game Management/Shade Manager.md",
     "Architecture/AI Info",
     "Architecture/Player",
     "Architecture/Dungeons",
