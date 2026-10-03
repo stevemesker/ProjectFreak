@@ -1,80 +1,32 @@
+Starting point for each architecture section. Only the entry notes are linked here; each one links out to the rest of its section.
+
 **Guides**
 [[How To - Create Enemies & Shades]]
 
 **Game Management**
-[[AA - Managers]]
-[[Game Manager]]
-[[Dungeon Manager]]
-[[Shade Manager]]
-[[Inventory Manager]]
-[[Save Manager]]
-[[Scene Manager]]
-[[Camera Manager]]
-[[HUD Manager]]
-[[UIDamage Manager]]
-[[Runtime Bootstrapper & Runtime Asset]]
+[[AA - Managers]] - every manager, save data, scene loading, HUD, wrappers
 
-**Gameplay**
-[[Cameras]]
-[[Interface List]]
-[[Destructible Objects]]
-[[Chest Content]]
+**Player**
+[[Player.player]] - player movement, stats & inventory, items, abilities, weapons
 
-**Player Specific**
-[[Player.player]]
-[[Player Movement]]
-[[Stats & Inventory Data]]
-
-**Shades**
-[[Shade (Runtime)]]
-
-**AI & Movement**
-[[AI Movement & Dungeon Loading Plan]]
-[[Unit Targeting]]
-[[Unit Brain]]
-
-**Enemies**
-[[Enemy Movement]]
+**AI, Shades & Enemies**
+[[AI Movement & Dungeon Loading Plan]] - unit brain, targeting, enemy movement, shades
 
 **Combat**
-[[Ability System]]
-[[Damage Package]]
-[[Damage Receivers & Projectiles]]
-[[Damage Popup System]]
-[[Unit Dash Script]]
-[[Weapon usage]]
-[[Melee Weapon System]]
-[[Ranged Weapon System]]
+[[Damage Receivers & Projectiles]] - damage package, melee/ranged weapons, dash, traps, popups
 
 **Dungeons**
-[[Dungeon Architecture]]
-[[Dungeon Creation]]
-[[Dungeon Map Manager]]
-[[Dungeon Map Node]]
-[[Dungeon Door]]
-[[Dungeon Floor Object]]
-[[POI System]]
-[[Enemy Spawners]]
-[[Traps]]
-
-**Items**
-[[Items & Pickups]]
+[[Dungeon Architecture]] - dungeon creation, map, doors, floors, POIs, spawners
 
 **UI**
-[[Radial Menu]]
 [[Rune Field System]]
 
-**Save Data**
-[[Save slot]]
-
 **Tools**
-[[Manager Wrappers]]
+[[Interface List]]
 [[Utility Scripts]]
-[[ArcMover]]
-[[Timeline Runner System]]
-[[Interaction Object]]
 
 **AI Info**
 [[AA - AI Info]]
-[[Code Style Rules]]
-[[Known Issues]]
+
+**Design (not linked anywhere else yet)**
+[[Cameras]]
