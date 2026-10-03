@@ -1,7 +1,7 @@
 ## Overview
 The plan for how melee weapons work in code. **Nothing here is built yet (Oct 2026).** It's the design to build from once the ranged notes are in and the weapon overhaul starts. [[Notes for the future]]
 
-Design side: [[Weapons#Melee]]. Back to [[Architecture Atlas]].
+Design side: [[Weapons#Melee]]. Ranged counterpart: [[Ranged Weapon System]]. Back to [[Architecture Atlas]].
 
 ```text
 MeleeWeaponItem (WeaponItem)
@@ -50,7 +50,7 @@ Inherits `WeaponItem` (see [[Weapon usage]]). Keeps base damage, element and kno
 | `_ComboResetTime` | Seconds without attacking before the combo goes back to hit 1 |
 | `_Combo`          | The ordered list of `ComboStepEntry`s. The last one is the finisher |
 
-*`WeaponItem` currently has a lot of ranged-only settings (fire rate, warm up, automatic, charged). The ranged overhaul should decide what moves down into `WeaponRangedItem` so melee weapons don't show them.*
+*The ranged-only settings currently on `WeaponItem` move down into `WeaponRangedItem`. See [[Ranged Weapon System#WeaponItem split]].*
 
 ### ComboStepEntry
 One hit in the combo.
@@ -79,6 +79,7 @@ The melee version of `WeaponAttackRanged`. Lives on the weapon prefab and implem
 | `TriggerAttack()`  | If idle, starts the current combo step. If mid-swing, buffers the press so the next step starts right after recovery |
 | `ReleaseAttack()`  | Clears the held flag. Holding the button keeps the combo going |
 | `IsRange()`        | `false`, so melee uses [[STR]] |
+| `IsBusy()`         | True from the start of a swing until its recovery ends, so weapons can't be switched mid-swing (see [[Ranged Weapon System#Weapon Switching]]) |
 
 ### Combo Flow
 ```text
@@ -144,7 +145,7 @@ Works like knockback: a new `IStaggerable` interface that `EnemyDamagable` check
 
 ---
 ## Build Order
-1. Fix the `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check from [[Known Issues]], since melee attacks go through it
+1. Fix the `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check from [[Known Issues]], since melee attacks go through it, and add `IsBusy()` with the switching block (shared with ranged)
 2. `SwingShapeSO` with its Scene view gizmo
 3. `MeleeWeaponItem` and `ComboStepEntry`
 4. `WeaponAttackMelee`: combo timing, sweep and hit list, damage. Test with a test sword on `PFB_Enemy_ChaseTest_Dev`
@@ -156,7 +157,7 @@ Works like knockback: a new `IStaggerable` interface that `EnemyDamagable` check
 ---
 ## Open Questions [[Notes for the future]]
 - Should the swing's facing lock at the start of the swing (current plan) or keep following the aim?
-- Can dashing cancel a swing? Does the player slow down or stop while swinging?
+- Can dashing cancel a swing? (Ranged: a dash cancels a charge but keeps warm up.) If it does, the weapon should still stay busy until the swing's time would have ended, so dashing can't be used to bypass attack speed Does the player slow down while swinging? If so, it can use the same move speed multiplier as ranged charging
 - How does the weapon's [[Attack Speed]] (X/sec) map to combo timing? Total combo time, or a multiplier on each step?
 - How long should stagger immunity last?
 - Should enemies use this same system for their melee attacks? An ability function that runs one `ComboStepEntry` would let the ability overhaul reuse all of it.
