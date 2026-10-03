@@ -9,8 +9,8 @@ public class UnitTeam : MonoBehaviour
     //so AI can find it without searching the scene. Goes on the player, shades and enemies.
 
     [Header("Data")]
-    [Tooltip("Which side this unit fights for. Units on different teams are hostile to each other")]
-    public UnitType.Team _Team = UnitType.Team.Enemy;
+    [Tooltip("Which side this unit fights for: Player, Fiend or Lumina. Units on different teams are hostile to each other, so Fiends and Lumina also fight each other")]
+    public UnitType.Team _Team = UnitType.Team.Fiend;
 
     [Tooltip("What kind of unit this is. Player Body gets special target rules while the player is off controlling a shade")]
     public UnitType.Role _Role = UnitType.Role.Enemy;

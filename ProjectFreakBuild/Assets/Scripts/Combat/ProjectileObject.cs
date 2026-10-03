@@ -22,6 +22,7 @@ public class ProjectileObject : MonoBehaviour
 
     //local variables
     bool _isLaunched; //true once LaunchProjectile has set the lifetime
+    UnitTeam _sourceTeam; //the shooter's side, so the projectile flies through its allies. Null = hits every team (like traps)
 
     private void Start()
     {
@@ -41,6 +42,10 @@ public class ProjectileObject : MonoBehaviour
         _Launch = launch;
         _Speed = speed;
         _isLaunched = true;
+
+        //remember the shooter's team now, so we don't look it up on every hit
+        _sourceTeam = null;
+        if (damage != null && damage._Source != null) _sourceTeam = damage._Source.GetComponent<UnitTeam>();
         Destroy(gameObject, Mathf.Max(0.1f, lifeTime)); //Destroy with a second number waits that many seconds first
     }
 
@@ -48,9 +53,16 @@ public class ProjectileObject : MonoBehaviour
     {
         if (other.isTrigger) return;
         if (_Damage == null) { Destroy(gameObject); return; } //never got a package, nothing to deliver
-        if (other.gameObject == _Damage._Source) return;
+        if (_Damage._Source != null && other.transform.IsChildOf(_Damage._Source.transform)) return; //the shooter, or any part of it (IsChildOf also counts the object itself)
 
-        IDamagable damagable = other.GetComponent<IDamagable>();
+        //allies of the shooter: fly straight through them (no friendly fire)
+        if (_sourceTeam != null)
+        {
+            UnitTeam hitTeam = other.GetComponentInParent<UnitTeam>();
+            if (hitTeam != null && _sourceTeam.IsHostileTo(hitTeam) == false) return;
+        }
+
+        IDamagable damagable = other.GetComponentInParent<IDamagable>(); //InParent so hitting a child collider (like a big enemy's arm) still finds its damage script
         if (damagable == null)
         {
             Destroy(gameObject);
