@@ -242,6 +242,7 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Architecture/Combat/Ranged Weapon System.md",
     "Architecture/Combat/Melee Weapon System.md",
     "Combat/Damage.md",
     "Architecture/AI/Unit Targeting.md",
@@ -269,7 +270,6 @@
     "Architecture/UI/Rune Field System.md",
     "Architecture/Game Management/Scene Manager.md",
     "Architecture/Scene Manager.md",
-    "Architecture/UI/Radial Menu.md",
     "Architecture/UI",
     "Architecture/Shades",
     "Architecture/Items",
