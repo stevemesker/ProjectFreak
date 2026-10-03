@@ -5,17 +5,21 @@ Once a [[Damage Package]] is built, it's delivered by a projectile (or a dash) a
 ## ProjectileObject
 A simple projectile.
 
-| Variable  | Description                          |
-| :-------- | :----------------------------------- |
-| `_Speed`  | Units per second, moves forward      |
-| `_Damage` | The [[Damage Package]] it carries    |
+| Variable           | Description                          |
+| :----------------- | :----------------------------------- |
+| `_DefaultLifeTime` | Seconds before it removes itself if whatever spawned it didn't give it a lifetime (default 10, used by [[Traps]]) |
+| `_Speed`           | Meters per second, moves forward     |
+| `_Damage`          | The [[Damage Package]] it carries    |
+| `_Launch`          | The `LaunchPackage` from the weapon (charge %, finisher, source). Not used by this simple projectile yet [[Notes for the future]] |
+
+`LaunchProjectile(damage, launch, speed, lifeTime)` is how weapons send it off: it fills the fields above and destroys the projectile after `lifeTime` seconds if it hasn't hit anything. Traps still set `_Speed` and `_Damage` directly and get the default lifetime. See [[Ranged Weapon System#Damage and Projectiles]].
 
 On trigger enter:
-- Ignores its own source and other triggers
+- Ignores other triggers and its own source
 - If the object has `IDamagable`, calls `TakeDamage(_Damage)`
-- Destroys itself either way
+- Destroys itself either way (also if it never got a package)
 
-Used by `WeaponAttackRanged` (see [[Weapon usage]]) and [[Traps]].
+Used by `WeaponAttackRanged` (see [[Weapon usage]]) and [[Traps]]. Projectile behaviors (arcs, homing, growing with charge) get their own note later. [[Notes for the future]]
 
 ---
 ## EnemyDamagable
@@ -64,3 +68,11 @@ Controls how much camera shake is dampened based on how hurt a unit is. Stored i
 ## Other
 - `EnvironmentDamageable` exists but is an empty template. Planned for [[Destructible Objects]] [[Notes for the future]]
 - Pass-through dashes deliver damage packages too. See [[Unit Dash Script]]
+
+---
+## Planned: Damage Overhaul
+The defense math is getting rebuilt. Nothing here is decided yet beyond the direction. [[Notes for the future]]
+- **Mitigation formula:** replace the current "subtract the defense stat" step with Blizzard's k/(k+x) style: damage reduction = defense / (defense + K). Defense always helps, never reaches 100%, and each extra point helps a little less than the last [[Notes for the future]]
+- **K and leveling:** K usually grows with the attacker's level, so the same defense protects less against higher level enemies. How K scales with level, and how level ups and stat boosts (shades, runes, gear) feed into defense, needs working out before the formula goes in. Plotting a few K curves across the planned level range would help pick one [[Notes for the future]]
+- **Where it changes:** only the receivers (`EnemyStats.DamageCalculation`, `PlayerDamegable.DamageCalculation`). Weapons, abilities, traps and dashes only build [[Damage Package]]s, so they shouldn't need changes
+- **Folds in:** the damage bugs in [[Known Issues]] (defense adding damage, `PlayerDamegable` not implementing `IDamagable`, immunities not checked) and crits, which are always ×1 for now [[Notes for the future]]

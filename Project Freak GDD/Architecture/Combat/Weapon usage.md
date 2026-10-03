@@ -6,23 +6,22 @@ All hand held weapons utilize the `ITriggerable` interface in `CombatInterface.c
 | `TriggerAttack()`                                 | The trigger button is pressed, begin activation of the weapon                                                 |
 | `ReleaseAttack()`                                 | The trigger button is released, do any final effects and reset the weapon                                    |
 | `IsRange()`                                       | Returns true for ranged weapons. Used to pick the right attack stat (see [[Stats & Inventory Data]])          |
-| `IsBusy()`                                        | *Planned.* True while the weapon is waiting out an attack, so it can't be switched. See [[Ranged Weapon System#Weapon Switching]] [[Notes for the future]] |
+| `IsBusy()`                                        | True while the weapon is waiting out an attack, so it can't be switched. See [[Ranged Weapon System#Weapon Switching]] |
 
-*An `updateStats` function for adding bonuses after equipping was planned but isn't part of the interface yet.* [[Notes for the future]]
+*An `updateStats` function for adding bonuses after equipping was planned but isn't needed for now: weapons keep a reference to the wielder's stats and read them when an attack is built.*
 
 ---
 ## Equipping
-Weapons are spawned by `Player.UpdateCurrentWeapon()` under the player's hand bone (`handPointer`), then `SetUpWeapon` is called with the equipped `WeaponItem` and the player's stats. See [[Player.player]].
+The player picks a slot with `Player.SelectWeapon(index)`, which waits if the held weapon is busy (see [[Ranged Weapon System#Switch Buffer]]). `Player.UpdateCurrentWeapon()` then spawns the slot's `WeaponItem._WeaponPrefab` under the player's hand bone (`handPointer`) and calls `SetUpWeapon` with the item and the player's stats. See [[Player.player]].
+
+Attack input goes `PlayerCombatInteract` → `Player.UseCurrentWeapon()` / `ReleaseCurrentWeapon()` → the held weapon's `TriggerAttack()` / `ReleaseAttack()`.
 
 ---
 ## Current Weapon Scripts
-**`WeaponAttackRanged`** - the ranged weapon. A rewrite is planned, see [[Ranged Weapon System]] [[Notes for the future]]. Currently it:
-- Reads its settings from a `WeaponRangedItem` (fire rate, warm up, charge, automatic, etc.)
-- Builds a [[Damage Package]] when firing and hands it to each spawned `ProjectileObject`
-- Supports single shot, multishot spread, charged shots, and automatic fire through coroutines
+**`WeaponItem`** is the abstract base weapon data (`ItemSO`): attack type, prefab, attack speed, activation shake, base damage, element and knockback. See [[Ranged Weapon System#WeaponItem]].
+
+**`WeaponRangedItem`** + **`WeaponAttackRanged`** - the ranged weapon data and the script on the held weapon that fires it: warm up, automatic, burst, charge, finishers, projectile patterns and hit scan. See [[Ranged Weapon System]]
 
 **`WeaponAttackMelee`** - the melee weapon. Planned, see [[Melee Weapon System]] [[Notes for the future]]
 
-**`WeaponItem`** is the base weapon data (`ItemSO`): attack type, prefab, fire rate, warm up, knockback, camera shake, automatic/charged settings, base damage, and element.
-
-`WeaponItem.element` uses `DamageType.ElementType`.
+`WeaponItem._Element` uses `DamageType.ElementType`.

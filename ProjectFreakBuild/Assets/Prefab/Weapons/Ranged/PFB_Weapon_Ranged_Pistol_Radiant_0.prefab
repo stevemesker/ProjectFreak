@@ -76,13 +76,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Muzzle: {fileID: 1963131186212342856}
   _Wielder: {fileID: 0}
-  _WeaponObject: {fileID: 0}
-  _AttackBonus: 0
-  elementType: 0
-  canFire: 1
-  isReleased: 1
-  isCharging: 0
+  _WeaponData: {fileID: 0}
+  _IsTriggerHeld: 0
+  _IsWarm: 0
+  _ChargePercent: 0
+  _FinisherCount: 0
 --- !u!1001 &2025146345868279528
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -165,6 +165,12 @@ GameObject:
 --- !u!1 &1214751505230693305 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 90bcb59d6b964354a9ffeb50c88211d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 2025146345868279528}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1963131186212342856 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8708639282089872736, guid: 90bcb59d6b964354a9ffeb50c88211d5,
     type: 3}
   m_PrefabInstance: {fileID: 2025146345868279528}
   m_PrefabAsset: {fileID: 0}

@@ -29,8 +29,9 @@ It's reached anywhere with the static `Player.player`. In `Awake` it destroys du
 | :---------------- | :---------------------------------------------------------------------------------- |
 | `pData`           | The `PlayerData` component                                                          |
 | `camTarget`       | Object the camera can target                                                        |
-| `handPointer`     | The hand bone weapons spawn under. Must be the lowest child, since swapping deletes its child |
-| `weaponSelection` | Index of the currently selected equipped weapon                                     |
+| `handPointer`     | The hand bone weapons spawn under. Swapping only removes the weapon `Player` spawned, so other children are safe |
+| `weaponSelection` | Index of the equipped weapon slot currently in the hand                             |
+| `_QueuedWeaponSelection` | Read only. Slot waiting to be switched to once the held weapon stops being busy. -1 = none |
 | `_movement`       | The `CharacterMovement` component                                                   |
 | `_InputDriver`    | The `PlayerInputDriver` that reads the controls. Auto-filled from the same object if empty |
 
@@ -38,10 +39,12 @@ It's reached anywhere with the static `Player.player`. In `Awake` it destroys du
 
 | Function                       | Description                                                                                 |
 | :----------------------------- | :------------------------------------------------------------------------------------------ |
-| `UpdateCurrentWeapon()`        | Destroys the held weapon and spawns the selected one under `handPointer`, then calls `SetUpWeapon` (see [[Weapon usage]]) |
+| `SelectWeapon(int)`            | Picks a slot to hold. If the held weapon is busy the pick is queued and switches the moment it's free. Picking the held slot clears the queue (see [[Ranged Weapon System#Switch Buffer]]) |
+| `UpdateCurrentWeapon()`        | Makes the hand hold the selected slot: removes the old weapon, spawns the new one under `handPointer`, then calls `SetUpWeapon` (see [[Weapon usage]]). Does nothing if it's already holding that item |
 | `UpdateEquippedWeaponSlotSize()` | Grows/shrinks the equipped weapon list to match `_EquipmentSize`                         |
-| `GetActiveWeaponIndex()`       | Returns `weaponSelection`                                                                   |
-| `UseCurrentWeapon()` / `ReleaseCurrentWeapon()` | Calls `TriggerAttack` / `ReleaseAttack` on the held weapon                 |
+| `GetActiveWeaponIndex()`       | Returns `weaponSelection` (the slot in the hand)                                            |
+| `GetSelectedWeaponIndex()`     | The queued slot if a switch is waiting, otherwise the held one. Used for scrolling          |
+| `UseCurrentWeapon()` / `ReleaseCurrentWeapon()` | Calls `TriggerAttack` / `ReleaseAttack` on the held weapon. `PlayerCombatInteract` calls these from the attack input |
 
 **Control**
 

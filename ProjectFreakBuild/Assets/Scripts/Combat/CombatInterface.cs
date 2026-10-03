@@ -9,11 +9,12 @@ public interface IDamagable
 
 public interface ITriggerable
 {
+    //anything a unit can hold and attack with (see Weapon usage in the GDD)
     void SetUpWeapon(ItemSO item, GameObject Wielder, CoreStats stats);
     void TriggerAttack();
     void ReleaseAttack();
-    //DamageType.StatType GetStatType();
     bool IsRange();
+    bool IsBusy(); //true from the moment the weapon attacks until its attack time is over. Weapons can't be switched while busy
 }
 
 public interface IKnockbackable

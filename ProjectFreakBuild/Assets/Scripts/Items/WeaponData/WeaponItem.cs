@@ -3,56 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-[CreateAssetMenu(fileName = "SO_NewWeapon", menuName = "ScriptableObjects/Weapons/Weapon", order = 0)]
-
-public class WeaponItem : ItemSO
+////////////////////////////////////////////////
+///
+/// What every weapon shares, ranged or melee (see Weapons > Shared Traits in the GDD).
+/// It's abstract, so assets are always made from a weapon type like WeaponRangedItem.
+///
+////////////////////////////////////////////////
+public abstract class WeaponItem : ItemSO
 {
-    [TitleGroup("---Weapon Data---")]
-    [Tooltip("Class of weapon: Melee, Ranged, Summon")]
-    public DamageType.AttackType weaponAttackType;
+    [Title("Weapon Data")]
+    [Tooltip("Physical or magical. Decides which of the wielder's stats powers the attack (see CoreStats)")]
+    public DamageType.AttackType _AttackType = DamageType.AttackType.Physical;
 
-    [Tooltip("The art associated with the data which includes the model and its muzzle location")] 
-    public GameObject weaponPrefab;
+    [Tooltip("The held weapon prefab. Needs a weapon script on it, like WeaponAttackRanged")]
+    [Required] //Odin draws a red error box when this is empty
+    public GameObject _WeaponPrefab;
 
-    [Tooltip("how quickly the weapon can attack right after the previous")] 
-    public float weaponFireRate;
+    [Tooltip("Attacks per second. 2 = twice a second, 0.2 = once every 5 seconds. This is the number players see, so keep it the real rate")]
+    [Min(0.01f)] public float _AttackSpeed = 1f;
 
-    [Tooltip("time it takes to fire a projectile once the fire button is pressed that slows the player down by half (not to be confused with fire rate)")] 
-    public float weaponWarmUpTime;
+    [Tooltip("Camera shake each time the weapon fires. 0 = none. (Separate from the shake when a hit lands)")]
+    [Min(0f)] public float _ActivationShake = 0f;
 
-    [Tooltip("how strong the kickback of the gun is to the player")] 
-    public float weaponKnockback;
+    [Title("Damage Data")]
+    [Tooltip("Damage per hit before the wielder's attack stat and other modifiers are added")]
+    [Min(0)] public int _BaseDamage = 5;
 
-    [Tooltip("How much the camera shake will move when using the weapon")]
-    public float activationShake = 0.15f;
+    [Tooltip("Element of the damage")]
+    public DamageType.ElementType _Element = DamageType.ElementType.Normal;
 
-    [Tooltip("If ticked, weapon will not quit firing after first shot and will instead wait until fire rate timer ends")]
-    public bool isAutomatic;
+    [Tooltip("How far a hit pushes the target back, in meters. 0 = none. The target's size class can shrink it")]
+    [Min(0f)] public float _Knockback = 0f;
 
-    [Tooltip("Requires a held buildup time before attacking begins")]
-    public bool isChargedShot;
-    
-    [ShowIf(nameof(isChargedShot))]
-    [FoldoutGroup("Charge Settings")]
-    [Tooltip("How many seconds it takes to hit max charge")]
-    public float chargeMaxAmount;
-
-    [ShowIf(nameof(isChargedShot))]
-    [FoldoutGroup("Charge Settings")]
-    [Tooltip("If projectile grows in scale based on charging. 0 means no scaling")]
-    public float chargeScaling;
-
-    [ShowIf(nameof(isChargedShot))]
-    [FoldoutGroup("Charge Settings")]
-    [Tooltip("probably should get rid of this")]
-    public bool ChargeAutoAttack;
-
-    [TitleGroup("---Damage Data---")]
-    [Tooltip("Raw damage per projectile")] 
-    public int baseDamage;
-    [Tooltip("elemental damage type hitting the opponent (see element types for list)")] 
-    public DamageType.ElementType element;
-    [Tooltip("knockback strength hitting the enemy")] 
-    public float knockbackHitAmount;
-
+    #region Tools
+    public float GetAttackTime()
+    {
+        //function that turns attack speed into seconds per attack (2 per second = 0.5 seconds)
+        return 1f / Mathf.Max(_AttackSpeed, 0.01f); //Max stops a divide by 0 if the value is ever 0
+    }
+    #endregion
 }

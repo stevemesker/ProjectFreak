@@ -26,6 +26,9 @@ The player uses a physics-driven character controller inspired by the locomotion
 | `SetTurning(bool)`        | Turns rotation on/off without affecting movement. Turned off while the [[Radial Menu]] is open       |
 | `DeactivateMovement()`    | Pauses the rigidbody and saves its velocity (used by dashes)                                         |
 | `ReactivateMovement()`    | Restores the saved velocity                                                                          |
+| `SetMoveSpeedMultiplier(float)` | Temporary slowdown (1 = normal, 0.5 = half speed). Used by ranged weapons while charging, and meant for melee swings later. Whoever sets it must clear it |
+| `ClearMoveSpeedMultiplier()` | Back to normal speed                                                                            |
+| `GetMaxSpeed()`           | Top speed in m/s, including the move speed multiplier                                                |
 
 ## PlayerInputDriver (player controls)
 
