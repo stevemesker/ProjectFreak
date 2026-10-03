@@ -43,7 +43,8 @@ Back to [[AA - AI Info]]
 - [ ] Remove `FreakCharacter`, `FreakData`, `FreakInput`, `UnitBaseClass`, `Pawn`, `cameraScript`
 
 **Empty template scripts** *(build out or delete)*
-- [ ] `DungeonEnemyTableSO`, `DungeonLootTableSO` (also should inherit `ScriptableObject`, not `MonoBehaviour`)
+- [x] `DungeonEnemyTableSO` *(built Oct 2026, now a `ScriptableObject`. See [[Enemy Spawners]])*
+- [ ] `DungeonLootTableSO` (also should inherit `ScriptableObject`, not `MonoBehaviour`)
 - [ ] `GameManagerEventSO`
 - [ ] `EnvironmentDamageable`
 - [ ] `PlayerEquipment`, `ShadeSummoner`

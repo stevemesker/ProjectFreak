@@ -52,6 +52,7 @@
 [[Dungeon Door]]
 [[Dungeon Floor Object]]
 [[POI System]]
+[[Enemy Spawners]]
 [[Traps]]
 
 **Items**

@@ -134,6 +134,22 @@ public class DungeonManager : MonoBehaviour
         return _CurrentDungeon.GetPOI(GetMapNode(_CurrentRoomID)._Type, size);
     }
     #endregion
+
+    #region Enemies
+    public DungeonEnemyTableSO GetCurrentEnemyTable()
+    {
+        //function that hands enemy spawners the current dungeon's enemy table. Null if not in a dungeon or the dungeon has no table
+        if (_CurrentDungeon == null) return null;
+        return _CurrentDungeon.EnemyTable;
+    }
+
+    public POIType.Type GetCurrentRoomType()
+    {
+        //function that returns the type of the floor the player is on (Basic, Vault, etc.). Enemy spawners use it for the table's count multipliers
+        if (_map == null) { Debug.LogWarning("Warning! No dungeon map to read the room type from, using Basic...", this); return POIType.Type.Basic; }
+        return GetMapNode(_CurrentRoomID)._Type;
+    }
+    #endregion
 }
 
 [System.Serializable]

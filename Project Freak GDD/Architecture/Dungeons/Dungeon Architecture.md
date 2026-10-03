@@ -17,7 +17,8 @@ DungeonManager (runtime, on the Game Manager)
                     └── Dungeon Floor scene (loaded when entered)
                             │
                             ├── DungeonDoorSpawnerObjects → Dungeon Doors
-                            └── POISpawnerObjects → POI prefabs
+                            ├── POISpawnerObjects → POI prefabs
+                            └── EnemySpawnerObjects → enemies (from the DungeonSO's enemy table)
 ```
 
 **Each map node is one floor.** A dungeon run is a web of floors. The player moves node to node by walking through doors on each floor.
@@ -33,7 +34,7 @@ The dungeon manager's responsibility is maintaining all dungeon data and running
 `_CurrentDungeon` - When null it means the save manager does not need to worry about saving/loading dungeon data as the player has finished their latest dungeon and exists in a hub world of some kind.
 
 ### Realtime Systems
-The manager spawns the map, moves the player between floors, and answers POI requests from floor scenes.
+The manager spawns the map, moves the player between floors, and answers POI and enemy table requests from floor scenes.
 
 ---
 ## Dungeon SO
@@ -43,7 +44,8 @@ The data definition for a single dungeon. It holds:
 - The list of floor scenes normal nodes can use
 - Per-column node type weights (how often each `POIType.Type` shows up)
 - The POI list and the type → tag lookup table (see [[POI System]])
-- Enemy and loot tables (*not built yet*) [[Notes for the future]]
+- The enemy table: which enemies can spawn and how many per floor type (see [[Enemy Spawners]])
+- The loot table (*not built yet*) [[Notes for the future]]
 
 ---
 ## Dungeon Map
@@ -56,4 +58,5 @@ A scene file with a room layout. Normal nodes pick a random scene from the `Dung
 Floor scenes don't know anything about the dungeon. They contain:
 - **Door spawners** that ask the current node where each door leads (see [[Dungeon Door]]s)
 - **POI spawners** that ask for a POI of a set size, matching the current node's type (see [[POI System]])
+- **Enemy spawners** that place enemies from the dungeon's enemy table, spread out inside a box (see [[Enemy Spawners]])
 - A player spawn point (see [[Scene Manager]])

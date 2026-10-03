@@ -7,7 +7,8 @@ DungeonSO  ─────────────── "What dungeon am I crea
     ├── Map settings ───── "How big is the map?"
     ├── Floor pool types ─ "What kinds of nodes show up in each column?"
     ├── Floor scenes ───── "What layouts can a floor use?"
-    └── POI list + LUT ─── "What content can fill those layouts?"
+    ├── POI list + LUT ─── "What content can fill those layouts?"
+    └── Enemy table ────── "Which enemies live here?"
           ↓
 Dungeon Manager (_DungeonChapterData) ── "Register it so the game can find it"
 ```
@@ -23,7 +24,7 @@ Build from the top down: set up the dungeon's data first, then the floor scenes,
 3. Configure node type weights per column
 4. Build the entrance, boss, and floor scenes
 5. Add door spawners to each floor
-6. Add POI spawners to each floor
+6. Add POI spawners (and enemy spawners) to each floor
 7. Create the POIs
 8. Set up the type → tag lookup table
 9. Fill the `DungeonSO` lists
@@ -111,6 +112,8 @@ Place a `POISpawnerObject` wherever a POI should go. See [[POI System]] for deta
 - Use the **UpdateSizeVolume** button to preview how much space that size takes up, and **ToggleVolume** to show/hide it. The preview is hidden automatically when the game runs
 - POIs spawn at the spawner's position with no rotation, so build POIs facing the default direction
 
+**Enemy spawners:** add an `EnemySpawnerObject` wherever enemies should start (on the floor or inside a POI prefab). Size its box to cover the area and set the counts per rank. See [[Enemy Spawners]].
+
 ---
 
 # 7. Create the POIs
@@ -141,7 +144,8 @@ See [[POI System]] for how the lookup works.
 - **Floor scenes:** drag the floor scene assets into `_SceneAdd`, press **Fill Floor List**. This copies their names into `_DungeonFloorList` and clears `_SceneAdd`
 - **POIs:** add every `DungeonPOISO` for this dungeon to `POIList`
 - **LUT:** assign the `TypeTagLookUpSO` to `POILUT`
-- **Tables:** `LootTable` and `EnemyTable` exist but those systems aren't built yet [[Notes for the future]]
+- **Enemy table:** create a `DungeonEnemyTableSO` (**Create → Dungeon → Enemy Table**), drop in the dungeon's enemy prefabs with weights, add any floor type multipliers, and assign it to `EnemyTable`. See [[Enemy Spawners]]
+- **Loot table:** `LootTable` exists but that system isn't built yet [[Notes for the future]]
 
 **Clear All Lists** empties the floor list and POI list.
 
@@ -173,6 +177,7 @@ To leave, call `DungeonManagerWrapper.EndDungeon(returnScene)`.
 - [ ] `_DungeonFloorPoolTypes` has an entry for every column
 - [ ] Floor list filled
 - [ ] POI list and LUT assigned
+- [ ] Enemy table assigned, with at least one enemy for every rank the spawners use
 - [ ] Registered in `_DungeonChapterData`
 
 ### Scenes
@@ -181,6 +186,7 @@ To leave, call `DungeonManagerWrapper.EndDungeon(returnScene)`.
 - [ ] Each floor has the `PFB_Dungeon Floor` prefab
 - [ ] Each floor has at least 3 door spawners
 - [ ] POI spawners have sizes set
+- [ ] Enemy spawner boxes cover the floor (check the box's height)
 
 ### POIs
 - [ ] Every POI has a prefab, size, and tags
@@ -191,6 +197,7 @@ To leave, call `DungeonManagerWrapper.EndDungeon(returnScene)`.
 - [ ] Doors lead to the right nodes and match the map colors
 - [ ] Going back through a door puts the player in front of the right door
 - [ ] POIs match each node's type
+- [ ] Enemies spawn spread out, with no `ran out of room` warnings
 
 ---
 
@@ -219,7 +226,7 @@ Spawn Points
     ↓
 "Where does the gameplay happen?"
 
-Enemy / Loot Systems (not built yet)
+Enemy Spawners / Loot (loot not built yet)
     ↓
 "What actual content appears?"
 ```
