@@ -33,14 +33,15 @@ Back to [[AA - AI Info]]
 **Player**
 - [x] `UnitDash.startDashEvent` is never invoked (only `endDashEvent` is). *Fixed Oct 2026: start event now fires, dashes are tracked in `_dashRoutine` so chained dashes don't overlap, and `OnDisable` ends a running dash*
 - [ ] `UnitDash` keeps one shared `hitList`, so chaining a second dash before the first finishes throws away the first dash's hits (they never take damage)
-- [ ] `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted
+- [x] `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted. *Fixed Oct 2026: `Player` keeps a reference to the weapon it spawned, and `PlayerCombatInteract` goes through these functions instead of its own copy of the check*
+- [ ] `PlayerCombatInteract.EndSelection` calls `StopCoroutine(cycleTimer)` without checking for null, which logs an error if the scroll is released without a cycle running
 
 ---
 ## Cleanup
 
 **Legacy scripts** *(from a previous iteration, low priority)*
 - [ ] Remove `PlayerMovement.cs` (replaced by `CharacterMovement`)
-- [ ] Remove `FreakCharacter`, `FreakData`, `FreakInput`, `UnitBaseClass`, `Pawn`, `cameraScript`
+- [ ] Remove `FreakCharacter`, `FreakData`, `FreakInput`, `UnitBaseClass`, `Pawn`, `cameraScript`. *Oct 2026: all but `cameraScript` were emptied during the ranged weapon overhaul (they read old `WeaponItem` fields). Delete the empty files in Unity, plus `PFB_Character_Freak_Dev`, which will show a missing script*
 
 **Empty template scripts** *(build out or delete)*
 - [x] `DungeonEnemyTableSO` *(built Oct 2026, now a `ScriptableObject`. See [[Enemy Spawners]])*

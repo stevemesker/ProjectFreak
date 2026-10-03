@@ -50,7 +50,7 @@ Inherits `WeaponItem` (see [[Weapon usage]]). Keeps base damage, element and kno
 | `_ComboResetTime` | Seconds without attacking before the combo goes back to hit 1 |
 | `_Combo`          | The ordered list of `ComboStepEntry`s. The last one is the finisher |
 
-*The ranged-only settings currently on `WeaponItem` move down into `WeaponRangedItem`. See [[Ranged Weapon System#WeaponItem split]].*
+*The ranged-only settings moved down into `WeaponRangedItem` in Oct 2026, so `WeaponItem` only holds what every weapon shares. See [[Ranged Weapon System#WeaponItem]].*
 
 ### ComboStepEntry
 One hit in the combo.

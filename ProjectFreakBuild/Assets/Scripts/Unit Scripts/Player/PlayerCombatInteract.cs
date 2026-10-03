@@ -50,7 +50,7 @@ public class PlayerCombatInteract : MonoBehaviour
             isCycling = false;
         }
         
-        SetActiveWeapon(Player.player.GetActiveWeaponIndex() + (int)Mathf.Sign(context.ReadValue<float>()));
+        SetActiveWeapon(Player.player.GetSelectedWeaponIndex() + (int)Mathf.Sign(context.ReadValue<float>()));
         cycleTimer = StartCoroutine(SelectionCycle((int)Mathf.Sign(context.ReadValue<float>())));
         
     }
@@ -71,21 +71,23 @@ public class PlayerCombatInteract : MonoBehaviour
         else scale = 1;
 
         yield return new WaitForSeconds(cycleTime / scale);
-        SetActiveWeapon(Player.player.GetActiveWeaponIndex() + direction);
+        SetActiveWeapon(Player.player.GetSelectedWeaponIndex() + direction);
         isCycling = true;
         cycleTimer = StartCoroutine(SelectionCycle(direction));
     }
 
     public void SetActiveWeapon(int index)
     {
-        //function that handles switching weapon selection
+        //function that handles switching weapon selection. Wraps the index around the slots, then lets the Player decide if it can switch right now
+        int slotCount = pData.pInventory._EquipmentSize;
+        if (slotCount <= 0) return; //no weapon slots, nothing to switch to (and % 0 would crash)
+
         int wpn = index;
         if (index < 0)
         {
-            wpn = pData.pInventory._EquipmentSize - Mathf.Abs(index % pData.pInventory._EquipmentSize);
+            wpn = slotCount - Mathf.Abs(index % slotCount);
         }
-        Player.player.weaponSelection = wpn % pData.pInventory._EquipmentSize;
-        Player.player.UpdateCurrentWeapon();
+        Player.player.SelectWeapon(wpn % slotCount);
     }
 
     #endregion
@@ -93,20 +95,15 @@ public class PlayerCombatInteract : MonoBehaviour
     #region UseWeapon
     private void UseWeapon(InputAction.CallbackContext context)
     {
-        //Player.player.UseCurrentWeapon();
-        if (Player.player.handPointer.transform.childCount == 0) return; //todo: add unarmed strike
-        if (Player.player.handPointer.GetComponent<ITriggerable>() != null) return; //held item does not have the ITriggerable interface (see Known Issues)
-
-        //that 0 should be that proper stats the player uses to effect the weapon type. Figure that out later
-        Player.player.handPointer.transform.GetChild(0).GetComponent<ITriggerable>().TriggerAttack();
+        //attack button pressed, the Player passes it to the held weapon
+        if (Player.player == null) return;
+        Player.player.UseCurrentWeapon();
     }
     private void ReleaseWeapon(InputAction.CallbackContext context)
     {
-        //Player.player.ReleaseCurrentWeapon();
-        if (Player.player.handPointer.transform.childCount == 0) return; //todo: add unarmed strike
-        if (Player.player.handPointer.GetComponent<ITriggerable>() != null) return; //held item does not have the ITriggerable interface (see Known Issues)
-
-        Player.player.handPointer.transform.GetChild(0).GetComponent<ITriggerable>().ReleaseAttack();
+        //attack button let go
+        if (Player.player == null) return;
+        Player.player.ReleaseCurrentWeapon();
     }
 
     #endregion

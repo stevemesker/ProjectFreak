@@ -28,6 +28,8 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] Vector3 forceScale;
     [SerializeField] float maxAccelForceFactor = 1;
     [SerializeField] float speedFactor = 1;
+    [SerializeField, Sirenix.OdinInspector.ReadOnly, Tooltip("Temporary slowdown from actions like charging a weapon. 1 = normal speed, 0.5 = half speed. Set by SetMoveSpeedMultiplier (read only)")]
+    float _MoveSpeedMultiplier = 1;
     [SerializeField, Tooltip("The direction the unit is trying to move, set by its driver (read only)")] public Vector3 m_UnitGoal;
     Vector3 m_GoalVel;
     Vector3 savedVel; //used when stopping the unit and restarting at the same speed is necessary, saved to this variable
@@ -75,7 +77,7 @@ public class CharacterMovement : MonoBehaviour
         Vector3 unitVel = m_GoalVel.normalized;
         float velDot = Vector3.Dot(m_UnitGoal, unitVel);
         float accel = acceleration * AccelerationFactorFromDot.Evaluate(velDot);
-        goalVel = m_UnitGoal * maxSpeed * speedFactor;
+        goalVel = m_UnitGoal * GetMaxSpeed();
 
         m_GoalVel = Vector3.MoveTowards(m_GoalVel, goalVel, accel*Time.fixedDeltaTime);
 
@@ -128,7 +130,19 @@ public class CharacterMovement : MonoBehaviour
     public float GetMaxSpeed()
     {
         //function for checking the unit's top speed in meters per second (used by the AI driver so its steering matches)
-        return maxSpeed * speedFactor;
+        return maxSpeed * speedFactor * _MoveSpeedMultiplier;
+    }
+
+    public void SetMoveSpeedMultiplier(float multiplier)
+    {
+        //function for slowing the unit down for a while (like charging a weapon). 1 = normal speed. Whoever sets it must call ClearMoveSpeedMultiplier when done
+        _MoveSpeedMultiplier = Mathf.Max(0f, multiplier); //no negative speeds
+    }
+
+    public void ClearMoveSpeedMultiplier()
+    {
+        //function that puts the unit back to normal speed
+        _MoveSpeedMultiplier = 1f;
     }
 
     public void Dash()

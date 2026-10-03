@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4940204657544169585}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.70710677}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -7.126, y: 0.621, z: 3.918}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -76,13 +76,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Muzzle: {fileID: 2800548121028936842}
   _Wielder: {fileID: 0}
-  _WeaponObject: {fileID: 0}
-  _AttackBonus: 0
-  elementType: 0
-  canFire: 1
-  isReleased: 1
-  isCharging: 0
+  _WeaponData: {fileID: 0}
+  _IsTriggerHeld: 0
+  _IsWarm: 0
+  _ChargePercent: 0
+  _FinisherCount: 0
 --- !u!1001 &2448050660585010730
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -160,6 +160,12 @@ GameObject:
 --- !u!4 &2770699373467210177 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8fae52e6b58666c46b8f9ed71d4c3169,
+    type: 3}
+  m_PrefabInstance: {fileID: 2448050660585010730}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2800548121028936842 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8708639282089872736, guid: 8fae52e6b58666c46b8f9ed71d4c3169,
     type: 3}
   m_PrefabInstance: {fileID: 2448050660585010730}
   m_PrefabAsset: {fileID: 0}

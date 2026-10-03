@@ -18,32 +18,50 @@ MonoBehaviour:
   dropArt: {fileID: 8567313939770354761, guid: 0c550781899a6f440973345963acdc13, type: 3}
   ItemRarity: 0
   itemStackSizeMax: 1
-  weaponAttackType: 3
-  weaponPrefab: {fileID: 8567313939770354761, guid: 0c550781899a6f440973345963acdc13,
-    type: 3}
-  weaponFireRate: 0.3
-  weaponWarmUpTime: 0
-  weaponKnockback: 0
-  isAutomatic: 0
-  isChargedShot: 1
-  chargeMaxAmount: 1
-  chargeScaling: 0
-  ChargeAutoAttack: 0
-  baseDamage: 20
-  element: 9
-  knockbackHitAmount: 10
-  isHitScan: 1
-  shotsPerBurst: 1
-  BurstFireRate: 0
-  isLockOn: 0
-  lockOnDistance: 0
-  lockonTargetCount: 0
-  shotNumber: 1
-  fireSpread: 0
-  originSpread: 0
-  isRandomSpread: 0
-  ProjectilePrefab:
-  - {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
-  projectileSpeed: 17
-  projectileLifeTime: 0
-  fireDistance: 0
+  _AttackType: 3
+  _WeaponPrefab: {fileID: 8567313939770354761, guid: 0c550781899a6f440973345963acdc13, type: 3}
+  _AttackSpeed: 3.3333
+  _ActivationShake: 0
+  _BaseDamage: 20
+  _Element: 9
+  _Knockback: 10
+  _IsAutomatic: 0
+  _WarmUpTime: 0
+  _IsHitScan: 1
+  _FireDistance: 0
+  _HitPierce: 1
+  _VerticalAimAngle: 45
+  _AimWidth: 0.5
+  _TracerEffect: {fileID: 0}
+  _ImpactEffect: {fileID: 0}
+  _UsesCharge: 1
+  _ChargeTime: 1
+  _MaxChargeMultiplier: 1
+  _RequiresFullCharge: 1
+  _SlowWhileCharging: 0
+  _ChargeMoveMultiplier: 0.5
+  _Cycle:
+    _Projectile: {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
+    _ProjectileSpeed: 17
+    _ProjectileLifeTime: 5
+    _ProjectileCount: 1
+    _BurstCount: 1
+    _BurstSpeed: 10
+    _FiringOrigin: 0
+    _RandomOrigin: 0
+    _Spread: 0
+    _SpreadRandomness: 0
+    _DamageMultiplier: 1
+  _FinisherEvery: 0
+  _FinisherCycle:
+    _Projectile: {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
+    _ProjectileSpeed: 17
+    _ProjectileLifeTime: 5
+    _ProjectileCount: 1
+    _BurstCount: 1
+    _BurstSpeed: 10
+    _FiringOrigin: 0
+    _RandomOrigin: 0
+    _Spread: 0
+    _SpreadRandomness: 0
+    _DamageMultiplier: 1
