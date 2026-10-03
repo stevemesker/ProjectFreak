@@ -83,6 +83,7 @@ Before touching Unity, write down answers to these. You'll need them in the next
    | Stopping Distance | 1.5 | How close it walks up to its destination |
 
 6. Open the **Knockback** foldout. The defaults are fine for most enemies. Tick **Knockback Immune** for things that should never budge, like turrets.
+   Then the **Stagger** foldout: the defaults are fine too. Tick **Stagger Immune** for things that should never flinch. Mini bosses and bosses show a **Boss Stagger Thresholds** list instead (health percentages to stagger at, 66 and 33 to start).
 7. Open the **AI** foldout → **Personality** → drag a personality preset from `Assets/Scriptable Objects/AI/` into **Preset**. If you need a new one, do [[#Make a Personality Preset]] first, then come back.
 
 ✅ **When this step is done:** `SO_Enemy_<Name>` exists in `Scriptable Objects/Enemies/`, its name, rank and size class are set, and its AI foldout has a preset in it.
@@ -96,7 +97,7 @@ The quickest way is to copy the test enemy, which already has every script set u
 4. Double-click the new prefab to open it.
 5. Remove the **Damage Tester** component (click its ⋮ menu → **Remove Component**). It's a testing tool and real enemies don't need it.
 
-✅ **When this step is done:** `PFB_Enemy_<Name>` is in `Assets/Prefab/Enemies/` and opens on its own. Its Inspector lists these components: Enemy Damagable, Enemy Stats, Capsule Collider, Nav Mesh Agent (turned **off**), Enemy Movement, Unit Team, Unit Targeting and Unit Brain.
+✅ **When this step is done:** `PFB_Enemy_<Name>` is in `Assets/Prefab/Enemies/` and opens on its own. Its Inspector lists these components: Enemy Damagable, Enemy Stats, Capsule Collider, Nav Mesh Agent (turned **off**), Enemy Movement, Unit Team, Unit Targeting, Unit Brain and Enemy Stagger. Enemy Stagger's **On Staggered** event is where a hit reaction (flash, sound, animation) gets hooked up.
 
 ### Step 4 - Give it its look and body
 With the prefab still open:

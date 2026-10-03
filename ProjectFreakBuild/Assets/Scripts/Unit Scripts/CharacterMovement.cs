@@ -47,6 +47,8 @@ public class CharacterMovement : MonoBehaviour
 
     [Header("State Machine Variables")]
     [SerializeField] bool _CanTurn = true;
+    [SerializeField, Sirenix.OdinInspector.ReadOnly, Tooltip("True while an attack (like a melee swing) holds the unit's facing still. Separate from _CanTurn so the two never undo each other (read only)")]
+    bool _IsTurnLocked;
 
     #region Initialize
     public void SetTurning(bool Active)
@@ -93,7 +95,7 @@ public class CharacterMovement : MonoBehaviour
     void Rotationforce()
     {
         if (isMovePaused) return;
-        if (_CanTurn == false) return;
+        if (_CanTurn == false || _IsTurnLocked) return;
         if (m_turnGoal.sqrMagnitude < 0.0001f) return; //no look direction yet (LookRotation can't use a zero direction)
         Quaternion targetRotation =
         Quaternion.LookRotation(m_turnGoal);
@@ -143,6 +145,27 @@ public class CharacterMovement : MonoBehaviour
     {
         //function that puts the unit back to normal speed
         _MoveSpeedMultiplier = 1f;
+    }
+
+    public Vector3 GetLookDirection()
+    {
+        //function for where the unit is trying to face (its aim). Can be ahead of where its body faces while it turns. Zero if nothing has aimed yet
+        return m_turnGoal;
+    }
+
+    public void LockTurning(Vector3 facing)
+    {
+        //function for attacks that need the unit to hold still facing one way (like a melee swing). Snaps to that facing right away
+        //whoever locks it must call UnlockTurning when done. Aim input still updates, so the unit turns to the latest aim once unlocked
+        facing.y = 0f;
+        if (facing.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(facing.normalized);
+        _IsTurnLocked = true;
+    }
+
+    public void UnlockTurning()
+    {
+        //function that lets the unit turn again after LockTurning
+        _IsTurnLocked = false;
     }
 
     public void Dash()

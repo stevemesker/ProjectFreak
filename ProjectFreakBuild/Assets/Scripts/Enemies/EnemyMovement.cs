@@ -26,9 +26,13 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
     [Tooltip("True while a knockback slide is happening (read only)")]
     [SerializeField, ReadOnly] bool _IsKnockedBack;
 
+    [Tooltip("True while stunned (like a stagger): it stands still and can't take orders (read only)")]
+    [SerializeField, ReadOnly] bool _IsStunned;
+
     //local variables
     NavMeshAgent _agent;
     Coroutine _knockbackRoutine;
+    Coroutine _stunRoutine;
     DungeonFloorObject _waitingOnFloor; //the floor we're waiting on to finish loading, if any
     Vector3 _savedDestination; //remembered so the enemy can carry on after a knockback or once it activates
     bool _hasDestination;
@@ -63,6 +67,10 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
         if (_knockbackRoutine != null) StopCoroutine(_knockbackRoutine);
         _knockbackRoutine = null;
         _IsKnockedBack = false;
+
+        if (_stunRoutine != null) StopCoroutine(_stunRoutine);
+        _stunRoutine = null;
+        _IsStunned = false;
     }
 
     private void OnDestroy()
@@ -114,7 +122,7 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
         _savedDestination = destination;
         _hasDestination = true;
 
-        if (_IsActive == false || _IsKnockedBack) return; //remembered, and used once it can move again
+        if (IsActive() == false) return; //remembered, and used once it can move again
         _agent.SetDestination(destination);
     }
 
@@ -122,7 +130,7 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
     {
         //function that makes the enemy stop where it is and forget its destination
         _hasDestination = false;
-        if (_IsActive == false || _IsKnockedBack) return;
+        if (IsActive() == false) return;
         _agent.ResetPath();
     }
 
@@ -142,8 +150,8 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
 
     public bool IsActive()
     {
-        //function for checking if the enemy can take orders right now: on a NavMesh and not mid-knockback
-        return _IsActive && _IsKnockedBack == false;
+        //function for checking if the enemy can take orders right now: on a NavMesh, not mid-knockback and not stunned
+        return _IsActive && _IsKnockedBack == false && _IsStunned == false;
     }
     #endregion
 
@@ -208,10 +216,44 @@ public class EnemyMovement : MonoBehaviour, IKnockbackable, IUnitMover
             yield return null;
         }
 
-        _agent.isStopped = false;
         _IsKnockedBack = false;
         _knockbackRoutine = null;
+        ResumeMoving(); //carry on, unless a stun is still holding it
+    }
+    #endregion
 
+    #region Stun
+    public void Stun(float duration)
+    {
+        //function that stops the enemy where it stands for a while (used by stagger). Knockback can still slide it while stunned
+        //a new stun replaces one that's still going
+        if (duration <= 0f) return;
+        if (_stunRoutine != null) StopCoroutine(_stunRoutine);
+        _stunRoutine = StartCoroutine(StunRoutine(duration));
+    }
+
+    IEnumerator StunRoutine(float duration)
+    {
+        //function that holds the enemy still, then lets it carry on
+        _IsStunned = true;
+        if (_IsActive && _agent.isOnNavMesh)
+        {
+            _agent.isStopped = true;
+            _agent.velocity = Vector3.zero;
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        _IsStunned = false;
+        _stunRoutine = null;
+        ResumeMoving();
+    }
+
+    void ResumeMoving()
+    {
+        //function that lets the agent follow its path again once nothing (knockback or stun) is holding it
+        if (IsActive() == false || _agent.isOnNavMesh == false) return;
+        _agent.isStopped = false;
         if (_hasDestination) _agent.SetDestination(_savedDestination); //carry on to wherever we were going
     }
     #endregion

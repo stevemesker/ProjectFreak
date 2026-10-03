@@ -61,4 +61,28 @@ public class EnemySO : ScriptableObject
     [FoldoutGroup("Knockback", false)]
     [Tooltip("Shape of the knockback slide over its duration (0 = start, 1 = end). The default starts fast and slows down")]
     public AnimationCurve _KnockbackCurve = new AnimationCurve(new Keyframe(0f, 0f, 2f, 2f), new Keyframe(1f, 1f, 0f, 0f));
+
+    [FoldoutGroup("Stagger", false)]
+    [Tooltip("Never staggers from regular hits, no matter the size class. Boss health thresholds still work")]
+    public bool _StaggerImmune = false;
+
+    [FoldoutGroup("Stagger", false)]
+    [Tooltip("How long a stagger stuns this enemy, in seconds. It stops moving and its ability is interrupted")]
+    [Min(0f)] public float _StaggerDuration = 0.6f;
+
+    [FoldoutGroup("Stagger", false)]
+    [Tooltip("Seconds after a stagger ends before regular hits can stagger it again, so it can't be stunlocked forever")]
+    [Min(0f)] public float _StaggerImmunityTime = 1f; //todo: starting value, still an open question in the GDD
+
+    [FoldoutGroup("Stagger", false)]
+    [ShowIf(nameof(IsBossRank))] //only mini bosses and bosses use these
+    [InfoBox("Mini bosses and bosses don't use stagger chance. They stagger once each time their health drops past one of these percentages", InfoMessageType.Info, nameof(IsBossRank))]
+    [Tooltip("Health percentages to stagger at, like 66 and 33. Each one only happens once per fight")]
+    [Range(0f, 100f)] public List<float> _BossStaggerThresholds = new List<float>() { 66f, 33f }; //Range on a list applies to each entry
+
+    public bool IsBossRank()
+    {
+        //function for checking if this enemy uses boss stagger rules (set health points) instead of stagger chance
+        return _Rank == EnemyType.Rank.MiniBoss || _Rank == EnemyType.Rank.Boss;
+    }
 }

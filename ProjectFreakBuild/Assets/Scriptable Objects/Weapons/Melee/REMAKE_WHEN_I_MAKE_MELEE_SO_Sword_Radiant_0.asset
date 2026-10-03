@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f5287a5ad27d2a4fbc3c4775dd0da5d, type: 3}
+  m_Script: {fileID: 11500000, guid: 76636466070e404084767ee8787b083b, type: 3}
   m_Name: REMAKE_WHEN_I_MAKE_MELEE_SO_Sword_Radiant_0
   m_EditorClassIdentifier: 
   ItemID: 0
@@ -20,48 +20,35 @@ MonoBehaviour:
   itemStackSizeMax: 1
   _AttackType: 3
   _WeaponPrefab: {fileID: 8567313939770354761, guid: 0c550781899a6f440973345963acdc13, type: 3}
-  _AttackSpeed: 3.3333
+  _AttackSpeed: 1.5
   _ActivationShake: 0
   _BaseDamage: 20
   _Element: 9
-  _Knockback: 10
-  _IsAutomatic: 0
-  _WarmUpTime: 0
-  _IsHitScan: 1
-  _FireDistance: 0
-  _HitPierce: 1
-  _VerticalAimAngle: 45
-  _AimWidth: 0.5
-  _TracerEffect: {fileID: 0}
-  _ImpactEffect: {fileID: 0}
-  _UsesCharge: 1
-  _ChargeTime: 1
-  _MaxChargeMultiplier: 1
-  _RequiresFullCharge: 1
-  _SlowWhileCharging: 0
-  _ChargeMoveMultiplier: 0.5
-  _Cycle:
-    _Projectile: {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
-    _ProjectileSpeed: 17
-    _ProjectileLifeTime: 5
-    _ProjectileCount: 1
-    _BurstCount: 1
-    _BurstSpeed: 10
-    _FiringOrigin: 0
-    _RandomOrigin: 0
-    _Spread: 0
-    _SpreadRandomness: 0
+  _Knockback: 3
+  _Reach: 1
+  _ComboResetTime: 0.8
+  _Combo:
+  - _Swing: {fileID: 11400000, guid: ab2d6038ff8b4fcd8d8817d4169875ac, type: 2}
+    _Windup: 0.15
+    _ActiveTime: 0.15
+    _Recovery: 0.2
     _DamageMultiplier: 1
-  _FinisherEvery: 0
-  _FinisherCycle:
-    _Projectile: {fileID: 6182932304313693759, guid: a20066bc4a05b574d84fa968044d69f5, type: 3}
-    _ProjectileSpeed: 17
-    _ProjectileLifeTime: 5
-    _ProjectileCount: 1
-    _BurstCount: 1
-    _BurstSpeed: 10
-    _FiringOrigin: 0
-    _RandomOrigin: 0
-    _Spread: 0
-    _SpreadRandomness: 0
+    _KnockbackMultiplier: 0.3
+    _StaggerPower: 0.6
+    _MoveMultiplier: 0.6
+  - _Swing: {fileID: 11400000, guid: b0f41853686441639867a374587dc70f, type: 2}
+    _Windup: 0.1
+    _ActiveTime: 0.15
+    _Recovery: 0.2
     _DamageMultiplier: 1
+    _KnockbackMultiplier: 0.3
+    _StaggerPower: 0.6
+    _MoveMultiplier: 0.6
+  - _Swing: {fileID: 11400000, guid: b535d7bebfd648daa5c71c7d695bb724, type: 2}
+    _Windup: 0.25
+    _ActiveTime: 0.1
+    _Recovery: 0.45
+    _DamageMultiplier: 1.5
+    _KnockbackMultiplier: 1
+    _StaggerPower: 1
+    _MoveMultiplier: 0.6

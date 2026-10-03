@@ -53,14 +53,10 @@ public class ProjectileObject : MonoBehaviour
     {
         if (other.isTrigger) return;
         if (_Damage == null) { Destroy(gameObject); return; } //never got a package, nothing to deliver
-        if (_Damage._Source != null && other.transform.IsChildOf(_Damage._Source.transform)) return; //the shooter, or any part of it (IsChildOf also counts the object itself)
+        if (CombatTools.IsPartOf(other, _Damage._Source)) return; //the shooter, or any part of it
 
         //allies of the shooter: fly straight through them (no friendly fire)
-        if (_sourceTeam != null)
-        {
-            UnitTeam hitTeam = other.GetComponentInParent<UnitTeam>();
-            if (hitTeam != null && _sourceTeam.IsHostileTo(hitTeam) == false) return;
-        }
+        if (_sourceTeam != null && CombatTools.IsAlly(_sourceTeam, other.GetComponentInParent<UnitTeam>())) return;
 
         IDamagable damagable = other.GetComponentInParent<IDamagable>(); //InParent so hitting a child collider (like a big enemy's arm) still finds its damage script
         if (damagable == null)

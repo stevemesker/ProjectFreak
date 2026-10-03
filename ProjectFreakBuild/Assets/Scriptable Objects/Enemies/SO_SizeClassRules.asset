@@ -17,15 +17,19 @@ MonoBehaviour:
     _KnockbackDistanceMultiplier: 1
     _BonusDamageMultiplier: 1.25
     _FullKnockbackAttackTypes: 
+    _StaggerMultiplier: 1
   - _SizeClass: 1
     _KnockbackDistanceMultiplier: 1
     _BonusDamageMultiplier: 1
     _FullKnockbackAttackTypes: 
+    _StaggerMultiplier: 0.4
   - _SizeClass: 2
     _KnockbackDistanceMultiplier: 0.5
     _BonusDamageMultiplier: 1
     _FullKnockbackAttackTypes: 02000000
+    _StaggerMultiplier: 0.15
   - _SizeClass: 3
     _KnockbackDistanceMultiplier: 0
     _BonusDamageMultiplier: 1
     _FullKnockbackAttackTypes: 
+    _StaggerMultiplier: 0

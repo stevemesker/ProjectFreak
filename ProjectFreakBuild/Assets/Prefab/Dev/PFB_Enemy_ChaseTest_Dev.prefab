@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 7412093385526611203}
   - component: {fileID: 7412093385526611204}
   - component: {fileID: 7412093385526611205}
+  - component: {fileID: 6770343634273884826}
   m_Layer: 8
   m_Name: PFB_Enemy_ChaseTest_Dev
   m_TagString: Untagged
@@ -182,6 +183,26 @@ MonoBehaviour:
   _NavMeshSnapDistance: 3
   _IsActive: 0
   _IsKnockedBack: 0
+--- !u!114 &6770343634273884826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5078544813263492176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 905abcdbd6e74f1383304966953df750, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Movement: {fileID: 8240119936502187712}
+  _Abilities: {fileID: 0}
+  _OnStaggered:
+    m_PersistentCalls:
+      m_Calls: []
+  _IsStaggered: 0
+  _IsStaggerImmune: 0
+  _ThresholdsUsed: 0
 --- !u!1001 &3116855252906575070
 PrefabInstance:
   m_ObjectHideFlags: 0

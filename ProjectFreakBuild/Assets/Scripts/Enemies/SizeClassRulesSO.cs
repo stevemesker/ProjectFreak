@@ -55,6 +55,14 @@ public class SizeClassRulesSO : ScriptableObject
 
         return entry._KnockbackDistanceMultiplier;
     }
+
+    public float GetStaggerMultiplier(EnemyType.SizeClass size)
+    {
+        //function for how much of a hit's stagger power a size class takes (Small takes it all, Huge none)
+        SizeClassEntry entry = GetEntry(size);
+        if (entry == null) return 1f; //no rules for this size, take the full stagger chance (OnValidate warns about this)
+        return entry._StaggerMultiplier;
+    }
     #endregion
 
     #region Tools
@@ -63,14 +71,14 @@ public class SizeClassRulesSO : ScriptableObject
     {
         //editor button that resets the list to the standard setup
         _SizeClasses.Clear();
-        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Small, 1f, 1.25f));
-        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Medium, 1f, 1f));
+        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Small, 1f, 1.25f, 1f));
+        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Medium, 1f, 1f, 0.4f));
 
-        SizeClassEntry large = new SizeClassEntry(EnemyType.SizeClass.Large, 0.5f, 1f);
+        SizeClassEntry large = new SizeClassEntry(EnemyType.SizeClass.Large, 0.5f, 1f, 0.15f);
         large._FullKnockbackAttackTypes.Add(DamageType.AttackType.Explosion);
         _SizeClasses.Add(large);
 
-        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Huge, 0f, 1f));
+        _SizeClasses.Add(new SizeClassEntry(EnemyType.SizeClass.Huge, 0f, 1f, 0f));
     }
     #endregion
 }
@@ -90,13 +98,17 @@ public class SizeClassEntry
     [Tooltip("Attack types that ignore this size's knockback reduction and always push it the full distance")]
     public List<DamageType.AttackType> _FullKnockbackAttackTypes = new List<DamageType.AttackType>();
 
+    [Tooltip("How much of a hit's stagger power this size takes. Chance to stagger = hit's stagger power × this. 1 = full, 0 = never staggers from regular hits. Mini bosses and bosses ignore this and stagger at set health points instead")]
+    [Range(0f, 1f)] public float _StaggerMultiplier = 1f;
+
     public SizeClassEntry() { } //empty constructor so Unity can make new entries when you press + in the inspector
 
-    public SizeClassEntry(EnemyType.SizeClass size, float knockbackMultiplier, float bonusDamageMultiplier)
+    public SizeClassEntry(EnemyType.SizeClass size, float knockbackMultiplier, float bonusDamageMultiplier, float staggerMultiplier)
     {
         //constructor used by the Fill Defaults button
         _SizeClass = size;
         _KnockbackDistanceMultiplier = knockbackMultiplier;
         _BonusDamageMultiplier = bonusDamageMultiplier;
+        _StaggerMultiplier = staggerMultiplier;
     }
 }
