@@ -26,9 +26,12 @@ The player uses a physics-driven character controller inspired by the locomotion
 | `SetTurning(bool)`        | Turns rotation on/off without affecting movement. Turned off while the [[Radial Menu]] is open       |
 | `DeactivateMovement()`    | Pauses the rigidbody and saves its velocity (used by dashes)                                         |
 | `ReactivateMovement()`    | Restores the saved velocity                                                                          |
-| `SetMoveSpeedMultiplier(float)` | Temporary slowdown (1 = normal, 0.5 = half speed). Used by ranged weapons while charging, and meant for melee swings later. Whoever sets it must clear it |
+| `SetMoveSpeedMultiplier(float)` | Temporary slowdown (1 = normal, 0.5 = half speed). Used by ranged weapons while charging and melee weapons while swinging. Whoever sets it must clear it |
 | `ClearMoveSpeedMultiplier()` | Back to normal speed                                                                            |
 | `GetMaxSpeed()`           | Top speed in m/s, including the move speed multiplier                                                |
+| `GetLookDirection()`      | Where the unit is trying to face (its aim). Can be ahead of where the body faces while it turns      |
+| `LockTurning(Vector3)`    | Snaps the unit to face a direction and holds it there (used by melee swings). Aim input keeps updating underneath. Separate from `SetTurning`, so the two never undo each other |
+| `UnlockTurning()`         | Lets the unit turn again, toward its latest aim                                                      |
 
 ## PlayerInputDriver (player controls)
 

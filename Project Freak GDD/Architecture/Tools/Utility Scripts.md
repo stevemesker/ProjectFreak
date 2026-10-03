@@ -39,5 +39,6 @@ In `Scripts/Dev Scripts`. For testing only.
 | :------------- | :--------------------------------------------------------------------------------------- |
 | `DamageTester` | Buttons that show a damage, healing, or crit popup at the object (see [[UIDamage Manager]]) |
 | `SceneGetter`  | Button that writes a scene asset's name into a `SceneLocationSO` (see [[Scene Manager]]) |
+| `SwingShapePreviewObject` | Draws a melee weapon's swing shapes in the Scene view without playing. Put it on an empty object on the floor (see [[Melee Weapon System#Previewing shapes]]) |
 | `EnemyChaseTestBrain` | *Old temp brain, replaced by [[Unit Brain]] and no longer on any prefab. Safe to delete* [[Notes for the future]] |
 | `ShadeFollowTestBrain` | *Old temp brain, replaced by [[Unit Brain]] and no longer on any prefab. Safe to delete* [[Notes for the future]] |

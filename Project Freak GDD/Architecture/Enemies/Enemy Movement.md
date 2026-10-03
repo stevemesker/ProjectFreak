@@ -44,6 +44,15 @@ Always visible:
 | `_KnockbackDuration`  | 0.25    | How long the slide lasts, seconds                          |
 | `_KnockbackCurve`     | ease-out| Shape of the slide over its duration                       |
 
+**Stagger** foldout (starts closed). Read by `EnemyStagger` (see [[Melee Weapon System#Stagger]]):
+
+| Field                    | Default | Description |
+| :----------------------- | :------ | :---------- |
+| `_StaggerImmune`         | off     | Never staggers from regular hits, no matter the size. Boss thresholds still work |
+| `_StaggerDuration`       | 0.6     | How long a stagger stuns it, seconds |
+| `_StaggerImmunityTime`   | 1       | Seconds after a stagger ends before regular hits can stagger it again (stops stunlocks). Starting value, to tune |
+| `_BossStaggerThresholds` | 66, 33  | *MiniBoss and Boss only.* Health percentages it staggers at, once each |
+
 **AI** foldout (starts closed):
 
 | Field          | Description                                                                 |
@@ -63,12 +72,14 @@ Because bosses are placed by hand, movement never depends on a spawner. Spawners
 ## Size Class Rules
 One shared `SizeClassRulesSO` for the whole game (`Scriptable Objects/Enemies/SO_SizeClassRules`), assigned once on the [[Game Manager]] and reached with `GameManager._GameManager.GetSizeClassRules()`. **Create → Combat → Size Class Rules**, with a **Fill Defaults** button.
 
-| Size   | Knockback | Bonus damage* | Full knockback from |
-| :----- | :-------- | :------------ | :------------------ |
-| Small  | 1×        | 1.25×         | -                   |
-| Medium | 1×        | 1×            | -                   |
-| Large  | 0.5×      | 1×            | Explosion           |
-| Huge   | 0×        | 1×            | -                   |
+| Size   | Knockback | Bonus damage* | Full knockback from | Stagger |
+| :----- | :-------- | :------------ | :------------------ | :------ |
+| Small  | 1×        | 1.25×         | -                   | 1×      |
+| Medium | 1×        | 1×            | -                   | 0.4×    |
+| Large  | 0.5×      | 1×            | Explosion           | 0.15×   |
+| Huge   | 0×        | 1×            | -                   | 0×      |
+
+**Stagger** multiplies a hit's stagger power to get the chance it staggers (`GetStaggerMultiplier`). Mini bosses and bosses ignore it.
 
 \* *Bonus damage isn't applied yet. It comes with the damage pass (along with the defense bug in [[Known Issues]]).* [[Notes for the future]]
 
@@ -90,11 +101,12 @@ If any damage entry in a hit uses one of the "full knockback" attack types, that
 
 | Function                  | Description                                                                |
 | :------------------------ | :------------------------------------------------------------------------- |
-| `SetDestination(Vector3)` | Go here. Remembered if the enemy can't move yet or is mid-knockback        |
+| `SetDestination(Vector3)` | Go here. Remembered if the enemy can't move yet, is mid-knockback or is stunned |
 | `StopMoving()`            | Stop and forget the destination                                            |
 | `HasArrived()`            | True when it reached its destination (or has none)                         |
-| `IsActive()`              | True when it can take orders: on a NavMesh and not mid-knockback           |
+| `IsActive()`              | True when it can take orders: on a NavMesh, not mid-knockback and not stunned. The [[Unit Brain]] pauses while this is false |
 | `TakeKnockback(DamagePackage)` | From `IKnockbackable`. Pushes away from the package's `_Source`       |
+| `Stun(float)`             | Stops it where it stands for that many seconds (used by stagger). A new stun replaces one still going. Knockback can still slide it while stunned |
 
 The movement functions come from `IUnitMover`, so the same AI brain can steer enemies and shades (see [[Unit Targeting#IUnitMover]]).
 
@@ -103,7 +115,7 @@ Hits carry `_KnockbackDistance` (meters) on the [[Damage Package]]. When an enem
 1. Skips if the distance is 0, the enemy is immune, or it isn't on a NavMesh yet
 2. Multiplies the distance by its size class rule
 3. Uses `NavMesh.Raycast` to stop the slide at the edge of the NavMesh, so enemies never get pushed into walls or off the map
-4. Slides there over `_KnockbackDuration` following `_KnockbackCurve` (with `agent.Move`, which keeps it on the NavMesh), then carries on to its destination
+4. Slides there over `_KnockbackDuration` following `_KnockbackCurve` (with `agent.Move`, which keeps it on the NavMesh), then carries on to its destination (unless it's still stunned: whichever of knockback or stun ends last lets it move again, through `ResumeMoving()`)
 
 A new hit during a slide replaces it. **Test Knockback** (Odin button, play mode) knocks the enemy away from the player.
 

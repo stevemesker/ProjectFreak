@@ -208,7 +208,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
             _busyUntil = Time.time + Mathf.Max(_WeaponData.GetAttackTime() - chargeTimeUsed, burstTime);
 
             //the package is built once when the cycle fires, so buffs gained after firing don't change shots in the air
-            DamagePackage package = BuildDamagePackage(cycle, chargeMultiplier);
+            DamagePackage package = CombatTools.BuildWeaponDamagePackage(_Wielder, _stats, _WeaponData, IsRange(), cycle._DamageMultiplier * chargeMultiplier, 1f);
             LaunchPackage launch = new LaunchPackage();
             launch._Source = _Wielder;
             launch._ChargePercent = launchChargePercent;
@@ -394,10 +394,10 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         {
             RaycastHit hit = _sortedHits[i];
             Collider hitCollider = hit.collider;
-            if (IsPartOfWielder(hitCollider)) continue;
+            if (CombatTools.IsPartOf(hitCollider, _Wielder)) continue;
 
             UnitTeam unit = hitCollider.GetComponentInParent<UnitTeam>();
-            if (unit != null && IsAlly(unit)) continue; //shots pass through allies
+            if (unit != null && CombatTools.IsAlly(_wielderTeam, unit)) continue; //shots pass through allies
 
             IDamagable damagable = hitCollider.GetComponentInParent<IDamagable>(); //GetComponentInParent checks this object, then its parents
             Vector3 hitPoint = GetHitPoint(hit, origin);
@@ -447,9 +447,9 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         for (int i = 0; i < units.Count; i++)
         {
             UnitTeam unit = units[i];
-            if (unit == null || unit.gameObject == _Wielder || IsAlly(unit)) continue;
+            if (unit == null || unit.gameObject == _Wielder || CombatTools.IsAlly(_wielderTeam, unit)) continue;
 
-            Collider body = GetBodyCollider(unit);
+            Collider body = CombatTools.GetBodyCollider(unit, _colliderBuffer);
             if (body == null) continue;
 
             Vector3 targetCenter = body.bounds.center;
@@ -499,9 +499,9 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         for (int i = 0; i < hitCount; i++)
         {
             Collider hitCollider = _rayHitBuffer[i].collider;
-            if (IsPartOfWielder(hitCollider)) continue;
+            if (CombatTools.IsPartOf(hitCollider, _Wielder)) continue;
             if (hitCollider.transform.IsChildOf(targetRoot)) continue; //the target itself
-            if (IsLevelGeometry(hitCollider)) return false;
+            if (CombatTools.IsLevelGeometry(hitCollider)) return false;
         }
         return true;
     }
@@ -519,40 +519,6 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
         //function for where a hit happened. Things the ray started inside report distance 0 and no point, so use the muzzle
         if (hit.distance <= 0f) return origin;
         return hit.point;
-    }
-
-    Collider GetBodyCollider(UnitTeam unit)
-    {
-        //function that finds a unit's solid collider (skipping trigger colliders like pickup or detection ranges)
-        unit.GetComponentsInChildren(false, _colliderBuffer); //fills our reusable list instead of making a new one
-        for (int i = 0; i < _colliderBuffer.Count; i++)
-        {
-            if (_colliderBuffer[i].isTrigger == false) return _colliderBuffer[i];
-        }
-        return null;
-    }
-
-    bool IsAlly(UnitTeam unit)
-    {
-        //function for checking if a unit is on the wielder's side. A wielder with no team has no allies
-        if (_wielderTeam == null) return false;
-        if (unit == _wielderTeam) return true;
-        return _wielderTeam.IsHostileTo(unit) == false;
-    }
-
-    bool IsPartOfWielder(Collider hitCollider)
-    {
-        //function for checking if a collider belongs to whoever is holding the weapon (IsChildOf also counts the object itself)
-        if (_Wielder == null) return false;
-        return hitCollider.transform.IsChildOf(_Wielder.transform);
-    }
-
-    bool IsLevelGeometry(Collider hitCollider)
-    {
-        //function for checking if something stops shots: anything that isn't a unit and can't be damaged (walls, floors, props)
-        if (hitCollider.GetComponentInParent<UnitTeam>() != null) return false;
-        if (hitCollider.GetComponentInParent<IDamagable>() != null) return false;
-        return true;
     }
 
     void SpawnImpact(Vector3 point, Vector3 surfaceNormal)
@@ -584,45 +550,11 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
     }
     #endregion
 
-    #region Damage
-    DamagePackage BuildDamagePackage(FireCycleEntry cycle, float chargeMultiplier)
-    {
-        //function that builds the damage snapshot for one cycle, using the wielder's stats right now
-        DamagePackage package = new DamagePackage();
-        package._Source = _Wielder;
-        package._CritMultiplier = 1f; //todo: crits aren't built yet
-        package._KnockbackDistance = _WeaponData._Knockback;
-        package._Entries = new List<DamageEntry>();
-
-        DamageType.StatType attackStat = DamageType.StatType.None;
-        int attackStatValue = 0;
-        if (_stats != null)
-        {
-            attackStat = _stats.GetAttackStatType(IsRange(), _WeaponData._AttackType); //AGI or INT for ranged, depending on attack type
-            attackStatValue = _stats.TypeToStatFinder(attackStat);
-        }
-
-        //(base damage + attack stat) × multipliers, following the formula in the Damage note
-        float damage = (_WeaponData._BaseDamage + attackStatValue) * cycle._DamageMultiplier * chargeMultiplier;
-
-        DamageEntry entry = new DamageEntry();
-        entry._Damage = Mathf.RoundToInt(damage);
-        entry._atkType = _WeaponData._AttackType;
-        entry._statType = attackStat;
-        entry._elementType = _WeaponData._Element;
-        package._Entries.Add(entry);
-
-        return package;
-    }
-
+    #region Effects
     void ShakeCamera()
     {
-        //function for the weapon's activation shake. Only shakes when the camera is following the wielder, so shades firing off screen don't shake it
-        if (_WeaponData._ActivationShake <= 0f) return;
-        if (CameraManager._CamManager == null) return;
-        if (CameraManager._CamManager._currentFollowTarget != _Wielder) return;
-
-        CameraManager._CamManager.CameraShake(_WeaponData._ActivationShake, null);
+        //function for the weapon's activation shake (the shared helper only shakes when the camera follows the wielder)
+        CombatTools.ShakeCameraForWielder(_Wielder, _WeaponData._ActivationShake);
     }
     #endregion
 

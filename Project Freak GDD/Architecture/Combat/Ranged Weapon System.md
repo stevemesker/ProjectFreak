@@ -16,7 +16,7 @@ WeaponAttackRanged (ITriggerable, on the held weapon prefab)
  └── runs warm up → charge → cycle → repeat
 ```
 
-**Scripts:** `Items/WeaponData/WeaponItem.cs`, `Items/WeaponData/WeaponRangedItem.cs` (also holds `FireCycleEntry`), `Combat/WeaponAttackRanged.cs`, `Combat/LaunchPackage.cs`, `Combat/ProjectileObject.cs`, `Combat/HitScanTracerObject.cs`.
+**Scripts:** `Items/WeaponData/WeaponItem.cs`, `Items/WeaponData/WeaponRangedItem.cs` (also holds `FireCycleEntry`), `Combat/WeaponAttackRanged.cs`, `Combat/LaunchPackage.cs`, `Combat/ProjectileObject.cs`, `Combat/HitScanTracerObject.cs`. Rules shared with melee (allies, walls, body colliders, damage packages, activation shake) live in `Combat/CombatTools.cs` (see [[Weapon usage]]).
 
 ---
 ## Data

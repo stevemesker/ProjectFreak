@@ -59,16 +59,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 8567313939770354761}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06d037bbb4796504996c92978481af8e, type: 3}
+  m_Script: {fileID: 11500000, guid: b5a9e02c537045858c8b394396cc7a4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _HitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _DrawSwingGizmos: 1
   _Wielder: {fileID: 0}
-  _WeaponObject: {fileID: 0}
-  _AttackBonus: 0
-  elementType: 0
-  canFire: 1
-  isReleased: 1
-  isCharging: 0
+  _WeaponData: {fileID: 0}
+  _ComboStep: 0
+  _IsTriggerHeld: 0
+  _IsAttackBuffered: 0
 --- !u!114 &6681318171562485221
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -23,6 +23,13 @@ public interface IKnockbackable
     void TakeKnockback(DamagePackage dmgPackage);
 }
 
+public interface IStaggerable
+{
+    //anything that can be staggered (interrupted and stunned briefly) by a hit. Gets every hit, even ones with no
+    //stagger power, so bosses can check their health thresholds. The damage package's _StaggerPower says how likely it is
+    void TakeStagger(DamagePackage dmgPackage);
+}
+
 public interface IAggroReceiver
 {
     //anything that wants to know who hit it, so its AI can go after the attacker (see UnitTargeting)

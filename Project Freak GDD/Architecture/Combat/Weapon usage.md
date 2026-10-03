@@ -22,6 +22,8 @@ Attack input goes `PlayerCombatInteract` → `Player.UseCurrentWeapon()` / `Rele
 
 **`WeaponRangedItem`** + **`WeaponAttackRanged`** - the ranged weapon data and the script on the held weapon that fires it: warm up, automatic, burst, charge, finishers, projectile patterns and hit scan. See [[Ranged Weapon System]]
 
-**`WeaponAttackMelee`** - the melee weapon. Planned, see [[Melee Weapon System]] [[Notes for the future]]
+**`MeleeWeaponItem`** + **`WeaponAttackMelee`** - the melee weapon data and the script on the held weapon that swings it: combos built from shared `SwingShapeSO`s, a sweeping hit check, damage and knockback. See [[Melee Weapon System]]. Stagger and animations aren't hooked up yet [[Notes for the future]]
+
+**`CombatTools`** - static helpers both weapon scripts share: `IsPartOf`, `IsAlly`, `IsLevelGeometry`, `GetBodyCollider`, `BuildWeaponDamagePackage` and `ShakeCameraForWielder`. New attack code (abilities, enemy attacks) should use these so the rules for allies, walls and damage stay in one place.
 
 `WeaponItem._Element` uses `DamageType.ElementType`.

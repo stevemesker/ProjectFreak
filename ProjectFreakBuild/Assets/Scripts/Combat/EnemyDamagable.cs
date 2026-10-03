@@ -33,6 +33,9 @@ public class EnemyDamagable : MonoBehaviour, IDamagable
 
         //push this unit back if it can be knocked back. TryGetComponent with an interface finds any component that implements it
         if (TryGetComponent(out IKnockbackable knockbackable)) knockbackable.TakeKnockback(dmgPackage);
+
+        //maybe stagger it. Runs after onDamage, so bosses see their health after this hit when checking thresholds
+        if (TryGetComponent(out IStaggerable staggerable)) staggerable.TakeStagger(dmgPackage);
         return true;
     }
 }
