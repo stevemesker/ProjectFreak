@@ -33,6 +33,7 @@ Back to [[AA - AI Info]]
 **Player**
 - [x] `UnitDash.startDashEvent` is never invoked (only `endDashEvent` is). *Fixed Oct 2026: start event now fires, dashes are tracked in `_dashRoutine` so chained dashes don't overlap, and `OnDisable` ends a running dash*
 - [ ] `UnitDash` keeps one shared `hitList`, so chaining a second dash before the first finishes throws away the first dash's hits (they never take damage)
+- [ ] `UnitDash` pass-through damage doesn't check teams, so a damaging dash would hit allies too. Projectiles and hit scan skip allies through `UnitTeam.IsHostileTo` (Oct 2026); dashes should do the same
 - [x] `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted. *Fixed Oct 2026: `Player` keeps a reference to the weapon it spawned, and `PlayerCombatInteract` goes through these functions instead of its own copy of the check*
 - [ ] `PlayerCombatInteract.EndSelection` calls `StopCoroutine(cycleTimer)` without checking for null, which logs an error if the scroll is released without a cycle running
 

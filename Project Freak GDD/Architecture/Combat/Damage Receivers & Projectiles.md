@@ -15,8 +15,9 @@ A simple projectile.
 `LaunchProjectile(damage, launch, speed, lifeTime)` is how weapons send it off: it fills the fields above and destroys the projectile after `lifeTime` seconds if it hasn't hit anything. Traps still set `_Speed` and `_Damage` directly and get the default lifetime. See [[Ranged Weapon System#Damage and Projectiles]].
 
 On trigger enter:
-- Ignores other triggers and its own source
-- If the object has `IDamagable`, calls `TakeDamage(_Damage)`
+- Ignores other triggers and its own source (including the source's child colliders)
+- **No friendly fire:** flies through units on the shooter's team (`UnitTeam.IsHostileTo`, see [[Unit Targeting#UnitTeam]]). The shooter's team is looked up once in `LaunchProjectile`. Projectiles with no team behind them (like [[Traps]]) hit every team
+- If the object or one of its parents has `IDamagable`, calls `TakeDamage(_Damage)`
 - Destroys itself either way (also if it never got a package)
 
 Used by `WeaponAttackRanged` (see [[Weapon usage]]) and [[Traps]]. Projectile behaviors (arcs, homing, growing with charge) get their own note later. [[Notes for the future]]

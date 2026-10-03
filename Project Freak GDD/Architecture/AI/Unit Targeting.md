@@ -17,14 +17,14 @@ Goes on **every unit**: the player, shades and enemies. It says which side the u
 
 | Field             | Description                                                                                     |
 | :---------------- | :---------------------------------------------------------------------------------------------- |
-| `_Team`           | `Player` or `Enemy`. Units on different teams are hostile to each other                          |
+| `_Team`           | `Player`, `Fiend` or `Lumina` (default `Fiend`). Units on different teams are hostile to each other, so Fiends and Lumina fight each other as well as the player, but never their own team. *(Oct 2026: `Enemy` was renamed `Fiend`, so every existing enemy is a Fiend. New teams go at the end of the enum, since Unity saves it as a number)* |
 | `_Role`           | `PlayerBody`, `Shade` or `Enemy`. The player's body gets special rules while the player is in the shade |
 | `_TargetPriority` | How much hostile AI prefers this unit inside its priority group. 1 = normal, 2 = twice as appealing |
 | `_InputDriver`    | *Player Body only.* The `PlayerInputDriver` that shows whether the player is in this body (auto-filled) |
 
 | Function            | Description                                                         |
 | :------------------ | :------------------------------------------------------------------ |
-| `IsHostileTo(unit)` | True if the other unit is on the opposite team                      |
+| `IsHostileTo(unit)` | True if the other unit is on a different team. Every friendly fire check goes through this (AI targeting, aggro, hit scan, projectiles) |
 | `IsVacantBody()`    | True for the player's body while its input driver is off (the player is controlling the shade) |
 | `GetTargetPriority()` | Returns `_TargetPriority`                                         |
 
