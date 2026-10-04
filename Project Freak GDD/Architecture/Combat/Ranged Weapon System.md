@@ -186,7 +186,7 @@ For each projectile `i` of `count`, using the wielder's flat forward and right. 
 ---
 ## Damage and Projectiles
 The [[Damage Package]] is built once when the cycle fires (per [[Weapons#Damage Package]]), so buffs gained after firing don't change shots already in the air. Every projectile in the cycle (burst shots included) carries the same package:
-- One damage entry: `(base damage + attack stat) × the cycle's _DamageMultiplier × the charge multiplier`, following the formula in [[Damage]]. The attack stat is AGI or INT depending on attack type (`IsRange()` = true). The wielder's stats are read when the package is built, not when the weapon is equipped
+- One damage entry: `(base damage + attack stat) × the cycle's _DamageMultiplier × the charge multiplier`, following the formula in [[Damage]]. The attack stat is AGI or INT depending on attack type (`IsRange()` = true). The wielder's stats are read when the package is built, not when the weapon is equipped. *The damage overhaul changes this to `attack stat × weapon power × multipliers`, so `_BaseDamage` becomes a power multiplier, and the entry carries the attack stat (see [[Damage]]).* [[Notes for the future]]
 - `_KnockbackDistance` = the weapon's `_Knockback`
 - Crit is always ×1 for now [[Notes for the future]]
 

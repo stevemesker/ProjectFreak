@@ -14,6 +14,8 @@ CoreStats           (every unit that can fight)
 
 **Stats:** `_HP`, `_Health`, `_STR`, `_DEF`, `_AGI`, `_INT`, `_SPR`, `_WIS`, `_LVL`, `_Name`
 
+*`_WIS` is being removed. SPR is now the mental defense stat and INT the mental attack stat (see [[Character Stats]]). The cleanup is tracked in [[Known Issues]].* [[Notes for the future]]
+
 **Combat stat pointers** - which stat each kind of attack uses:
 
 | Variable                | Default   |

@@ -68,13 +68,18 @@ Controls how much camera shake is dampened based on how hurt a unit is. Stored i
 
 ---
 ## Other
-- `EnvironmentDamageable` exists but is an empty template. Planned for [[Destructible Objects]] [[Notes for the future]]
+- `EnvironmentDamageable` exists but is an empty template. Planned for [[Destructible Objects]]: no health, just a tier and a material, checked against the package's entry types/elements, stagger power and (later) ability tags [[Notes for the future]]
 - Pass-through dashes deliver damage packages too. See [[Unit Dash Script]]
 
 ---
 ## Planned: Damage Overhaul
-The defense math is getting rebuilt. Nothing here is decided yet beyond the direction. [[Notes for the future]]
-- **Mitigation formula:** replace the current "subtract the defense stat" step with Blizzard's k/(k+x) style: damage reduction = defense / (defense + K). Defense always helps, never reaches 100%, and each extra point helps a little less than the last [[Notes for the future]]
-- **K and leveling:** K usually grows with the attacker's level, so the same defense protects less against higher level enemies. How K scales with level, and how level ups and stat boosts (shades, runes, gear) feed into defense, needs working out before the formula goes in. Plotting a few K curves across the planned level range would help pick one [[Notes for the future]]
-- **Where it changes:** only the receivers (`EnemyStats.DamageCalculation`, `PlayerDamegable.DamageCalculation`). Weapons, abilities, traps and dashes only build [[Damage Package]]s, so they shouldn't need changes
-- **Folds in:** the damage bugs in [[Known Issues]] (defense adding damage, `PlayerDamegable` not implementing `IDamagable`, immunities not checked) and crits, which are always ×1 for now [[Notes for the future]]
+The damage math is getting rebuilt. The formula was decided in Oct 2026, see [[Damage]] for it and [[Damage Balance]] for why. Not built yet. [[Notes for the future]]
+- **Mitigation formula:** replace "subtract the defense stat" with: damage that gets through = ATK ÷ (ATK + 2 × DEF), where ATK is the attacker's stat carried on the damage entry and DEF is the receiver's matching defense (DEF or SPR). K is the attacker's stat, not a level, because level never drives stats in this game [[Notes for the future]]
+- **One shared calculation:** `EnemyStats.DamageCalculation` and `PlayerDamegable.DamageCalculation` are separate copies today. Both should call one shared function (likely a static in `CombatTools` or `CoreStats`) [[Notes for the future]]
+- **True damage:** skips defense but still checks element resistance and immunity. Hazards will use true damage as a percent of max HP [[Notes for the future]]
+- **Healing:** stop treating healing as negative damage (the Healing element is being removed). For now a separate small heal call that skips the damage formula is enough. The popup already shows negative numbers as heals. A real healing system comes later [[Notes for the future]]
+- **Stat floor:** stats used in the formula never go below 1, so a stat pushed down by negative runes can't make damage 0 or negative [[Notes for the future]]
+- **Where it changes:** the receivers, plus the attackers in a small way: entries need to carry the attack stat (see [[Damage Package]]), and weapons switch from base damage to a power multiplier (see [[Ranged Weapon System#Damage and Projectiles]], [[Melee Weapon System#Damage]])
+- **Crits:** all crit logic lives in the shared damage calculation. On each hit: crit if the unit is staggered (ask its `IStaggerable`), otherwise roll against the package's `_CritChance`. A crit multiplies the first (main) entry only, by `_CritMultiplier`. The popup's `isCrit` comes from this result [[Notes for the future]]
+- **Friendly fire:** dashes and explosions need the same `UnitTeam.IsHostileTo` check projectiles and hit scan already have, skipped only when the package's `_HitsAllies` flag is set [[Notes for the future]]
+- **Folds in:** the damage bugs in [[Known Issues]] (defense adding damage, `PlayerDamegable` not implementing `IDamagable`, immunities not checked, dashes hitting allies) and crits, which are always ×1 for now [[Notes for the future]]

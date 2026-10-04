@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Notes for the future.md",
+                "file": "UI/Rune Field/Rune Field.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Notes for the future"
+              "title": "Rune Field"
             }
           }
         ]
@@ -236,35 +236,35 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "ecc4a37c8f083c41",
+  "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Combat/Damage Balance.md",
+    "UI/Rune Field/Core Node.md",
+    "Character Traits/Character Stats.md",
+    "Combat/Damage.md",
+    "Architecture/Tools/Utility Scripts.md",
+    "Notes for the future.md",
+    "Architecture/AI Info/Known Issues.md",
     "Architecture/Architecture Atlas.md",
     "Architecture/AI/Unit Targeting.md",
-    "Notes for the future.md",
     "Architecture/Dungeons/Dungeon Floor Object.md",
     "Combat/Weapons.md",
     "Attack Speed.md",
     "Atlas.md",
-    "Architecture/AI Info/Known Issues.md",
     "Architecture/AI Info/Code Style Rules.md",
     "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
     "Architecture/AI Info/AA - AI Info.md",
     "Shade Info/Shade.md",
     "Dungeons/Dungeon.md",
     "Game design.md",
-    "Character Traits/Character Stats.md",
     "Architecture/Combat/Ranged Weapon System.md",
     "Architecture/Combat/Melee Weapon System.md",
-    "Combat/Damage.md",
     "Architecture/AI/Unit Brain.md",
     "Architecture/Combat/Damage Package.md",
     "File Naming Conventions.md",
     "Combat/Attack Type.md",
     "Architecture/Enemies/Enemy Movement.md",
-    "Architecture/Dungeons/Enemy Spawners.md",
     "Architecture/AI",
-    "Architecture/Dungeons/Dungeon Architecture.md",
-    "Architecture/Game Management/Game Manager.md",
     "Architecture/Enemies",
     "Architecture/UI",
     "Architecture/Shades",

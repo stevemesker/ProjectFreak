@@ -15,8 +15,14 @@ All weapon categories can be either a physical or magical based device, some can
 ### Activation Shake
 We want some weapons to make the player feel incredibly powerful and camera shake is one of the tools we can use to really punch that feeling home. Most weapons won't utilize this but things like giant rocket launchers or massive axes need that extra punch.
 
-### Base Damage
-The amount of damage a weapon can do before any modifiers are added to it.
+### Weapon Power
+How hard a weapon hits, as a **multiplier on the wielder's attack stat** (for example a starter sword ×1.0, an ultima weapon ×2.5). *Decided in the Oct 2026 damage overhaul, replacing flat base damage* (see [[Damage]] and [[Damage Balance]]).
+
+Stats grow a lot over the game (from around 10 to the hundreds), so a flat base damage would stop mattering late. As a multiplier, a great weapon is always a big upgrade, which keeps late game weapon hunting (think Kingdom Hearts ultima weapon hunting) worth doing.
+
+Weapons also carry a **crit chance** and **crit multiplier** (default ×1.5), which runes can add to. Crits only hit the main damage entry, and staggered enemies always take a crit (see [[Damage]]).
+
+Weapons are expected to matter less in most playthroughs, since [[Fuse Shade]] makes Hazen a powerhouse for a whole floor. The best weapons are for players who want to play without fusing, or who lose their shade and still want to finish the dungeon.
 
 ### Damage Package
 The damage package is a custom data holder class that takes in the damage dealers stats, bonus effects, and applies the weapon's alterations to deliver a total damage to a target (see [[Damage]] or [[Damage Package]] for more detail). All weapons create damage packages but different weapon types will calculate it at different times. For instance, melee weapons calculate it at the point of collision with an enemy vs ranged weapons who build it when launching their projectile (with the exception of hit scan ranged weapons) since debuffs should not effect a projectile that is in mid air.
