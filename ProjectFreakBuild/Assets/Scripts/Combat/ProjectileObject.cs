@@ -55,8 +55,8 @@ public class ProjectileObject : MonoBehaviour
         if (_Damage == null) { Destroy(gameObject); return; } //never got a package, nothing to deliver
         if (CombatTools.IsPartOf(other, _Damage._Source)) return; //the shooter, or any part of it
 
-        //allies of the shooter: fly straight through them (no friendly fire)
-        if (_sourceTeam != null && CombatTools.IsAlly(_sourceTeam, other.GetComponentInParent<UnitTeam>())) return;
+        //allies of the shooter: fly straight through them, unless the package has friendly fire turned on
+        if (CombatTools.CanHitTeam(_sourceTeam, other.GetComponentInParent<UnitTeam>(), _Damage._HitsAllies) == false) return;
 
         IDamagable damagable = other.GetComponentInParent<IDamagable>(); //InParent so hitting a child collider (like a big enemy's arm) still finds its damage script
         if (damagable == null)

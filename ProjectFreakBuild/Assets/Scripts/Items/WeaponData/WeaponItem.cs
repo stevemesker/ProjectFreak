@@ -26,8 +26,17 @@ public abstract class WeaponItem : ItemSO
     [Min(0f)] public float _ActivationShake = 0f;
 
     [Title("Damage Data")]
-    [Tooltip("Damage per hit before the wielder's attack stat and other modifiers are added")]
-    [Min(0)] public int _BaseDamage = 5;
+    [Tooltip("How strong the weapon is, as a multiplier on the wielder's attack stat. Raw damage = attack stat × power × the hit's multipliers. A starter weapon is about 1, an ultima weapon about 2.5 (see Damage Balance in the GDD)")]
+    [Min(0f)] public float _Power = 1f;
+
+    [Tooltip("Chance for each hit to crit, 0 to 1 (0.05 = 5%). Staggered enemies always take a crit. todo: base crit chances are still undecided in the GDD")]
+    [Range(0f, 1f)] public float _CritChance = 0.05f;
+
+    [Tooltip("Damage multiplier on a crit. 1.5 = 50% more. Only the main damage gets multiplied, not bonus damage")]
+    [Min(1f)] public float _CritMultiplier = 1.5f;
+
+    [Tooltip("Friendly fire. Off = hits skip the wielder's allies. Only turn on for weapons that are meant to hurt allies")]
+    public bool _HitsAllies = false;
 
     [Tooltip("Element of the damage")]
     public DamageType.ElementType _Element = DamageType.ElementType.Normal;

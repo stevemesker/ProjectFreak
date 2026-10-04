@@ -28,6 +28,7 @@ public interface IStaggerable
     //anything that can be staggered (interrupted and stunned briefly) by a hit. Gets every hit, even ones with no
     //stagger power, so bosses can check their health thresholds. The damage package's _StaggerPower says how likely it is
     void TakeStagger(DamagePackage dmgPackage);
+    bool IsStaggered(); //true while staggered. Staggered units always take a crit (see CombatTools.ResolveHit)
 }
 
 public interface IAggroReceiver

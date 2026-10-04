@@ -397,7 +397,7 @@ public class WeaponAttackRanged : MonoBehaviour, ITriggerable
             if (CombatTools.IsPartOf(hitCollider, _Wielder)) continue;
 
             UnitTeam unit = hitCollider.GetComponentInParent<UnitTeam>();
-            if (unit != null && CombatTools.IsAlly(_wielderTeam, unit)) continue; //shots pass through allies
+            if (unit != null && CombatTools.CanHitTeam(_wielderTeam, unit, package._HitsAllies) == false) continue; //shots pass through allies, unless the weapon has friendly fire
 
             IDamagable damagable = hitCollider.GetComponentInParent<IDamagable>(); //GetComponentInParent checks this object, then its parents
             Vector3 hitPoint = GetHitPoint(hit, origin);

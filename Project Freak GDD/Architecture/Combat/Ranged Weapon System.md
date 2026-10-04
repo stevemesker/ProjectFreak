@@ -30,7 +30,10 @@ What every weapon shares, matching [[Weapons#Shared Traits]]. It's **abstract**,
 | `_WeaponPrefab`    | The held weapon. Needs an `ITriggerable` script like `WeaponAttackRanged` |
 | `_AttackSpeed`     | Attacks per second (2 = twice a second). `GetAttackTime()` gives seconds per attack |
 | `_ActivationShake` | Camera shake each time the weapon fires (separate from the package's impact shake on hit). 0 = none |
-| `_BaseDamage`      | Damage before the attack stat and modifiers |
+| `_Power`           | Multiplier on the wielder's attack stat. Starter weapons ×1, ultima weapons about ×2.5 (see [[Damage Balance]]) |
+| `_CritChance`      | Chance for each hit to crit, 0-1 (default 0.05). *Base crit chances are still undecided* [[Notes for the future]] |
+| `_CritMultiplier`  | Damage multiplier on a crit (default 1.5). Only the main entry is multiplied |
+| `_HitsAllies`      | Friendly fire. Off (default) = hits skip the wielder's allies |
 | `_Element`         | `DamageType.ElementType` |
 | `_Knockback`       | Meters, goes on the [[Damage Package]] |
 
@@ -186,9 +189,10 @@ For each projectile `i` of `count`, using the wielder's flat forward and right. 
 ---
 ## Damage and Projectiles
 The [[Damage Package]] is built once when the cycle fires (per [[Weapons#Damage Package]]), so buffs gained after firing don't change shots already in the air. Every projectile in the cycle (burst shots included) carries the same package:
-- One damage entry: `(base damage + attack stat) × the cycle's _DamageMultiplier × the charge multiplier`, following the formula in [[Damage]]. The attack stat is AGI or INT depending on attack type (`IsRange()` = true). The wielder's stats are read when the package is built, not when the weapon is equipped. *The damage overhaul changes this to `attack stat × weapon power × multipliers`, so `_BaseDamage` becomes a power multiplier, and the entry carries the attack stat (see [[Damage]]).* [[Notes for the future]]
+- One damage entry: `attack stat × weapon _Power × the cycle's _DamageMultiplier × the charge multiplier`, following the formula in [[Damage]]. The attack stat is AGI or INT depending on attack type (`IsRange()` = true) and is carried on the entry for the target's defense math. The wielder's stats are read when the package is built, not when the weapon is equipped
 - `_KnockbackDistance` = the weapon's `_Knockback`
-- Crit is always ×1 for now [[Notes for the future]]
+- Crit chance and multiplier come from the weapon. Each projectile or ray rolls its own crit when it lands (see [[Damage Receivers & Projectiles#Shared Damage Calculation]])
+- Hit scan rays pass through the wielder's allies unless the weapon's `_HitsAllies` is on
 
 Each projectile also gets a `LaunchPackage` with information that isn't damage, for the projectile to use however it wants:
 

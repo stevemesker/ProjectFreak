@@ -99,7 +99,7 @@ Everything still open from this work, roughly in the order it's likely to come u
 - **Attack tokens** (only a few enemies attack the same target at once). Revisit after playtests.
 - **Hazard knockback:** let units be knocked over NavMesh edges into hazards like lava for instant kills. Decide with how hazards are built (NavMesh area type or trigger volume).
 - **Weapons that knock back.** The knockback system works, but no weapon sets a knockback distance yet.
-- **Damage pass:** apply the size class bonus damage and fix the defense math ([[Known Issues]]). Move enemy health and stats from the prefab into the EnemySO.
+- **Damage pass:** apply the size class bonus damage (the defense math was fixed in the Oct 2026 damage overhaul, see [[Damage Receivers & Projectiles#Shared Damage Calculation]]). Move enemy health and stats from the prefab into the EnemySO.
 - **Enemy death and loot** (`EnemyStats` On Death does nothing yet).
 - **Facing:** enemies don't turn to face their target while holding still in Engage.
 - **Enemies don't steer around the shade while the player drives it** (its agent is off then).

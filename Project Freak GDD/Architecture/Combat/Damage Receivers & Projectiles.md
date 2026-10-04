@@ -16,7 +16,7 @@ A simple projectile.
 
 On trigger enter:
 - Ignores other triggers and its own source (including the source's child colliders)
-- **No friendly fire:** flies through units on the shooter's team (`UnitTeam.IsHostileTo`, see [[Unit Targeting#UnitTeam]]). The shooter's team is looked up once in `LaunchProjectile`. Projectiles with no team behind them (like [[Traps]]) hit every team
+- **No friendly fire:** flies through units on the shooter's team (`CombatTools.CanHitTeam`, which uses `UnitTeam.IsHostileTo`, see [[Unit Targeting#UnitTeam]]), unless the package's `_HitsAllies` is on. The shooter's team is looked up once in `LaunchProjectile`. Projectiles with no team behind them (like [[Traps]]) hit every team
 - If the object or one of its parents has `IDamagable`, calls `TakeDamage(_Damage)`
 - Destroys itself either way (also if it never got a package)
 
@@ -39,18 +39,42 @@ After the events, it checks the object for three optional components (no inspect
 *Note:* the player prefab also uses `EnemyDamagable` (forwarding to `PlayerDamegable`), so these checks run on the player too. The player has neither component, so nothing changes for it.
 
 ---
+## Shared Damage Calculation
+All damage math lives in one place, `CombatTools.ResolveHit(package, defenderStats, isStaggered)`, so enemies and the player always follow the same rules. It returns a `HitResult`: the final damage of each entry, the total, and whether it crit. It follows the formula in [[Damage]]:
+
+1. **Crit:** if the target is staggered it's always a crit, otherwise roll against the package's `_CritChance`. Rolled once per hit, on the target
+2. For each entry, starting from its raw `_Damage`:
+   - × `_CritMultiplier` if it crit and this is the **first (main) entry**
+   - × effectiveness. *Always 1 for now, the element chart isn't decided yet (see [[Elemental Affinity]])* [[Notes for the future]]
+   - × resistance from `CoreStats.GetAttackResistanceModifier`: 0 if immune, 0.5 if resisted, 1 otherwise
+   - × **ATK ÷ (ATK + 2 × DEF)**, where ATK is the entry's `_AttackStat` and DEF is the target's matching defense stat (DEF for physical stats, SPR for magical, through `GetCombatStat`, so never below 1). **True damage skips this step**, but immunities and resistances above still apply. Attacks with no stat behind them (like explosions) have no matching defense and get through in full
+   - **rounded up** once at the very end (`Mathf.CeilToInt`), so anything not fully blocked does at least 1, and an immune hit stays exactly 0
+
+The defense weight (2) and the stat floor (1) are constants at the top of the Damage region in `CombatTools`. *Move them to an inspector asset if they need frequent tuning.* [[Notes for the future]]
+
+**Popups:** `CombatTools.ShowHitPopups` shows one number per entry, with only the main entry shown as a crit. `ShowHealPopup` shows a heal (the popup draws negative numbers in the healing color). See [[Damage Popup System]].
+
+---
+## EnemyStats
+Health for enemies, hooked to `EnemyDamagable`'s `onDamage` event (`TakeDamage(DamagePackage)`).
+- Asks its `IStaggerable` (if it has one) whether it's staggered, runs `ResolveHit`, shows the popups, subtracts the total from `eStats._Health`, and fires `onDeath` at 0
+- `Heal(amount)` adds health (capped at max HP) and shows a heal popup. It skips the damage formula. *A real healing system comes later* [[Notes for the future]]
+- `GetHealthPercent()` for the AI (`IUnitHealth`)
+
+*Enemy death and loot don't do anything yet, and the size class bonus damage (`SizeClassRulesSO`) isn't applied yet (see [[AI Movement & Dungeon Loading Plan#To Do]]).* [[Notes for the future]]
+
+---
 ## PlayerDamegable
 Handles damage to the player. *(Spelling matches the class name in code.)*
 
+Hits reach it the same way they reach enemies: the player prefab has an `EnemyDamagable` (the `IDamagable` projectiles, swings and dashes look for), and its `onDamage` event calls `PlayerDamegable.TakeDamage`. That way the player gets the same aggro, knockback and stagger checks as every unit (it has none of those components, so nothing extra happens).
+
 `TakeDamage(DamagePackage)`:
-1. For each damage entry, calculates damage with `DamageCalculation()` × crit, and shows a popup through the [[UIDamage Manager]]
-2. Subtracts the total from the player's health
-3. Fires `onDeath` if health hits 0, clamps health to max HP
-4. If the camera is following the player, shakes it using the package's impact strength × the current danger level's dampen value
+1. Runs `ResolveHit` against the player's stats (`Player.player.pData.pStats`) and shows the popups through the [[UIDamage Manager]]
+2. Subtracts the total from the player's health and fires `onDeath` at 0
+3. If the camera is following the player, shakes it using the package's impact strength × the current danger level's dampen value
 
-`Death()` is a placeholder that refills health. [[Notes for the future]]
-
-*Known issues:* `PlayerDamegable` doesn't implement `IDamagable`, so projectiles can't damage the player yet, and the defense math adds defense instead of subtracting it. Both are planned for the damage overhaul. See [[Known Issues]]. [[Notes for the future]]
+`Heal(amount)` works like the enemy version. `Death()` is a placeholder that refills health. [[Notes for the future]]
 
 ---
 ## DangerLevel
@@ -72,14 +96,17 @@ Controls how much camera shake is dampened based on how hurt a unit is. Stored i
 - Pass-through dashes deliver damage packages too. See [[Unit Dash Script]]
 
 ---
-## Planned: Damage Overhaul
-The damage math is getting rebuilt. The formula was decided in Oct 2026, see [[Damage]] for it and [[Damage Balance]] for why. Not built yet. [[Notes for the future]]
-- **Mitigation formula:** replace "subtract the defense stat" with: damage that gets through = ATK ÷ (ATK + 2 × DEF), where ATK is the attacker's stat carried on the damage entry and DEF is the receiver's matching defense (DEF or SPR). K is the attacker's stat, not a level, because level never drives stats in this game [[Notes for the future]]
-- **One shared calculation:** `EnemyStats.DamageCalculation` and `PlayerDamegable.DamageCalculation` are separate copies today. Both should call one shared function (likely a static in `CombatTools` or `CoreStats`) [[Notes for the future]]
-- **True damage:** skips defense but still checks element resistance and immunity. Hazards will use true damage as a percent of max HP [[Notes for the future]]
-- **Healing:** stop treating healing as negative damage (the Healing element is being removed). For now a separate small heal call that skips the damage formula is enough. The popup already shows negative numbers as heals. A real healing system comes later [[Notes for the future]]
-- **Stat floor:** stats used in the formula never go below 1, so a stat pushed down by negative runes can't make damage 0 or negative [[Notes for the future]]
-- **Where it changes:** the receivers, plus the attackers in a small way: entries need to carry the attack stat (see [[Damage Package]]), and weapons switch from base damage to a power multiplier (see [[Ranged Weapon System#Damage and Projectiles]], [[Melee Weapon System#Damage]])
-- **Crits:** all crit logic lives in the shared damage calculation. On each hit: crit if the unit is staggered (ask its `IStaggerable`), otherwise roll against the package's `_CritChance`. A crit multiplies the first (main) entry only, by `_CritMultiplier`. The popup's `isCrit` comes from this result [[Notes for the future]]
-- **Friendly fire:** dashes and explosions need the same `UnitTeam.IsHostileTo` check projectiles and hit scan already have, skipped only when the package's `_HitsAllies` flag is set [[Notes for the future]]
-- **Folds in:** the damage bugs in [[Known Issues]] (defense adding damage, `PlayerDamegable` not implementing `IDamagable`, immunities not checked, dashes hitting allies) and crits, which are always ×1 for now [[Notes for the future]]
+## Damage Overhaul (Oct 2026)
+Built from the plan decided in Oct 2026 (see [[Damage]] for the formula and [[Damage Balance]] for why):
+- Defense is now ATK ÷ (ATK + 2 × DEF) instead of subtracting the defense stat (which was actually adding it)
+- One shared calculation (`CombatTools.ResolveHit`) instead of separate copies in `EnemyStats` and `PlayerDamegable`
+- True damage skips defense but not resistances or immunities. Immunities are checked now
+- Healing is a separate `Heal` call, not negative damage. The Healing element is gone
+- Damage stays a decimal until it's rounded up once per entry
+- Stats used in the formula never go below 1
+- Entries carry the attack stat, and weapons use a power multiplier instead of base damage
+- Crits: weapon crit chance and multiplier, rolled by the target, guaranteed on staggered targets, main entry only
+- Friendly fire: dashes now skip allies too, and everything respects the package's `_HitsAllies` flag
+- WIS was removed from the stats, and the element list was swapped to the final one
+
+**Still open:** explosions don't exist yet (they should use the same team check and can hit the source when `_HitsAllies` is on), the element effectiveness chart, and hazards dealing true damage as a percent of max HP [[Notes for the future]]

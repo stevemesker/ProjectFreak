@@ -10,7 +10,7 @@ All interfaces currently in the project, grouped by the file they live in.
 | `IUnitHealth` | Anything that can report its health as 0 to 1 (`GetHealthPercent()`). On `EnemyStats`. Used by the [[Unit Brain]] (Flee) |
 | `IUnitData`   | Gives access to a unit's `DangerLevel` settings. Used for camera shake dampening                       |
 | `IKnockbackable` | Anything that can be pushed back by a hit. `TakeKnockback(DamagePackage)`, called by `EnemyDamagable`. See [[Enemy Movement]] |
-| `IStaggerable` | Anything that can be staggered (interrupted and briefly stunned). `TakeStagger(DamagePackage)`, called by `EnemyDamagable` on every hit after knockback. Used by `EnemyStagger`, see [[Melee Weapon System#Stagger]] |
+| `IStaggerable` | Anything that can be staggered (interrupted and briefly stunned). `TakeStagger(DamagePackage)`, called by `EnemyDamagable` on every hit after knockback. `IsStaggered()`, asked by health scripts when a hit lands, since staggered units always take a crit. Used by `EnemyStagger`, see [[Melee Weapon System#Stagger]] |
 | `IAggroReceiver` | Anything that wants to know who hit it. `AddAggro(DamagePackage)`, called by `EnemyDamagable`. Used by `UnitTargeting`, see [[Unit Targeting]] |
 
 *Spelling note:* the code uses `IDamagable` (one "e").

@@ -29,10 +29,8 @@ public class CoreStats
     [Header("Mental Stats")]
     [Tooltip("Mental skill and effectiveness with magic attacks/weapons")]
     public int _INT;
-    [Tooltip("Mental resilience and lowers incoming magic damage")]
+    [Tooltip("Mental fortitude and lowers incoming magic damage")]
     public int _SPR;
-    [Tooltip("How fast a character can use magic abilities/weapons and how quickly/effectively they progress in levels")]
-    public int _WIS;
 
     [Header("Other Stats")]
     [Tooltip("How strong overall a creature is. For enemies it is completely arbitrary but for Hazen and his shades it effects various stat point distribution")]
@@ -45,10 +43,10 @@ public class CoreStats
     public DamageType.StatType PhysicalPrimaryStat = DamageType.StatType.Strength;
     [Tooltip("Stat used for physical ranged attacks. Agility is the default")]
     public DamageType.StatType PhysicalSecondaryStat = DamageType.StatType.Agility;
-    [Tooltip("Stat used for magical melee attacks. Intelect is the default")]
-    public DamageType.StatType MagicalPrimaryStat = DamageType.StatType.Intelect;
-    [Tooltip("Stat used for magical ranged attacks. Intelect is the default")]
-    public DamageType.StatType MagicalSecondaryStat = DamageType.StatType.Intelect;
+    [Tooltip("Stat used for magical melee attacks. Intellect is the default")]
+    public DamageType.StatType MagicalPrimaryStat = DamageType.StatType.Intellect;
+    [Tooltip("Stat used for magical ranged attacks. Intellect is the default")]
+    public DamageType.StatType MagicalSecondaryStat = DamageType.StatType.Intellect;
 
     [Header("Modifier Pointers")]
     [Tooltip("What stat is used for physical defense. Defense is the default, AGI is usually the other but there is no hard limit")]
@@ -57,15 +55,24 @@ public class CoreStats
     public DamageType.StatType MagicalDefMod = DamageType.StatType.Spirit;
 
     [Header("Resistances: Half Damage")]
+    [Tooltip("Attack types this unit takes half damage from")]
     public List<DamageType.AttackType> AttackTypeResistance;
+    [Tooltip("Elements this unit takes half damage from")]
     public List<DamageType.ElementType> ElementTypeResistance;
 
     [Header("Immunity: No Damage")]
+    [Tooltip("Attack types this unit takes no damage from")]
     public List<DamageType.AttackType> AttackTypeImmunity;
+    [Tooltip("Elements this unit takes no damage from. Lava is its own element, so Fire immunity doesn't cover it")]
     public List<DamageType.ElementType> ElementTypeImmunity;
+
+    //local variables
+    const float ResistanceMultiplier = 0.5f; //how much damage a resistance lets through. todo: how resistances stack is still undecided in the GDD (Damage Balance)
+    const int StatFloor = 1; //stats used in damage math never go below this, however many negative runes are stacked
 
     public int TypeToStatFinder(DamageType.StatType type)
     {
+        //function that turns a stat type into this unit's value for it
         switch(type)
         {
             case DamageType.StatType.Health:
@@ -76,28 +83,36 @@ public class CoreStats
                 return _DEF;
             case DamageType.StatType.Agility:
                 return _AGI;
-            case DamageType.StatType.Intelect:
+            case DamageType.StatType.Intellect:
                 return _INT;
             case DamageType.StatType.Spirit:
                 return _SPR;
-            case DamageType.StatType.Wisdom:
-                return _WIS;
             default:
                 return 0;
         }
     }
 
+    public int GetCombatStat(DamageType.StatType type)
+    {
+        //function for a stat used in damage math. Same as TypeToStatFinder, but never below the stat floor (1),
+        //so negative runes can't make damage 0 or flip it negative. Stat type None (like explosions) has no stat and stays 0
+        if (type == DamageType.StatType.None) return 0;
+        return Mathf.Max(StatFloor, TypeToStatFinder(type));
+    }
+
     public DamageType.StatType GetDefensiveStatType(DamageType.StatType type)
     {
+        //function that picks which of this unit's stats defends against an attack made with a given stat
         if (type == DamageType.StatType.Strength || type == DamageType.StatType.Agility || type == DamageType.StatType.Defense)
             return PhysicalDefMod;
-        if (type == DamageType.StatType.Intelect || type == DamageType.StatType.Spirit || type == DamageType.StatType.Wisdom)
+        if (type == DamageType.StatType.Intellect || type == DamageType.StatType.Spirit)
             return MagicalDefMod;
         return DamageType.StatType.None;
     }
 
     public DamageType.StatType GetAttackStatType(bool isRanged, DamageType.AttackType type)
     {
+        //function that picks which of this unit's stats powers an attack
         switch(type)
         {
             case DamageType.AttackType.Physical:
@@ -109,20 +124,18 @@ public class CoreStats
             default: return DamageType.StatType.None;
         }
     }
+
     public float GetAttackResistanceModifier(DamageType.AttackType atk, DamageType.ElementType ele)
     {
-        if (atk == DamageType.AttackType.None && ele == DamageType.ElementType.None) return 1;
+        //function for how much of a hit gets through this unit's immunities and resistances. 0 = immune, 0.5 = resisted, 1 = full
+        //Normal element and attack type None can still be listed by hand, but nothing has them by default
+        if (AttackTypeImmunity != null && AttackTypeImmunity.Contains(atk)) return 0f;
+        if (ElementTypeImmunity != null && ElementTypeImmunity.Contains(ele)) return 0f;
 
-        for (int i = 0; i < AttackTypeResistance.Count; i++)
-        {
-            if (atk == AttackTypeResistance[i]) return .5f;
-        }
-        for (int i = 0; i < ElementTypeResistance.Count; i++)
-        {
-            if (ele == ElementTypeResistance[i]) return .5f;
-        }
+        if (AttackTypeResistance != null && AttackTypeResistance.Contains(atk)) return ResistanceMultiplier;
+        if (ElementTypeResistance != null && ElementTypeResistance.Contains(ele)) return ResistanceMultiplier;
 
-        return 1;
+        return 1f;
     }
 }
 

@@ -14,7 +14,7 @@ these are the basic stats that all movable units will have in a [[Dive]]. [[Dest
 [[INT]] - mental power stat. Drives magical attacks (melee and ranged)
 [[SPR]] - mental fortitude stat. Defends against magical attacks
 
-*Decided Oct 2026 (damage overhaul):* WIS was dropped and SPR went from "mental agility" to mental fortitude. Nothing in combat needed a mental agility stat, since AGI already covers speed. The code still has `_WIS` until the enum cleanup in [[Known Issues]]. [[Notes for the future]]
+*Decided Oct 2026 (damage overhaul):* WIS was dropped and SPR went from "mental agility" to mental fortitude. Nothing in combat needed a mental agility stat, since AGI already covers speed. WIS was removed from the code in the damage overhaul (Oct 2026).
 
 **Stat balance rule:** the physical side has three stats (STR / AGI / DEF) and the mental side has two (INT / SPR), so a magic build gets one attack stat for both melee and ranged. That's intended: Hazen is a shadowmancer and magic can be a bit stronger thematically. Balance it through how much physical stat growth units get, not by adding stats. **Physical builds must always stay viable and never feel punished.** AGI also drives dash cooldown and pass-through dash damage (see [[Dash]]).
 

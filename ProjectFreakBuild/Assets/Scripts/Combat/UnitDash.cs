@@ -48,6 +48,13 @@ public class UnitDash : MonoBehaviour
 
     //local variables
     Coroutine _dashRoutine; //the dash that's currently running, null when not dashing
+    DamagePackage _activeDamage; //the package the current dash delivers. Null for a normal dash that doesn't deal damage
+    UnitTeam _team; //this unit's side, so damaging dashes skip allies (unless the package has friendly fire). Null = hits everyone
+
+    private void Awake()
+    {
+        _team = GetComponent<UnitTeam>();
+    }
 
     private void OnDisable()
     {
@@ -64,9 +71,22 @@ public class UnitDash : MonoBehaviour
     #region Input
     public void DashCharacter(Vector3 direction)
     {
-        //Dash activation
+        //Dash activation. A normal dash, no damage
+        StartDash(direction, null);
+    }
 
+    public void DashPassthrough(Vector3 direction, DamagePackage dmg)
+    {
+        //alternate dash activation that also damages everything it passes through
+        StartDash(direction, dmg);
+    }
+
+    void StartDash(Vector3 direction, DamagePackage dmg)
+    {
+        //function that starts a dash. dmg is the package delivered to everything passed through, or null for no damage
         if (DashCurrent <= 0 || canDash == false) return;
+        _activeDamage = dmg;
+        Damage = dmg; //shown in the inspector for testing
         DashCurrent -= 1;
         if (refreshTimer == null) refreshTimer = StartCoroutine(DashRefresh());
 
@@ -93,15 +113,6 @@ public class UnitDash : MonoBehaviour
 
     }
 
-    public void DashPassthrough(Vector3 direction, DamagePackage dmg)
-    {
-        //alternate dash activation that also includes damage
-
-        Damage = dmg;
-        dmg._Entries = new List<DamageEntry>();
-        DashCharacter(direction);
-    }
-
     IEnumerator DashRoutine(Vector3 startPosition, Vector3 endPosition)
     {
         //Dashing movement code
@@ -124,7 +135,7 @@ public class UnitDash : MonoBehaviour
             _RB.MovePosition(targetPosition);
 
             //damage detections
-            if (Damage != null)
+            if (_activeDamage != null)
             {
                 float distanceTraveled = curveT * dashDistance;
 
@@ -143,7 +154,7 @@ public class UnitDash : MonoBehaviour
 
         _RB.MovePosition(endPosition);
 
-        if (Damage != null)
+        if (_activeDamage != null)
         {
             ApplyDashDamage();
         }
@@ -157,10 +168,22 @@ public class UnitDash : MonoBehaviour
 
     void ApplyDashDamage()
     {
+        //function that delivers the dash's package to everything it passed through
         foreach(GameObject hits in hitList)
         {
-            hits.GetComponent<IDamagable>().TakeDamage(Damage);
+            if (hits == null) continue; //destroyed during the dash
+            IDamagable damagable = hits.GetComponent<IDamagable>();
+            if (damagable != null) damagable.TakeDamage(_activeDamage);
         }
+    }
+
+    bool CanDamage(GameObject target)
+    {
+        //function for checking if the dash should hurt something it passed: never itself, and allies only with friendly fire
+        if (target == null || target == gameObject) return false;
+        if (target.transform.IsChildOf(transform)) return false; //one of this unit's own colliders
+        bool hitsAllies = _activeDamage != null && _activeDamage._HitsAllies;
+        return CombatTools.CanHitTeam(_team, target.GetComponentInParent<UnitTeam>(), hitsAllies);
     }
 
     void SphereCastForHits(Vector3 start, Vector3 end)
@@ -174,7 +197,7 @@ public class UnitDash : MonoBehaviour
 
         foreach (RaycastHit hit in hits)
         {
-            if (hit.collider.GetComponent<IDamagable>() != null)
+            if (hit.collider.GetComponent<IDamagable>() != null && CanDamage(hit.transform.gameObject))
             {
                 hitList.Add(hit.transform.gameObject);
             }
@@ -212,7 +235,8 @@ public class UnitDash : MonoBehaviour
         {
             if (hits[i].transform.gameObject.GetComponent<IDamagable>() != null)
             {
-                hitList.Add(hits[i].transform.gameObject);
+                //damageable things never stop the dash, but only enemies (or allies with friendly fire) get added to take damage
+                if (_activeDamage != null && CanDamage(hits[i].transform.gameObject)) hitList.Add(hits[i].transform.gameObject);
             }
             else
             {
