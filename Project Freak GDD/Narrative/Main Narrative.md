@@ -28,9 +28,9 @@ With the [[Watcher Fiend]] defeated and the hole sealed [[Hazen]] meets with his
 
 ---
 Chapter 2 *The Rise* | "Unholy Light"
-[[Hazen]] discovers the holes are linked to someone in the [[Lumina Council]] and that person is likely the one who ordered the extermination of the [[Keepers]]. The coucil begins installing soldiers on the streets, tensions rise.
+[[Hazen]] discovers the holes are linked to someone in the [[Lumina Council]] and that person is likely the one who ordered the extermination of the [[Keepers]]. The council begins installing soldiers on the streets, tensions rise.
 
-Boss: Lumina Dreadnaught
+Boss: [[Lumina Dreadnaught]]
 
 [[Hazen]] meets [[Stolas]]
 
@@ -38,7 +38,7 @@ Boss: Lumina Dreadnaught
 Chapter 3 *The Climax* | "[[Outworld]]"
 [[Hazen]] finds his way into [[Cradle]] and sets up a [[waypoint]] to it. He meets the last great [[Sage]] who tells him the story of the [[Legendary Heroes]] and their failure. The [[Sage]] still believes in the [[Legendary Heroes]] and that the world is just holding its breath in the anticipation of their arrival.
 
-Boss: Rot Druid
+Boss: [[Rot Druid]]
 
 [[Stolas]] tells [[Lady Kimaris]] the time for their plans to begin is coming and she should prepare.
 
