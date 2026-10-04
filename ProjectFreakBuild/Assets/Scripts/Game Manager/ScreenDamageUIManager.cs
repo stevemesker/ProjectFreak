@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ScreenDamageUIManager : MonoBehaviour
 {
+    //entry point for damage popups. Lives on a child of the Game Manager prefab (DamageCanvasUI), so the Game Manager's
+    //duplicate check already removes any extra copy. See UIDamage Manager in the GDD
+
     [Header("Initialize Data")]
     public static ScreenDamageUIManager _UIdamage;
 
@@ -11,11 +14,14 @@ public class ScreenDamageUIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (ScreenDamageUIManager._UIdamage == null) ScreenDamageUIManager._UIdamage = this;
-        else
-        {
-            Destroy(gameObject);
-        }
+        //only claims the singleton if it's free. A duplicate Game Manager still runs this Awake before it's destroyed at the end of the frame,
+        //so this keeps the original from being replaced by the copy that's about to disappear
+        if (_UIdamage == null) _UIdamage = this;
     }
 
+    private void OnDestroy()
+    {
+        //clears the singleton if this was it, so nothing tries to use a destroyed manager
+        if (_UIdamage == this) _UIdamage = null;
+    }
 }
