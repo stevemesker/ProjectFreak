@@ -7,26 +7,49 @@ ___
 
 Standard Damage - standard damage is typically done through combat between units via weapons, spells, or abilities. Typically enhanced by the associated [[Character Stats]] and reduced by the defense of that same stat
 
-True Damage - true damage is an unblockable and unreducable damage type typically reserved for special events and development testing.
+True Damage - true damage ignores [[DEF]] and [[SPR]] completely. It's used for hazards (lava pits deal a percent of max HP so they hurt the same at any depth), special events and development testing. **Element resistances and immunities still apply,** so a lava pit (true + Lava) can't hurt a lava-immune shade. True damage with the Normal element is fully unblockable, since nothing resists Normal (see [[Elemental Affinity]]).
 
-Explosive Damage - the most chaotic kind of damage. It will hurt anything it reaches regardless of who created the damage and is the only thing that can harm certain kinds of [[Destructible Objects]]
+Explosive Damage - area damage, and the only thing that can break the heaviest [[Destructible Objects]]. Like every other damage type it only hurts enemies by default (see Friendly Fire below). Only weapons or abilities flagged for friendly fire can hurt allies or the user.
 
 ---
 **Standard Damage**
 
 Standard damage is typically applied during combat and is the most modified type. The main damage algorithm is:
 
-**((Base damage + Character Attack Stat) x Effectiveness - Receiver Defense Stat) / Resistance x Critical**
+**Raw = Attack Stat × Power × Multipliers × Critical**
+**Final = Raw × Effectiveness × Resistance × Attack Stat ÷ (Attack Stat + 2 × Defense Stat)**
+
+*Decided in the Oct 2026 damage overhaul. This replaced the old "((Base damage + Attack Stat) × Effectiveness − Defense) / Resistance × Critical" formula. See [[Damage Balance]] for why, the test results, and how stats scale across the game.*
 
 
 | Type          | Description                                                                                                                                                                                                                       |
 | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Base Damage   | the base damage defined by either the weapon or the ability being used                                                                                                                                                            |
-| Attack Stat   | The stat that is dependent on the type of attack being made. Physical melee attacks will use STR, Physical ranged is AGI, and Magical attacks typically use INT                                                                   |
-| Defense Stat  | The stat that is dependent on the type of attack being made. Physical defense will use DEF and Magical defense will use SPR                                                                                                       |
+| Power         | How strong the weapon or ability is, as a multiplier (a starter sword ×1.0, an ultima weapon ×2.5). Replaces flat base damage so weapons stay relevant at any stat level                                                          |
+| Multipliers   | Combo step, charge and finisher multipliers from the weapon or ability                                                                                                                                                            |
+| Attack Stat   | The stat that is dependent on the type of attack being made. Physical melee attacks will use STR, Physical ranged is AGI, and Magical attacks use INT. Snapshotted when the attack is made. Attackers without stats (preset traps) use a faux attack stat |
+| Defense Stat  | The stat that is dependent on the type of attack being made. Physical defense will use DEF and Magical defense will use SPR. Weighted ×2 so defense keeps up with HP as a stat choice. Defense never blocks 100%                  |
 | Effectiveness | When an attack type is a weakness of the target this number acts as a damage multiplier. Usually this happens with elemental effectiveness but some things can be weak to physical ranged or explosive damage                     |
-| Critical      | [[Critical hit]]s are semi-random multiplier bonuses that can cause huge damage to enemies                                                                                                                                        |
+| Critical      | [[Critical hit]]s are semi-random multiplier bonuses that can cause huge damage to enemies. Only applies to the main (first) entry, see Critical Hits below                                                                       |
 | Resistance    | Resistance is the opposite of effectiveness. Typically resistances are given to a character that is of that type, like a water creature being resistant to water or a heavy tank being resistant to most types of physical damage |
+
+---
+**Main Entry**
+A [[Damage Package]] can hold several damage entries (for example a sword's physical hit plus bonus fire damage). **The first entry is always the main one,** the attack itself. Any other entries are smaller bonus effects, like a sword's bonus fire or a rune that adds extra damage to abilities. Some rules, like crits, only apply to the main entry.
+
+---
+**Critical Hits**
+*Decided Oct 2026.* Crits are part luck and part skill:
+- **Crit chance comes from the weapon or ability, plus rune effects.** It's not tied to a stat like AGI, which would feel odd for magic. Runes can add crit chance or crit multiplier, so a crit-focused shade is a build choice (see [[Element Rune]])
+- **Crit multiplier** starts at ×1.5. Weapons and runes can raise it
+- **Staggered enemies always take a crit.** Stagger them with a finisher, then follow up for a guaranteed crit. This makes crits reward good play, not just luck (see [[Weapons]] for stagger)
+- **Only the main entry crits.** Bonus entries never crit, otherwise crits get too strong
+- **Every hit rolls on its own,** at the moment it lands, so each pellet of a shotgun blast can crit separately. The attack carries its crit chance and multiplier (fixed when the attack is made), and the target does the roll. This keeps all the crit logic in one place, since the target already has to check for stagger
+
+For comparison: Pokémon uses a small fixed chance raised by certain moves. Diablo and Monster Hunter put crit chance on the weapon and raise it with gear or skills. Dark Souls has no random crits, only hits on stunned or exposed enemies. Project Freak mixes the weapon-based and stun-based approaches.
+
+---
+**Friendly Fire**
+No damage hurts the attacker's own team by default: projectiles, hit scan, melee, dashes, spells and explosions all skip allies. Players shouldn't have to worry about hitting their own shade. Certain weapons or abilities can be flagged for friendly fire, and only those can hurt allies or the user themselves. Attacks with no team behind them (like preset [[Traps]]) hit everyone.
 
 ---
 # Weapon & Damage System Architecture

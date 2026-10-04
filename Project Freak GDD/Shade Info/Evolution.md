@@ -14,6 +14,19 @@ The list of rank names are as follows:
 | Legend    | The most powerful form and hardest to unlock                                                                                       |
 
 ---
+**Evolution Stats**
+Each rank roughly doubles the shade's base stats **and multiplies every [[Element Rune]] bonus**. The multiplier is what keeps evolving meaningful all game: late runes give most of a shade's stats, so if evolution only raised base stats, a Legend would barely feel stronger than an Ascendant. A baby tree usually has 3 evolutions after Bound.
+
+| Rank      | Base stats (avg / specialty) | Rune bonus multiplier |
+| :-------- | :--------------------------- | :-------------------- |
+| Bound     | 3 / 5                        | ×1                    |
+| Unbound   | 6 / 10                       | ×2                    |
+| Ascendant | 12 / 20                      | ×4                    |
+| Legend    | 24 / 40                      | ×8                    |
+
+*Starting guesses. The multiplier and late rune values stack hard, so these will likely get flattened in playtesting. See [[Damage Balance]].*
+
+---
 **Evolution Type**
 Because all [[Shade]]s can be any [[Elemental Affinity]] type they are organized into [[Evolution Type]]s, typically described by their physical structure. The different [[Evolution Type]]s are as follows:
 

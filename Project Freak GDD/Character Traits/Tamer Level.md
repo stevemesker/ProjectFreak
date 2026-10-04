@@ -1,4 +1,6 @@
-When the player defeats a boss or raises a shade to the highest evolution they may gain a [[Tamer Level]]. 
+When the player defeats a boss or raises a shade to the highest evolution they may gain a [[Tamer Level]]. Hazen also earns XP toward it by completing dungeon levels, and by burning a shade down to its core, which gives a lot of XP (see Death and Burning Down in [[Shade]]). XP requirements are [[undecided]].
+
+Tamer Level only unlocks tools. It never raises combat stats, and it doesn't factor into the [[Damage]] formula (see [[Damage Balance]]).
 
 | Level | Ability Unlock                        |
 | :---- | :------------------------------------ |

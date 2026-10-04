@@ -31,6 +31,8 @@ Not all [[Element Rune]]s are made the same. Though technically arbitrary, the g
 
 When the [[Shade Slot]] is saved, the [[Shade Manager]] will take all of the stat data and find the average material type and [[Elemental Affinity]] if the particular shader supports it.
 
+Mixing elements is how secondary elements are found: a shade built with a lot of fire and earth runes builds out as a Lava shade, water and air as Ice, and so on (see [[Elemental Affinity]]).
+
 ---
 **Stat effects**
 These nodes (when powered) give various types of buffs, debuffs, and other effects
@@ -41,6 +43,25 @@ These nodes (when powered) give various types of buffs, debuffs, and other effec
 | element effect   | adds an [[Elemental Affinity]] to attack/defense   |
 | connect boost    | adds more of a stat to nodes connected to this one |
 | energy reduction | lowers the required energy a node needs to power   |
+| crit effect      | adds crit chance or crit multiplier (see [[Damage]]) |
+
+---
+**Stat Values Over the Game**
+Runes are where nearly all of a shade's stats come from (with [[Evolution]] multiplying them). Rough starting values:
+
+| Stage | Typical rune                          | Runes a core can power (guess) |
+| :---- | :------------------------------------ | :----------------------------- |
+| Early | +2 good stat / −2 bad stat            | ~6–12                          |
+| Mid   | +3 good / −1 bad                      | ~20                            |
+| Late  | +10 good / −2 bad, or +5 good only    | ~30, maybe 50 at endgame       |
+
+Early runes net out to zero on purpose: early power comes from evolution and loot, and runes push the shade into a specialization. The runes available get better as the player reaches better enemies, and synthesizing runes may become a small minigame [[undecided]].
+
+No stat can be pushed below 1 by negative runes. If a player wants a stat that low, let them.
+
+**Attack runes and obedience:** attack-heavy runes tend to raise [[WILD]] and lower [[DIS]] (see [[Shade Stats]]), so raw power comes with a shade that's harder to control.
+
+**Runes and Hazen:** a rune can give stats to the shade, to [[Hazen]], or both, sometimes trading one for the other (for example −1 STR to the shade but +2 STR to Hazen). This is where Hazen's stats come from, and it feeds the story of why someone would split off their shadow and give it an artificial soul. Whether Hazen gets stats from only the active shade's runes or every slot is [[undecided]]. See [[Main Character Stats]].
 
 ---
 **Energy Requirements**

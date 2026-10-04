@@ -17,6 +17,20 @@ the list of ability types are as follows
 | [[Shade Ability]]    | An ability that can be unlocked via the [[Rune Field]]. Any [[Shade]] can access the ability provided it has not been locked out for any reason                                              |
 
 ---
+**Levels and Power**
+A shade's level decides how much power its [[Core Node]] has, which decides how many [[Element Rune]]s it can power. Its level never raises stats directly. The stats come from its [[Evolution]] and the runes the player places, so progression is how you build your [[Rune Field]]. See [[Damage Balance]].
+
+---
+**Death and Burning Down** *(idea, to work out later)*
+The game is a roguelite at heart: going back through dungeons, trying new training methods and raising new shades from easy-to-make beasts is a big part of the loop (the Digimon World influence).
+
+When a shade dies it starts over from Bound. Losing a strong shade in a final dungeon could mean a huge grind, so a dead shade should pass something on to the next one. A starting idea:
+- **Shade dies:** about **25%** of its levels carry over to the new shade
+- **Player burns it down on purpose** (breaks it down to its core before it dies): about **50%** carries over, and it gives Hazen a lot of XP toward his [[Tamer Level]]
+
+The numbers are [[undecided]]. The goal is that losing a shade hurts, but never means starting the whole game over.
+
+---
 Data:
 [[Character Stats]]
 [[Party Stats]]
