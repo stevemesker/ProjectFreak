@@ -68,7 +68,7 @@ The shape math (`IsInsideShape`, `GetCurrentAngles`, `GetCurrentReach`) and the 
 
 ---
 ## MeleeWeaponItem
-Inherits `WeaponItem` (see [[Ranged Weapon System#WeaponItem]]): attack type, prefab, attack speed, activation shake, base damage, element and knockback. **Create → Combat → Melee Weapon** (`SO_Weapon_Melee_Name_0`).
+Inherits `WeaponItem` (see [[Ranged Weapon System#WeaponItem]]): attack type, prefab, attack speed, activation shake, power, crit chance and multiplier, friendly fire, element and knockback. **Create → Combat → Melee Weapon** (`SO_Weapon_Melee_Name_0`).
 
 | Field             | Description |
 | :---------------- | :---------- |
@@ -160,9 +160,10 @@ The timing data is the source of truth for when a swing hits, not the animation.
 ---
 ## Damage
 Per [[Weapons#Damage Package]], melee builds its package at the moment of the hit, using the wielder's current stats (`CombatTools.BuildWeaponDamagePackage`, shared with ranged):
-- One damage entry: `(base damage + attack stat) × the step's _DamageMultiplier`, with the wielder's primary stat (STR for physical, INT for magical). *The damage overhaul changes this to `attack stat × weapon power × the step's _DamageMultiplier`, and the entry carries the attack stat (see [[Damage]]).* [[Notes for the future]]
+- One damage entry: `attack stat × weapon _Power × the step's _DamageMultiplier`, with the wielder's primary stat (STR for physical, INT for magical). The entry also carries the attack stat, so the target can apply its defense (see [[Damage]])
 - `_KnockbackDistance`: weapon knockback × the step's `_KnockbackMultiplier`. Enemies are pushed away from the wielder
-- Crit is always ×1 for now (see the damage overhaul in [[Damage Receivers & Projectiles]])
+- Crit chance and multiplier come from the weapon. The target rolls the crit when the hit lands (see [[Damage Receivers & Projectiles#Shared Damage Calculation]])
+- Swings skip the wielder's allies unless the weapon's `_HitsAllies` is on
 
 - `_StaggerPower`: the step's `_StaggerPower` (see [[#Stagger]])
 

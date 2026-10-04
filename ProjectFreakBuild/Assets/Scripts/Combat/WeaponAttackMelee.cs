@@ -310,7 +310,7 @@ public class WeaponAttackMelee : MonoBehaviour, ITriggerable
         {
             Collider hitCollider = _overlapBuffer[i];
             if (CombatTools.IsPartOf(hitCollider, _Wielder)) continue;
-            if (CombatTools.IsAlly(_wielderTeam, hitCollider.GetComponentInParent<UnitTeam>())) continue;
+            if (CombatTools.CanHitTeam(_wielderTeam, hitCollider.GetComponentInParent<UnitTeam>(), _WeaponData._HitsAllies) == false) continue; //skips allies unless the weapon has friendly fire
 
             IDamagable damagable = hitCollider.GetComponentInParent<IDamagable>(); //GetComponentInParent checks this object, then its parents
             if (damagable == null) continue;

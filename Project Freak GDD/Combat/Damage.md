@@ -21,6 +21,10 @@ Standard damage is typically applied during combat and is the most modified type
 
 *Decided in the Oct 2026 damage overhaul. This replaced the old "((Base damage + Attack Stat) × Effectiveness − Defense) / Resistance × Critical" formula. See [[Damage Balance]] for why, the test results, and how stats scale across the game.*
 
+**Rounding:** the math stays in decimals the whole way and the final damage of each entry is **rounded up** to a whole number (health is a whole number). So any hit that isn't fully blocked does at least 1 damage, and weak early builds (like a starting DoT build) still see their hits register. Immunities still work, since an immune hit is exactly 0 and stays 0. Rounding up adds about half a point per hit on average, which only shows in early game fights.
+
+*For damage over time later:* each effect should carry its leftover decimals between ticks (0.3 per tick adds up to 3 over 10 ticks) instead of rounding every tick up. Part of the status effect system.
+
 
 | Type          | Description                                                                                                                                                                                                                       |
 | :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

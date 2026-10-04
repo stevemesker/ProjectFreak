@@ -137,14 +137,11 @@ public class ShadeManager : MonoBehaviour
             case (DamageType.StatType.Agility):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._AGI += input._ChangeAmount * multiplier;
                 break;
-            case (DamageType.StatType.Intelect):
+            case (DamageType.StatType.Intellect):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._INT += input._ChangeAmount * multiplier;
                 break;
             case (DamageType.StatType.Spirit):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._SPR += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Wisdom):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._WIS += input._ChangeAmount * multiplier;
                 break;
             case (DamageType.StatType.Discipline):
                 _ShadeSlots[currentShadeSelected]._AlteredStats._DIS += input._ChangeAmount * multiplier;

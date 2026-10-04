@@ -93,7 +93,9 @@ This allows the dash speed profile to be adjusted without modifying code.
 
 ## Pass-Through Damage
 
-If a `DamagePackage` exists, the dash periodically performs sphere casts while moving.
+Only dashes started with `DashPassthrough` deal damage. A plain `DashCharacter` dash never does, even though the inspector's `Damage` field is always filled in by Unity. The package for the current dash is kept in `_activeDamage`.
+
+While a damaging dash moves, it periodically performs sphere casts.
 
 ### Detection Frequency
 
@@ -104,7 +106,7 @@ Rather than checking every frame, the script waits until the dash has traveled a
 Once that distance has been reached:
 
 - A SphereCast is performed between the previous cast position and the current position.
-- All damageable objects found are added to `hitList`.
+- Damageable objects found are added to `hitList`, except the dasher itself and its allies. **No friendly fire:** allies are skipped with the same `CombatTools.CanHitTeam` check weapons use (`UnitTeam`), unless the package's `_HitsAllies` is on. A unit with no `UnitTeam` hits everyone.
 - The next detection checkpoint is advanced by another radius distance.
 
 This provides reliable hit detection while avoiding unnecessary physics queries every frame.
@@ -164,7 +166,7 @@ Responsible for:
 
 ### DashPassthrough()
 
-Alternative dash entry point that stores a `DamagePackage` before beginning the dash.
+Alternative dash entry point that delivers a `DamagePackage` to everything it passes through. *Before Oct 2026 it wiped the package's entries, so pass-through dashes did no damage. Fixed in the damage overhaul.*
 
 Used for offensive dash abilities.
 
@@ -201,7 +203,7 @@ Returns:
 - Index of the first object that blocks movement.
 - `-1` if nothing obstructs the dash.
 
-Damageable objects encountered before the blocker are immediately added to the hit list.
+Damageable objects never block the dash. On a damaging dash, the ones encountered before the blocker are added to the hit list (allies skipped, see above).
 
 ---
 
@@ -209,7 +211,7 @@ Damageable objects encountered before the blocker are immediately added to the h
 
 Performs a sphere cast between the previous detection point and the current dash position.
 
-Every object implementing `IDamagable` is added to the hit list.
+Every object implementing `IDamagable` that isn't the dasher or an ally is added to the hit list.
 
 ---
 

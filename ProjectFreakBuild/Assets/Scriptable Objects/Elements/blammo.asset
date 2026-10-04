@@ -53,7 +53,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  element: 1
+  element: 0
   materialType: 0
   connectionsAllowed: 3
   connectionDistance: 150

@@ -22,8 +22,8 @@ MonoBehaviour:
   _WeaponPrefab: {fileID: 6206950580225152400, guid: 6dcae488eaa202a43ad6986a936ffae5, type: 3}
   _AttackSpeed: 2.5
   _ActivationShake: 0.15
-  _BaseDamage: 20
-  _Element: 9
+  _Power: 1.5
+  _Element: 10
   _Knockback: 0
   _IsAutomatic: 1
   _WarmUpTime: 0

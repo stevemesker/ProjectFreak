@@ -12,9 +12,9 @@ CoreStats           (every unit that can fight)
 ---
 ## CoreStats
 
-**Stats:** `_HP`, `_Health`, `_STR`, `_DEF`, `_AGI`, `_INT`, `_SPR`, `_WIS`, `_LVL`, `_Name`
+**Stats:** `_HP`, `_Health`, `_STR`, `_DEF`, `_AGI`, `_INT`, `_SPR`, `_LVL`, `_Name`
 
-*`_WIS` is being removed. SPR is now the mental defense stat and INT the mental attack stat (see [[Character Stats]]). The cleanup is tracked in [[Known Issues]].* [[Notes for the future]]
+*WIS was removed in the damage overhaul (Oct 2026). SPR is the mental defense stat and INT the mental attack stat (see [[Character Stats]]).*
 
 **Combat stat pointers** - which stat each kind of attack uses:
 
@@ -22,12 +22,14 @@ CoreStats           (every unit that can fight)
 | :---------------------- | :-------- |
 | `PhysicalPrimaryStat`   | Strength  |
 | `PhysicalSecondaryStat` | Agility   |
-| `MagicalPrimaryStat`    | Intelect  |
-| `MagicalSecondaryStat`  | Intelect  |
+| `MagicalPrimaryStat`    | Intellect |
+| `MagicalSecondaryStat`  | Intellect |
 | `PhysicalDefMod`        | Defense   |
 | `MagicalDefMod`         | Spirit    |
 
-**Resistances / Immunities:** lists of `DamageType.AttackType` and `DamageType.ElementType`.
+**Resistances / Immunities:** lists of `DamageType.AttackType` and `DamageType.ElementType`. `GetAttackResistanceModifier` returns 0 if the attack type or element is in an immunity list, 0.5 if it's in a resistance list, otherwise 1. *How resistances stack is still undecided, for now the first match wins.* [[Notes for the future]]
+
+**Stat floor:** `GetCombatStat(type)` is what the damage math uses. It's `TypeToStatFinder` but never below 1, so negative runes can't make damage 0 or negative.
 
 | Function                              | Description                                                          |
 | :------------------------------------ | :------------------------------------------------------------------- |

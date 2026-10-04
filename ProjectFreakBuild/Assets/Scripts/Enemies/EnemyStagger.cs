@@ -99,6 +99,12 @@ public class EnemyStagger : MonoBehaviour, IStaggerable
 
         Stagger();
     }
+
+    public bool IsStaggered()
+    {
+        //function the health script asks when a hit lands. Staggered enemies always take a crit
+        return Time.time < _staggerEndTime;
+    }
     #endregion
 
     #region Stagger

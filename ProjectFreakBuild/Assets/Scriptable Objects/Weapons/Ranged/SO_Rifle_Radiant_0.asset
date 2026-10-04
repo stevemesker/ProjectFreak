@@ -23,8 +23,8 @@ MonoBehaviour:
     type: 3}
   _AttackSpeed: 1
   _ActivationShake: 0.2
-  _BaseDamage: 20
-  _Element: 9
+  _Power: 1.5
+  _Element: 10
   _Knockback: 3
   _IsAutomatic: 1
   _WarmUpTime: 0

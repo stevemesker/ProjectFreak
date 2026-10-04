@@ -102,7 +102,7 @@ MonoBehaviour:
     PhysicalDefMod: 3
     MagicalDefMod: 6
     AttackTypeResistance: 00000000
-    ElementTypeResistance: 00000000
+    ElementTypeResistance: 
     AttackTypeImmunity: 
     ElementTypeImmunity: 
     _DropGold: 0

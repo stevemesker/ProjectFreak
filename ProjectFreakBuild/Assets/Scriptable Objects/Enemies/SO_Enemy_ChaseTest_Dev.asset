@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _EnemyName: Chase Test Dummy
   _Rank: 1
-  _SizeClass: 1
+  _SizeClass: 0
   _Personality:
     _Preset: {fileID: 11400000, guid: 0fa0b366050d4f149a80032a33be5230, type: 2}
     _OverrideAggression: 0
@@ -57,3 +57,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  _StaggerImmune: 0
+  _StaggerDuration: 0.6
+  _StaggerImmunityTime: 1
+  _BossStaggerThresholds:
+  - 66
+  - 33

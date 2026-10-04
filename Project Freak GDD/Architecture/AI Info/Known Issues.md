@@ -5,11 +5,12 @@ Back to [[AA - AI Info]]
 ---
 ## Bugs
 
-**Damage** *(save for the damage overhaul)*
-- [ ] `PlayerDamegable.DamageCalculation` negates the defense stat and then subtracts it, so defense is **added** to damage instead of reducing it
-- [ ] `PlayerDamegable` doesn't implement `IDamagable`, so projectiles (including [[Traps]]) can't hit the player
-- [ ] `CoreStats.GetAttackResistanceModifier` checks resistances but not immunities
-- [ ] `TrapProjectileSpawner._CritMultiplier` is never used (the package always gets 1)
+**Damage** *(damage overhaul, Oct 2026)*
+- [x] `PlayerDamegable.DamageCalculation` negates the defense stat and then subtracts it, so defense is **added** to damage instead of reducing it. *Fixed Oct 2026: both health scripts use the new shared `CombatTools.ResolveHit`*
+- [x] `PlayerDamegable` doesn't implement `IDamagable`, so projectiles (including [[Traps]]) can't hit the player. *Checked Oct 2026: not actually a bug. The player prefab's `EnemyDamagable` is the `IDamagable`, and its `onDamage` event forwards to `PlayerDamegable`. Left as is so the player gets the same hit checks as every unit*
+- [x] `CoreStats.GetAttackResistanceModifier` checks resistances but not immunities. *Fixed Oct 2026*
+- [x] `TrapProjectileSpawner._CritMultiplier` is never used (the package always gets 1). *Fixed Oct 2026, traps also have a crit chance and a faux attack stat now*
+- [x] `UnitDash.DashPassthrough` replaced the package's entries with an empty list, so pass-through dashes did no damage. *Fixed Oct 2026*
 
 **Abilities**
 - [ ] `AbilityInterpreter.ExecuteAbility` always waits using the **first** step's `Timing` instead of the current step's (see [[Ability System]])
@@ -33,7 +34,7 @@ Back to [[AA - AI Info]]
 **Player**
 - [x] `UnitDash.startDashEvent` is never invoked (only `endDashEvent` is). *Fixed Oct 2026: start event now fires, dashes are tracked in `_dashRoutine` so chained dashes don't overlap, and `OnDisable` ends a running dash*
 - [ ] `UnitDash` keeps one shared `hitList`, so chaining a second dash before the first finishes throws away the first dash's hits (they never take damage)
-- [ ] `UnitDash` pass-through damage doesn't check teams, so a damaging dash would hit allies too. Projectiles and hit scan skip allies through `UnitTeam.IsHostileTo` (Oct 2026); dashes should do the same
+- [x] `UnitDash` pass-through damage doesn't check teams, so a damaging dash would hit allies too. *Fixed Oct 2026: dashes use `CombatTools.CanHitTeam` like weapons*
 - [x] `Player.UseCurrentWeapon` / `ReleaseCurrentWeapon` check `handPointer` for `ITriggerable` instead of the held weapon, and the check is inverted. *Fixed Oct 2026: `Player` keeps a reference to the weapon it spawned, and `PlayerCombatInteract` goes through these functions instead of its own copy of the check*
 - [ ] `PlayerCombatInteract.EndSelection` calls `StopCoroutine(cycleTimer)` without checking for null, which logs an error if the scroll is released without a cycle running
 
@@ -60,6 +61,6 @@ Back to [[AA - AI Info]]
 - [x] Add null checks to `SceneManagerWrapper` and `CameraManagerWrapper`. *Done Oct 2026*
 - [x] Remove leftover debug prints (`print("boop")` in `PlayerMenuInputs`, scene load logs in `SceneManagerObject`, etc.). *Done Oct 2026. Kept `AbilityInterpreter.AbilIntLog` and the Odin test buttons. The legacy scripts above were left alone since they're getting deleted*
 - [ ] A few classes still have lowercase names: `statBoostPackage` (in `ElementManagerSO.cs`) and `cameraScript` (legacy). Renaming `statBoostPackage` is safe for saved data since it's a plain serializable class
-- [ ] **Remove WIS** *(damage overhaul, Oct 2026 decision, see [[Character Stats]])*: delete `_WIS` from `CoreStats` and the WIS value from `DamageType.StatType`, and update `TypeToStatFinder`, `ShadeManager.ChangeStat` and anything else that switches on stats. `StatType` is saved as an int on assets (rune stat boosts, weapons), so removing a value shifts everything after it. Either shift those assets like the last enum cleanup, or give the enum explicit numbers first so this never happens again. Also rename the "Intelect" spelling in the stat pointers while there
-- [ ] **Swap `DamageType.ElementType` to the final element list** *(damage overhaul, Oct 2026 decision, see [[Elemental Affinity]])*: Normal, Fire, Water, Air, Earth, Ice, Lava, Lightning, Plant, Void, Light. Cut `None` (Normal is the default and means non-elemental), rename Electric → Lightning and Dark → Void, add Air, Lava and Plant, and remove Poison (future status effect) and Healing (healing gets its own path later). Do this in the same pass as Remove WIS. Nothing much is built on elements yet, so shifting assets isn't a concern, but explicit enum numbers are still worth adding
+- [x] **Remove WIS** *(damage overhaul)*. *Done Oct 2026: `_WIS` and `StatType.Wisdom` are gone, "Intelect" is now "Intellect", and every `DamageType` enum has explicit numbers so removing a value never shifts assets again. One trap in `New_Player_Movement_Scene` used Wisdom and was moved to Intellect*
+- [x] **Swap `DamageType.ElementType` to the final element list** *(damage overhaul)*. *Done Oct 2026: Normal (0), Fire, Water, Air, Earth, Ice, Lava, Lightning, Plant, Void, Light. Weapon, rune element and trap assets were shifted to keep their element. The two dev enemy prefabs had `None` in their element resistance list, which was cleared (it would have become a Normal resistance)*
 - [ ] There's a bug where the radial dial toggle becomes always on instead of always off until button is pressed. Something about long holding or switching windows with it up breaks the radial dial

@@ -18,12 +18,12 @@ Attack input goes `PlayerCombatInteract` → `Player.UseCurrentWeapon()` / `Rele
 
 ---
 ## Current Weapon Scripts
-**`WeaponItem`** is the abstract base weapon data (`ItemSO`): attack type, prefab, attack speed, activation shake, base damage, element and knockback. See [[Ranged Weapon System#WeaponItem]].
+**`WeaponItem`** is the abstract base weapon data (`ItemSO`): attack type, prefab, attack speed, activation shake, power, crit chance and multiplier, friendly fire, element and knockback. See [[Ranged Weapon System#WeaponItem]].
 
 **`WeaponRangedItem`** + **`WeaponAttackRanged`** - the ranged weapon data and the script on the held weapon that fires it: warm up, automatic, burst, charge, finishers, projectile patterns and hit scan. See [[Ranged Weapon System]]
 
 **`MeleeWeaponItem`** + **`WeaponAttackMelee`** - the melee weapon data and the script on the held weapon that swings it: combos built from shared `SwingShapeSO`s, a sweeping hit check, damage and knockback. See [[Melee Weapon System]]. Stagger and animations aren't hooked up yet [[Notes for the future]]
 
-**`CombatTools`** - static helpers both weapon scripts share: `IsPartOf`, `IsAlly`, `IsLevelGeometry`, `GetBodyCollider`, `BuildWeaponDamagePackage` and `ShakeCameraForWielder`. New attack code (abilities, enemy attacks) should use these so the rules for allies, walls and damage stay in one place.
+**`CombatTools`** - static helpers both weapon scripts share: `IsPartOf`, `IsAlly`, `CanHitTeam` (the friendly fire rule), `IsLevelGeometry`, `GetBodyCollider`, `BuildWeaponDamagePackage`, `ResolveHit` (the shared damage calculation, see [[Damage Receivers & Projectiles#Shared Damage Calculation]]), the popup helpers and `ShakeCameraForWielder`. New attack code (abilities, enemy attacks) should use these so the rules for allies, walls and damage stay in one place.
 
 `WeaponItem._Element` uses `DamageType.ElementType`.
