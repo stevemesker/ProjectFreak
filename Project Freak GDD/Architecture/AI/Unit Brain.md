@@ -17,7 +17,7 @@ The brain never moves the unit itself. Actions give orders through `IUnitMover` 
 
 ---
 ## Setup
-A unit needs `UnitTeam`, `UnitTargeting`, `UnitBrain` and a mover (`EnemyMovement` or `NavGuideDriver`). `PFB_Shade` and `PFB_Enemy_ChaseTest_Dev` already have all of them.
+A unit needs `UnitTeam`, `UnitTargeting`, `UnitBrain` and a mover (`EnemyMovement` or `NavGuideDriver`). `PFB_Shade_Released` and `PFB_Enemy_ChaseTest_Dev` already have all of them.
 
 If the action list is empty, the brain fills in the **default set for its role** when the game starts:
 - **Enemy:** Chase, Engage, Flee, Wander
@@ -51,7 +51,7 @@ Each brain builds its **own copy** of its personality when the game starts, from
 
 ### Where a unit's personality is set
 - **Enemies:** on their **EnemySO**, in the **AI** foldout. Every enemy using that EnemySO gets it. The brain's own setup is hidden on enemies, and the inspector says where to look instead.
-- **Units without an EnemySO** (shades): on the **UnitBrain** itself (`_PersonalitySetup`). `PFB_Shade` uses `SO_AIPersonality_Shade_Loyal`.
+- **Units without an EnemySO** (shades): on the **UnitBrain** itself (`_PersonalitySetup`). `PFB_Shade_Released` uses `SO_AIPersonality_Shade_Loyal`.
   *Later the shade's personality will come from its shade slot data and training (shade overhaul pass).* [[Notes for the future]]
 
 Both places use the same **Personality Setup**:

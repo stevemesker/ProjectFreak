@@ -73,7 +73,7 @@ public class UnitBrain : MonoBehaviour
     IUnitMover _mover; //interfaces can't show in the inspector, so this is always found with GetComponent
     IUnitHealth _health;
     UnitTeam _team;
-    Shade _shade; //only on shades, used to find the player to follow
+    ReleasedShade _shade; //only on released shades, used to find the player to follow
     AIAction _currentAction;
     float _actionStartTime;
     Vector3 _homePosition;
@@ -86,7 +86,7 @@ public class UnitBrain : MonoBehaviour
         _mover = GetComponent<IUnitMover>(); //GetComponent works with interfaces too, it finds whichever component uses it
         _health = GetComponent<IUnitHealth>();
         _team = GetComponent<UnitTeam>();
-        _shade = GetComponent<Shade>();
+        _shade = GetComponent<ReleasedShade>();
         _homePosition = transform.position; //remembers where it started, so wandering stays near home
         if (TryGetComponent(out EnemyMovement enemyMovement)) _enemyData = enemyMovement.GetEnemyData();
 

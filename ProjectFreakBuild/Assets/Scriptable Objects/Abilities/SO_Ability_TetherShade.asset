@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd3089071ac57a748a1694e25af4fae4, type: 3}
+  m_Name: SO_Ability_TetherShade
+  m_EditorClassIdentifier: 
+  _AbilityName: Tether Shade
+  _AbilitySprite: {fileID: 21300000, guid: 71aa56ec46903084eabe2a46ca53a1b9, type: 3}
+  _AbilityCooldown: 0.5
+  _steps:
+  - rid: 190815126375104512
+  - rid: 190815189735571456
+  references:
+    version: 2
+    RefIds:
+    - rid: 190815126375104512
+      type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
+      data:
+        DevNotes: Cast animation
+        Timing: 0.25
+        _StepObject: {fileID: 0}
+        _Functions:
+        - rid: 190815126375104513
+    - rid: 190815126375104513
+      type: {class: TestAbility, ns: , asm: Assembly-CSharp}
+      data: 
+    - rid: 190815189735571456
+      type: {class: AbilityStep, ns: , asm: Assembly-CSharp}
+      data:
+        DevNotes: Tether Shade
+        Timing: 1
+        _StepObject: {fileID: 0}
+        _Functions:
+        - rid: 190815189735571457
+    - rid: 190815189735571457
+      type: {class: TetherShade, ns: , asm: Assembly-CSharp}
+      data: 

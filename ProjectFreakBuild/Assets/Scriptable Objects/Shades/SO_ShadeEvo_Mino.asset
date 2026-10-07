@@ -26,3 +26,7 @@ MonoBehaviour:
     _XP: 0
     _DIS: 0
     _WILD: 0
+  _TetheredArt: {fileID: 1334845799166773360, guid: 70e3aed5106b403a92b086a1b7e9255b, type: 3}
+  _ReleasedArt: {fileID: 0}
+  _TetherDistance: 2
+  _TetherWidth: 0.5

@@ -17,6 +17,9 @@ public class UnitHover : MonoBehaviour
     [Tooltip("How much the spring resists bouncing. Higher = settles faster with less bob")]
     [SerializeField, Min(0f)] float _RideSpringDamper = 6f;
 
+    [Tooltip("Which layers count as floor. Leave Units off on shades so the floor ray doesn't land on the player when the shade passes over them")]
+    [SerializeField] LayerMask _FloorLayers = Physics.DefaultRaycastLayers;
+
     [Header("References")]
     [Tooltip("The unit's rigidbody. Grabbed automatically from this object if left empty")]
     [SerializeField] Rigidbody _RB;
@@ -39,6 +42,13 @@ public class UnitHover : MonoBehaviour
         if (_RB == null) { Debug.LogError($"Error! No Rigidbody found on {gameObject.name}, UnitHover can't float it", this); enabled = false; }
     }
 
+    private void Reset()
+    {
+        //Unity calls Reset when this component is first added (or Reset is picked in its menu)
+        //new hovers skip the Units layer by default, so units don't float on top of each other
+        _FloorLayers = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("Units"); //& ~ removes the Units bit from the mask
+    }
+
     private void OnValidate()
     {
         //editor-only warning: if the ray is shorter than the ride height the unit can never find the floor it's trying to float above
@@ -58,7 +68,7 @@ public class UnitHover : MonoBehaviour
         //function that casts down from the unit and saves what it hit into _rayHit
         //QueryTriggerInteraction.Ignore means trigger volumes don't count as floor
         Vector3 downDir = transform.TransformDirection(Vector3.down);
-        return Physics.Raycast(transform.position, downDir, out _rayHit, _RayLength, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        return Physics.Raycast(transform.position, downDir, out _rayHit, _RayLength, _FloorLayers, QueryTriggerInteraction.Ignore);
     }
 
     void StandingForce()
@@ -96,6 +106,18 @@ public class UnitHover : MonoBehaviour
     {
         //function other scripts (AI, animation, abilities) can use to check if the unit is over the floor
         return _IsGrounded;
+    }
+
+    public RaycastHit GetFloorHit()
+    {
+        //function for reading where the floor ray landed (the tether tail starts here). Only up to date while IsGrounded() is true
+        return _rayHit;
+    }
+
+    public float GetRideHeight()
+    {
+        //function for how high above the floor this unit floats, in meters
+        return _RideHeight;
     }
     #endregion
 }

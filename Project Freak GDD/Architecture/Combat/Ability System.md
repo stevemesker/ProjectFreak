@@ -48,7 +48,9 @@ Steps and functions use `[SerializeReference]`, which lets one list hold differe
 
 | Function       | Description                                                                                          |
 | :------------- | :--------------------------------------------------------------------------------------------------- |
-| `SummonShade`  | Finds open space around the source (raycasts in a circle along the ground) and asks the [[Shade Manager]] to summon the shade there |
+| `TetherShade`  | Asks the [[Shade Manager]] to tether the shade (or put it away if it's already tethered). Used by `SO_Ability_TetherShade` |
+| `ReleaseShade` | Renamed from `SummonShade`. If the shade is already released, puts it away. Otherwise finds open space around the source (raycasts in a circle along the ground) and asks the [[Shade Manager]] to release the shade there. Used by `SO_Ability_ReleaseShade` |
+| `ReturnShade`  | Asks the [[Shade Manager]] to put away whatever form is out. Used by `SO_Ability_ReturnShade` |
 | `ControlShade` | Asks the [[Shade Manager]] to switch control to the shade                                            |
 | `TestAbility`  | Logs a message. For testing                                                                          |
 
@@ -56,6 +58,8 @@ Steps and functions use `[SerializeReference]`, which lets one list hold differe
 1. Create a class that inherits `AbilityFunction` and add `[System.Serializable]`
 2. Override `ActivateAbility`
 3. It will now show up as an option in any ability step
+
+**Renaming a function class:** steps save their function by class name, so renaming one breaks existing ability assets. Add `[MovedFrom(false, sourceClassName: "OldName")]` (from `UnityEngine.Scripting.APIUpdating`) to the renamed class, like `ReleaseShade` does.
 
 ---
 ## AbilityInterpreter

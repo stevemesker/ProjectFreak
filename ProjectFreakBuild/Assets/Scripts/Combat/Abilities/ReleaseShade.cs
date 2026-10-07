@@ -1,12 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-public class SummonShade : AbilityFunction
+//this class used to be called SummonShade. Abilities save which function class they use by name,
+//so MovedFrom tells Unity "anything saved as SummonShade is now ReleaseShade" and existing ability assets keep working
+[MovedFrom(false, sourceClassName: "SummonShade")]
+public class ReleaseShade : AbilityFunction
 {
     public override void ActivateAbility(GameObject source, AbilityInterpreter interpreter)
     {
-        interpreter.AbilIntLog($"{source.name} successfully used Summon Shade!");
+        interpreter.AbilIntLog($"{source.name} successfully used Release Shade!");
+        if (ShadeManager._ShadeManager == null) { Debug.LogError("Error! Shade Manager not found, can't use Release Shade", source); return; }
+
+        //already released: using it again puts the shade away, no need to look for a spot
+        if (ShadeManager._ShadeManager.GetCurrentForm() == ShadeFormType.Form.Released)
+        {
+            ShadeManager._ShadeManager.ReturnShade();
+            return;
+        }
+
         //find area in front of player to sapwn
         Vector3 summonPosition = FindSummonSpot(source);
         if (summonPosition == Vector3.zero)
@@ -92,8 +105,8 @@ public class SummonShade : AbilityFunction
 
     public void SpawnShade(Vector3 location)
     {
-        //spawns the shade through the shade manager singleton
-        if (ShadeManager._ShadeManager == null) { Debug.LogError("Error! Shade Manager not found, can't summon a shade"); return; }
-        ShadeManager._ShadeManager.SummonShade(location);
+        //releases the shade through the shade manager singleton (it returns a tethered shade first)
+        if (ShadeManager._ShadeManager == null) { Debug.LogError("Error! Shade Manager not found, can't release a shade"); return; }
+        ShadeManager._ShadeManager.ReleaseShade(location);
     }
 }

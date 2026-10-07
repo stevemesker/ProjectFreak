@@ -14,6 +14,7 @@ Back to [[AA - AI Info]]
 
 **Abilities**
 - [ ] `AbilityInterpreter.ExecuteAbility` always waits using the **first** step's `Timing` instead of the current step's (see [[Ability System]])
+- [ ] `ReleaseShade.FindSummonSpot` (was `SummonShade`): `smallestDistance` is never reset between directions, so one close wall in any direction makes every later direction fail too. It also has hardcoded search values (5 m, 2 m, etc.), uses `Vector3.zero` to mean "no spot found", and leaves debug `LogWarning`s running ("Found Myself...", "is summoning a shade", "Correct numbers on a flat plane"). *Spotted Oct 2026 during the shade forms work, left as is*
 
 **Dungeons**
 - [ ] `DungeonSO.SearchDictionaries` / `GetPOI` throw an error if no POI has the requested size or tag, instead of returning null (see [[POI System]])

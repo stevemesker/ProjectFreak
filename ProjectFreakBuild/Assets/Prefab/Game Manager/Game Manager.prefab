@@ -152,9 +152,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   managerScriptableObject: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530,
     type: 2}
-  _ShadePrefab: {fileID: 5828660845402572805, guid: 345767b28b2d2404190bd012b07a7e56,
+  _TetheredPrefab: {fileID: 7968207597447001717, guid: 290815cbd3064d0689808ff5dade4df2, type: 3}
+  _ReleasedPrefab: {fileID: 5828660845402572805, guid: 345767b28b2d2404190bd012b07a7e56,
     type: 3}
-  _CurrentShade: {fileID: 0}
+  _TetheredShade: {fileID: 0}
+  _ReleasedShade: {fileID: 0}
+  _IsControllingShade: 0
   _ShadeSlots:
   - {fileID: 11400000, guid: c2a5cbd993cf42d418a6b7db80df3cce, type: 2}
   - {fileID: 11400000, guid: aa6dc390da24f3146899eaae6d3ebbcd, type: 2}
