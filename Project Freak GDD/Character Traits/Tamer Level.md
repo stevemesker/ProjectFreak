@@ -4,8 +4,8 @@ Tamer Level only unlocks tools. It never raises combat stats, and it doesn't fac
 
 | Level | Ability Unlock                        |
 | :---- | :------------------------------------ |
-| 1     | [[Summon Shade]], +1 [[Shade Slot]]   |
-| 2     | [[Separate Shade]], +1 [[Shade Slot]] |
+| 1     | [[Tether Shade]], +1 [[Shade Slot]]   |
+| 2     | [[Release Shade]], +1 [[Shade Slot]]  |
 | 3     | +1 [[Shade Slot]]                     |
 | 4     | +1 [[Dive Switch]], +1 [[Shade Slot]] |
 | 5     | [[Control Shade]], +1 [[Shade Slot]]  |

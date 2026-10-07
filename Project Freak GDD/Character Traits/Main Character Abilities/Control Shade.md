@@ -1,1 +1,1 @@
-When a shade is released Hazen can sometimes take over and directly control it, giving him direct access to his shade’s abilities and skills. The amount of time depends on the shade’s [[DIS]] and [[WILD]]
+When a shade is [[Release Shade|released]] Hazen can sometimes take over and directly control it, giving him direct access to his shade’s abilities and skills. The amount of time depends on the shade’s [[DIS]] and [[WILD]]

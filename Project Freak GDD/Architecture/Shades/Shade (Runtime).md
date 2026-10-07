@@ -5,6 +5,8 @@ How a [[Shade]] exists in code. There are two parts:
 
 The [[Shade Manager]] owns the slots and spawns the shade.
 
+*Planned:* the shade is getting a second prefab for its [[Tethered]] form, the current `Shade` component and `PFB_Shade` get renamed to `ReleasedShade` and `PFB_Shade_Released`, and both forms will spawn their art from the shade's evolution. See [[Shade Forms Plan]]. [[Notes for the future]]
+
 ---
 ## ShadeSO
 One asset per shade slot. Created from **Create → ScriptableObjects → Shades → ShadeSlot**.
@@ -44,4 +46,4 @@ The shade implements `ISummonUnit`:
 - `AssignSummoner(GameObject)` - stores `PlayerRef`
 - `UpdateStats(CoreStats)` - *empty for now* [[Notes for the future]]
 
-*Note:* the Summon Shade flow spawns the shade through the [[Shade Manager]] and doesn't call `AssignSummoner` yet. [[Notes for the future]]
+*Note:* the `SummonShade` ability (becoming Release Shade) spawns the shade through the [[Shade Manager]] and doesn't call `AssignSummoner` yet. [[Notes for the future]]
