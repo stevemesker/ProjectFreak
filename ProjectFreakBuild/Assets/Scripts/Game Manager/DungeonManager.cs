@@ -60,6 +60,9 @@ public class DungeonManager : MonoBehaviour
         _map = _CurrentDungeonMap.GetComponent<DungeonMapManager>();
         _map.StartNewMap(_CurrentDungeon);
 
+        //released shades don't come into dungeons (a tethered shade does, it travels with the player)
+        if (ShadeManager._ShadeManager != null) ShadeManager._ShadeManager.ReturnReleased();
+
         //SceneManagerObject._SceneManager.HudFadeOnOpen(1);
         //SceneManagerObject._SceneManager.ChangeScene(_DungeonChapterData[dungeonID]._DungeonData._DungeonEntranceSceneName);
     }

@@ -291,8 +291,8 @@ public class UnitTargeting : MonoBehaviour, IAggroReceiver
     {
         //editor button (play mode only) that acts like the shade just hit this unit
         if (Application.isPlaying == false) return;
-        if (Shade.shade == null) { Debug.LogWarning("Warning! No shade out to test with, skipping..."); return; }
-        AddAttacker(Shade.shade.GetComponent<UnitTeam>());
+        if (ReleasedShade._Released == null) { Debug.LogWarning("Warning! No released shade out to test with, skipping..."); return; }
+        AddAttacker(ReleasedShade._Released.GetComponent<UnitTeam>());
     }
 
     [Button("Test Aggro From Player")]

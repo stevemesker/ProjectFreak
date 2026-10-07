@@ -1,9 +1,9 @@
 ## Overview
-The plan for how a [[Shade]] is brought out in its different forms (**Tethered**, **Released**, **Controlled**, **Fused**), starting with the **Tethered** form. Worked out with Claude in Oct 2026. Nothing on this page is built yet. As each piece gets built it moves into its own system note ([[Shade (Runtime)]], [[Shade Manager]], etc.) and the tag comes off here.
+The plan for how a [[Shade]] is brought out in its different forms (**Tethered**, **Released**, **Controlled**, **Fused**), starting with the **Tethered** form. Worked out with Claude in Oct 2026. Built pieces are written up in their system notes ([[Tethered Shade]], [[Shade (Runtime)]], [[Shade Manager]], [[Ability System]]) and their tags are off here.
 
 Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
-**Status (Oct 2026):** planned, not built. [[Notes for the future]]
+**Status (Oct 2026):** the code for build order steps 1-9 is written. The Unity side (file renames, the new prefab and ability assets) is in **Unity Setup** below, then it needs a playtest. [[Notes for the future]]
 
 The design side lives in [[Shade]] (Summoning Styles), [[Tethered]], and the ability notes ([[Tether Shade]], [[Release Shade]], [[Return Shade]], [[Control Shade]], [[Fuse Shade]]).
 
@@ -35,8 +35,8 @@ Every form has a matching ability: the ability is the verb, the form is what the
 
 | Form | Prefab | Status |
 | :--- | :--- | :--- |
-| **Tethered** | `PFB_Shade_Tethered` (new) | This pass [[Notes for the future]] |
-| **Released** | `PFB_Shade_Released` (the current `PFB_Shade`) | Exists. Gets renamed, the new tether/release/return flow, and art from its evolution [[Notes for the future]] |
+| **Tethered** | `PFB_Shade_Tethered` (new) | Code built (see [[Tethered Shade]]). Prefab still to be made, see Unity Setup [[Notes for the future]] |
+| **Released** | `PFB_Shade_Released` (the current `PFB_Shade`) | Code renamed, uses the tether/release/return flow and can spawn art from its evolution. Prefab rename and art holder still to do, see Unity Setup [[Notes for the future]] |
 | **Controlled** | `PFB_Shade_Released` | Exists ([[Control Shade]] through the [[Shade Manager]]). Only works on the released shade |
 | **Fused** | Undecided, maybe a third prefab | Later [[Notes for the future]] |
 
@@ -54,7 +54,7 @@ Tethered and released work in very different ways, so they're separate prefabs i
 Having more than one [[Shade Slot]] is for when a shade dies, or for switching to a better fit for the current dungeon (through a menu that isn't built yet). For now everything uses the currently selected slot. **Switching slots while a shade is out** is a later problem [[Notes for the future]]
 
 ### 3. The player always chooses to summon
-Shades never come out on their own. Summoning a new evolution for the first time should feel like a moment, and a shade with no health or [[LIFE]] left shouldn't be summonable at all. That rule lives in **one** check, `ShadeManager.CanSummon()`, which just returns true for now. Health and lives plug into it later without the abilities needing to know [[Notes for the future]]
+Shades never come out on their own. Summoning a new evolution for the first time should feel like a moment, and a shade with no health or [[LIFE]] left shouldn't be summonable at all. That rule lives in **one** check, `ShadeManager.CanSummon()`, which only checks the player and slot exist for now. Health and lives plug into it later without the abilities needing to know [[Notes for the future]]
 
 ### 4. Scene rules
 - **Tethered** shade persists between scenes (`DontDestroyOnLoad`, like the player) and snaps to the player after a scene loads. If it's tethered in the hub, it's still tethered when the player enters a dungeon
@@ -77,16 +77,16 @@ Three [[Ability System|abilities]], so the player never has to think about what 
 
 | Ability function | Asset | Status |
 | :--- | :--- | :--- |
-| `TetherShade` | `SO_Ability_TetherShade` | New [[Notes for the future]] |
-| `ReleaseShade` | `SO_Ability_ReleaseShade` | Renamed from `SummonShade` / `SO_Ability_SummonShade` and changed to follow the table above [[Notes for the future]] |
-| `ReturnShade` | `SO_Ability_ReturnShade` | Asset exists but has no function yet [[Notes for the future]] |
+| `TetherShade` | `SO_Ability_TetherShade` | Function built. Asset still to be made [[Notes for the future]] |
+| `ReleaseShade` | `SO_Ability_ReleaseShade` | Function renamed from `SummonShade` and follows the table above. Asset still to be renamed [[Notes for the future]] |
+| `ReturnShade` | `SO_Ability_ReturnShade` | Function built. Still to be added to the asset [[Notes for the future]] |
 
 The new abilities need to be added to the player's `_TamerAbilities` list (see [[Stats & Inventory Data]]) so they show in the [[Radial Menu]].
 
 ---
 ## Pieces to Build
 
-### Shade Manager [[Notes for the future]]
+### Shade Manager *(built)*
 | Change | Description |
 | :--- | :--- |
 | `_TetheredPrefab` / `_ReleasedPrefab` | Replace `_ShadePrefab` |
@@ -99,7 +99,7 @@ The new abilities need to be added to the player's `_TamerAbilities` list (see [
 
 `ShadeControlAbility()` keeps working on the released shade only.
 
-### IShadeForm (interface) [[Notes for the future]]
+### IShadeForm (interface) *(built)*
 Both prefabs implement it, so the manager treats them the same way. Lives in `ShadeInterface.cs`.
 
 | Function | Description |
@@ -108,7 +108,7 @@ Both prefabs implement it, so the manager treats them the same way. Lives in `Sh
 | `Appear()` | Instant for now. Hook for the magic circle / pop-out later |
 | `Dismiss()` | Destroys it for now. Hook for the tethered shade sinking into the player later |
 
-### ShadeEvolutionSO [[Notes for the future]]
+### ShadeEvolutionSO *(built)*
 | Variable | Description |
 | :--- | :--- |
 | `_TetheredArt` | Art prefab used while tethered |
@@ -118,7 +118,7 @@ Both prefabs implement it, so the manager treats them the same way. Lives in `Sh
 
 Size data goes on the evolution instead of the slot, since a shade changes size as it evolves.
 
-### ShadeArtRig (on every shade art prefab) [[Notes for the future]]
+### ShadeArtRig (on every shade art prefab) *(built)*
 | Variable | Description |
 | :--- | :--- |
 | `_TailConnectionPoint` | Where the tail meets the body |
@@ -128,7 +128,7 @@ Size data goes on the evolution instead of the slot, since a shade changes size 
 
 Lets one FBX serve both forms: use it for both art fields on the evolution and say "turn off legs while tethered".
 
-### TetheredShade (on PFB_Shade_Tethered) [[Notes for the future]]
+### TetheredShade (on PFB_Shade_Tethered) *(built)*
 Prefab: `TetheredShade`, `Rigidbody` + `UnitHover`, `ShadeTail`, and an empty art holder the art is spawned into.
 
 **Where it goes (slots)**
@@ -141,24 +141,24 @@ Prefab: `TetheredShade`, `Rigidbody` + `UnitHover`, `ShadeTail`, and an empty ar
 - **Wall check:** before using a slot, a spherecast from the player to the slot pulls it in if a wall is in the way. The casting slot also checks the `_CastPoint` isn't behind a wall, so a player backed into a wall still has a shade that can defend
 - **Height:** `UnitHover` floats it over its own floor. If there's no floor under it (a pit or ledge), it holds at the player's floor height. *Try it and see how it feels*
 
-### ShadeTail (placeholder) [[Notes for the future]]
+### ShadeTail (placeholder) *(built)*
 The real tail waits until the art style is locked in. This pass only sets up the points it will need:
 - **Start:** the floor point under the player, from the player's `UnitHover` raycast
 - **End:** the art rig's `_TailConnectionPoint`
 - Drawn with a **LineRenderer** as a simple L (along the floor, then up into the body). Turns off while the player isn't grounded
 - Later: a real tail mesh along a curve, sized by `_TetherWidth`, plus a shader to hide it while the player is in the air [[Notes for the future]]
 
-### UnitHover [[Notes for the future]]
+### UnitHover *(built)*
 - `_FloorLayers` layer mask, so the shade's ray doesn't land on the player when it passes over them
 - `GetFloorHit()` so the tail can read the player's floor point
 
-### ReleasedShade (on PFB_Shade_Released) [[Notes for the future]]
+### ReleasedShade (on PFB_Shade_Released) *(built)*
 - The current `Shade` component, renamed. Its static `Shade.shade` becomes `ReleasedShade._Released`
 - Implements `IShadeForm` and spawns its art from the evolution's `_ReleasedArt`
 - Clears its static when disabled, so a returned shade doesn't stay the static
 
 ---
-## Build Order [[Notes for the future]]
+## Build Order *(code done Oct 2026)*
 1. Renames: `Shade` → `ReleasedShade`, `PFB_Shade` → `PFB_Shade_Released`, `SummonShade` → `ReleaseShade` (function and asset)
 2. `IShadeForm`, `ShadeArtRig`, `ShadeEvolutionSO` fields
 3. Shade Manager: two prefabs, tether / release / return, `CanSummon()`
@@ -168,6 +168,19 @@ The real tail waits until the art style is locked in. This pass only sets up the
 7. Abilities: Tether Shade, Return Shade, update Release Shade
 8. Scene rules: tethered shade persists and snaps to the player, `EnterDungeon` returns the released shade
 9. Released shade gets art from its evolution
+
+---
+## Unity Setup [[Notes for the future]]
+Things the code can't do by itself. Do the renames **in Unity's Project window** (not in Explorer) so the `.meta` files move with them and prefabs keep their references, and do them **before** opening or saving the shade prefab.
+1. ~~Rename `Shade.cs` → `ReleasedShade.cs`~~ *(done)*
+2. ~~Rename `SummonShade.cs` → `ReleaseShade.cs`~~ *(done)*
+3. Rename `PFB_Shade` → `PFB_Shade_Released` and `SO_Ability_SummonShade` → `SO_Ability_ReleaseShade`
+4. ~~Make `PFB_Shade_Tethered` and assign it to `_TetheredPrefab` on the Shade Manager~~ *(done by Claude, Oct 2026)*
+5. ~~Make `SO_Ability_TetherShade` and add it to the player's `_TamerAbilities`~~ *(done, it reuses the Summon Shade icon for now)*. Still to do: add the `ReturnShade` function to `SO_Ability_ReturnShade` and add it to `_TamerAbilities`
+6. Every evolution (Baby, Mino, Turtle) uses the placeholder art `PFB_Shade_Art_Placeholder_0` (a sphere with a `ShadeArtRig`) as `_TetheredArt`, with `_TetherDistance` 2. Swap in real art per evolution later
+7. Add a `ShadeArtRig` to each real shade art prefab and set its tail and cast points
+8. Optional, for released art from the evolution: remove the art child from `PFB_Shade_Released`, add an empty `ArtHolder` child and drag it into `_ArtHolder`. Until then the prefab keeps its own art
+9. Playtest: catch-up feel, wall pull-in, the pit/ledge height rule, scene changes, entering a dungeon with each form out
 
 ---
 ## Later (not this pass)

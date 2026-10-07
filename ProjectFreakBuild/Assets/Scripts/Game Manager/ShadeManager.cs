@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 using Sirenix.OdinInspector;
+using UnityEngine.Serialization;
 
 public class ShadeManager : MonoBehaviour
 {
@@ -11,8 +12,23 @@ public class ShadeManager : MonoBehaviour
 
     [Header("Pointer")]
     [SerializeField]ElementManagerSO managerScriptableObject;
-    [SerializeField] GameObject _ShadePrefab;
-    [SerializeField] GameObject _CurrentShade;
+
+    [Tooltip("Prefab spawned when the shade is tethered (PFB_Shade_Tethered). Needs a TetheredShade on its root")]
+    [SerializeField] GameObject _TetheredPrefab;
+
+    [Tooltip("Prefab spawned when the shade is released (PFB_Shade_Released). Needs a ReleasedShade on its root")]
+    [FormerlySerializedAs("_ShadePrefab")] //this field used to be _ShadePrefab, this keeps the prefab already assigned
+    [SerializeField] GameObject _ReleasedPrefab;
+
+    [Header("Runtime Data")]
+    [Tooltip("The tethered shade currently out. Only one form is ever out, so this and Released Shade are never both filled (read only)")]
+    [SerializeField, ReadOnly] TetheredShade _TetheredShade;
+
+    [Tooltip("The released shade currently out (read only)")]
+    [SerializeField, ReadOnly] ReleasedShade _ReleasedShade;
+
+    [Tooltip("True while the player is driving the released shade (read only)")]
+    [SerializeField, ReadOnly] bool _IsControllingShade;
 
 
     [Header("All possible shade slots")]
@@ -41,38 +57,189 @@ public class ShadeManager : MonoBehaviour
         managerScriptableObject.manager = this;
     }
 
-    #region ShadeControl
-    public void SummonShade(Vector3 position)
+    #region Summoning
+    public void TetherShade()
     {
+        //function the Tether Shade ability calls. Tethered out: put it away. Released out: swap it for a tethered one. Nothing out: tether one
         if (isBusy) return;
-        if (_CurrentShade != null) _CurrentShade.transform.position = Player.player.transform.position + position;
-        else _CurrentShade = Instantiate(_ShadePrefab, Player.player.transform.position+position, Quaternion.identity);
-        ControlShade(false);
+
+        if (_TetheredShade != null)
+        {
+            ReturnShade();
+            return;
+        }
+
+        if (CanSummon() == false) return;
+        ReturnReleased();
+        SpawnTethered();
     }
 
-    [Button("Control Shade")]
+    public void ReleaseShade(Vector3 offset)
+    {
+        //function the Release Shade ability calls with a spot next to the player. Released out: put it away. Tethered out: swap it for a released one
+        if (isBusy) return;
 
+        if (_ReleasedShade != null)
+        {
+            ReturnShade();
+            return;
+        }
+
+        if (CanSummon() == false) return;
+        ReturnTethered();
+        SpawnReleased(offset);
+    }
+
+    public void ReturnShade()
+    {
+        //function the Return Shade ability calls. Puts away whichever form is out
+        if (isBusy) return;
+        ReturnTethered();
+        ReturnReleased();
+    }
+
+    public void ReturnReleased()
+    {
+        //function that puts away only the released shade. Also called by DungeonManager.EnterDungeon, since released shades don't come into dungeons
+        if (_ReleasedShade == null) return;
+        if (IsControlTiedToShade()) GiveControlBackToPlayer(); //don't leave the player stuck driving a shade that's gone
+
+        ReleasedShade leaving = _ReleasedShade;
+        _ReleasedShade = null;
+        leaving.Dismiss();
+    }
+
+    void ReturnTethered()
+    {
+        //function that puts away only the tethered shade
+        if (_TetheredShade == null) return;
+
+        TetheredShade leaving = _TetheredShade;
+        _TetheredShade = null;
+        leaving.Dismiss();
+    }
+
+    public bool CanSummon()
+    {
+        //the one place that decides if the current slot's shade can come out in any form
+        //todo: health and lives (Fail State) plug in here, so a shade with nothing left can't be summoned
+        if (Player.player == null) { Debug.LogError("Error! No player found, there's nobody to summon a shade for", this); return false; }
+        if (currentShadeSelected < 0 || currentShadeSelected >= _ShadeSlots.Count) { Debug.LogError($"Error! Shade slot {currentShadeSelected} doesn't exist on {gameObject.name}", this); return false; }
+        if (_ShadeSlots[currentShadeSelected] == null) { Debug.LogError($"Error! Shade slot {currentShadeSelected} is empty on {gameObject.name}", this); return false; }
+        return true;
+    }
+
+    public ShadeFormType.Form GetCurrentForm()
+    {
+        //function for checking which form (if any) the shade is out in
+        if (_TetheredShade != null) return ShadeFormType.Form.Tethered;
+        if (_ReleasedShade != null) return ShadeFormType.Form.Released;
+        return ShadeFormType.Form.None;
+    }
+
+    void SpawnTethered()
+    {
+        //spawns the tethered prefab next to the player and hands it the slot data
+        if (_TetheredPrefab == null) { Debug.LogError($"Error! Tethered prefab not assigned on {gameObject.name}", this); return; }
+
+        GameObject shadeObject = Instantiate(_TetheredPrefab, Player.player.transform.position, Player.player.transform.rotation);
+        if (shadeObject.TryGetComponent(out TetheredShade tethered) == false)
+        {
+            Debug.LogError($"Error! {_TetheredPrefab.name} has no TetheredShade on its root", this);
+            Destroy(shadeObject);
+            return;
+        }
+
+        _TetheredShade = tethered;
+        tethered.Setup(GetCurrentShade(), Player.player.gameObject);
+        tethered.Appear();
+    }
+
+    void SpawnReleased(Vector3 offset)
+    {
+        //spawns the released prefab at the spot the ability found, hands it the slot data, and lets it act on its own
+        if (_ReleasedPrefab == null) { Debug.LogError($"Error! Released prefab not assigned on {gameObject.name}", this); return; }
+
+        GameObject shadeObject = Instantiate(_ReleasedPrefab, Player.player.transform.position + offset, Quaternion.identity);
+        if (shadeObject.TryGetComponent(out ReleasedShade released) == false)
+        {
+            Debug.LogError($"Error! {_ReleasedPrefab.name} has no ReleasedShade on its root", this);
+            Destroy(shadeObject);
+            return;
+        }
+
+        _ReleasedShade = released;
+        released.Setup(GetCurrentShade(), Player.player.gameObject);
+        released.Appear();
+        ControlShade(false); //the player keeps control, the shade runs on its AI
+    }
+
+    public void OnReleasedShadeGone(ReleasedShade shade)
+    {
+        //called by the released shade when it's destroyed. Covers scene changes, which remove it without going through ReturnReleased
+        if (_ReleasedShade != null && _ReleasedShade != shade) return; //a different shade, ignore it
+        _ReleasedShade = null;
+        if (IsControlTiedToShade()) GiveControlBackToPlayer();
+    }
+    #endregion
+
+    #region ShadeControl
+    [Button("Control Shade")]
     public void ShadeControlAbility()
     {
+        //toggles control: driving the shade? go back to the player. Otherwise take over the released shade
+        //todo: while controlling, the radial menu should show the shade's abilities instead of the player's (system for later)
         if (isBusy) return;
-        if (_CurrentShade == null) return;
+
+        GameObject controlTarget;
+        if (_IsControllingShade)
+        {
+            if (Player.player == null) { Debug.LogError("Error! No player found to switch control back to", this); return; }
+            controlTarget = Player.player.gameObject;
+        }
+        else
+        {
+            if (_ReleasedShade == null) return; //only the released shade can be controlled
+            controlTarget = _ReleasedShade.gameObject;
+        }
+
         isBusy = true;
-        _transferTimer = StartCoroutine(ShadeControlSwitch(_switchTimeIn, _switchTimeOut, _CurrentShade));
+        _transferTimer = StartCoroutine(ShadeControlSwitch(_switchTimeIn, _switchTimeOut, controlTarget));
     }
 
     public void ControlShade(bool control)
     {
+        _IsControllingShade = control;
         if (control)
         {
             Player.player.DisablePlayerControl();
-            Shade.shade.EnablePlayerControl();
+            if (_ReleasedShade != null) _ReleasedShade.EnablePlayerControl();
         }
         else
         {
             Player.player.EnablePlayerControl();
-            Shade.shade.EnableShadeControl();
+            if (_ReleasedShade != null) _ReleasedShade.EnableShadeControl();
         }
         
+    }
+
+    bool IsControlTiedToShade()
+    {
+        //true while the player is driving the shade, or a control switch is fading over to it
+        return _IsControllingShade || _transferTimer != null;
+    }
+
+    void GiveControlBackToPlayer()
+    {
+        //function that puts the player straight back in their own body (no fade), for when the controlled shade goes away
+        if (_transferTimer != null) StopCoroutine(_transferTimer);
+        _transferTimer = null;
+        isBusy = false;
+
+        if (Player.player == null) return; //game is shutting down
+        ControlShade(false);
+        if (CameraManager._CamManager != null) CameraManager._CamManager.SetCamTargetToPlayer();
+        if (HUDManager._HUD != null) HUDManager._HUD.FadeIn(_switchTimeOut); //in case it was mid fade-out
     }
 
     IEnumerator ShadeControlSwitch(float easeOutTime, float easeInTime, GameObject controlTarget)
@@ -80,13 +247,21 @@ public class ShadeManager : MonoBehaviour
         HUDManager._HUD.FadeOut(easeOutTime);
         yield return new WaitForSeconds(easeOutTime + .5f);
 
-        CameraManager._CamManager.SetCamTargetToTarget(controlTarget);
-        if (controlTarget == Player.player.gameObject) ControlShade(false); //player is back in their own body
-        else ControlShade(true); //player is controlling the shade
+        if (controlTarget == Player.player.gameObject)
+        {
+            CameraManager._CamManager.SetCamTargetToPlayer(); //back to the normal player camera setup
+            ControlShade(false); //player is back in their own body
+        }
+        else
+        {
+            CameraManager._CamManager.SetCamTargetToTarget(controlTarget);
+            ControlShade(true); //player is controlling the shade
+        }
 
         HUDManager._HUD.FadeIn(easeInTime);
         yield return new WaitForSeconds(easeInTime + .1f);
         isBusy = false;
+        _transferTimer = null;
     }
 
     #endregion

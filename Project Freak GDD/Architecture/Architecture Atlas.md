@@ -11,7 +11,7 @@ Starting point for each architecture section. Only the entry notes are linked he
 
 **AI, Shades & Enemies**
 [[AI Movement & Dungeon Loading Plan]] - unit brain, targeting, enemy movement, shades
-[[Shade Forms Plan]] - tethered / released shade prefabs, tether, release and return abilities *(planned)*
+[[Shade Forms Plan]] - tethered / released shade prefabs, tether, release and return abilities *(code built, Unity setup to do)*
 
 **Combat**
 [[Damage Receivers & Projectiles]] - damage package, melee/ranged weapons, dash, traps, popups
