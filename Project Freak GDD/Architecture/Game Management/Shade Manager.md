@@ -1,5 +1,5 @@
 ## Overview
-`ShadeManager` holds the data for each of the player's [[Shade Slot]]s, summons the [[Shade]] into the world, and handles switching control between the player and the shade ([[Summon Shade]] and [[Control Shade]]).
+`ShadeManager` holds the data for each of the player's [[Shade Slot]]s, summons the [[Shade]] into the world, and handles switching control between the player and the shade ([[Release Shade]] and [[Control Shade]]).
 
 It lives on the Game Manager object (see [[AA - Managers]]) and is reached through its singleton:
 
@@ -8,6 +8,8 @@ ShadeManager._ShadeManager
 ```
 
 `GameManager.GetShadeManager()` also returns this singleton.
+
+*Planned:* separate tethered and released prefabs, `TetherShade()` / `ReleaseShade()` (replacing `SummonShade()`) / `ReturnShade()`, `CanSummon()`, and returning the released shade when entering a dungeon. See [[Shade Forms Plan]]. [[Notes for the future]]
 
 ---
 ## Inspector Data

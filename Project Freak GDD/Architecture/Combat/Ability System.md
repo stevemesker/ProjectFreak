@@ -84,6 +84,6 @@ AdvanceAbilityStep() — next step, or EndAbility() when out of steps
 
 ---
 ## Related
-- [[Summon Shade]] / [[Control Shade]] (design)
+- [[Tether Shade]] / [[Release Shade]] / [[Return Shade]] / [[Control Shade]] (design)
 - [[Radial Menu]]
 - [[Shade Manager]]

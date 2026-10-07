@@ -102,7 +102,7 @@ Each action is its own script in `Scripts/AI/Actions/`. Every action has `_Weigh
 | **Flee** | Fear × the bigger of `_BaseFleeUrge` (0.3) and `_LowHealthCurve` (how hurt it is), while closer than `_SafeDistance` (12 m) | Runs away, trying a few angles if straight back is blocked. Finished once safe |
 | **Wander** | Flat `_BaseScore` (0.1) | Waits, walks to a random nearby spot, repeats. Radius goes from `_MinRadius` to `_MaxRadius` with roam. **No leader:** wanders around where it started. **With a leader (shades):** shuffles around where it's standing; loyalty shrinks the radius (`_LoyaltyStayPut`), and if that leaves less than `_ShortestWalk` (2 m) it just stands still. It never picks a spot within `_LeaderPersonalSpace` (2.5 m) of the leader or walks a straight line that passes that close |
 | **Follow Leader** | Loyalty × `_PullCurve` (how far from the leader, up to `_LeashDistance` 15 m) | Shades: walks back to a spot `_ArriveDistance` (2 m) beside the player on its own side, not onto the player, and stops within `_FollowDistance` (3 m). The farther it strays, the harder the pull |
-| **Seek Fight** | Aggression × `_RoamCurve` (0 until roam 0.6), only with no target | Heads for the nearest hostile unit within `_SearchRange` (60 m), even unseen, or roams far. Makes berserk shades run off when summoned |
+| **Seek Fight** | Aggression × `_RoamCurve` (0 until roam 0.6), only with no target | Heads for the nearest hostile unit within `_SearchRange` (60 m), even unseen, or roams far. Makes berserk shades run off when released |
 
 ### How they play together
 - **Normal enemy:** wanders → sees you → chases → holds in range. With the default fear (0.3), Flee tops out at 0.3, below its aggression, so it fights to the end.

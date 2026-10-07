@@ -6,6 +6,8 @@ Back to [[AA - AI Info]]
 ## Project Layout
 - Unity project: `Build\ProjectFreak\ProjectFreakBuild` (scripts in `Assets\Scripts\<System>\`)
 - GDD: `Build\ProjectFreak\Project Freak GDD`. Claude checks the system's note in Architecture before working on it
+- Plans and to-do lists for upcoming work go in `Architecture\AI Info` (listed in [[AA - AI Info]]). Once a piece is built, it's written up in its system's note in Architecture
+- Claude doesn't rename, move or delete GDD notes. It updates the contents and links under the new name, then lists the notes for me to retitle in Obsidian (which fixes the links) or delete
 - In the GDD, any line about something unfinished, temporary or planned ends with `[[Notes for the future]]`. When it gets done, the tag comes off and the line is updated
 - `Art` folders are reference only. Claude doesn't change them unless asked
 - **GDD notes outside `Architecture`** (design, narrative, shade ideas, etc.) are treated the same way: Claude reads them for reference when building systems but doesn't change them unless asked. The one exception is the `[[Notes for the future]]` hub note at the GDD root, which the tagging system uses

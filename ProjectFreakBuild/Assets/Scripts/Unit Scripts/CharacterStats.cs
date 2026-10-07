@@ -162,6 +162,8 @@ public class ShadeStats : PartyStats
     public int _DIS;
     [Tooltip("Wildness. Determines how aggressive the shade can be and how willing to listen to orders it is. Higher wild means a stronger monster but much less controllable")]
     public int _WILD;
+    [Tooltip("Lives. Number of times the shade can fall in a dungeon before needing to be reborn as a new baby shade")]
+    public int _LIFE;
 }
 
 [Serializable]
