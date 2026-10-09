@@ -38,12 +38,28 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 - **One draft at a time.** Switching slots or leaving with unsaved changes asks "save or discard?". Pending rune use is counted across drafts from the start so multiple drafts can be added later if wanted
 
 ### Ability nodes and effects
+- **Nodes are generic:** one node script for every node. A node is an evolution gate simply because its effect list has an **Evolve** effect, so there's no separate gate type to keep in sync
 - Nodes are objects in the field scene, wired up by hand (unlocks/lockouts are references to other node objects, so they're easy to follow in the inspector and don't break when reordered)
 - Each node holds a **list of effects** picked from a small set of types, like the [[Ability System]]'s steps: **stat change**, **grant shade ability** (`AbilitySO`), **evolve** (`ShadeEvolutionSO`), more later (Hazen stats, element affinity). Rune stat boosts compile into the same stat change type
 - Saved plugs point at a node by its spot in `ListOfNodes`. *Don't reorder that list once fields are saved* (revisit if it ever causes trouble)
 - **Lockouts trigger on plugging, not power.** Once a rune is plugged into node X, every node X locks out is locked, even if X has no power yet. A locked-out node won't let a rune snap in (same red "can't place" feedback). Runes go in one at a time, so the first node plugged always wins and two rival gates can never both hold a rune
 - **Lockouts are always two-way.** When the field sets up, any one-sided lockout (X locks Y but Y doesn't list X) gets its missing reverse link filled in so the game behaves correctly, and a `Debug.LogError` names both nodes so the scene can be fixed. Checked once at setup, not every time a node is checked. *One-way lockouts could be added as an option later if ever needed*
 - **Unlocks stay power-based** (Y needs X on first). They're about progression, not branch choice
+
+### Shared settings asset
+- The global rune field numbers live in **one small settings asset** used by both the field scene and the [[Shade Manager]]: **zone width**, **rune size** (footprint) and **core reach**. The rules need them even without the field scene (level-ups in a dungeon need the zone edges for "frozen runes get power first"), and it gives one place to tune them
+- Only the shared numbers. Nodes stay as scene objects
+
+### Evolutions (`ShadeEvolutionSO`)
+- **Making an evolution = filling in one asset; the system handles the rest.** The asset is the complete definition of a form:
+  - **Stats:** its base stats
+  - **Art:** tethered and released art (plus any evolve effect/VFX later)
+  - **Body:** tether distance and width, size class (collisions, AI)
+  - **Abilities:** its **ultimate ability** (`AbilitySO`), its **natural abilities** (list of `AbilitySO`), and **capabilities** like "can hold weapons". Capabilities are probably checkboxes (traits the game checks, not abilities the shade uses), or they come from the evolution type (every biped can hold weapons). Decided when built [[undecided]]
+- **No element on the evolution, on purpose.** A shade's affinity comes only from the player's runes, so the form a player likes never pushes them toward an element and every evolution stays viable
+- *No identity section (name, rank, type, icon) for now*
+- Anything personal to one shade (level, lives, runes, fragment) stays on the slot. Evolve effects on nodes point at the target evolution asset, and evolving swaps the slot over to it
+- Warns in the inspector about missing pieces (no released art, no stats set, etc.)
 
 ### Runes
 - **Fixed rune types.** Every rune asset is a set recipe, made on purpose. Randomness comes from how runes are obtained (a future system), not rolled stats
@@ -56,6 +72,10 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 ### Zones and evolution
 - The field is **rings (radius zones) around the core**, the same for every shade. A Bound shade can only use zone 1
+- **Every ring is the same width** (one setting in the shared settings asset): zone 1's edge is 1 × width from the core, zone 2's is 2 × width, and so on. Outer rings have more room, so more branching options
+- **Snap tool:** an Odin button on the node with a "which zone edge" number. It keeps the node's angle around the core and moves it exactly onto that ring, so every gate on a ring is the same distance from the core (no gate can accidentally be closer and become a faster-evolving meta). Works in field units, so it's the same for 2D or 3D
+- **The scene view draws the zone rings** so the layout is visible while placing nodes. No tool for keeping normal nodes inside their zone, the art pass will make the borders obvious
+- **Setup check (once, like lockouts):** a gate that isn't sitting on a ring edge (nudged after snapping) logs a `Debug.LogError` naming it
 - **Evolution nodes are the gates** on the edge of each zone. **A shade evolves when the rune on a gate gets power**, either right when the field is saved, or later when a level-up gives the core enough power (see "Leveling up" above)
 - **The confirm popup is at save time.** Saving a field with a rune on a gate asks something like "Your shade will evolve as soon as it has enough power, locking zone 1 for good. Continue?", so a later evolution is never a surprise. Before the gate gets power, the player can still unplug that rune
 - **Evolving can happen mid-fight** (a big moment): the shade's model, stats and max HP change on the spot
@@ -71,7 +91,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 | :--- | :--- |
 | `RuneField` (rules) | Keep. Add zones, frozen runes, rune footprints/overlap, the looser snap, and effect compiling |
 | `RuneFieldData` | Keep as the slot's "placements and connections" |
-| `RuneFieldLayoutSO` | Probably remove. Node info comes from the field scene's node objects, and the Shade Manager reads the compiled list instead |
+| `RuneFieldLayoutSO` | Becomes the **shared settings asset** (core reach, zone width, rune size). The node list comes out: node info comes from the field scene's node objects, and the Shade Manager reads the compiled list |
 | 2D view (`RuneFieldManager`, `ElementItem`, `NodeBridge`, `CoreNode`, `EvolutionNode`) | Keep as the view for now. `EvolutionNode` gets an effect list. Draft/save flow, popups, overlap feedback added |
 | `ShadeManager` slot rune fields (`_SlotRuneFields`, `ShadeSO._StartingRuneField`) | Move onto the slot asset itself |
 | `ShadeManager` slot stats (`_SlotStats`) | Becomes the per-slot runtime entry (hard stats, live stats, current health) |
@@ -79,12 +99,12 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 ### Build order
 1. **Effect types** (stat change, grant ability, evolve) and effect lists on nodes; rune stat boosts compiled to the same type
-2. **Slot data on `ShadeSO`**: saved field, compiled effect list, plugged node snapshots, evolution + gate, level, lives, fragment. Base stats from the evolution
+2. **Slot data on `ShadeSO`**: saved field, compiled effect list, plugged node snapshots, evolution + gate, level, lives, fragment. Base stats from the evolution. **Evolution asset** filled out (stats, art, body, abilities). **Shared settings asset**
 3. **Shade Manager runtime entries**: hard stats, live stats, current health and the max HP rule, visible in the inspector. Level-up re-runs the saved field's rules
 4. **Save flow**: draft, save compiles and writes to the slot, inventory difference, runtime entry rebuilt, one draft with the save/discard popup, UI save button
 5. **Inventory list**: count, pending count, greyed at 0
 6. **Rune footprints**: overlap check, invalid feedback, looser snap
-7. **Zones**: rings, locked zones, gates, evolve when the gate gets power (on save or level-up) with the confirm at save time, freezing, add-only toggle, plug-based two-way lockouts
+7. **Zones**: rings (one zone width), snap tool and ring gizmos, locked zones, gates, evolve when the gate gets power (on save or level-up) with the confirm at save time, freezing, add-only toggle, plug-based two-way lockouts
 8. **3D prototype** (see The View)
 
 *Later:* timed effects and the game clock (with the buff/debuff system), core fragments, the disk save.
