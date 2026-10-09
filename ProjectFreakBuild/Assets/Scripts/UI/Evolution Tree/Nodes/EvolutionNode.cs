@@ -4,23 +4,26 @@ using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-public class EvolutionNode : MonoBehaviour, iEvolutionNode
+//an ability node on the 2D rune field. It's a view now: RuneField decides if the node is on, this shows it and fires the events
+//its unlock and lockout lists are still where the rules come from when the layout is built from the scene (see RuneFieldManager)
+public class EvolutionNode : MonoBehaviour
 {
     [Header("<=====Active State=====>")]
-    public bool _ActivationState;
-    public bool _LockedOut;
-
-    [Header("<=====Pointers=====>")]
-    public GameObject PluggedInNode; //element gameobject that is plugged into this node
+    [Tooltip("Is this node turned on right now (read only, set by the rune field)")]
+    [ReadOnly] public bool _ActivationState;
+    [Tooltip("Is an active node locking this one out right now (read only, set by the rune field)")]
+    [ReadOnly] public bool _LockedOut;
 
     [Header("<=====GateKeeper Settings=====>")]
-    [SerializeField, Tooltip("List of nodes that must be activated before this one can")] 
+    [SerializeField, Tooltip("List of nodes that must be activated before this one can")]
     List<EvolutionNode> unlocks;
-    [SerializeField, Tooltip("List of nodes that will be locked out as long as this node is active")] 
+    [SerializeField, Tooltip("List of nodes that will be locked out as long as this node is active")]
     List<EvolutionNode> Lockouts;
 
     [Header("<---Events--->")]
+    [Tooltip("Runs when the node turns on while the player is editing the field (not when a saved field loads)")]
     [SerializeField] public UnityEvent ActivationEvent;
+    [Tooltip("Runs when the node turns off while the player is editing the field (not when a saved field loads)")]
     [SerializeField] public UnityEvent DeactivationEvent;
 
     [Header("<---may delete--->")]
@@ -28,72 +31,53 @@ public class EvolutionNode : MonoBehaviour, iEvolutionNode
     public List<EvolutionNode> connectedNodes;
     public bool NodeEnabled;
     public bool Nodelocked;
-    
+
     [SerializeField] private List<GameObject> nodeStateBackground; //which background states need to be activated based on node's current activation state
 
-    public bool IsPlugged()
-    {
-        if (PluggedInNode == null) return false;
-        return true;
-    }
-    public void PlugElement(GameObject ElementToPlug)
-    {
-        PluggedInNode = ElementToPlug;
-    }
+    //local variables
+    const int EnabledBackground = 1; //index of the "Enabled" background, shown while the node is on
+    const int LockedBackground = 2; //index of the "Locked" background, shown while the node is locked out
 
-    public void UnplugElement ()
+    #region Rules
+    public List<EvolutionNode> GetUnlockNodes()
     {
-        PluggedInNode = null;
-        _ActivationState = false;
-        if (Lockouts.Count > 0) for (int i = 0; i < Lockouts.Count; i++)
-            {
-                Lockouts[i].SetLockoutNodeState(false);
-            }
-        DeactivationEvent?.Invoke();
+        return unlocks;
     }
 
-    public void SetLockoutNodeState(bool State)
+    public List<EvolutionNode> GetLockoutNodes()
     {
-        _LockedOut = State;
+        return Lockouts;
+    }
+    #endregion
+
+    #region Display
+    public void ShowState(bool active, bool lockedOut, bool fireEvents)
+    {
+        //function the rune field calls after every change to show if this node is on or locked out
+        //events only fire when the state actually changes, and only if fireEvents is true (it's false when a saved field loads)
+        bool wasActive = _ActivationState;
+        _ActivationState = active;
+        _LockedOut = lockedOut;
+
+        if (active) ShowBackground(EnabledBackground);
+        else if (lockedOut) ShowBackground(LockedBackground);
+        else ShowBackground(-1); //plain look, no state background
+
+        if (fireEvents == false || active == wasActive) return;
+        if (active) ActivationEvent?.Invoke();
+        else DeactivationEvent?.Invoke();
     }
 
-
-    public void ActivatePluggedNode()
+    void ShowBackground(int index)
     {
-        if (CanActivate() == false) return;
-        _ActivationState = true;
-        if (Lockouts.Count > 0) for (int i = 0; i < Lockouts.Count; i++)
-            {
-                Lockouts[i].SetLockoutNodeState(true);
-            }
-        ActivationEvent?.Invoke();
+        //turns on one state background and turns the rest off. -1 turns them all off
+        for (int i = 0; i < nodeStateBackground.Count; i++)
+        {
+            if (nodeStateBackground[i] == null) continue;
+            nodeStateBackground[i].SetActive(i == index);
+        }
     }
-
-    bool CanActivate()
-    {
-        //attached element power check
-        if (PluggedInNode.GetComponent<ElementItem>().CurrentPower <= 0) return false;
-
-        //lockout check
-        if (_LockedOut) return false;
-        
-        //unlock list gate
-        if (unlocks.Count > 0)
-            for (int i = 0; i<unlocks.Count; i++)
-            {
-                if (unlocks[i]._ActivationState == false) return false;
-            }
-
-        return true;
-    }
-
-    public void ResetNode()
-    {
-        //resets node to factory settings
-        _ActivationState = false;
-        _LockedOut = false;
-        PluggedInNode = null;
-    }
+    #endregion
 
     #region StateActivation
     [Button ("Activate node")]

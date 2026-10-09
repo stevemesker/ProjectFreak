@@ -22,12 +22,27 @@ Back to [[AA - AI Info]]
 - [ ] `DungeonDoorSpawnerObject._CurrentDoors` is a static list, so door order depends on enable order. Worth checking this stays reliable across scene loads
 
 **Rune Field** (see [[Rune Field System]])
-- [ ] `CoreNode.ClearConnection` loops with `i = Count; i > 0; i++`, which goes out of range if the core has any connections
-- [ ] `RuneFieldManager.SaveRuneFieldPackage` creates one `NodePackage` outside the loop and adds it for every node, so every saved node entry ends up with the last node's values
-- [ ] Dropping an element from the inventory list onto the field spawns a rune but doesn't give it the element's data or reduce the inventory count
-- [ ] `ElementItemSO`'s `connectionsAllowed`, `connectionDistance`, and `powerNeeded` aren't applied to the rune
-- [ ] `ElementItemSO.TriggerElementEffects` only tags the first stat boost package with the rune object
+*Oct 2026: the rune field was rebuilt on the new `RuneField` rules (see [[Rune Field System]]), so the old-script bugs below are gone with the old code.*
+- [x] `CoreNode.ClearConnection` loops with `i = Count; i > 0; i++`, which goes out of range if the core has any connections. *Gone, `CoreNode` is a view now*
+- [x] `RuneFieldManager.SaveRuneFieldPackage` creates one `NodePackage` outside the loop and adds it for every node, so every saved node entry ends up with the last node's values. *Fixed Oct 2026 (rune field bug pass)*
+- [ ] Dropping an element from the inventory list onto the field doesn't reduce the inventory count (it gets the element's data now). Needs to give runes back if the field isn't saved
+- [x] `ElementItemSO`'s `connectionsAllowed`, `connectionDistance`, and `powerNeeded` aren't applied to the rune. *Fixed Oct 2026, the new rules use them*
+- [x] `ElementItemSO.TriggerElementEffects` only tags the first stat boost package with the rune object. *Fixed Oct 2026: it doesn't write the rune into the SO at all now (the SO is shared by every rune of that type, so they overwrote each other). `statBoostPackage._ElementConnect` was removed*
 - [ ] `ShadeSlotManager` unlocks slots by player level instead of the shade slot count (`_SHA` / `tamerSlotLevel`)
+- [x] Loaded runes never got their `CoreNode` set, so they couldn't give power back or turn their stats off when cut off, and dropping a new rune on the core after a load could throw a null error. *Fixed Oct 2026: `CoreNode.LoadReconnect` calls `ConnectNode` on each rune it reconnects*
+- [x] `NodeBridge.SeverConnection` ran both "can I still reach the core" searches without clearing the checked flags in between, so in a loop of runes the second side could wrongly think it lost the core and shut down. *Fixed Oct 2026*
+- [x] `ElementItem.BuildConnections` never enforced `connectionsMax`, so a rune dropped near several runes bridged to all of them. *Fixed Oct 2026*
+- [x] Ability nodes only checked themselves when a rune was dropped on them: losing power didn't turn them off, powering a chain later didn't turn them on, turning off a node didn't shut down nodes it unlocked, and unplugging cleared lockouts even when it never activated or another node was also locking them. *Fixed Oct 2026: `RuneFieldManager.RefreshAllNodes` runs after every power change and plug/unplug, and lockouts are a count (`_LockoutCount`)*
+- [x] Loading ignored the saved ability nodes, so runes reappeared on nodes without being plugged in. *Fixed Oct 2026: `EvolutionNode.LoadNodeState` restores them without re-firing the events*
+- [x] The core's current power was loaded from the save, so leveling up didn't add power until a reset. *Fixed Oct 2026: it's rebuilt as max power minus what the runes use*
+- [x] *Gone Oct 2026: the rules don't use colliders anymore and `UpdateScaler` does nothing.* `RuneFieldManager.UpdateScaler` only resizes colliders when zoomed out (scale < 1), so zooming back in leaves them small. It also sizes them from the rect width (143 on the rune prefab) while the prefab's collider radius is 50, so the first zoom-out tick makes them bigger, not smaller. 3D colliders already scale with their parent, so this function may not be needed at all. Needs a test in the Evolution UI scene before changing
+- [x] Runes and layouts are written straight onto the `ShadeSO` assets at runtime (`_AlteredStats`, `_RuneFieldPackage`), so they stay changed in the editor after play mode. *Fixed Oct 2026: the [[Shade Manager]] keeps runtime copies of each slot's field and stats*
+- [x] Picking a different shade slot threw away unsaved runes but kept their stat boosts. *Fixed Oct 2026: stats are worked out from the saved field only, so unsaved changes never touch them. Throwing away unsaved changes is on purpose (save button design)*
+- [x] If the runes on a loaded field use more power than the core has, they kept their power and stats. *Fixed Oct 2026: power is handed out from scratch every time, so a smaller core just powers fewer runes*
+- [ ] Each slot's rune field and stats only last for the play session. The [[Save Manager]] doesn't save them yet
+- [ ] No UI save button for the rune field yet (only the Odin **Save Current Field** button on `RuneFieldManager`). Hook a button to `RuneFieldManager.SaveRuneSlot`, and later a "save before leaving?" popup
+- [ ] Runes can't be taken off the field (`RuneField.RemoveRune` exists, but nothing in the UI calls it)
+- [ ] Nothing uses a slot's stats in combat yet: the released shade has no stats/health component (see [[Shade (Runtime)]])
 
 **Save**
 - [ ] `SaveManager.SetCurrentActiveSaveSlot` has its range check backwards (`Count - 1 > index` should be `index > Count - 1`)
@@ -53,6 +68,9 @@ Back to [[AA - AI Info]]
 - [ ] `EnvironmentDamageable`
 - [ ] `PlayerEquipment`, `ShadeSummoner`
 - [ ] `DraggableItem`, `ElementObject`, `ShadeSlotDataObject` (early Rune Field leftovers)
+- [ ] Old rune field stat path, unused since the Oct 2026 rebuild: `RuneFieldPackage.cs`, `ShadeSO._RuneFieldPackage` and `_AlteredStats`, `ElementManagerSO` (and the Shade Manager's `managerScriptableObject` / `shadeAlterPackages`), `ShadeManager.ReceiveStatBoostPackage` / `RemoveStatBoostPackage` / `ChangeStat`, `ElementItemSO.TriggerElementEffects` / `DeactivateElementEffects` and the element assets' `statusEffectEnable/Disable` events
+- [ ] `IConnectable`, `ICoreNode`, `iEvolutionNode` in `EvolutionInterfaces.cs` are unused. Keep `IBridgeable`: the dungeon map uses it (and `NodeBridge.BuildConnection`)
+- [ ] `ElementDataObject` / `IngredientDataObject` `NodePrefabToSpawn` isn't used anymore
 
 **Consistency**
 - [x] Swap `StatNameType.Stat` and `ElementType.Element` over to the `DamageType` enums (see [[Notes for the future]]). *Done Oct 2026. `StatNameType.cs` and `ElementType.cs` can now be deleted in Unity*

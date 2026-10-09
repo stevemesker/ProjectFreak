@@ -12,7 +12,7 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
     [Header("<====Pointer Variables=====>")]
     public TextMeshProUGUI ElementNamePointer;
     public Image ElementIconPointer;
-    [SerializeField] private GameObject NodePrefabToSpawn;
+    [SerializeField, Tooltip("Old: not used anymore, the rune field spawns runes itself")] private GameObject NodePrefabToSpawn;
 
     [Header("<====Current Data=====>")]
     public ElementItemSO Item;
@@ -44,17 +44,13 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        //function that drops the element onto the rune field if the pointer is over it, then snaps the button back to the list
         var hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, hits);
-        GameObject temp;
 
         var hit = hits.FirstOrDefault(t => t.gameObject.CompareTag("UI Drag Field"));
-        if (hit.isValid)
-        {
-            temp = Instantiate(NodePrefabToSpawn, eventData.position, Quaternion.identity, hit.gameObject.transform);
-            hit.gameObject.GetComponent<RuneFieldManager>().AddRuneList(temp);
-            transform.position = _startPosition;
-        }
+        if (hit.isValid && hit.gameObject.TryGetComponent(out RuneFieldManager runeField))
+            runeField.PlaceRuneFromInventory(Item, eventData.position); //the rune field makes the rune object itself, with this element's data
 
         transform.position = _startPosition;
 

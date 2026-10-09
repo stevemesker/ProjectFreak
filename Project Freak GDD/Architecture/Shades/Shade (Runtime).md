@@ -14,9 +14,10 @@ One asset per shade slot. Created from **Create → ScriptableObjects → Shades
 | Variable            | Description                                                         |
 | :------------------ | :------------------------------------------------------------------ |
 | `_shadeStats`       | Base stats (`ShadeStats`, see [[Stats & Inventory Data]])          |
-| `_AlteredStats`     | Stat changes from [[Rune Field]] runes                              |
+| `_AlteredStats`     | Old, not used since the Oct 2026 rune field rebuild. Stats with runes are worked out by the [[Shade Manager]] (`GetSlotStats`) |
 | `_CurrentEvolution` | The shade's current [[Evolution]] (`ShadeEvolutionSO`)             |
-| `_RuneFieldPackage` | Saved [[Rune Field]] layout                                         |
+| `_StartingRuneField` | The [[Rune Field]] this slot starts the game with (`RuneFieldData`). The Shade Manager copies it, so playing never changes the asset. Usually empty |
+| `_RuneFieldPackage` | Old save format, not used anymore                                   |
 
 ---
 ## ShadeEvolutionSO

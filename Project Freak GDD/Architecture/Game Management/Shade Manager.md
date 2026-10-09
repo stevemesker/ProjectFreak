@@ -18,7 +18,7 @@ Only one shade is ever out, in one form. See [[Shade Forms Plan]], [[Tethered Sh
 
 | Variable                  | Description                                                                 |
 | :------------------------ | :-------------------------------------------------------------------------- |
-| `managerScriptableObject` | `ElementManagerSO`. The manager registers itself here in `OnEnable` so the [[Rune Field]] UI can reach it |
+| `managerScriptableObject` | `ElementManagerSO`. The manager registers itself here in `OnEnable`. Part of the old rune stat path, not used anymore (see [[Known Issues]]) |
 | `_TetheredPrefab`         | `PFB_Shade_Tethered`, spawned by Tether Shade                                |
 | `_ReleasedPrefab`         | `PFB_Shade_Released`, spawned by Release Shade. Was `_ShadePrefab` (the assigned prefab carried over) |
 
@@ -37,6 +37,14 @@ Only one shade is ever out, in one form. See [[Shade Forms Plan]], [[Tethered Sh
 | `_ShadeSlots`          | Every possible shade slot (`ShadeSO`, see [[Shade (Runtime)]])  |
 | `tamerSlotLevel`       | How many slots the player has access to                         |
 | `currentShadeSelected` | Index of the active slot                                        |
+
+**Rune Fields**
+
+| Variable | Description |
+| :--- | :--- |
+| `_RuneFieldLayout` | Shared `RuneFieldLayoutSO` (core settings + ability nodes). Optional for now: if empty, the rune field UI builds one from its scene and hands it over |
+| `_SlotRuneFields` | Each slot's saved `RuneFieldData` (read only). Copied from each `ShadeSO`'s `_StartingRuneField` in `Awake`, so playing never changes the assets |
+| `_SlotStats` | Each slot's stats with its saved runes applied (read only) |
 
 **Control Switching**
 
@@ -92,14 +100,23 @@ Fade screen back in
 *While controlling, the radial menu still shows the player's abilities. It should show the shade's abilities instead (system for later).* [[Notes for the future]]
 
 ---
-## Stat Boosts
-[[Rune Field]] runes change the active shade's stats through stat boost packages.
+## Rune Fields and Stats
+*Rebuilt Oct 2026.* Each slot's [[Rune Field]] and stats live here at runtime (see [[Rune Field System]]).
 
-| Function                          | Description                                                           |
-| :-------------------------------- | :-------------------------------------------------------------------- |
-| `ReceiveStatBoostPackage(list)`   | Adds every boost in the list                                           |
-| `RemoveStatBoostPackage(list)`    | Removes every boost in the list                                        |
-| `ChangeStat(package, multiplier)` | Adds `amount × multiplier` to the matching stat on `_AlteredStats`. Uses `DamageType.StatType`; `None` falls into the warning default |
+Stats are **worked out from scratch**, never added or removed bit by bit: the slot's base `_shadeStats`, copied, plus the stat totals from every powered rune in its *saved* field. So unsaved changes in the rune field UI never touch a shade's stats, and they can't drift out of sync. A negative rune can't push a stat below 1 (unless the base was already below 1).
+
+| Function | Description |
+| :--- | :--- |
+| `GetSavedRuneField(slot)` | A copy of a slot's saved field for the UI to edit |
+| `SaveRuneField(slot, field)` | Stores a copy and works the slot's stats out again |
+| `GetCorePower(slot)` | The slot's core power: its `_LVL`. Core fragments get added here later [[Notes for the future]] |
+| `GetSlotStats(slot)` / `GetCurrentShadeStats()` | A slot's stats with runes applied |
+| `GetRuneFieldLayout()` / `SetRuneFieldLayout(layout)` | The shared layout. Setting it works every slot's stats out again |
+| `IsValidSlot(slot)` | Checks a slot index points at a real slot |
+
+*Not in yet:* Hazen's share of rune stats, and saving fields between play sessions [[Notes for the future]]. Nothing reads the slot stats in combat yet, since the released shade has no stats component (see [[Shade (Runtime)]]).
+
+The old stat path (`ReceiveStatBoostPackage`, `RemoveStatBoostPackage`, `ChangeStat` on `_AlteredStats`) is still in the script but nothing calls it anymore (see [[Known Issues]], Cleanup).
 
 ---
 ## Other Functions
@@ -108,5 +125,4 @@ Fade screen back in
 | :---------------------------------------- | :--------------------------------------------------- |
 | `GetCurrentShade()`                       | Returns the active `ShadeSO`                         |
 | `GetShadeOfIndex(int)`                    | Returns the `ShadeSO` in that slot                   |
-| `SaveCurrentShadeRuneFieldPackage(pkg)`   | Stores the [[Rune Field]] layout on the active slot  |
 | `SetShadeSelection(int)` / `GetShadeSelectionIndex()` | Set/get the active slot              |

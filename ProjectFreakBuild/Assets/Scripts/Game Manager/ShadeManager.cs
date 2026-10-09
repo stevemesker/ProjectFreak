@@ -40,6 +40,16 @@ public class ShadeManager : MonoBehaviour
     [SerializeField] int currentShadeSelected;
     [SerializeField] List<statBoostPackage> shadeAlterPackages;
 
+    [Header("Rune Fields")]
+    [Tooltip("Core settings and ability nodes shared by every slot's rune field. Can be left empty for now: the rune field UI builds one from its scene nodes and hands it over when it opens")]
+    [SerializeField] RuneFieldLayoutSO _RuneFieldLayout;
+
+    [Tooltip("Each slot's saved rune field (read only). Copied from the slot assets' Starting Rune Field when the game starts, so playing never changes the assets")]
+    [SerializeField, ReadOnly] List<RuneFieldData> _SlotRuneFields = new List<RuneFieldData>();
+
+    [Tooltip("Each slot's stats with its saved runes applied (read only). Worked out from the base stats every time a field is saved")]
+    [SerializeField, ReadOnly] List<ShadeStats> _SlotStats = new List<ShadeStats>();
+
     [Header("Local Variables")]
     [SerializeField] float _switchTimeIn = .5f;
     [SerializeField] float _switchTimeOut = .3f;
@@ -50,6 +60,8 @@ public class ShadeManager : MonoBehaviour
     {
         //sets up the singleton so other scripts can reach this manager with ShadeManager._ShadeManager
         if (_ShadeManager == null) _ShadeManager = this;
+
+        InitializeRuneFields();
     }
 
     private void OnEnable()
@@ -332,10 +344,155 @@ public class ShadeManager : MonoBehaviour
 
     #endregion
 
-    #region Save Rune Field Package
-    public void SaveCurrentShadeRuneFieldPackage(RuneFieldPackage package)
+    #region Rune Fields
+    void InitializeRuneFields()
     {
-        _ShadeSlots[currentShadeSelected]._RuneFieldPackage = package;
+        //copies every slot's starting rune field and works out its stats, so nothing at runtime ever changes the slot assets
+        _SlotRuneFields.Clear();
+        _SlotStats.Clear();
+
+        for (int i = 0; i < _ShadeSlots.Count; i++)
+        {
+            ShadeSO slot = _ShadeSlots[i];
+            RuneFieldData startingField = (slot != null && slot._StartingRuneField != null) ? slot._StartingRuneField.Clone() : new RuneFieldData();
+            _SlotRuneFields.Add(startingField);
+            _SlotStats.Add(null);
+            RecalculateSlotStats(i);
+        }
+    }
+
+    public bool IsValidSlot(int slotIndex)
+    {
+        //checks a slot index points at a real slot
+        return slotIndex >= 0 && slotIndex < _ShadeSlots.Count && _ShadeSlots[slotIndex] != null && slotIndex < _SlotRuneFields.Count;
+    }
+
+    public RuneFieldData GetSavedRuneField(int slotIndex)
+    {
+        //returns a copy of a slot's saved rune field for the rune field UI to edit. Editing the copy doesn't change the saved one
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't load its rune field", this); return new RuneFieldData(); }
+        return _SlotRuneFields[slotIndex].Clone();
+    }
+
+    public void SaveRuneField(int slotIndex, RuneFieldData field)
+    {
+        //function the rune field UI calls when the player saves. Stores a copy and works the slot's stats out again
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't save its rune field", this); return; }
+        if (field == null) return;
+
+        _SlotRuneFields[slotIndex] = field.Clone();
+        RecalculateSlotStats(slotIndex);
+    }
+
+    public int GetCorePower(int slotIndex)
+    {
+        //how much power a slot's core has. todo: + the core fragment's power once fragments exist (see Rune Field Overhaul Plan)
+        if (IsValidSlot(slotIndex) == false) return 0;
+        return _ShadeSlots[slotIndex]._shadeStats._LVL;
+    }
+
+    public RuneFieldLayoutSO GetRuneFieldLayout()
+    {
+        return _RuneFieldLayout;
+    }
+
+    public void SetRuneFieldLayout(RuneFieldLayoutSO layout)
+    {
+        //function the rune field UI uses to hand over the layout it built from its scene, when none is assigned here
+        //every slot's stats get worked out again now that the ability nodes are known
+        _RuneFieldLayout = layout;
+        for (int i = 0; i < _SlotRuneFields.Count; i++)
+        {
+            RecalculateSlotStats(i);
+        }
+    }
+
+    public ShadeStats GetSlotStats(int slotIndex)
+    {
+        //returns a slot's stats with its saved runes applied
+        if (IsValidSlot(slotIndex) == false || slotIndex >= _SlotStats.Count) return null;
+        return _SlotStats[slotIndex];
+    }
+
+    public ShadeStats GetCurrentShadeStats()
+    {
+        return GetSlotStats(currentShadeSelected);
+    }
+    #endregion
+
+    #region Stat Calculation
+    void RecalculateSlotStats(int slotIndex)
+    {
+        //works a slot's stats out from scratch: its base stats plus every powered rune in its saved field
+        //nothing is added or taken away bit by bit, so the stats can't drift out of sync with the runes
+        if (IsValidSlot(slotIndex) == false) return;
+
+        ShadeStats baseStats = _ShadeSlots[slotIndex]._shadeStats;
+        ShadeStats result = CopyStats(baseStats);
+
+        //a throwaway RuneField over a copy of the saved data, only used for its power and stat math
+        RuneField field = new RuneField(_SlotRuneFields[slotIndex].Clone(), _RuneFieldLayout, GetCorePower(slotIndex));
+        Dictionary<DamageType.StatType, int> totals = field.GetStatTotals();
+
+        //todo: evolution rank multiplier and Hazen's share of the runes (see Element Rune and Evolution in the GDD)
+        foreach (KeyValuePair<DamageType.StatType, int> entry in totals)
+        {
+            AddToStat(result, entry.Key, entry.Value);
+        }
+
+        _SlotStats[slotIndex] = result;
+    }
+
+    ShadeStats CopyStats(ShadeStats source)
+    {
+        //makes a full copy of a set of stats, so changing the copy never touches the slot asset
+        //JsonUtility turns the stats into text and back into a brand new object. It works because ShadeStats is plain data
+        if (source == null) return new ShadeStats();
+        return JsonUtility.FromJson<ShadeStats>(JsonUtility.ToJson(source));
+    }
+
+    void AddToStat(ShadeStats target, DamageType.StatType stat, int amount)
+    {
+        //adds a rune bonus to one stat. Negative runes can't push a stat below 1 (unless it already started below 1)
+        switch (stat)
+        {
+            case DamageType.StatType.Health:
+                target._HP = ApplyStatFloor(target._HP, amount);
+                target._Health = ApplyStatFloor(target._Health, amount);
+                break;
+            case DamageType.StatType.Strength:
+                target._STR = ApplyStatFloor(target._STR, amount);
+                break;
+            case DamageType.StatType.Defense:
+                target._DEF = ApplyStatFloor(target._DEF, amount);
+                break;
+            case DamageType.StatType.Agility:
+                target._AGI = ApplyStatFloor(target._AGI, amount);
+                break;
+            case DamageType.StatType.Intellect:
+                target._INT = ApplyStatFloor(target._INT, amount);
+                break;
+            case DamageType.StatType.Spirit:
+                target._SPR = ApplyStatFloor(target._SPR, amount);
+                break;
+            case DamageType.StatType.Discipline:
+                target._DIS = ApplyStatFloor(target._DIS, amount);
+                break;
+            case DamageType.StatType.Wild:
+                target._WILD = ApplyStatFloor(target._WILD, amount);
+                break;
+            default:
+                Debug.LogWarning($"Warning! A rune is trying to change a stat that isn't handled: {stat}. Skipping it...", this);
+                break;
+        }
+    }
+
+    int ApplyStatFloor(int baseValue, int amount)
+    {
+        //adds a bonus to a stat, but a negative bonus never takes it below 1 (see Element Rune in the GDD)
+        int result = baseValue + amount;
+        if (amount < 0 && result < 1) result = Mathf.Min(baseValue, 1); //if the base was already below 1, it just stays where it was
+        return result;
     }
     #endregion
 

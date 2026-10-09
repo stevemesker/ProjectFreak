@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 31.82406209573092,
+        "dimension": 48.09259863058363,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/Shade Forms Plan.md",
+                "file": "Architecture/AI Info/Rune Field Overhaul Plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Shade Forms Plan"
+              "title": "Rune Field Overhaul Plan"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 51.35834411384217,
+        "dimension": 35.050537985001625,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -59,7 +59,7 @@
       {
         "id": "61347cd08ee47fa1",
         "type": "tabs",
-        "dimension": 16.81759379042691,
+        "dimension": 16.856863384414737,
         "children": [
           {
             "id": "8f34965267559858",
@@ -242,6 +242,14 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "UI/Rune Field/Rune Field.md",
+    "Architecture/AI Info/Rune Field Overhaul Plan.md",
+    "UI/Rune Field/Element Rune.md",
+    "UI/Rune Field/Core Node.md",
+    "UI/Rune Field/Bridge.md",
+    "UI/Rune Field/Ability Node.md",
+    "Shade Info/Evolution.md",
+    "Architecture/AI Info/Shade Forms Plan.md",
     "Architecture/Shades/Tethered Shade.md",
     "Architecture/Shades/Shade (Runtime).md",
     "Shade Info/Attached.md",
@@ -250,7 +258,6 @@
     "Character Traits/Main Character Abilities/Release Shade.md",
     "Character Traits/Main Character Abilities/Tether Shade.md",
     "Architecture/Shades/Shade Forms Plan.md",
-    "Architecture/AI Info/Shade Forms Plan.md",
     "Shade Info/Shade.md",
     "zzz Extras/Attachments/Pasted image 20261007135323.png",
     "Shade Info/Shade Stats.md",
@@ -262,13 +269,6 @@
     "Dungeons/Bosses.md",
     "Architecture/Tools/ArcMover.md",
     "Combat/Damage Balance.md",
-    "UI/Rune Field/Rune Field.md",
-    "UI/Rune Field/Core Node.md",
-    "Combat/Damage.md",
-    "Architecture/Tools/Utility Scripts.md",
-    "Architecture/AI Info/Known Issues.md",
-    "Architecture/Architecture Atlas.md",
-    "Architecture/AI/Unit Targeting.md",
     "Architecture/AI",
     "Architecture/Enemies",
     "Architecture/UI",
