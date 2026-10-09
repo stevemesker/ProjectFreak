@@ -25,15 +25,16 @@ public class ElementItemSO : ItemSO
     public float connectionDistance = 150;
     public int powerNeeded = 1;
 
-    public void TriggerElementEffects(GameObject ElementCarrier)
+    public void TriggerElementEffects()
     {
-        mypackage[0]._ElementConnect = ElementCarrier;
+        //function that turns this element's effects on (statusEffectEnable is usually hooked up to ElementManagerSO.BoostStats)
+        //this used to write the rune object into the package, but this SO is shared by every rune of this type, so runes kept overwriting each other
         statusEffectEnable?.Invoke();
     }
 
-    public void DeactivateElementEffects(GameObject ElementCarrier)
+    public void DeactivateElementEffects()
     {
-        mypackage[0]._ElementConnect = ElementCarrier;
+        //function that turns this element's effects off (statusEffectDisable is usually hooked up to ElementManagerSO.ReduceStats)
         statusEffectDisable?.Invoke();
     }
 

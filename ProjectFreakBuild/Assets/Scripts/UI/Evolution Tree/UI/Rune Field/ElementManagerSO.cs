@@ -11,15 +11,17 @@ public class ElementManagerSO : ScriptableObject
     #region runefield Functions
     public void BoostStats(ElementItemSO source)
     {
+        //function that sends an element's stat boosts to the shade manager when its rune gets power
+        if (manager == null) { Debug.LogError($"Error! No Shade Manager registered on {name}, can't boost stats from {source.name}", this); return; }
         List<statBoostPackage> temp = source.GetStatBoostPackage();
-        //Debug.Log(source.name + " is boosting " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
         manager.ReceiveStatBoostPackage(temp);
     }
 
     public void ReduceStats(ElementItemSO source)
     {
+        //function that takes an element's stat boosts back off when its rune loses power
+        if (manager == null) { Debug.LogError($"Error! No Shade Manager registered on {name}, can't reduce stats from {source.name}", this); return; }
         List<statBoostPackage> temp = source.GetStatBoostPackage();
-        //Debug.Log(source.name + " is reducing " + temp.Count + " different stats. It's source comes from " + temp[0]._ElementConnect);
         manager.RemoveStatBoostPackage(temp);
     }
     #endregion
@@ -29,7 +31,6 @@ public class ElementManagerSO : ScriptableObject
 public class statBoostPackage
 {
     public ElementItemSO _linkedElement;
-    public GameObject _ElementConnect;
     public DamageType.StatType _statToChange;
     public int _ChangeAmount;
-}
+}

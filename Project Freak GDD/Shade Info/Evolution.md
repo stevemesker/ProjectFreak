@@ -15,16 +15,16 @@ The list of rank names are as follows:
 
 ---
 **Evolution Stats**
-Each rank roughly doubles the shade's base stats **and multiplies every [[Element Rune]] bonus**. The multiplier is what keeps evolving meaningful all game: late runes give most of a shade's stats, so if evolution only raised base stats, a Legend would barely feel stronger than an Ascendant. A baby tree usually has 3 evolutions after Bound.
+Each evolution sets the shade's base stats directly, picked by hand for that evolution (like rolling stats for a new character). Higher ranks have much bigger numbers, but there's no multiplier math, so an evolution can be lopsided on purpose, like the highest [[DEF]] in its rank with 1 [[STR]]. [[Element Rune]]s, [[Ability Node]]s and core fragments then add on top of the base. A baby tree usually has 3 evolutions after Bound.
 
-| Rank      | Base stats (avg / specialty) | Rune bonus multiplier |
-| :-------- | :--------------------------- | :-------------------- |
-| Bound     | 3 / 5                        | ×1                    |
-| Unbound   | 6 / 10                       | ×2                    |
-| Ascendant | 12 / 20                      | ×4                    |
-| Legend    | 24 / 40                      | ×8                    |
+| Rank      | Base stats (avg / specialty) |
+| :-------- | :--------------------------- |
+| Bound     | 3 / 5                        |
+| Unbound   | 6 / 10                       |
+| Ascendant | 12 / 20                      |
+| Legend    | 24 / 40                      |
 
-*Starting guesses. The multiplier and late rune values stack hard, so these will likely get flattened in playtesting. See [[Damage Balance]].*
+*Starting guesses for the usual range of each rank. A single evolution can go well outside them. See [[Damage Balance]].*
 
 ---
 **Evolution Type**

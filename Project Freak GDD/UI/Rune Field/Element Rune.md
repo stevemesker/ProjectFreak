@@ -47,7 +47,7 @@ These nodes (when powered) give various types of buffs, debuffs, and other effec
 
 ---
 **Stat Values Over the Game**
-Runes are where nearly all of a shade's stats come from (with [[Evolution]] multiplying them). Rough starting values:
+Runes are where most of a shade's stats come from, on top of the base stats its [[Evolution]] sets. Rough starting values:
 
 | Stage | Typical rune                          | Runes a core can power (guess) |
 | :---- | :------------------------------------ | :----------------------------- |

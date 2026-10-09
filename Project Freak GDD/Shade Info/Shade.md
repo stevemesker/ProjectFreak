@@ -18,17 +18,35 @@ the list of ability types are as follows
 
 ---
 **Levels and Power**
-A shade's level decides how much power its [[Core Node]] has, which decides how many [[Element Rune]]s it can power. Its level never raises stats directly. The stats come from its [[Evolution]] and the runes the player places, so progression is how you build your [[Rune Field]]. See [[Damage Balance]].
+A shade's level, plus a core fragment if one is slotted into it, decides how much power its [[Core Node]] has, which decides how many [[Element Rune]]s it can power. Its level never raises stats directly. The stats come from its [[Evolution]] and the runes the player places, so progression is how you build your [[Rune Field]]. See [[Damage Balance]].
 
 ---
-**Death and Burning Down** *(idea, to work out later)*
+**Death and Burning Down** *(numbers to work out in playtests)*
 The game is a roguelite at heart: going back through dungeons, trying new training methods and raising new shades from easy-to-make beasts is a big part of the loop (the Digimon World influence).
 
-When a shade dies it starts over from Bound. Losing a strong shade in a final dungeon could mean a huge grind, so a dead shade should pass something on to the next one. A starting idea:
-- **Shade dies:** about **25%** of its levels carry over to the new shade
-- **Player burns it down on purpose** (breaks it down to its core before it dies): about **50%** carries over, and it gives Hazen a lot of XP toward his [[Tamer Level]]
+When a shade dies it starts over from Bound. Losing a strong shade in a final dungeon could mean a huge grind, so a dead shade passes something on: a **core fragment** (a shard), which is extra [[Core Node]] power for a shade slot.
 
-The numbers are [[undecided]]. The goal is that losing a shade hurts, but never means starting the whole game over.
+- **Shade dies:** all of its [[Element Rune]]s are lost and the player gets a shard
+- **Player burns it down on purpose** (breaks it down to its core before it dies): the player gets a shard, some of the runes come back, and Hazen gets a lot of XP toward his [[Tamer Level]]. How many runes come back is [[undecided]]
+
+The shard's size comes from the shade's level in tiers. Higher tiers grow faster than doubling, so sacrificing one strong shade beats several weak ones:
+
+| Shade level | Shard   | Power |
+| :---------- | :------ | :---- |
+| 1–3         | none    | –     |
+| 4–10        | Minor   | 1     |
+| 11–20       | Basic   | 3     |
+| 21–40       | Major   | 7     |
+| 41–50       | Perfect | 15    |
+
+*Starting numbers, these will change in playtests.* [[undecided]]
+
+The player can slot a shard into a brand new shade (it keeps the shard for life), into an existing shade that doesn't have one yet (a lvl 20 shade with a 3 power shard has 23 power), or not use it at all.
+- **One shard per shade.** Slotting one is permanent, with a confirm box to catch accidental clicks
+- A shard's power is separate from level and doesn't count toward the next shard. A slotted shard is lost when its shade dies or is burned down, so power can't build up over generations
+- Shards are normal items, one per tier
+
+The goal is that losing a shade hurts, but never means starting the whole game over. See [[Rune Field Overhaul Plan]] for the open questions.
 
 ---
 **Summoning Styles**

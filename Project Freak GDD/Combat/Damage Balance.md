@@ -4,7 +4,7 @@ How damage scales across the whole game, and why the [[Damage]] formula is built
 ## The Big Idea
 **Level never drives combat power. Stats do.**
 - [[Hazen]]'s level is his [[Tamer Level]], which only unlocks tools (summoning, commands, more [[Shade Slot]]s).
-- A [[Shade]]'s level decides how much power its [[Core Node]] has, which decides how many [[Element Rune]]s it can power. The stats come from the runes and the [[Evolution]].
+- A [[Shade]]'s level (plus a core fragment, if one is slotted) decides how much power its [[Core Node]] has, which decides how many [[Element Rune]]s it can power. The stats come from the runes and the [[Evolution]].
 - Enemies are just their stats. Deeper dungeons and harder paths get stronger enemy stats.
 
 Because of that, defense can't be scaled by level the way a lot of RPGs do it. Instead, defense is compared to the **attacker's stat**.
@@ -49,16 +49,14 @@ So the full standard damage is:
 
 ---
 ## Where Stats Come From
-**Evolution** sets base stats and multiplies rune bonuses. Each rank roughly doubles both. See [[Evolution]].
+**Evolution** sets base stats, picked by hand for each evolution (no multiplier). Runes, [[Ability Node]]s and core fragments add on top. See [[Evolution]].
 
-| Rank      | Base stats (avg / specialty) | Rune bonus multiplier |
-| :-------- | :--------------------------- | :-------------------- |
-| Bound     | 3 / 5                        | ×1                    |
-| Unbound   | 6 / 10                       | ×2                    |
-| Ascendant | 12 / 20                      | ×4                    |
-| Legend    | 24 / 40                      | ×8                    |
-
-*The ×8 at Legend is an upper guess. If late stats get out of hand, flatten the multiplier curve (×1, ×1.5, ×2, ×3) before touching the defense formula.*
+| Rank      | Base stats (avg / specialty) |
+| :-------- | :--------------------------- |
+| Bound     | 3 / 5                        |
+| Unbound   | 6 / 10                       |
+| Ascendant | 12 / 20                      |
+| Legend    | 24 / 40                      |
 
 For comparison: Pokémon starter lines grow about 1.3× per stage (Bulbasaur → Ivysaur → Venusaur ≈ 318 → 405 → 525 total base stats). Digimon jumps much harder. We're closer to Digimon on purpose, since every evolution should feel like a big step.
 
@@ -101,16 +99,9 @@ Stable from mid to late, and every stat matters. Early game leans toward attack,
 
 ---
 ## Estimated Stat Ranges
-A specialized shade putting its good rune stats into 2 main stats, with evolution multiplying rune bonuses:
+A specialized shade's main stat is its evolution's base plus the rune bonuses it stacks into that stat.
 
-| Stage           | Main stat (rough) |
-| :-------------- | :---------------- |
-| Bound           | ~10               |
-| Unbound         | ~35               |
-| Ascendant       | ~140              |
-| Legend          | ~1,400+           |
-
-*These are with the ×8 Legend multiplier and +10 late runes stacked together, which is almost certainly too much. It shows why the multiplier curve and late rune values need tuning together. The defense formula itself doesn't care about the scale. Enemy stats per dungeon have to follow whatever curve we settle on.*
+*The old estimates here assumed evolution multiplied rune bonuses, which was dropped (Oct 2026). They need redoing once evolution base stats and late rune values are closer to settled.* [[undecided]] *The defense formula itself doesn't care about the scale. Enemy stats per dungeon have to follow whatever curve we settle on.*
 
 ---
 ## Balancing Attack With Obedience
@@ -120,7 +111,7 @@ Attack-heavy runes can raise [[WILD]] and lower [[DIS]] (see [[Shade Stats]]). A
 ## Open Questions
 - How many runes a core can power at each shade level (guess: ~30, up to 50 at endgame). Solved by playtesting the first real runs [[undecided]]
 - HP per stat point, and the exact defense weight (starting at ×2) [[undecided]]
-- Final evolution multiplier curve and late rune values (see Estimated Stat Ranges) [[undecided]]
+- Base stat ranges per evolution rank and late rune values (see Estimated Stat Ranges) [[undecided]]
 - Enemy stat curve per dungeon and path difficulty, built from the curve above [[undecided]]
 - XP costs for shade levels and [[Tamer Level]], which follow from how many runes each level should unlock [[undecided]]
 - The element effectiveness/resistance chart and how resistances stack (heavy imbalances intended, see [[Elemental Affinity]]) [[undecided]]

@@ -44,6 +44,6 @@ All interfaces currently in the project, grouped by the file they live in.
 | Interface        | Description                                                                                  |
 | :--------------- | :------------------------------------------------------------------------------------------- |
 | `IBridgeable`    | Anything that can be linked with a bridge line. Used by [[Rune Field]] nodes and [[Dungeon Map Node]]s |
-| `IConnectable`   | [[Rune Field]] nodes that pass power along a chain                                           |
-| `ICoreNode`      | The [[Core Node]] power source                                                               |
-| `iEvolutionNode` | [[Ability Node]]s that an element rune can plug into                                         |
+| `IConnectable`   | Not used anymore (was [[Rune Field]] nodes passing power, replaced by `RuneField` in Oct 2026) |
+| `ICoreNode`      | Not used anymore (was the [[Core Node]] power source)                                        |
+| `iEvolutionNode` | Not used anymore (was [[Ability Node]]s a rune could plug into)                              |
