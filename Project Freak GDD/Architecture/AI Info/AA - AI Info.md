@@ -6,11 +6,14 @@ Home for notes and rules about working with Claude on Project Freak.
 **Tracking**
 [[Known Issues]] - bugs and cleanup Claude has spotted but not fixed
 
+**Learning**
+[[Coding Concepts]] - C# and Unity features used in the code, explained, with where they show up
+
 **Plans & To Do**
 Plans and to-do lists for upcoming work live here. Once a piece is built, it moves into its system's note in Architecture.
 [[AI Movement & Dungeon Loading Plan]] - AI movement, brain and dungeon loading (built)
 [[Shade Forms Plan]] - tethered / released shade prefabs, tether, release and return abilities (code built, Unity setup to do)
-[[Rune Field Overhaul Plan]] - rune field rebuild, core fragments and shade death rules (planning)
+[[Rune Field Overhaul Plan]] - rune field rebuild, core fragments and shade death rules (steps 1–4 built)
 
 ---
 ## How this connects to Claude

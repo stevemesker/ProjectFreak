@@ -37,7 +37,7 @@ public class ShadeSlotManager : MonoBehaviour
         
         //may need to add some catch for loading a rune field that's already selected
 
-        _runeField.LoadRuneField(index);
+        _runeField.SelectSlot(index); //asks about unsaved changes before switching
         /*
         if (GameManager._GameManager.GetComponent<ShadeManager>().GetShadeSelectionIndex() == index)
         {

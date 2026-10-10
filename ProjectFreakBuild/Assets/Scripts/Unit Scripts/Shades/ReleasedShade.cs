@@ -12,6 +12,9 @@ public class ReleasedShade : MonoBehaviour, ISummonUnit, IShadeForm
     public ShadeSO _shadeSlotData;
     public ShadeEvolutionSO _shadeEvoData;
 
+    [Tooltip("The slot's runtime entry on the Shade Manager: live stats (Health = current health) and abilities (read only). Shared with the manager, not a copy")]
+    [ShowInInspector, ReadOnly] ShadeRuntimeEntry _RuntimeEntry; //ShowInInspector shows it without Unity saving it, so it stays the manager's object
+
     [FoldoutGroup("Pointers")]
     [Header("Script pointers")]
     public CharacterMovement _movement;
@@ -51,11 +54,17 @@ public class ReleasedShade : MonoBehaviour, ISummonUnit, IShadeForm
     }
 
     #region Shade Form Interface
+    public ShadeRuntimeEntry GetRuntimeEntry()
+    {
+        return _RuntimeEntry;
+    }
+
     public void Setup(ShadeSO slot, GameObject summoner)
     {
         //function the Shade Manager calls right after spawning this shade
         _shadeSlotData = slot;
         _shadeEvoData = slot != null ? slot._CurrentEvolution : null; //"? :" picks the left value if the check is true, the right one if not
+        _RuntimeEntry = ShadeManager._ShadeManager != null ? ShadeManager._ShadeManager.GetRuntimeEntry(slot) : null; //nothing reads it yet, the shade's health component will
         AssignSummoner(summoner);
         SpawnArt();
     }
@@ -73,6 +82,15 @@ public class ReleasedShade : MonoBehaviour, ISummonUnit, IShadeForm
     #endregion
 
     #region Art
+    public void RefreshForm()
+    {
+        //function the Shade Manager calls when this shade evolves while it's out (even mid-fight): swaps in the new form's art on the spot
+        //todo: evolve effect/VFX once shade art exists
+        if (_shadeSlotData == null) return;
+        _shadeEvoData = _shadeSlotData._CurrentEvolution;
+        SpawnArt();
+    }
+
     void SpawnArt()
     {
         //function that spawns the evolution's released art into the art holder

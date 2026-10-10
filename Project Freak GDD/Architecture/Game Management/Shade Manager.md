@@ -18,7 +18,6 @@ Only one shade is ever out, in one form. See [[Shade Forms Plan]], [[Tethered Sh
 
 | Variable                  | Description                                                                 |
 | :------------------------ | :-------------------------------------------------------------------------- |
-| `managerScriptableObject` | `ElementManagerSO`. The manager registers itself here in `OnEnable`. Part of the old rune stat path, not used anymore (see [[Known Issues]]) |
 | `_TetheredPrefab`         | `PFB_Shade_Tethered`, spawned by Tether Shade                                |
 | `_ReleasedPrefab`         | `PFB_Shade_Released`, spawned by Release Shade. Was `_ShadePrefab` (the assigned prefab carried over) |
 
@@ -37,14 +36,14 @@ Only one shade is ever out, in one form. See [[Shade Forms Plan]], [[Tethered Sh
 | `_ShadeSlots`          | Every possible shade slot (`ShadeSO`, see [[Shade (Runtime)]])  |
 | `tamerSlotLevel`       | How many slots the player has access to                         |
 | `currentShadeSelected` | Index of the active slot                                        |
+| `_BoundEvolution`      | The form every shade starts in. A slot's **Reset Slot** button puts it back to this (play mode only, the button can't reach the manager outside play), and dying will too later [[Notes for the future]] |
 
 **Rune Fields**
 
 | Variable | Description |
 | :--- | :--- |
-| `_RuneFieldLayout` | Shared `RuneFieldLayoutSO` (core settings + ability nodes). Optional for now: if empty, the rune field UI builds one from its scene and hands it over |
-| `_SlotRuneFields` | Each slot's saved `RuneFieldData` (read only). Copied from each `ShadeSO`'s `_StartingRuneField` in `Awake`, so playing never changes the assets |
-| `_SlotStats` | Each slot's stats with its saved runes applied (read only) |
+| `_RuneFieldSettings` | `SO_RuneField_Settings` (`RuneFieldSettingsSO`, see [[Rune Field System]]). The rune field scene gets it from here. If empty, the defaults are used and a warning is logged |
+| `_RuntimeEntries` | Each slot's runtime entry (read only, see **Runtime Entries** below). Shown with Odin's `ShowInInspector`, not saved by Unity |
 
 **Control Switching**
 
@@ -101,22 +100,57 @@ Fade screen back in
 
 ---
 ## Rune Fields and Stats
-*Rebuilt Oct 2026.* Each slot's [[Rune Field]] and stats live here at runtime (see [[Rune Field System]]).
-
-Stats are **worked out from scratch**, never added or removed bit by bit: the slot's base `_shadeStats`, copied, plus the stat totals from every powered rune in its *saved* field. So unsaved changes in the rune field UI never touch a shade's stats, and they can't drift out of sync. A negative rune can't push a stat below 1 (unless the base was already below 1).
+*Rebuilt Oct 2026, moved onto the slots Oct 9.* Each slot's saved [[Rune Field]] lives on its slot asset (`ShadeSO`, see [[Shade (Runtime)]]). The manager reads it, writes it when the player saves, and keeps each slot's runtime entry (see [[Rune Field System]]).
 
 | Function | Description |
 | :--- | :--- |
 | `GetSavedRuneField(slot)` | A copy of a slot's saved field for the UI to edit |
-| `SaveRuneField(slot, field)` | Stores a copy and works the slot's stats out again |
-| `GetCorePower(slot)` | The slot's core power: its `_LVL`. Core fragments get added here later [[Notes for the future]] |
-| `GetSlotStats(slot)` / `GetCurrentShadeStats()` | A slot's stats with runes applied |
-| `GetRuneFieldLayout()` / `SetRuneFieldLayout(layout)` | The shared layout. Setting it works every slot's stats out again |
+| `SaveRuneField(slot, field)` | Returns whether it saved. **1.** Counts every rune type on the old and new field. **2.** Checks the inventory has enough for every rune the new field adds; if not, logs an error and changes **nothing**. **3.** Takes added runes out of the inventory and gives removed runes back. **4.** Sets the field to the slot's current core power (in case it leveled while the field was open), writes its data, compiled effects and plugged node snapshots onto the slot (`ShadeSO.SaveRuneField`), **evolves** the shade if a gate in its open zone now has power (`TryEvolve`), then rebuilds the slot's runtime entry. With no Inventory Manager it saves without touching the inventory (warning). A draft made before the shade evolved (its rank is out of date) is refused with a warning |
+| `GetSavedRuneCount(slot, element)` | How many of a rune the slot's saved field has (the rune field UI uses it for pending counts) |
+| `GetCorePower(slot)` | The slot's core power: its level + fragment power |
+| `GetRank(slot)` | How many times the slot's shade has evolved (Bound = 0) |
+| `GetBoundEvolution()` | The shared Bound form |
+| `GetRuneFieldSettings()` | The shared rune field settings |
 | `IsValidSlot(slot)` | Checks a slot index points at a real slot |
 
-*Not in yet:* Hazen's share of rune stats, and saving fields between play sessions [[Notes for the future]]. Nothing reads the slot stats in combat yet, since the released shade has no stats component (see [[Shade (Runtime)]]).
+---
+## Evolving
+*Added Oct 9, 2026 (overhaul step 7).* A shade evolves when a gate (a node with an Evolve effect) in its open zone gets power. See **Zones and Evolving** in [[Rune Field System]].
 
-The old stat path (`ReceiveStatBoostPackage`, `RemoveStatBoostPackage`, `ChangeStat` on `_AlteredStats`) is still in the script but nothing calls it anymore (see [[Known Issues]], Cleanup).
+- **`TryEvolve(slot)`** runs after every save and every level-up. It runs the rules on the slot's saved field with its node snapshots (no field scene, so it works mid-dungeon and mid-fight). If a gate is on, `ShadeSO.Evolve(gate, form)` records the gate in `_GatesTaken` (rank + 1) and swaps `_CurrentEvolution`, then the field runs again so the zone it left counts as frozen (frozen runes get power first)
+- Then the runtime entry is rebuilt (new base stats; the max HP rule moves current HP with max HP), and **`FinishEvolving`**: if that slot's shade is out, `TetheredShade.RefreshForm()` / `ReleasedShade.RefreshForm()` swap in the new form's art on the spot (and the tethered shade's tether distance and tail point). Then the C# event **`OnShadeEvolved(slotIndex)`** fires; the rune field listens to reload
+- A gate with power but no form set on its Evolve effect logs an error and doesn't evolve
+- *No evolve effect or VFX yet, the art just swaps* [[Notes for the future]]
+
+---
+## Runtime Entries
+*Added Oct 9, 2026 (overhaul step 3).* One `ShadeRuntimeEntry` per slot: what the shade is like right now. Every layer uses the same `ShadeStats` character sheet as the player and enemies.
+
+| Field | Description |
+| :--- | :--- |
+| `_SlotName` | The slot asset's name |
+| `_HardStats` | The evolution's `_BaseStats` + every stat change in the slot's saved compiled list + the slot's level, XP and lives. `_Health` just equals `_HP` here |
+| `_LiveStats` | Hard stats + timed effects and equipment (later [[Notes for the future]]). **`_Health` is the shade's current health.** This is what combat should read |
+| `_Abilities` | The evolution's natural abilities and ultimate + every Grant Ability effect, each listed once. Not used yet [[Notes for the future]] |
+
+**`RebuildSlot(slot)`** is the one place an entry is worked out (also on the [[Manager Wrappers|Shade Manager Wrapper]]). It runs at game start, on field save, on level change and on evolving (later also slotting a shard [[Notes for the future]]). It keeps the **same entry object** and fills it in again, so summoned shades pointing at it stay pointed at it. Stats are worked out from scratch, never added or removed bit by bit, so they can't drift. A negative rune can't push a stat below 1 (unless the base was already below 1). No evolution logs a warning and starts from all 0.
+
+**Max HP rule:** when max HP changes, current health moves by the same amount, clamped between 0 and the new max. The first build of the session starts at full health. A shade already at 0 stays at 0 (a stat change doesn't revive it). Dropping to 0 this way only logs a warning for now; falling is the [[Fail State]] work [[Notes for the future]]
+
+| Function | Description |
+| :--- | :--- |
+| `RebuildSlot(slot)` | Works the entry out again from the slot asset |
+| `GetRuntimeEntry(slot)` | By index or by `ShadeSO`. Null if the slot doesn't exist |
+| `GetSlotStats(slot)` / `GetCurrentShadeStats()` | A slot's **live** stats |
+| `Heal(slot, amount)` | Never above max. A shade at 0 isn't healed back up (Fail State decides that) |
+| `RefillHealth(slot)` / `RefillAllHealth()` | Back to full. For the hub and rest floor refills. *Nothing calls these on entering the hub yet, there's no "entered the hub" moment in the code* [[Notes for the future]] |
+| `SetSlotLevel(slot, level)` / `AddLevels(slot, amount)` | Changes the slot's level (minimum 1), **re-runs its saved rune field** with the new core power using its node snapshots (no field scene needed, works mid-dungeon), writes the result back to the slot, then evolves the shade if the extra power reached a plugged gate, then rebuilds the entry |
+
+**Test Tools** (Odin foldout, play mode only): **Level Up Current Slot**, **Hurt Current Slot** (takes health off, to test healing and the max HP rule), **Refill All Health**.
+
+*Not in yet:* Hazen's share of rune stats, timed effects and the game clock, and saving slots to disk [[Notes for the future]]. Nothing reads live stats in combat yet, since the released shade has no health component (see [[Shade (Runtime)]]).
+
+*Oct 9, 2026:* the old stat path (`managerScriptableObject`, `shadeAlterPackages`, `ReceiveStatBoostPackage`, `RemoveStatBoostPackage`, `ChangeStat`) and the slot copies (`_SlotRuneFields`, `_RuneFieldLayout`) were removed.
 
 ---
 ## Other Functions

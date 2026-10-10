@@ -12,8 +12,16 @@ public class IngredientListWindow : MonoBehaviour
     [SerializeField, Tooltip("Current List of button prefabs. Used to access their data to compare to the master list in inventory manager")]
     private List<GameObject> currentListAssets;
 
+    //local variables
+    RuneFieldManager _runeField; //read from RuneFieldPointer. Gives each button how many of its rune the draft is using
+
     private void OnEnable()
     {
+        //listens for inventory changes and draft changes, then fills the list straight away
+        if (RuneFieldPointer != null) _runeField = RuneFieldPointer.GetComponent<RuneFieldManager>();
+        if (_runeField != null) _runeField.OnDraftChanged += UpdateList;
+        else Debug.LogWarning($"Warning! No RuneFieldManager on Rune Field Pointer for {gameObject.name}, the list won't show how many runes the field is using...", this);
+
         if (InventoryManager._PlayerInventory == null)
         {
             Debug.LogWarning("Warning! No Item List Update Event was found! Maybe the game manager doesn't exist or this is firing off before the game manager declairs the event");
@@ -21,16 +29,22 @@ public class IngredientListWindow : MonoBehaviour
         }
             
         InventoryManager._PlayerInventory.OnInventoryChanged += UpdateList;
+        UpdateList();
     }
 
     private void OnDisable()
     {
-        InventoryManager._PlayerInventory.OnInventoryChanged -= UpdateList;
+        //stops listening. Both are checked first, since either can be missing when testing a scene on its own
+        if (_runeField != null) _runeField.OnDraftChanged -= UpdateList;
+        if (InventoryManager._PlayerInventory != null) InventoryManager._PlayerInventory.OnInventoryChanged -= UpdateList;
     }
 
     [Button("Update List")]
     public void UpdateList()
     {
+        //function that rebuilds the rune list: one button per rune in the inventory, with its count, how many the draft is using, and how many are left to place
+        if (InventoryManager._PlayerInventory == null) return;
+
         //pull in the manager's source of truth for elements
         var elements = InventoryManager._PlayerInventory.Elements;
 
@@ -43,7 +57,12 @@ public class IngredientListWindow : MonoBehaviour
             //if (currentListAssets.Count < i) currentListAssets.Add(Instantiate(ButtonListPrefab, ListHolderPointer.transform));
             //currentListAssets[i].GetComponent<IngredientDataObject>().FillData(ingredients[i])
             currentListAssets[index].SetActive(true);
-            currentListAssets[index].GetComponent<ElementDataObject>().FillData(entry.Key, entry.Value);
+            if (currentListAssets[index].TryGetComponent(out ElementDataObject button))
+            {
+                int pending = _runeField != null ? _runeField.GetPendingUse(entry.Key) : 0; //"? :" picks the left value if there's a rune field, 0 if not
+                int available = _runeField != null ? _runeField.GetAvailable(entry.Key) : entry.Value;
+                button.FillData(entry.Key, entry.Value, pending, available);
+            }
             index++;
         }
 

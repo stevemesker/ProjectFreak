@@ -33,6 +33,16 @@ Calls the [[Scene Manager]]. Every function checks the manager exists first and 
 ## HUDWrapper
 Calls the [[HUD Manager]]. `FadeHudIn(speed)` and `FadeHudOut(speed)`.
 
+## ShadeManagerWrapper
+*Added Oct 9, 2026.* Calls the [[Shade Manager]]. Works on the selected shade slot unless the function takes a slot index. Every function checks the manager exists first and logs an error naming the function if it doesn't.
+
+| Function | Calls |
+| :--- | :--- |
+| `RebuildCurrentSlot()` / `RebuildSlot(index)` | `RebuildSlot` (works the slot's runtime entry out again) |
+| `HealCurrentShade(amount)` | `Heal` |
+| `RefillCurrentShadeHealth()` / `RefillAllShadeHealth()` | `RefillHealth` / `RefillAllHealth` |
+| `AddLevelsToCurrentShade(amount)` | `AddLevels` |
+
 ## CameraManagerWrapper
 Calls the [[Camera Manager]]. `SetCamTargetToPlayer()` and `SetGameplayCameraPriority(priority)`. Both check the manager exists first.
 

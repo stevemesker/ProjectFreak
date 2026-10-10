@@ -2,34 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//the rules of a rune field: placing runes, bridges, power and ability nodes
+//the rules of a rune field: placing runes, bridges, power, ability nodes, and compiling what the field does to its shade
 //this is a plain C# class, not a MonoBehaviour. It doesn't live on a GameObject, it's created with "new RuneField(...)" by whatever shows the field
 //the view (2D or 3D) only draws what this class says and sends player actions to it, so the rules work the same no matter how the field looks
 public class RuneField
 {
     public const int CoreID = -1; //the core is a bridge end like any rune, it just always has this ID
+    public const int NoRuneID = -2; //means "no rune", like a rune that hasn't been placed yet
     const int ClampPasses = 10; //how many times ClampToBridges re-checks every bridge when a rune is pulled by more than one
 
     //local variables
     RuneFieldData _data; //the field being edited. Usually a copy of the saved data (see RuneFieldData.Clone)
-    RuneFieldLayoutSO _layout; //core settings and ability nodes, shared by every shade slot
+    RuneFieldSettingsSO _settings; //core reach, field radius, snap radius etc, shared by every shade slot
+    Dictionary<int, AbilityNodeEntry> _nodes = new Dictionary<int, AbilityNodeEntry>(); //node index -> node. A Dictionary finds an entry by its key, so gaps in the indexes are fine
+    List<int> _nodeOrder = new List<int>(); //every node index, smallest first, so nodes are always checked in the same order
     int _maxPower; //how much power the core has (shade level, plus a core fragment later)
+    int _rank; //how many times the shade has evolved (Bound = 0). Zones up to this are frozen, zone rank + 1 is the one the player can build in
     int _powerUsed; //worked out by CalculatePower
     HashSet<int> _poweredRunes = new HashSet<int>(); //IDs of runes that got their power. A HashSet is a list that's fast at "is this in here?" and can't hold duplicates
 
     public event System.Action OnFieldChanged; //fires after every recalculation so the view can redraw
 
-    public RuneField(RuneFieldData data, RuneFieldLayoutSO layout, int maxPower)
+    public RuneField(RuneFieldData data, RuneFieldSettingsSO settings, List<AbilityNodeEntry> nodes, int maxPower, int rank = 0)
     {
         //sets up a field from saved data. Bad entries in the data get cleaned out, then everything is worked out once
+        //nodes can be the full list from the field scene, or just the snapshots a shade slot saved (only the nodes it plugged into)
+        //rank is the shade's rank (ShadeSO.GetRank). Leaving it out means Bound
         _data = data;
-        _layout = layout;
+        _settings = settings;
         _maxPower = Mathf.Max(0, maxPower);
+        _rank = Mathf.Max(0, rank);
 
         if (_data == null) { Debug.LogWarning("Warning! Rune field was given no data, starting with an empty field..."); _data = new RuneFieldData(); }
-        //no layout is allowed on purpose: the Shade Manager can still work out power and stats before the rune field UI has given it one
-        //in that mode ability nodes are left exactly as saved, and new bridges to the core can't be made (0 reach)
+        if (_settings == null)
+        {
+            Debug.LogWarning("Warning! Rune field was given no settings asset, using the default settings...");
+            _settings = ScriptableObject.CreateInstance<RuneFieldSettingsSO>(); //a temporary asset with the default values, not saved anywhere
+        }
 
+        SetUpNodes(nodes);
         CleanUpData();
         Recalculate();
     }
@@ -40,9 +51,9 @@ public class RuneField
         return _data;
     }
 
-    public RuneFieldLayoutSO GetLayout()
+    public RuneFieldSettingsSO GetSettings()
     {
-        return _layout;
+        return _settings;
     }
 
     public int GetMaxPower()
@@ -127,26 +138,48 @@ public class RuneField
         return _data._ActiveNodes.Contains(nodeIndex);
     }
 
-    public int GetNodeCount()
+    public AbilityNodeEntry GetNode(int nodeIndex)
     {
-        if (_layout == null) return 0;
-        return _layout._AbilityNodes.Count;
+        //returns the node with this index, or null if this field doesn't know it
+        if (_nodes.TryGetValue(nodeIndex, out AbilityNodeEntry node)) return node; //TryGetValue looks the key up and gives the value back through "out" if it's there
+        return null;
+    }
+
+    public bool HasNode(int nodeIndex)
+    {
+        return _nodes.ContainsKey(nodeIndex);
     }
 
     public float GetReach(int id)
     {
         //how far this rune (or the core) reaches to make a bridge, in field units
-        if (id == CoreID) return _layout != null ? _layout._CoreReach : 0f; //"a ? b : c" means "if a then b, otherwise c"
+        if (id == CoreID) return _settings._CoreReach;
 
         PlacedRuneEntry rune = GetRune(id);
         if (rune == null) return 0f;
         return rune._Element.connectionDistance;
     }
 
+    public float GetBaseReach(int idA, int idB)
+    {
+        //how long a NEW bridge between these two can be: whichever of the two reaches is bigger
+        return Mathf.Max(GetReach(idA), GetReach(idB));
+    }
+
     public float GetBridgeReach(int idA, int idB)
     {
-        //how long a bridge between these two can be: whichever of the two reaches is bigger
-        return Mathf.Max(GetReach(idA), GetReach(idB));
+        //how long an EXISTING bridge can be before it counts as stretched
+        //snapping into a node is allowed to stretch bridges a little (settings Snap Stretch), so a rune sitting in a node gets that extra length
+        return GetBridgeReach(idA, idB, NoRuneID);
+    }
+
+    float GetBridgeReach(int idA, int idB, int movingRuneID)
+    {
+        //same as above, but the rune being dragged counts as out of its node, so dragging it away uses normal reach
+        bool plugged = (idA != movingRuneID && GetPluggedNode(idA) != -1) || (idB != movingRuneID && GetPluggedNode(idB) != -1);
+        float reach = GetBaseReach(idA, idB);
+        if (plugged) reach += _settings._SnapStretch;
+        return reach;
     }
 
     public int GetMaxBridges(int id)
@@ -154,8 +187,8 @@ public class RuneField
         //how many bridges this rune (or the core) can have
         if (id == CoreID)
         {
-            if (_layout == null || _layout._CoreMaxBridges <= 0) return int.MaxValue; //0 means no limit
-            return _layout._CoreMaxBridges;
+            if (_settings._CoreMaxBridges <= 0) return int.MaxValue; //0 means no limit
+            return _settings._CoreMaxBridges;
         }
 
         PlacedRuneEntry rune = GetRune(id);
@@ -174,46 +207,150 @@ public class RuneField
     {
         return GetConnections(id).Count < GetMaxBridges(id);
     }
+
+    public int GetRank()
+    {
+        return _rank;
+    }
+    #endregion
+
+    #region Zones
+    public int GetOpenZone()
+    {
+        //the one zone the player can build in: the one past the last zone the shade evolved out of (a Bound shade uses zone 1)
+        return Mathf.Clamp(_rank + 1, 1, _settings._ZoneCount);
+    }
+
+    public int GetZone(Vector2 position)
+    {
+        //which zone a spot is in. See RuneFieldSettingsSO.GetZone
+        return _settings.GetZone(position.magnitude);
+    }
+
+    public bool IsInsideField(Vector2 position)
+    {
+        //checks a spot is inside the outer ring (with the small ring tolerance, so a spot on the edge still counts)
+        return position.magnitude <= _settings.GetFieldEdge() + RuneFieldSettingsSO.RingTolerance;
+    }
+
+    public bool IsInOpenZone(Vector2 position)
+    {
+        //checks a rune could sit here zone-wise: inside the field and in the open zone. Zones further out are locked, zones further in are frozen
+        return IsInsideField(position) && GetZone(position) == GetOpenZone();
+    }
+
+    public bool IsRuneFrozen(int id)
+    {
+        //a rune is frozen once the shade has evolved out of its zone: it can't be moved, removed or unplugged anymore
+        //the core counts as frozen, so a bridge from the core to a frozen rune is frozen too
+        if (id == CoreID) return true;
+
+        PlacedRuneEntry rune = GetRune(id);
+        if (rune == null) return false;
+        return GetZone(rune._Position) <= _rank;
+    }
+
+    public bool IsBridgeFrozen(int idA, int idB)
+    {
+        //a bridge is frozen if both of its ends are, so it can't tear. A bridge from a frozen rune to a new one is still normal
+        return IsRuneFrozen(idA) && IsRuneFrozen(idB);
+    }
     #endregion
 
     #region Rune Editing
     public bool TryPlaceRune(ElementItemSO element, Vector2 position, out int runeID)
     {
         //function that puts a new rune on the field. It doesn't make any bridges, call ConnectNearby after
-        //returns false (and runeID = -2) if the rune can't go there
-        runeID = -2;
+        //returns false (and runeID = NoRuneID) if the rune can't go there
+        //a spot on an empty node snaps the rune to its center and plugs it in. Any other spot has to be clear of every footprint
+        runeID = NoRuneID;
         if (element == null) { Debug.LogWarning("Warning! Tried to place a rune with no element, nothing placed..."); return false; }
-        if (IsInsideField(position) == false) return false;
+        if (CanDropAt(NoRuneID, position, out Vector2 finalPosition, out int nodeIndex) == false) return false;
 
         PlacedRuneEntry rune = new PlacedRuneEntry();
         rune._ID = _data._NextRuneID;
         rune._Element = element;
-        rune._Position = position;
+        rune._Position = finalPosition;
 
         _data._NextRuneID++;
         _data._Runes.Add(rune);
         runeID = rune._ID;
 
+        if (nodeIndex != -1) AddPlug(runeID, nodeIndex);
         Recalculate();
         return true;
     }
 
-    public void MoveRune(int runeID, Vector2 position)
+    public bool TryDropRune(int runeID, Vector2 position)
     {
-        //function that moves a rune. It doesn't check bridges, use ClampToBridges first if the rune has any
-        //power only cares about bridges, not positions, so this doesn't recalculate (unless it pulls the rune out of a node)
+        //function for a dragged rune being let go. Moves it (snapping into a node if it's on one) if the spot is allowed
+        //returns false and changes nothing if it isn't, so the rune stays at its last spot. Call ConnectNearby after a successful drop
         PlacedRuneEntry rune = GetRune(runeID);
-        if (rune == null) return;
+        if (rune == null) return false;
+        if (IsRuneFrozen(runeID)) return false; //frozen runes never move
+        if (CanDropAt(runeID, position, out Vector2 finalPosition, out int nodeIndex) == false) return false;
 
-        rune._Position = ClampToField(position);
-        if (GetPluggedNode(runeID) != -1) UnplugRune(runeID); //a moved rune isn't sitting in its node anymore
+        int oldNode = GetPluggedNode(runeID);
+        if (oldNode != -1 && oldNode != nodeIndex) RemovePlug(runeID); //it left its node
+        rune._Position = finalPosition;
+        if (nodeIndex != -1 && oldNode != nodeIndex) AddPlug(runeID, nodeIndex);
+
+        Recalculate();
+        return true;
     }
 
-    public void RemoveRune(int runeID)
+    public bool CanDropAt(int runeID, Vector2 position, out Vector2 finalPosition, out int nodeIndex)
     {
-        //function that takes a rune off the field along with its bridges and plug
+        //checks if a rune could go here. runeID is the rune being moved (NoRuneID for a new one), so it doesn't block itself
+        //1. an empty node in snap range: allowed if the node can take this rune (see CanPlugInto), and it lands on the node's center
+        //2. anywhere else: allowed if it's in the open zone and doesn't overlap a rune, the core or a node (see IsSpotFree)
+        //the view uses this while dragging to show where the rune would land, or that it can't go there
+        finalPosition = position;
+        nodeIndex = FindNodeAt(position, runeID);
+
+        if (nodeIndex != -1)
+        {
+            if (CanPlugInto(runeID, nodeIndex))
+            {
+                finalPosition = _nodes[nodeIndex]._Position;
+                return true;
+            }
+            nodeIndex = -1;
+            return false; //right on top of a node that can't take it (locked, locked out, or too far to snap): refused
+        }
+
+        return IsSpotFree(runeID, position);
+    }
+
+    public bool IsSpotFree(int runeID, Vector2 position)
+    {
+        //checks a rune's footprint here doesn't overlap another rune, the core or a node, and is in the open zone
+        //footprints are circles: two runes overlap if their centers are closer than one rune size
+        if (IsInOpenZone(position) == false) return false;
+
+        float runeSize = _settings._RuneSize;
+        if (position.magnitude < (_settings._CoreSize + runeSize) * 0.5f) return false; //the core sits at (0, 0). Half of each size = the gap two circles need
+
+        for (int i = 0; i < _data._Runes.Count; i++)
+        {
+            PlacedRuneEntry other = _data._Runes[i];
+            if (other._ID == runeID) continue; //a rune can't block itself
+            if (Vector2.Distance(position, other._Position) < runeSize) return false;
+        }
+
+        for (int i = 0; i < _nodeOrder.Count; i++)
+        {
+            if (Vector2.Distance(position, _nodes[_nodeOrder[i]]._Position) < runeSize) return false; //nodes hold exactly one rune, so they're rune sized
+        }
+        return true;
+    }
+
+    public bool RemoveRune(int runeID)
+    {
+        //function that takes a rune off the field along with its bridges and plug. Returns false if it can't (missing or frozen)
         PlacedRuneEntry rune = GetRune(runeID);
-        if (rune == null) return;
+        if (rune == null) return false;
+        if (IsRuneFrozen(runeID)) return false; //frozen runes stay for good
 
         //go backwards so removing an entry doesn't skip the next one
         for (int i = _data._Bridges.Count - 1; i >= 0; i--)
@@ -228,20 +365,15 @@ public class RuneField
 
         _data._Runes.Remove(rune);
         Recalculate();
-    }
-
-    public bool IsInsideField(Vector2 position)
-    {
-        //checks if a spot is within the field's radius
-        if (_layout == null || _layout._FieldRadius <= 0f) return true; //0 means no limit
-        return position.magnitude <= _layout._FieldRadius;
+        return true;
     }
 
     Vector2 ClampToField(Vector2 position)
     {
-        //pulls a spot back inside the field's radius if it's outside
-        if (IsInsideField(position)) return position;
-        return position.normalized * _layout._FieldRadius;
+        //pulls a dragged spot back inside the outer ring plus the edge bleed. Past the ring itself the drop is refused (red), but the rune can still be pulled a little way out
+        float maxDistance = _settings.GetFieldEdge() + _settings._EdgeBleed;
+        if (position.magnitude <= maxDistance) return position;
+        return position.normalized * maxDistance;
     }
     #endregion
 
@@ -262,7 +394,7 @@ public class RuneField
         if (HasFreeBridgeSlot(idA) == false || HasFreeBridgeSlot(idB) == false) return false;
 
         float distance = Vector2.Distance(positionA, GetPosition(idB));
-        return distance <= GetBridgeReach(idA, idB);
+        return distance <= GetBaseReach(idA, idB); //new bridges always use normal reach
     }
 
     public List<int> FindBridgeTargets(int runeID, Vector2 position)
@@ -314,12 +446,34 @@ public class RuneField
 
     public void Disconnect(int idA, int idB)
     {
-        //function that removes a bridge (what happens when one tears)
+        //function that removes a bridge (what happens when one tears). Frozen bridges never come off
         int index = FindBridgeIndex(idA, idB);
         if (index == -1) return;
+        if (IsBridgeFrozen(idA, idB)) return;
 
         _data._Bridges.RemoveAt(index);
         Recalculate();
+    }
+
+    public void RestoreBridges(int runeID, List<int> otherIDs)
+    {
+        //function that puts back bridges a rune had before (like ones torn during a drag that ended on a bad spot)
+        //there's no reach check, since they were already bridged from this exact spot. Missing ends and full slots are still skipped
+        if (GetRune(runeID) == null || otherIDs == null) return;
+
+        bool changed = false;
+        for (int i = 0; i < otherIDs.Count; i++)
+        {
+            int otherID = otherIDs[i];
+            if (otherID == runeID || AreConnected(runeID, otherID)) continue;
+            if (otherID != CoreID && GetRune(otherID) == null) continue; //the other end is gone
+            if (HasFreeBridgeSlot(runeID) == false || HasFreeBridgeSlot(otherID) == false) continue;
+
+            AddBridge(runeID, otherID);
+            changed = true;
+        }
+
+        if (changed) Recalculate();
     }
 
     void AddBridge(int idA, int idB)
@@ -357,7 +511,7 @@ public class RuneField
             for (int i = 0; i < connections.Count; i++)
             {
                 Vector2 center = GetPosition(connections[i]);
-                float reach = GetBridgeReach(runeID, connections[i]);
+                float reach = GetBridgeReach(runeID, connections[i], runeID); //the dragged rune counts as out of its node
 
                 if (Vector2.Distance(result, center) > reach)
                 {
@@ -377,7 +531,7 @@ public class RuneField
         //how far past its reach a bridge would be if the rune were dragged here. 0 or less means it isn't stretched
         //the view uses this to decide how fast a bridge tears
         float distance = Vector2.Distance(desiredPosition, GetPosition(otherID));
-        return distance - GetBridgeReach(runeID, otherID);
+        return distance - GetBridgeReach(runeID, otherID, runeID); //the dragged rune counts as out of its node
     }
     #endregion
 
@@ -385,20 +539,24 @@ public class RuneField
     public int FindNodeAt(Vector2 position)
     {
         //returns the index of the closest empty ability node whose snap radius covers this spot, or -1
-        if (_layout == null) return -1;
+        return FindNodeAt(position, NoRuneID);
+    }
 
+    int FindNodeAt(Vector2 position, int movingRuneID)
+    {
+        //same as above, but a node holding the rune being moved counts as empty, so it can be dropped back in its own node
         int closest = -1;
         float closestDistance = float.MaxValue;
-        for (int i = 0; i < _layout._AbilityNodes.Count; i++)
+        for (int i = 0; i < _nodeOrder.Count; i++)
         {
-            AbilityNodeEntry node = _layout._AbilityNodes[i];
-            if (node == null) continue;
-            if (GetRuneInNode(i) != -1) continue; //already has a rune in it
+            int nodeIndex = _nodeOrder[i];
+            int runeInNode = GetRuneInNode(nodeIndex);
+            if (runeInNode != -1 && runeInNode != movingRuneID) continue; //already has another rune in it
 
-            float distance = Vector2.Distance(position, node._Position);
-            if (distance <= node._SnapRadius && distance < closestDistance)
+            float distance = Vector2.Distance(position, _nodes[nodeIndex]._Position);
+            if (distance <= _settings._NodeSnapRadius && distance < closestDistance)
             {
-                closest = i;
+                closest = nodeIndex;
                 closestDistance = distance;
             }
         }
@@ -412,48 +570,87 @@ public class RuneField
         PlacedRuneEntry rune = GetRune(runeID);
         if (rune == null) return false;
         if (GetPluggedNode(runeID) != -1) return false; //already plugged in somewhere
+        if (IsRuneFrozen(runeID)) return false;
 
         int nodeIndex = FindNodeAt(rune._Position);
         if (nodeIndex == -1) return false;
-        if (CanSnapToNode(runeID, nodeIndex) == false) return false;
+        if (CanPlugInto(runeID, nodeIndex) == false) return false;
 
-        NodePlugEntry plug = new NodePlugEntry();
-        plug._NodeIndex = nodeIndex;
-        plug._RuneID = runeID;
-        _data._Plugs.Add(plug);
-
-        rune._Position = _layout._AbilityNodes[nodeIndex]._Position;
+        AddPlug(runeID, nodeIndex);
+        rune._Position = _nodes[nodeIndex]._Position;
         Recalculate();
         return true;
     }
 
     public bool CanSnapToNode(int runeID, int nodeIndex)
     {
-        //checks that moving the rune to the node's center wouldn't stretch any of its bridges past their reach
-        //the view can also use this while dragging to decide whether to show the snap
-        if (nodeIndex < 0 || nodeIndex >= GetNodeCount()) return false;
+        //checks that moving the rune to the node's center wouldn't stretch any of its bridges more than the settings' Snap Stretch past their reach
+        if (HasNode(nodeIndex) == false) return false;
+        if (runeID == NoRuneID) return true; //a new rune has no bridges yet
 
-        Vector2 nodePosition = _layout._AbilityNodes[nodeIndex]._Position;
+        Vector2 nodePosition = _nodes[nodeIndex]._Position;
         List<int> connections = GetConnections(runeID);
         for (int i = 0; i < connections.Count; i++)
         {
-            if (GetBridgeStretch(runeID, nodePosition, connections[i]) > 0f) return false;
+            float distance = Vector2.Distance(nodePosition, GetPosition(connections[i]));
+            if (distance - GetBaseReach(runeID, connections[i]) > _settings._SnapStretch) return false;
         }
         return true;
     }
 
     public void UnplugRune(int runeID)
     {
-        //function that takes a rune out of its node (what happens when the player starts dragging it)
+        //function that takes a rune out of its node. Frozen runes stay plugged
+        if (IsRuneFrozen(runeID)) return;
+        if (RemovePlug(runeID)) Recalculate();
+    }
+
+    public bool CanPlugInto(int runeID, int nodeIndex)
+    {
+        //checks a node could take this rune: it's in the open zone, nothing plugged in locks it out, and snapping wouldn't overstretch the rune's bridges
+        //runeID is the rune being moved (NoRuneID for a new one). Its own plug doesn't count, since it's leaving that node
+        if (HasNode(nodeIndex) == false) return false;
+        if (IsNodeBlocked(nodeIndex, runeID)) return false;
+        return CanSnapToNode(runeID, nodeIndex);
+    }
+
+    public bool IsNodeBlocked(int nodeIndex)
+    {
+        //checks if a node can't take a rune right now: it's outside the open zone (locked, or frozen like an evolution gate that wasn't taken), or it's locked out
+        //the view shows blocked nodes with their Locked background
+        return IsNodeBlocked(nodeIndex, NoRuneID);
+    }
+
+    bool IsNodeBlocked(int nodeIndex, int movingRuneID)
+    {
+        //same as above, ignoring the plug of the rune being moved
+        AbilityNodeEntry node = GetNode(nodeIndex);
+        if (node == null) return true;
+        if (IsInOpenZone(node._Position) == false) return true;
+        return IsNodeLockedOut(nodeIndex, movingRuneID);
+    }
+
+    void AddPlug(int runeID, int nodeIndex)
+    {
+        //records a rune sitting in a node. Doesn't move the rune or recalculate, the caller does that
+        NodePlugEntry plug = new NodePlugEntry();
+        plug._NodeIndex = nodeIndex;
+        plug._RuneID = runeID;
+        _data._Plugs.Add(plug);
+    }
+
+    bool RemovePlug(int runeID)
+    {
+        //removes a rune's plug. Returns false if it wasn't plugged in. Doesn't recalculate, the caller does that
         for (int i = _data._Plugs.Count - 1; i >= 0; i--)
         {
             if (_data._Plugs[i]._RuneID == runeID)
             {
                 _data._Plugs.RemoveAt(i);
-                Recalculate();
-                return;
+                return true;
             }
         }
+        return false;
     }
     #endregion
 
@@ -475,12 +672,23 @@ public class RuneField
 
     void CalculatePower()
     {
-        //hands out the core's power one "layer" at a time: runes 1 bridge from the core, then 2 bridges, and so on
+        //hands out the core's power in two passes:
+        //1. frozen runes first, walking out from the core along the frozen chain. Otherwise a new rune bridged close to the core could
+        //   take their power and cut the evolution gate off, which would be a devolve
+        //2. then everything else, one "layer" at a time: runes 1 bridge from the core, then 2 bridges, and so on
         //inside a layer, the rune placed first goes first. A rune the core can't afford stays dark and doesn't pass power on
         _poweredRunes.Clear();
         _powerUsed = 0;
         int powerLeft = _maxPower;
 
+        powerLeft = PowerLayers(powerLeft, true);
+        PowerLayers(powerLeft, false);
+    }
+
+    int PowerLayers(int powerLeft, bool frozenOnly)
+    {
+        //one power pass outward from the core. Returns the power left over
+        //frozenOnly: only walks through frozen runes. Otherwise runes already powered (the frozen ones) pass power on for free
         HashSet<int> visited = new HashSet<int>();
         visited.Add(CoreID);
         List<int> currentLayer = GetConnections(CoreID);
@@ -495,13 +703,17 @@ public class RuneField
                 int runeID = currentLayer[i];
                 if (visited.Contains(runeID)) continue; //already reached by a shorter or earlier path
                 visited.Add(runeID);
+                if (frozenOnly && IsRuneFrozen(runeID) == false) continue; //the first pass stays on the frozen chain
 
-                int powerNeeded = GetPowerNeeded(runeID);
-                if (powerNeeded > powerLeft) continue; //not enough power. Stays dark, and power doesn't flow through it
+                if (_poweredRunes.Contains(runeID) == false)
+                {
+                    int powerNeeded = GetPowerNeeded(runeID);
+                    if (powerNeeded > powerLeft) continue; //not enough power. Stays dark, and power doesn't flow through it
 
-                powerLeft -= powerNeeded;
-                _powerUsed += powerNeeded;
-                _poweredRunes.Add(runeID);
+                    powerLeft -= powerNeeded;
+                    _powerUsed += powerNeeded;
+                    _poweredRunes.Add(runeID);
+                }
 
                 //everything bridged to this rune is one bridge further out
                 List<int> connections = GetConnections(runeID);
@@ -513,15 +725,13 @@ public class RuneField
 
             currentLayer = nextLayer;
         }
+        return powerLeft;
     }
 
     void CalculateNodes()
     {
-        //turns ability nodes on and off to match their rules
-        //nodes that are already on keep their spot, so when two nodes lock each other, the one that turned on first stays the winner
-        if (_layout == null) return; //no layout, so the saved node states are left alone (see the constructor)
-        int nodeCount = GetNodeCount();
-        int maxPasses = nodeCount + 1; //a normal setup settles within one pass per node, plus one to confirm nothing changed
+        //turns ability nodes on and off to match their rules (power, unlocks, and not being locked out)
+        int maxPasses = _nodeOrder.Count + 1; //a normal setup settles within one pass per node, plus one to confirm nothing changed
 
         for (int pass = 0; pass < maxPasses; pass++)
         {
@@ -530,7 +740,7 @@ public class RuneField
             //turn off nodes that don't meet their rules anymore
             for (int i = _data._ActiveNodes.Count - 1; i >= 0; i--)
             {
-                if (MeetsNodeRules(_data._ActiveNodes[i]) == false)
+                if (MeetsNodeRules(_data._ActiveNodes[i]) == false || IsNodeLockedOut(_data._ActiveNodes[i]))
                 {
                     _data._ActiveNodes.RemoveAt(i);
                     changed = true;
@@ -538,34 +748,37 @@ public class RuneField
             }
 
             //turn on nodes that meet their rules and aren't locked out
-            for (int i = 0; i < nodeCount; i++)
+            for (int i = 0; i < _nodeOrder.Count; i++)
             {
-                if (IsNodeActive(i)) continue;
-                if (MeetsNodeRules(i) == false || IsNodeLockedOut(i)) continue;
+                int nodeIndex = _nodeOrder[i];
+                if (IsNodeActive(nodeIndex)) continue;
+                if (MeetsNodeRules(nodeIndex) == false || IsNodeLockedOut(nodeIndex)) continue;
 
-                _data._ActiveNodes.Add(i);
+                _data._ActiveNodes.Add(nodeIndex);
                 changed = true;
             }
 
             if (changed == false) return; //every node is settled
         }
 
-        Debug.LogWarning("Warning! Ability nodes kept switching on and off. Check the layout for nodes that lock and unlock each other. Leaving them as they are...");
+        Debug.LogWarning("Warning! Ability nodes kept switching on and off. Check the field scene for nodes that lock and unlock each other. Leaving them as they are...");
     }
 
     bool MeetsNodeRules(int nodeIndex)
     {
         //checks the Power and Unlock rules from the Ability Node GDD page (lockouts are checked separately)
-        if (nodeIndex < 0 || nodeIndex >= GetNodeCount()) return false;
+        AbilityNodeEntry node = GetNode(nodeIndex);
+        if (node == null) return false;
 
         int runeID = GetRuneInNode(nodeIndex);
         if (runeID == -1) return false; //nothing plugged in
         if (IsRunePowered(runeID) == false) return false;
 
-        List<int> unlocks = _layout._AbilityNodes[nodeIndex]._Unlocks;
+        List<int> unlocks = node._Unlocks;
+        if (unlocks == null) return true; //no unlock list means nothing else has to be on first
         for (int i = 0; i < unlocks.Count; i++)
         {
-            if (unlocks[i] == nodeIndex) continue; //a node can't unlock itself (the layout warns about this)
+            if (unlocks[i] == nodeIndex) continue; //a node can't unlock itself
             if (IsNodeActive(unlocks[i]) == false) return false;
         }
         return true;
@@ -573,49 +786,224 @@ public class RuneField
 
     public bool IsNodeLockedOut(int nodeIndex)
     {
-        //a node is locked out if any node that's on has it in its lockout list
-        if (_layout == null) return false;
-        for (int i = 0; i < _data._ActiveNodes.Count; i++)
+        //a node is locked out as soon as a rune is plugged into a node that locks it (power doesn't matter, see LocksOut)
+        return IsNodeLockedOut(nodeIndex, NoRuneID);
+    }
+
+    bool IsNodeLockedOut(int nodeIndex, int movingRuneID)
+    {
+        //same as above, ignoring the plug of the rune being moved (it's leaving its node)
+        //if this node has a rune plugged in too, only nodes plugged BEFORE it count, so the first node plugged always wins
+        int ownPlug = FindPlugIndex(nodeIndex);
+
+        for (int i = 0; i < _data._Plugs.Count; i++)
         {
-            int activeIndex = _data._ActiveNodes[i];
-            if (activeIndex == nodeIndex) continue;
-            if (_layout._AbilityNodes[activeIndex]._Lockouts.Contains(nodeIndex)) return true;
+            if (ownPlug != -1 && i >= ownPlug) break; //plugs go into the list in the order they happened
+            NodePlugEntry plug = _data._Plugs[i];
+            if (plug._NodeIndex == nodeIndex || plug._RuneID == movingRuneID) continue;
+
+            if (LocksOut(plug._NodeIndex, nodeIndex)) return true;
         }
         return false;
     }
 
-    public Dictionary<DamageType.StatType, int> GetStatTotals()
+    bool LocksOut(int lockerIndex, int nodeIndex)
     {
-        //adds up the stat boosts from every powered rune
-        //todo: evolution multiplier, the minimum of 1 per stat, and Hazen's stats get applied when this is hooked up to the Shade Manager
-        Dictionary<DamageType.StatType, int> totals = new Dictionary<DamageType.StatType, int>();
+        //checks if one node locks another: it's in the locker's lockout list, or both are evolution gates in the same zone (a branch choice, automatic)
+        AbilityNodeEntry locker = GetNode(lockerIndex);
+        AbilityNodeEntry node = GetNode(nodeIndex);
+        if (locker == null || node == null) return false;
 
+        if (locker._Lockouts != null && locker._Lockouts.Contains(nodeIndex)) return true;
+        return locker.IsGate() && node.IsGate() && GetZone(locker._Position) == GetZone(node._Position);
+    }
+
+    int FindPlugIndex(int nodeIndex)
+    {
+        //returns where this node's plug is in the plug list, or -1 if nothing is plugged into it
+        for (int i = 0; i < _data._Plugs.Count; i++)
+        {
+            if (_data._Plugs[i]._NodeIndex == nodeIndex) return i;
+        }
+        return -1;
+    }
+    #endregion
+
+    #region Evolution
+    public int GetPluggedGate()
+    {
+        //returns the evolution gate in the open zone that has a rune plugged in (powered or not), or -1
+        //gates in the same zone lock each other out, so there's only ever one
+        for (int i = 0; i < _nodeOrder.Count; i++)
+        {
+            int nodeIndex = _nodeOrder[i];
+            if (IsOpenGate(nodeIndex) && GetRuneInNode(nodeIndex) != -1 && IsNodeLockedOut(nodeIndex) == false) return nodeIndex;
+        }
+        return -1;
+    }
+
+    public int GetEvolvingGate()
+    {
+        //returns the evolution gate in the open zone that's on (its rune has power), or -1. The shade evolves through this gate
+        for (int i = 0; i < _nodeOrder.Count; i++)
+        {
+            int nodeIndex = _nodeOrder[i];
+            if (IsOpenGate(nodeIndex) && IsNodeActive(nodeIndex)) return nodeIndex;
+        }
+        return -1;
+    }
+
+    bool IsOpenGate(int nodeIndex)
+    {
+        //an evolution gate the shade could still go through: it's in the open zone
+        AbilityNodeEntry node = GetNode(nodeIndex);
+        return node != null && node.IsGate() && IsInOpenZone(node._Position);
+    }
+    #endregion
+
+    #region Effects
+    public List<RuneEffect> CompileEffects()
+    {
+        //function that gathers everything this field does to its shade into one list: stat boosts from every powered rune, then the effects of every active node
+        //everything in the list is a copy, so changing it never changes the rune assets or the nodes
+        //this is the list the slot will store when the field is saved (Rune Field Overhaul Plan, step 4)
+        List<RuneEffect> compiled = new List<RuneEffect>();
+
+        //powered runes, in placement order
         for (int i = 0; i < _data._Runes.Count; i++)
         {
             PlacedRuneEntry rune = _data._Runes[i];
             if (IsRunePowered(rune._ID) == false) continue;
 
-            List<statBoostPackage> boosts = rune._Element.GetStatBoostPackage();
-            if (boosts == null) continue;
-
+            List<StatChangeEffect> boosts = rune._Element.GetStatBoosts();
             for (int j = 0; j < boosts.Count; j++)
             {
-                if (boosts[j] == null) continue;
-                DamageType.StatType stat = boosts[j]._statToChange;
-
-                if (totals.ContainsKey(stat)) totals[stat] += boosts[j]._ChangeAmount;
-                else totals.Add(stat, boosts[j]._ChangeAmount);
+                AddCompiledEffect(compiled, boosts[j]);
             }
         }
-        return totals;
+
+        //active nodes, in the order they turned on
+        for (int i = 0; i < _data._ActiveNodes.Count; i++)
+        {
+            AbilityNodeEntry node = GetNode(_data._ActiveNodes[i]);
+            if (node == null || node._Effects == null) continue;
+
+            for (int j = 0; j < node._Effects.Count; j++)
+            {
+                AddCompiledEffect(compiled, node._Effects[j]);
+            }
+        }
+
+        return compiled;
+    }
+
+    void AddCompiledEffect(List<RuneEffect> compiled, RuneEffect effect)
+    {
+        //adds a copy of one effect to a compiled list. Empty or broken effects are skipped (the inspector already warns about them)
+        if (effect == null || effect.IsSetUp() == false) return;
+        compiled.Add(effect.Clone());
+    }
+
+    public Dictionary<DamageType.StatType, int> GetStatTotals()
+    {
+        //adds up every stat change in the compiled list (powered runes and active nodes)
+        return RuneEffect.AddUpStats(CompileEffects());
+    }
+
+    public List<AbilityNodeEntry> GetPluggedNodeSnapshots()
+    {
+        //function that copies every node with a rune plugged in (powered or not), smallest index first
+        //the shade slot saves these so the rules can run later without the field scene (see SetUpNodes)
+        List<AbilityNodeEntry> snapshots = new List<AbilityNodeEntry>();
+        for (int i = 0; i < _nodeOrder.Count; i++)
+        {
+            if (GetRuneInNode(_nodeOrder[i]) == -1) continue;
+            snapshots.Add(_nodes[_nodeOrder[i]].Clone());
+        }
+        return snapshots;
+    }
+    #endregion
+
+    #region Setup Checks
+    public static string FixOneWayLockouts(List<AbilityNodeEntry> nodes)
+    {
+        //function that makes every lockout two-way: if X locks Y but Y doesn't list X, Y gets X added so the game plays right
+        //returns a line per fix (or "" if there were none) so the field scene can log them and the scene can be fixed. Run once when the scene builds its nodes
+        string problems = "";
+        if (nodes == null) return problems;
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            AbilityNodeEntry node = nodes[i];
+            if (node == null || node._Lockouts == null) continue;
+
+            for (int j = 0; j < node._Lockouts.Count; j++)
+            {
+                AbilityNodeEntry other = FindNode(nodes, node._Lockouts[j]);
+                if (other == null || other == node) continue;
+                if (other._Lockouts == null) other._Lockouts = new List<int>();
+                if (other._Lockouts.Contains(node._NodeIndex)) continue; //already two-way
+
+                other._Lockouts.Add(node._NodeIndex);
+                problems += $"{node._Name} locks out {other._Name}, but {other._Name} doesn't lock out {node._Name}. Fixed for this run, add it to {other._Name}'s Lockouts\n";
+            }
+        }
+        return problems;
+    }
+
+    public static string CheckGates(List<AbilityNodeEntry> nodes, RuneFieldSettingsSO settings)
+    {
+        //function that checks every evolution gate sits on a ring the shade can evolve through (not off a ring, and not on the outer edge)
+        //returns a line per problem, or "" if they're all fine
+        string problems = "";
+        if (nodes == null || settings == null) return problems;
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            AbilityNodeEntry node = nodes[i];
+            if (node == null || node.IsGate() == false) continue;
+
+            if (settings.IsOnRing(node._Position.magnitude, out int ring) == false)
+                problems += $"Gate {node._Name} isn't on a zone ring, so it isn't the same distance from the core as the other gates. Use its Snap buttons\n";
+            else if (ring > settings.GetLastGateRing())
+                problems += $"Gate {node._Name} is on ring {ring}, the field's outer edge. There's nothing to evolve into from there, gates go on rings 1 to {settings.GetLastGateRing()}\n";
+        }
+        return problems;
+    }
+
+    static AbilityNodeEntry FindNode(List<AbilityNodeEntry> nodes, int nodeIndex)
+    {
+        //finds a node in a list by its index, or null
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i] != null && nodes[i]._NodeIndex == nodeIndex) return nodes[i];
+        }
+        return null;
     }
     #endregion
 
     #region Initialize
+    void SetUpNodes(List<AbilityNodeEntry> nodes)
+    {
+        //fills the node lookup from the list this field was given. Empty entries and repeated indexes are skipped
+        _nodes.Clear();
+        _nodeOrder.Clear();
+        if (nodes == null) return; //no nodes is fine, the field just has nothing to plug into
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i] == null) continue;
+            if (_nodes.ContainsKey(nodes[i]._NodeIndex)) { Debug.LogWarning($"Warning! Two rune field nodes use index {nodes[i]._NodeIndex}, keeping the first one..."); continue; }
+
+            _nodes.Add(nodes[i]._NodeIndex, nodes[i]);
+            _nodeOrder.Add(nodes[i]._NodeIndex);
+        }
+        _nodeOrder.Sort();
+    }
+
     void CleanUpData()
     {
         //removes anything in the saved data that points at something that doesn't exist, so the rest of the code can trust it
-        int nodeCount = GetNodeCount();
         HashSet<int> runeIDs = new HashSet<int>();
 
         //runes: no element, or a repeated ID
@@ -643,15 +1031,13 @@ public class RuneField
             if (endAExists == false || endBExists == false || bridge._A == bridge._B || repeated) _data._Bridges.RemoveAt(i);
         }
 
-        if (_layout == null) return; //can't check plugs or active nodes without the node list, so they're kept as saved
-
         //plugs: missing rune or node, or a node/rune used twice
         HashSet<int> usedNodes = new HashSet<int>();
         HashSet<int> usedRunes = new HashSet<int>();
         for (int i = 0; i < _data._Plugs.Count; i++)
         {
             NodePlugEntry plug = _data._Plugs[i];
-            bool valid = plug._NodeIndex >= 0 && plug._NodeIndex < nodeCount && runeIDs.Contains(plug._RuneID) && usedNodes.Contains(plug._NodeIndex) == false && usedRunes.Contains(plug._RuneID) == false;
+            bool valid = HasNode(plug._NodeIndex) && runeIDs.Contains(plug._RuneID) && usedNodes.Contains(plug._NodeIndex) == false && usedRunes.Contains(plug._RuneID) == false;
 
             if (valid == false)
             {
@@ -663,10 +1049,10 @@ public class RuneField
             usedRunes.Add(plug._RuneID);
         }
 
-        //active nodes: index outside the layout's node list
+        //active nodes: a node this field doesn't know
         for (int i = _data._ActiveNodes.Count - 1; i >= 0; i--)
         {
-            if (_data._ActiveNodes[i] < 0 || _data._ActiveNodes[i] >= nodeCount) _data._ActiveNodes.RemoveAt(i);
+            if (HasNode(_data._ActiveNodes[i]) == false) _data._ActiveNodes.RemoveAt(i);
         }
     }
     #endregion

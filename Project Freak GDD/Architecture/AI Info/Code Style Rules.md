@@ -78,6 +78,7 @@ Back to [[AA - AI Info]]
 ## Readability
 - Straightforward code over clever code. Avoid LINQ chains, nested lambdas and advanced C# tricks unless they make things much simpler
 - When a less common feature is the right choice, add a one-line comment explaining it
+- C# or Unity features that are new to the project also get an entry in [[Coding Concepts]] (what it is, a tiny example, where it's used), so I can review them later
 - Non-trivial functions start with a short casual comment saying what they're for: `//function that refills the type pool for a column`. No XML `///` comments
 - Leave honest `//temp` or `//todo` notes on placeholders
 

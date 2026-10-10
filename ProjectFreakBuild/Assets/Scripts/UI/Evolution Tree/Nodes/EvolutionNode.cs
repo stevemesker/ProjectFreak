@@ -20,6 +20,12 @@ public class EvolutionNode : MonoBehaviour
     [SerializeField, Tooltip("List of nodes that will be locked out as long as this node is active")]
     List<EvolutionNode> Lockouts;
 
+    [Header("<=====Effects=====>")]
+    [Tooltip("What this node does to the shade while it's on (stat change, grant ability, evolve). A node with an Evolve effect is an evolution gate. Copied into the layout when the field is built from the scene")]
+    [InfoBox("$_effectProblems", InfoMessageType.Warning, "HasEffectProblems")]
+    [SerializeReference] //lets this one list hold different effect types. The inspector asks which type to add
+    List<RuneEffect> _Effects = new List<RuneEffect>();
+
     [Header("<---Events--->")]
     [Tooltip("Runs when the node turns on while the player is editing the field (not when a saved field loads)")]
     [SerializeField] public UnityEvent ActivationEvent;
@@ -37,6 +43,13 @@ public class EvolutionNode : MonoBehaviour
     //local variables
     const int EnabledBackground = 1; //index of the "Enabled" background, shown while the node is on
     const int LockedBackground = 2; //index of the "Locked" background, shown while the node is locked out
+    string _effectProblems; //filled by OnValidate, shown as a warning box in the inspector
+
+    private void OnValidate()
+    {
+        //checks the effect list for empty entries, missing assets or more than one Evolve, so broken nodes show up in the inspector
+        _effectProblems = RuneEffect.GetListProblems(_Effects, gameObject.name);
+    }
 
     #region Rules
     public List<EvolutionNode> GetUnlockNodes()
@@ -47,6 +60,52 @@ public class EvolutionNode : MonoBehaviour
     public List<EvolutionNode> GetLockoutNodes()
     {
         return Lockouts;
+    }
+
+    public List<RuneEffect> GetEffects()
+    {
+        return _Effects;
+    }
+
+    public bool IsGate()
+    {
+        //a node is an evolution gate if it has an Evolve effect
+        return RuneEffect.HasEvolve(_Effects);
+    }
+
+    bool HasEffectProblems()
+    {
+        //used by the InfoBox above to decide if the warning shows
+        return string.IsNullOrEmpty(_effectProblems) == false;
+    }
+    #endregion
+
+    #region Zone Tools
+    [FoldoutGroup("Zone Tools"), Button("Snap To Next Ring Out"), GUIColor(0.4f, 1f, 0.4f)]
+    void SnapToNextRingOut()
+    {
+        //editor button: moves the node out onto the closest ring past it, keeping its angle around the core. A node already on a ring goes up to the next one
+        RuneFieldManager field = FindField();
+        if (field == null) return;
+        field.SnapNodeToRing(transform, field.GetNextRingOut(transform));
+    }
+
+    [FoldoutGroup("Zone Tools"), Button("Snap To Ring")]
+    void SnapToRing(int ring = 1)
+    {
+        //editor button: moves the node onto a chosen ring, keeping its angle around the core. Ring 1 is zone 1's outer edge
+        RuneFieldManager field = FindField();
+        if (field == null) return;
+        field.SnapNodeToRing(transform, ring);
+    }
+
+    RuneFieldManager FindField()
+    {
+        //finds the rune field this node belongs to: a parent first, otherwise any field in the open scenes (editor tool, so searching is fine here)
+        RuneFieldManager field = GetComponentInParent<RuneFieldManager>();
+        if (field == null) field = FindObjectOfType<RuneFieldManager>();
+        if (field == null) Debug.LogError($"Error! No RuneFieldManager found for {gameObject.name}, can't snap it to a ring", this);
+        return field;
     }
     #endregion
 

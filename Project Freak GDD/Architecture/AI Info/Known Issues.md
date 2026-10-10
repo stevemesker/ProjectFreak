@@ -25,7 +25,7 @@ Back to [[AA - AI Info]]
 *Oct 2026: the rune field was rebuilt on the new `RuneField` rules (see [[Rune Field System]]), so the old-script bugs below are gone with the old code.*
 - [x] `CoreNode.ClearConnection` loops with `i = Count; i > 0; i++`, which goes out of range if the core has any connections. *Gone, `CoreNode` is a view now*
 - [x] `RuneFieldManager.SaveRuneFieldPackage` creates one `NodePackage` outside the loop and adds it for every node, so every saved node entry ends up with the last node's values. *Fixed Oct 2026 (rune field bug pass)*
-- [ ] Dropping an element from the inventory list onto the field doesn't reduce the inventory count (it gets the element's data now). Needs to give runes back if the field isn't saved
+- [x] Dropping an element from the inventory list onto the field doesn't reduce the inventory count (it gets the element's data now). Needs to give runes back if the field isn't saved. *Fixed Oct 9, 2026 (overhaul step 4): runes count as pending in the draft, can't be placed past what the inventory has, and leave the inventory on save*
 - [x] `ElementItemSO`'s `connectionsAllowed`, `connectionDistance`, and `powerNeeded` aren't applied to the rune. *Fixed Oct 2026, the new rules use them*
 - [x] `ElementItemSO.TriggerElementEffects` only tags the first stat boost package with the rune object. *Fixed Oct 2026: it doesn't write the rune into the SO at all now (the SO is shared by every rune of that type, so they overwrote each other). `statBoostPackage._ElementConnect` was removed*
 - [ ] `ShadeSlotManager` unlocks slots by player level instead of the shade slot count (`_SHA` / `tamerSlotLevel`)
@@ -36,13 +36,13 @@ Back to [[AA - AI Info]]
 - [x] Loading ignored the saved ability nodes, so runes reappeared on nodes without being plugged in. *Fixed Oct 2026: `EvolutionNode.LoadNodeState` restores them without re-firing the events*
 - [x] The core's current power was loaded from the save, so leveling up didn't add power until a reset. *Fixed Oct 2026: it's rebuilt as max power minus what the runes use*
 - [x] *Gone Oct 2026: the rules don't use colliders anymore and `UpdateScaler` does nothing.* `RuneFieldManager.UpdateScaler` only resizes colliders when zoomed out (scale < 1), so zooming back in leaves them small. It also sizes them from the rect width (143 on the rune prefab) while the prefab's collider radius is 50, so the first zoom-out tick makes them bigger, not smaller. 3D colliders already scale with their parent, so this function may not be needed at all. Needs a test in the Evolution UI scene before changing
-- [x] Runes and layouts are written straight onto the `ShadeSO` assets at runtime (`_AlteredStats`, `_RuneFieldPackage`), so they stay changed in the editor after play mode. *Fixed Oct 2026: the [[Shade Manager]] keeps runtime copies of each slot's field and stats*
+- [x] Runes and layouts are written straight onto the `ShadeSO` assets at runtime (`_AlteredStats`, `_RuneFieldPackage`), so they stay changed in the editor after play mode. *Fixed Oct 2026: the [[Shade Manager]] keeps runtime copies of each slot's field and stats. Oct 9, 2026: saved fields go onto the slot asset again, this time **on purpose** (see [[Rune Field Overhaul Plan]], the slot is the source of truth). Use the slot's **Reset Slot** button to start over*
 - [x] Picking a different shade slot threw away unsaved runes but kept their stat boosts. *Fixed Oct 2026: stats are worked out from the saved field only, so unsaved changes never touch them. Throwing away unsaved changes is on purpose (save button design)*
 - [x] If the runes on a loaded field use more power than the core has, they kept their power and stats. *Fixed Oct 2026: power is handed out from scratch every time, so a smaller core just powers fewer runes*
-- [ ] Each slot's rune field and stats only last for the play session. The [[Save Manager]] doesn't save them yet
-- [ ] No UI save button for the rune field yet (only the Odin **Save Current Field** button on `RuneFieldManager`). Hook a button to `RuneFieldManager.SaveRuneSlot`, and later a "save before leaving?" popup
-- [ ] Runes can't be taken off the field (`RuneField.RemoveRune` exists, but nothing in the UI calls it)
-- [ ] Nothing uses a slot's stats in combat yet: the released shade has no stats/health component (see [[Shade (Runtime)]])
+- [ ] The [[Save Manager]] doesn't save shade slots to disk yet. *Since Oct 9, 2026 each slot's field stays on its slot asset in the editor, but a built game would lose it* (see [[Rune Field Overhaul Plan]], disk save comes later)
+- [ ] No UI save button for the rune field yet (only the Odin **Save Current Field** button on `RuneFieldManager`). Hook a button to `RuneFieldManager.SaveRuneSlot`, and later a "save before leaving?" popup. *Oct 9, 2026: the code side is done (`_SaveButton`, `_Popup`, `RequestLeave`), the buttons and popup still need adding in the scene (see [[Rune Field System]], Unity setup still to do)*
+- [x] Runes can't be taken off the field (`RuneField.RemoveRune` exists, but nothing in the UI calls it). *Fixed Oct 9, 2026: dropping a rune on the inventory list removes it*
+- [ ] Nothing uses a slot's stats in combat yet: the released shade has no stats/health component (see [[Shade (Runtime)]]). *Since Oct 9, 2026 both shade forms hold their slot's runtime entry (live stats, current health), ready for one*
 
 **Save**
 - [ ] `SaveManager.SetCurrentActiveSaveSlot` has its range check backwards (`Count - 1 > index` should be `index > Count - 1`)
@@ -68,7 +68,7 @@ Back to [[AA - AI Info]]
 - [ ] `EnvironmentDamageable`
 - [ ] `PlayerEquipment`, `ShadeSummoner`
 - [ ] `DraggableItem`, `ElementObject`, `ShadeSlotDataObject` (early Rune Field leftovers)
-- [ ] Old rune field stat path, unused since the Oct 2026 rebuild: `RuneFieldPackage.cs`, `ShadeSO._RuneFieldPackage` and `_AlteredStats`, `ElementManagerSO` (and the Shade Manager's `managerScriptableObject` / `shadeAlterPackages`), `ShadeManager.ReceiveStatBoostPackage` / `RemoveStatBoostPackage` / `ChangeStat`, `ElementItemSO.TriggerElementEffects` / `DeactivateElementEffects` and the element assets' `statusEffectEnable/Disable` events
+- [ ] Old rune field stat path, unused since the Oct 2026 rebuild. *All removed Oct 9, 2026 (overhaul steps 1 and 2).* Still to delete in Unity: `Scripts/Common/RuneFieldPackage.cs` and `Scripts/Rune Field/RuneFieldLayoutSO.cs` (both emptied)
 - [ ] `IConnectable`, `ICoreNode`, `iEvolutionNode` in `EvolutionInterfaces.cs` are unused. Keep `IBridgeable`: the dungeon map uses it (and `NodeBridge.BuildConnection`)
 - [ ] `ElementDataObject` / `IngredientDataObject` `NodePrefabToSpawn` isn't used anymore
 
@@ -79,7 +79,7 @@ Back to [[AA - AI Info]]
 - [ ] Make manager singleton setup consistent (destroy duplicates in `Awake`). *Skipped for now: all managers live on the one Game Manager object*
 - [x] Add null checks to `SceneManagerWrapper` and `CameraManagerWrapper`. *Done Oct 2026*
 - [x] Remove leftover debug prints (`print("boop")` in `PlayerMenuInputs`, scene load logs in `SceneManagerObject`, etc.). *Done Oct 2026. Kept `AbilityInterpreter.AbilIntLog` and the Odin test buttons. The legacy scripts above were left alone since they're getting deleted*
-- [ ] A few classes still have lowercase names: `statBoostPackage` (in `ElementManagerSO.cs`) and `cameraScript` (legacy). Renaming `statBoostPackage` is safe for saved data since it's a plain serializable class
+- [ ] A few classes still have lowercase names: `cameraScript` (legacy). *`statBoostPackage` is gone since Oct 9, 2026 (replaced by `StatChangeEffect`)*
 - [x] **Remove WIS** *(damage overhaul)*. *Done Oct 2026: `_WIS` and `StatType.Wisdom` are gone, "Intelect" is now "Intellect", and every `DamageType` enum has explicit numbers so removing a value never shifts assets again. One trap in `New_Player_Movement_Scene` used Wisdom and was moved to Intellect*
 - [x] **Swap `DamageType.ElementType` to the final element list** *(damage overhaul)*. *Done Oct 2026: Normal (0), Fire, Water, Air, Earth, Ice, Lava, Lightning, Plant, Void, Light. Weapon, rune element and trap assets were shifted to keep their element. The two dev enemy prefabs had `None` in their element resistance list, which was cleared (it would have become a Normal resistance)*
 - [ ] There's a bug where the radial dial toggle becomes always on instead of always off until button is pressed. Something about long holding or switching windows with it up breaks the radial dial

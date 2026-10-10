@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.Serialization;
+using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "SO_NewElement", menuName = "ScriptableObjects/Items/Element", order = 0)]
 public class ElementItemSO : ItemSO
@@ -10,11 +11,10 @@ public class ElementItemSO : ItemSO
     public Sprite itemSprite;
 
     [Header("Stat Upgrade")]
-    [SerializeField] List<statBoostPackage> mypackage;
-
-    [Header("Status Effect Settings")]
-    [SerializeField] public UnityEvent statusEffectEnable;
-    [SerializeField] public UnityEvent statusEffectDisable;
+    [Tooltip("Stats this rune adds to the shade while it has power. Compiled into the shade's effect list when the rune field is saved")]
+    [FormerlySerializedAs("mypackage")] //this list used to be mypackage (old statBoostPackage entries), this keeps the values already set on element assets
+    [InfoBox("$_statBoostProblems", InfoMessageType.Warning, "HasStatBoostProblems")]
+    [SerializeField] List<StatChangeEffect> _StatBoosts = new List<StatChangeEffect>();
 
     [Header("Physical Settings")]
     public DamageType.ElementType element;
@@ -25,21 +25,33 @@ public class ElementItemSO : ItemSO
     public float connectionDistance = 150;
     public int powerNeeded = 1;
 
-    public void TriggerElementEffects()
+    //local variables
+    string _statBoostProblems; //filled by OnValidate, shown as a warning box in the inspector
+
+    private void OnValidate()
     {
-        //function that turns this element's effects on (statusEffectEnable is usually hooked up to ElementManagerSO.BoostStats)
-        //this used to write the rune object into the package, but this SO is shared by every rune of this type, so runes kept overwriting each other
-        statusEffectEnable?.Invoke();
+        //checks the stat boosts for missing stats or 0 amounts so broken runes show up in the inspector
+        _statBoostProblems = "";
+        if (_StatBoosts == null) return;
+
+        for (int i = 0; i < _StatBoosts.Count; i++)
+        {
+            if (_StatBoosts[i] == null) continue;
+            string problem = _StatBoosts[i].GetSetupProblem();
+            if (problem != "") _statBoostProblems += $"Stat boost {i}: {problem}\n";
+        }
     }
 
-    public void DeactivateElementEffects()
+    public List<StatChangeEffect> GetStatBoosts()
     {
-        //function that turns this element's effects off (statusEffectDisable is usually hooked up to ElementManagerSO.ReduceStats)
-        statusEffectDisable?.Invoke();
+        //returns this rune's stat boosts. Don't change them at runtime: this asset is shared by every rune of this type
+        if (_StatBoosts == null) _StatBoosts = new List<StatChangeEffect>();
+        return _StatBoosts;
     }
 
-    public List<statBoostPackage> GetStatBoostPackage()
+    bool HasStatBoostProblems()
     {
-        return mypackage;
+        //used by the InfoBox above to decide if the warning shows
+        return string.IsNullOrEmpty(_statBoostProblems) == false;
     }
 }
