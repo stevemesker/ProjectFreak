@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 48.09259863058364,
+        "dimension": 42.191066188457775,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/Rune Field Overhaul Plan.md",
+                "file": "UI/Rune Field/Rune Field 3D.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune Field Overhaul Plan"
+              "title": "Rune Field 3D"
             }
           }
         ]
@@ -27,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 35.050537985001625,
+        "dimension": 40.91946527551353,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -59,7 +59,7 @@
       {
         "id": "61347cd08ee47fa1",
         "type": "tabs",
-        "dimension": 16.856863384414737,
+        "dimension": 16.889468536028694,
         "children": [
           {
             "id": "8f34965267559858",
@@ -242,17 +242,20 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "zzz Extras/Attachments/Pasted image 20261010045505.png",
+    "Shade Info/Shade Stats.md",
+    "UI/Rune Field/Rune Field 3D.md",
+    "Architecture/AI Info/Shade Forms Plan.md",
+    "Architecture/AI Info/Rune Field Overhaul Plan.md",
     "Architecture/AI Info/Coding Concepts.md",
     "Architecture/UI/Confirm Popup.md",
     "Shade Info/Tethered.md",
-    "Architecture/AI Info/Rune Field Overhaul Plan.md",
     "UI/Rune Field/Rune Field.md",
     "UI/Rune Field/Element Rune.md",
     "UI/Rune Field/Core Node.md",
     "UI/Rune Field/Bridge.md",
     "UI/Rune Field/Ability Node.md",
     "Shade Info/Evolution.md",
-    "Architecture/AI Info/Shade Forms Plan.md",
     "Architecture/Shades/Tethered Shade.md",
     "Architecture/Shades/Shade (Runtime).md",
     "Shade Info/Attached.md",
@@ -262,13 +265,10 @@
     "Architecture/Shades/Shade Forms Plan.md",
     "Shade Info/Shade.md",
     "zzz Extras/Attachments/Pasted image 20261007135323.png",
-    "Shade Info/Shade Stats.md",
     "Shade Info/Evolution Type.md",
     "Combat/Fail State.md",
     "Character Traits/Character Stats.md",
     "Notes for the future.md",
-    "Shade Info/Shade Ability.md",
-    "Dungeons/Bosses.md",
     "Architecture/AI",
     "Architecture/Enemies",
     "Architecture/UI",
