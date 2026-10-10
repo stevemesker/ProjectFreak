@@ -42,6 +42,10 @@ OnInventoryChanged
 | `AddIngredient(item, amount)`           | Adds to the stack, capped at `ItemStackSizeMax`                         |
 | `RemoveIngredient(item, amount)`        | Removes from the stack, deleting it at 0                                |
 | `CheckIngredient(item)`                 | Returns how many the player has                                         |
-| `AddElement(item, amount)`              | Adds element runes, capped at `ItemStackSizeMax`                        |
+| `AddElement(item, amount)`              | Adds element runes, capped at `ItemStackSizeMax`. Fires `OnInventoryChanged` (since Oct 9, 2026) |
+| `RemoveElement(item, amount)`           | Takes element runes out. Refuses (warning, returns false) if there aren't enough. A rune at 0 leaves the list. Fires `OnInventoryChanged` |
+| `GetElementCount(item)`                 | How many of an element rune the player has (0 if none) |
+
+Rune field saves use `RemoveElement` / `AddElement` for the difference between the old and new saved field (see [[Rune Field System]], Draft and Saving).
 
 Most functions have Odin buttons for testing.

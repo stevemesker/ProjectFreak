@@ -54,6 +54,9 @@ public class TetheredShade : MonoBehaviour, IShadeForm
     [Tooltip("The evolution its art and tether distance come from (read only)")]
     [SerializeField, ReadOnly] ShadeEvolutionSO _EvolutionData;
 
+    [Tooltip("The slot's runtime entry on the Shade Manager: live stats (Health = current health) and abilities (read only). Shared with the manager, not a copy")]
+    [ShowInInspector, ReadOnly] ShadeRuntimeEntry _RuntimeEntry; //ShowInInspector shows it without Unity saving it, so it stays the manager's object
+
     [Tooltip("Where the shade is trying to sit: Resting (behind the player) or Casting (in front, toward the aim) (read only)")]
     [SerializeField, ReadOnly] ShadeFormType.Slot _CurrentSlot = ShadeFormType.Slot.Resting;
 
@@ -127,6 +130,11 @@ public class TetheredShade : MonoBehaviour, IShadeForm
     }
 
     #region Shade Form Interface
+    public ShadeRuntimeEntry GetRuntimeEntry()
+    {
+        return _RuntimeEntry;
+    }
+
     public void Setup(ShadeSO slot, GameObject summoner)
     {
         //function the Shade Manager calls right after spawning this shade
@@ -134,6 +142,7 @@ public class TetheredShade : MonoBehaviour, IShadeForm
 
         _SlotData = slot;
         _EvolutionData = slot != null ? slot._CurrentEvolution : null; //"? :" picks the left value if the check is true, the right one if not
+        _RuntimeEntry = ShadeManager._ShadeManager != null ? ShadeManager._ShadeManager.GetRuntimeEntry(slot) : null; //nothing reads it yet, a health component will if the tethered shade can be hit later
         if (_EvolutionData == null) Debug.LogWarning($"Warning! No evolution on the shade slot for {gameObject.name}, using the fallback tether distance and no art...", this);
 
         _summoner = summoner;
@@ -159,6 +168,16 @@ public class TetheredShade : MonoBehaviour, IShadeForm
     #endregion
 
     #region Art
+    public void RefreshForm()
+    {
+        //function the Shade Manager calls when this shade evolves while it's out: swaps in the new form's art and tether distance on the spot
+        //todo: evolve effect/VFX once shade art exists
+        if (_SlotData == null) return;
+        _EvolutionData = _SlotData._CurrentEvolution;
+        SpawnArt();
+        _tail.Setup(_summonerHover, GetTailConnectionPoint()); //the new art has its own tail connection point
+    }
+
     void SpawnArt()
     {
         //function that spawns the evolution's tethered art and hides the parts the tethered form doesn't use

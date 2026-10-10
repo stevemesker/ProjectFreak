@@ -9,7 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d0ce8cd35fcc0c4ea5b3b7ccba26863, type: 3}
-  m_Name: SO_ShadeManager
+  m_Script: {fileID: 11500000, guid: ce9049b034464d45971ac0f3a5621bf3, type: 3}
+  m_Name: SO_RuneField_Settings
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
+  _CoreReach: 150
+  _CoreMaxBridges: 0
+  _FieldRadius: 0
+  _NodeSnapRadius: 70
+  _ZoneWidth: 300
+  _RuneSize: 100

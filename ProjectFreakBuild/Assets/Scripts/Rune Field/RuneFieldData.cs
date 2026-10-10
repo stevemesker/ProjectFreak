@@ -24,6 +24,33 @@ public class RuneFieldData
     public int _NextRuneID = 0;
 
     #region Tools
+    public Dictionary<ElementItemSO, int> CountRunes()
+    {
+        //function that counts how many of each rune type are on this field. Used for the inventory difference when a field is saved
+        Dictionary<ElementItemSO, int> counts = new Dictionary<ElementItemSO, int>();
+        for (int i = 0; i < _Runes.Count; i++)
+        {
+            if (_Runes[i] == null || _Runes[i]._Element == null) continue;
+            ElementItemSO element = _Runes[i]._Element;
+
+            if (counts.ContainsKey(element)) counts[element]++;
+            else counts.Add(element, 1);
+        }
+        return counts;
+    }
+
+    public int CountRunes(ElementItemSO element)
+    {
+        //function that counts how many runes of one type are on this field
+        if (element == null) return 0;
+        int count = 0;
+        for (int i = 0; i < _Runes.Count; i++)
+        {
+            if (_Runes[i] != null && _Runes[i]._Element == element) count++;
+        }
+        return count;
+    }
+
     public RuneFieldData Clone()
     {
         //function that makes a full copy of this data
@@ -88,9 +115,59 @@ public class RuneBridgeEntry
 [System.Serializable]
 public class NodePlugEntry
 {
-    [Tooltip("Index of the ability node in the layout's node list")]
+    [Tooltip("Which ability node: its spot in the field scene's node list (RuneFieldManager.ListOfNodes)")]
     public int _NodeIndex;
 
     [Tooltip("ID of the rune plugged into it")]
     public int _RuneID;
+}
+
+//one ability node as the rules see it. The field scene builds one per node object, and each shade slot keeps a copy (a "snapshot") of every node it plugged into
+//so the rules can run without the field scene (like a level-up in a dungeon)
+[System.Serializable]
+public class AbilityNodeEntry
+{
+    [Tooltip("Which node this is: its spot in the field scene's node list (RuneFieldManager.ListOfNodes). Don't reorder that list once fields are saved")]
+    public int _NodeIndex;
+
+    [Tooltip("The node object's name, to tell nodes apart in the inspector")]
+    public string _Name = "New Node";
+
+    [Tooltip("Where the node sits on the field, in field units. The core is at (0, 0)")]
+    public Vector2 _Position;
+
+    [Tooltip("Node indexes that must be on before this one can turn on")]
+    public List<int> _Unlocks = new List<int>();
+
+    [Tooltip("Node indexes this one locks out while it's on")]
+    public List<int> _Lockouts = new List<int>();
+
+    [Tooltip("What this node does to the shade while it's on. A node with an Evolve effect is an evolution gate")]
+    [SerializeReference] //lets this one list hold different effect types (stat change, grant ability, evolve)
+    public List<RuneEffect> _Effects = new List<RuneEffect>();
+
+    public bool IsGate()
+    {
+        //a node is an evolution gate if it has an Evolve effect
+        return RuneEffect.HasEvolve(_Effects);
+    }
+
+    public ShadeEvolutionSO GetEvolution()
+    {
+        //the form this gate evolves the shade into, or null if it isn't a gate
+        return RuneEffect.GetEvolution(_Effects);
+    }
+
+    public AbilityNodeEntry Clone()
+    {
+        //function that makes a full copy, effects included, so a snapshot never shares anything with the scene's node
+        AbilityNodeEntry copy = new AbilityNodeEntry();
+        copy._NodeIndex = _NodeIndex;
+        copy._Name = _Name;
+        copy._Position = _Position;
+        if (_Unlocks != null) copy._Unlocks.AddRange(_Unlocks); //ints copy by value, so AddRange is enough
+        if (_Lockouts != null) copy._Lockouts.AddRange(_Lockouts);
+        copy._Effects = RuneEffect.CloneList(_Effects);
+        return copy;
+    }
 }

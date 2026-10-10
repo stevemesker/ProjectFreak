@@ -150,9 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5145255a98260ef44a2012709860bea8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  managerScriptableObject: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530,
-    type: 2}
-  _TetheredPrefab: {fileID: 7968207597447001717, guid: 290815cbd3064d0689808ff5dade4df2, type: 3}
+  _TetheredPrefab: {fileID: 7968207597447001717, guid: 290815cbd3064d0689808ff5dade4df2,
+    type: 3}
   _ReleasedPrefab: {fileID: 5828660845402572805, guid: 345767b28b2d2404190bd012b07a7e56,
     type: 3}
   _TetheredShade: {fileID: 0}
@@ -163,7 +162,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: aa6dc390da24f3146899eaae6d3ebbcd, type: 2}
   tamerSlotLevel: 1
   currentShadeSelected: 0
-  shadeAlterPackages: []
+  _RuneFieldSettings: {fileID: 11400000, guid: 16c64325abff4f25a8c43efc0086c261, type: 2}
   _switchTimeIn: 0.5
   _switchTimeOut: 0.3
   isBusy: 0

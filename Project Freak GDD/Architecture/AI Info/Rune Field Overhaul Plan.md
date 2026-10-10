@@ -5,6 +5,8 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 **Status (Oct 8, 2026):** architecture talked through and written up below (**Architecture**). The code written on Oct 8 (the `RuneField` logic layer and the 2D UI hooked up to it) is a **draft**: parts of it fit, parts move. Nothing else gets changed until this plan is signed off. [[Notes for the future]]
 
+**Oct 9, 2026:** build order steps 1 (effect types), 2 (slot data, evolution asset, settings asset), 3 (runtime entries, health, level-ups), 4 (save flow), 5 (inventory list counts), 6 (rune footprints) and 7 (zones and evolving) are built, see [[Rune Field System]], [[Shade (Runtime)]] and [[Shade Manager]]. Step 8 (3D prototype) is still to do [[Notes for the future]]
+
 ---
 ## Architecture
 *Agreed Oct 8, 2026.*
@@ -12,7 +14,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 ### Three layers of stats
 | Layer | What's in it | Lives on | Changes when |
 | :--- | :--- | :--- | :--- |
-| **Base** | The evolution's stats, set by hand per evolution (like rolling stats for a character). No multiplier math | `ShadeEvolutionSO` (`_coreStats`) | Never at runtime |
+| **Base** | The evolution's stats, set by hand per evolution (like rolling stats for a character). No multiplier math | `ShadeEvolutionSO` (`_BaseStats`) | Never at runtime |
 | **Hard stats** | Base + the slot's compiled rune field effects (runes, ability nodes) + core fragment | Worked out by the [[Shade Manager]] from the slot | The rune field is saved, the shade evolves, a shard is slotted, the game loads |
 | **Live stats** | Hard stats + timed effects (buffs, debuffs, potions) + equipment, and current health | The Shade Manager's runtime entry for that slot | Every moment in a dungeon |
 
@@ -73,7 +75,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 ### Zones and evolution
 - The field is **rings (radius zones) around the core**, the same for every shade. A Bound shade can only use zone 1
 - **Every ring is the same width** (one setting in the shared settings asset): zone 1's edge is 1 × width from the core, zone 2's is 2 × width, and so on. Outer rings have more room, so more branching options
-- **Snap tool:** an Odin button on the node with a "which zone edge" number. It keeps the node's angle around the core and moves it exactly onto that ring, so every gate on a ring is the same distance from the core (no gate can accidentally be closer and become a faster-evolving meta). Works in field units, so it's the same for 2D or 3D
+- **Snap tool:** an Odin button on the node with a "which zone edge" number (plus **Snap To Next Ring Out**, which picks the next ring past the node by itself). It keeps the node's angle around the core and moves it exactly onto that ring, so every gate on a ring is the same distance from the core (no gate can accidentally be closer and become a faster-evolving meta). Works in field units, so it's the same for 2D or 3D
 - **The scene view draws the zone rings** so the layout is visible while placing nodes. No tool for keeping normal nodes inside their zone, the art pass will make the borders obvious
 - **Setup check (once, like lockouts):** a gate that isn't sitting on a ring edge (nudged after snapping) logs a `Debug.LogError` naming it
 - **Evolution nodes are the gates** on the edge of each zone. **A shade evolves when the rune on a gate gets power**, either right when the field is saved, or later when a level-up gives the core enough power (see "Leveling up" above)
@@ -81,9 +83,9 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 - **Evolving can happen mid-fight** (a big moment): the shade's model, stats and max HP change on the spot
 - Evolving **freezes everything in the zone behind it**: runes, bridges and plugs can't be moved, removed, unplugged or torn. The next zone opens. The other gates on that ring lock for good (the branch is chosen). Devolving or switching branches is impossible
 - Frozen runes **can still take new bridges** if they have free slots, so the next zone can be powered through them (leaving free slots near the border is part of the planning)
-- "Frozen" isn't saved separately: a rune is frozen if it sits in a zone below the shade's rank
+- "Frozen" isn't saved separately: a rune is frozen if it sits in a zone the shade has evolved out of (zone number ≤ rank, so after the first evolve zone 1 is frozen)
 - **Frozen runes always get power first.** The power pass powers every frozen rune before anything else (still working outward from the core), then hands what's left to everything else by fewest bridges. Otherwise a new rune bridged close to the core could take power from the frozen chain and cut the gate off, which would be a devolve. It's safe because the frozen chain was fully powered when the shade evolved, its cost never changes, frozen bridges can't tear, and core power only goes up (death resets everything). *The only way around it is changing a rune's power cost in its asset after a shade has evolved, which is development only*
-- **Add-only option:** a setting that lets inner zones take new runes after evolving (never remove). Strict vs add-only gets decided in playtests [[undecided]]
+- ~~**Add-only option:** a setting that lets inner zones take new runes after evolving (never remove)~~ *Dropped Oct 9, 2026: strict only. Add it later if playtests ask for it*
 - Dying resets to Bound, so the zones lock again (the field is wiped anyway)
 
 ### What happens to the Oct 8 draft code
@@ -91,20 +93,20 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 | :--- | :--- |
 | `RuneField` (rules) | Keep. Add zones, frozen runes, rune footprints/overlap, the looser snap, and effect compiling |
 | `RuneFieldData` | Keep as the slot's "placements and connections" |
-| `RuneFieldLayoutSO` | Becomes the **shared settings asset** (core reach, zone width, rune size). The node list comes out: node info comes from the field scene's node objects, and the Shade Manager reads the compiled list |
+| `RuneFieldLayoutSO` | Becomes the **shared settings asset** (core reach, zone width, rune size). The node list comes out: node info comes from the field scene's node objects, and the Shade Manager reads the compiled list. *Done Oct 9 (step 2): `RuneFieldSettingsSO`, nodes are `AbilityNodeEntry` lists built from the scene or saved as snapshots* |
 | 2D view (`RuneFieldManager`, `ElementItem`, `NodeBridge`, `CoreNode`, `EvolutionNode`) | Keep as the view for now. `EvolutionNode` gets an effect list. Draft/save flow, popups, overlap feedback added |
-| `ShadeManager` slot rune fields (`_SlotRuneFields`, `ShadeSO._StartingRuneField`) | Move onto the slot asset itself |
+| `ShadeManager` slot rune fields (`_SlotRuneFields`, `ShadeSO._StartingRuneField`) | Move onto the slot asset itself. *Done Oct 9 (step 2): `ShadeSO._RuneField`* |
 | `ShadeManager` slot stats (`_SlotStats`) | Becomes the per-slot runtime entry (hard stats, live stats, current health) |
-| Old stat path (`ElementManagerSO`, `_AlteredStats`, `ChangeStat`, element `statusEffectEnable/Disable` events) | Remove |
+| Old stat path (`ElementManagerSO`, `_AlteredStats`, `ChangeStat`, element `statusEffectEnable/Disable` events) | Remove. *Done Oct 9 (steps 1 and 2)* |
 
 ### Build order
-1. **Effect types** (stat change, grant ability, evolve) and effect lists on nodes; rune stat boosts compiled to the same type
-2. **Slot data on `ShadeSO`**: saved field, compiled effect list, plugged node snapshots, evolution + gate, level, lives, fragment. Base stats from the evolution. **Evolution asset** filled out (stats, art, body, abilities). **Shared settings asset**
-3. **Shade Manager runtime entries**: hard stats, live stats, current health and the max HP rule, visible in the inspector. Level-up re-runs the saved field's rules
-4. **Save flow**: draft, save compiles and writes to the slot, inventory difference, runtime entry rebuilt, one draft with the save/discard popup, UI save button
-5. **Inventory list**: count, pending count, greyed at 0
-6. **Rune footprints**: overlap check, invalid feedback, looser snap
-7. **Zones**: rings (one zone width), snap tool and ring gizmos, locked zones, gates, evolve when the gate gets power (on save or level-up) with the confirm at save time, freezing, add-only toggle, plug-based two-way lockouts
+1. ~~**Effect types** (stat change, grant ability, evolve) and effect lists on nodes; rune stat boosts compiled to the same type~~ *Built Oct 9, 2026 (`RuneEffect` types, `RuneField.CompileEffects`), plus removing the old stat path*
+2. ~~**Slot data on `ShadeSO`**: saved field, compiled effect list, plugged node snapshots, evolution + gate, level, lives, fragment. Base stats from the evolution. **Evolution asset** filled out (stats, art, body, abilities). **Shared settings asset**~~ *Built Oct 9, 2026. Saving already writes the field, compiled list and snapshots onto the slot (the rest of the save flow is step 4). Capabilities ("can hold weapons") skipped until a system needs them* [[undecided]]
+3. ~~**Shade Manager runtime entries**: hard stats, live stats, current health and the max HP rule, visible in the inspector. Level-up re-runs the saved field's rules~~ *Built Oct 9, 2026. Every layer stays `ShadeStats` (one shared character sheet), live `_Health` is current health. Also added: the abilities list on the entry, shade forms pointing at their entry, and the `ShadeManagerWrapper`*
+4. ~~**Save flow**: draft, save compiles and writes to the slot, inventory difference, runtime entry rebuilt, one draft with the save/discard popup, UI save button~~ *Built Oct 9, 2026. Also added: taking runes off the field (drop on the inventory list), the reusable [[Confirm Popup]], and `RequestLeave` / Escape / `_OnLeave` for the timeline open/close. The buttons and popup still need adding in the scene*
+5. ~~**Inventory list**: count, pending count, greyed at 0~~ *Built Oct 9, 2026. Runes the draft took off with 0 in the inventory aren't listed until saved*
+6. ~~**Rune footprints**: overlap check, invalid feedback, looser snap~~ *Built Oct 9, 2026. The core has its own `_CoreSize`. A refused drop puts the rune back as if the drag never happened, including bridges torn during the drag*
+7. ~~**Zones**: rings (one zone width), snap tool and ring gizmos, locked zones, gates, evolve when the gate gets power (on save or level-up) with the confirm at save time, freezing, add-only toggle, plug-based two-way lockouts~~ *Built Oct 9, 2026. Also decided: `_ZoneCount` (4, one per rank) with the last ring as the field's edge and `_EdgeBleed` past it (replacing `_FieldRadius`); gates in the same zone lock each other automatically; a **Snap To Next Ring Out** button; one shared Bound form on the Shade Manager for Reset Slot; gizmos instead of field visuals for now. No add-only toggle*
 8. **3D prototype** (see The View)
 
 *Later:* timed effects and the game clock (with the buff/debuff system), core fragments, the disk save.
@@ -123,6 +125,8 @@ The field goes **2.5D**: the rules stay flat (runes sit on a plane, positions ar
 - The camera looks down at the plane (straight or a slight tilt) so distances and reach stay easy to read
 
 Not built yet [[Notes for the future]]. The dungeon map stays 2D for now.
+
+**Field feedback visuals** (how powered vs unpowered runes, bridges, nodes and "can't place" look) get planned once the field works and 2D vs 3D is decided. For now unpowered runes just fade to 45% (`ElementItem._UnpoweredAlpha`) [[Notes for the future]]
 
 ---
 ## Logic Layer
@@ -149,7 +153,7 @@ Not built yet [[Notes for the future]]. The dungeon map stays 2D for now.
 
 **Main functions:** `TryPlaceRune`, `MoveRune`, `RemoveRune`, `ConnectNearby`, `Connect`, `Disconnect`, `FindBridgeTargets`, `ClampToBridges`, `GetBridgeStretch`, `FindNodeAt`, `CanSnapToNode`, `TryPlugRune`, `UnplugRune`, `SetMaxPower`, `Recalculate`, `GetStatTotals`, plus getters for power, connections, plugs and node states.
 
-**Not covered yet:** what ability nodes actually do (abilities, stat upgrades, evolution), core fragments, Hazen's stats, the tests for `GetStatTotals` (needs an element asset with stat boosts) [[Notes for the future]]
+**Not covered yet:** applying what ability nodes do (granting abilities, evolving; their effect lists exist since Oct 9), core fragments, Hazen's stats [[Notes for the future]]. *The `GetStatTotals` tests were added Oct 9*
 
 ---
 ## Core Fragments
@@ -204,4 +208,5 @@ The power more than doubles each tier on purpose, so sacrificing one high-level 
 - **Large nodes that need large runes** (all runes are one size for now)
 - **Multiple drafts** (editing several shades before saving)
 - **Legendary potions** whose effects survive entering the hub
+- **XP rates per shade:** XP could decide how fast a shade levels, so some shades level faster but have weaker stats. Probably not, but worth keeping in mind [[undecided]]
 - *Dropped:* zones that spin to change the layout (adds frustration, not fun)

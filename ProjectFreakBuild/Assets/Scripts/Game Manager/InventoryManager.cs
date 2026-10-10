@@ -181,9 +181,11 @@ public class InventoryManager : MonoBehaviour
             {
                 Debug.LogWarning("Warning! Maximum item amount has been surpassed for item " + item.ItemName);
                 playerElements[item] = ItemStackSizeMax;
+                OnInventoryChanged?.Invoke();
                 return false;
             }
             playerElements[item] = current + amountAdded;
+            OnInventoryChanged?.Invoke();
             return true;
         }
         else
@@ -196,9 +198,37 @@ public class InventoryManager : MonoBehaviour
             if (amountAdded > ItemStackSizeMax) amountAdded = ItemStackSizeMax;
 
             playerElements.Add(item, amountAdded);
+            OnInventoryChanged?.Invoke();
             return true;
         }
 
+    }
+
+    [Button]
+    public bool RemoveElement(ElementItemSO item, int amountRemoved)
+    {
+        //function that takes element runes out of the inventory (like when a rune field is saved with new runes on it)
+        //returns false and changes nothing if there aren't enough. A rune that hits 0 is removed from the list
+        if (item == null || amountRemoved < 1) return false;
+        if (playerElements.TryGetValue(item, out int current) == false || current < amountRemoved)
+        {
+            Debug.LogWarning($"Warning! Tried to remove {amountRemoved} {item.ItemName} but the inventory only has {GetElementCount(item)}, nothing removed...");
+            return false;
+        }
+
+        if (current - amountRemoved <= 0) playerElements.Remove(item);
+        else playerElements[item] = current - amountRemoved;
+
+        OnInventoryChanged?.Invoke();
+        return true;
+    }
+
+    public int GetElementCount(ElementItemSO item)
+    {
+        //returns how many of this element rune the player has (0 if none)
+        if (item == null) return 0;
+        if (playerElements.TryGetValue(item, out int current)) return current;
+        return 0;
     }
     #endregion
 

@@ -49,7 +49,7 @@ The prefab was written by Claude without a `LineRenderer`, so `ShadeTail` adds o
 | `_WallPadding` | 0.2 | Gap kept from a wall |
 | `_HeightCatchUpTime` | 0.2 | Seconds to reach the player's floor height over a pit |
 
-**Runtime Data** (read only): `_SlotData`, `_EvolutionData`, `_CurrentSlot`, `_SlotPosition`.
+**Runtime Data** (read only): `_SlotData`, `_EvolutionData`, `_RuntimeEntry`, `_CurrentSlot`, `_SlotPosition`. `_RuntimeEntry` is its slot's runtime entry on the [[Shade Manager]] (the same object, not a copy, shown with Odin's `ShowInInspector`), grabbed in `Setup` and readable with `GetRuntimeEntry()`. Nothing reads it yet [[Notes for the future]]
 
 ### Where it goes (slots)
 - **Resting:** behind the player, the evolution's `_TetherDistance` away, opposite `CharacterMovement.GetLookDirection()`. The [[Player Movement|PlayerInputDriver]] already makes facing follow travel when not aiming and point at the aim while aiming, so this one rule covers "behind the direction of travel" and "opposite the aim target"

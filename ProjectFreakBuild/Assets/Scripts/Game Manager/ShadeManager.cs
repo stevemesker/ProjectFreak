@@ -11,8 +11,6 @@ public class ShadeManager : MonoBehaviour
     public static ShadeManager _ShadeManager;
 
     [Header("Pointer")]
-    [SerializeField]ElementManagerSO managerScriptableObject;
-
     [Tooltip("Prefab spawned when the shade is tethered (PFB_Shade_Tethered). Needs a TetheredShade on its root")]
     [SerializeField] GameObject _TetheredPrefab;
 
@@ -38,17 +36,19 @@ public class ShadeManager : MonoBehaviour
     public int tamerSlotLevel;
 
     [SerializeField] int currentShadeSelected;
-    [SerializeField] List<statBoostPackage> shadeAlterPackages;
+
+    [Tooltip("The form every shade starts in. A slot's Reset Slot button puts it back to this (in play mode), and dying will too later")]
+    [SerializeField] ShadeEvolutionSO _BoundEvolution;
 
     [Header("Rune Fields")]
-    [Tooltip("Core settings and ability nodes shared by every slot's rune field. Can be left empty for now: the rune field UI builds one from its scene nodes and hands it over when it opens")]
-    [SerializeField] RuneFieldLayoutSO _RuneFieldLayout;
+    [Tooltip("The rune field numbers every slot shares (SO_RuneField_Settings): core reach, snap radius, zone width, rune size. If empty, the defaults are used and a warning is logged")]
+    [SerializeField] RuneFieldSettingsSO _RuneFieldSettings;
 
-    [Tooltip("Each slot's saved rune field (read only). Copied from the slot assets' Starting Rune Field when the game starts, so playing never changes the assets")]
-    [SerializeField, ReadOnly] List<RuneFieldData> _SlotRuneFields = new List<RuneFieldData>();
+    [Tooltip("Each slot's runtime entry (read only): hard stats, live stats (live Health = current health) and abilities. Summoned shades point at these, so health carries over when a shade is put away")]
+    [ShowInInspector, ReadOnly] //ShowInInspector shows it without Unity saving it. It's runtime only, and saving it could make Unity swap in copies the shades don't point at
+    List<ShadeRuntimeEntry> _RuntimeEntries = new List<ShadeRuntimeEntry>();
 
-    [Tooltip("Each slot's stats with its saved runes applied (read only). Worked out from the base stats every time a field is saved")]
-    [SerializeField, ReadOnly] List<ShadeStats> _SlotStats = new List<ShadeStats>();
+    public event System.Action<int> OnShadeEvolved; //fires with the slot index after a shade evolves (from a save or a level-up). The rune field listens to reload
 
     [Header("Local Variables")]
     [SerializeField] float _switchTimeIn = .5f;
@@ -61,12 +61,13 @@ public class ShadeManager : MonoBehaviour
         //sets up the singleton so other scripts can reach this manager with ShadeManager._ShadeManager
         if (_ShadeManager == null) _ShadeManager = this;
 
-        InitializeRuneFields();
-    }
+        if (_RuneFieldSettings == null)
+        {
+            Debug.LogWarning($"Warning! No Rune Field Settings assigned on {gameObject.name}, using the default settings...", this);
+            _RuneFieldSettings = ScriptableObject.CreateInstance<RuneFieldSettingsSO>(); //a temporary asset with the default values, not saved anywhere
+        }
 
-    private void OnEnable()
-    {
-        managerScriptableObject.manager = this;
+        InitializeRuntimeEntries();
     }
 
     #region Summoning
@@ -290,128 +291,257 @@ public class ShadeManager : MonoBehaviour
     }
     #endregion
 
-    #region stat change
-    public void ReceiveStatBoostPackage(List<statBoostPackage> input)
-    {
-        for (int i = 0; i < input.Count; i++)
-        {
-            ChangeStat(input[i], 1);
-        }
-    }
-
-    public void RemoveStatBoostPackage(List<statBoostPackage> input)
-    {
-        for (int i = 0; i < input.Count; i++)
-        {
-            ChangeStat(input[i], -1);
-        }
-    }
-
-    public void ChangeStat(statBoostPackage input, int multiplier)
-    {
-        switch (input._statToChange)
-        {
-            case (DamageType.StatType.Health):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._HP += input._ChangeAmount * multiplier;
-                _ShadeSlots[currentShadeSelected]._AlteredStats._Health += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Strength):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._STR += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Defense):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._DEF += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Agility):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._AGI += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Intellect):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._INT += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Spirit):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._SPR += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Discipline):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._DIS += input._ChangeAmount * multiplier;
-                break;
-            case (DamageType.StatType.Wild):
-                _ShadeSlots[currentShadeSelected]._AlteredStats._WILD += input._ChangeAmount * multiplier;
-                break;
-            default:
-                Debug.LogWarning("Warning! Stat upgrade package is trying to access a stat that is unaccounted for: " + input._statToChange);
-                break;
-        }
-    }
-
-    #endregion
-
     #region Rune Fields
-    void InitializeRuneFields()
-    {
-        //copies every slot's starting rune field and works out its stats, so nothing at runtime ever changes the slot assets
-        _SlotRuneFields.Clear();
-        _SlotStats.Clear();
-
-        for (int i = 0; i < _ShadeSlots.Count; i++)
-        {
-            ShadeSO slot = _ShadeSlots[i];
-            RuneFieldData startingField = (slot != null && slot._StartingRuneField != null) ? slot._StartingRuneField.Clone() : new RuneFieldData();
-            _SlotRuneFields.Add(startingField);
-            _SlotStats.Add(null);
-            RecalculateSlotStats(i);
-        }
-    }
-
     public bool IsValidSlot(int slotIndex)
     {
         //checks a slot index points at a real slot
-        return slotIndex >= 0 && slotIndex < _ShadeSlots.Count && _ShadeSlots[slotIndex] != null && slotIndex < _SlotRuneFields.Count;
+        return slotIndex >= 0 && slotIndex < _ShadeSlots.Count && _ShadeSlots[slotIndex] != null;
     }
 
     public RuneFieldData GetSavedRuneField(int slotIndex)
     {
         //returns a copy of a slot's saved rune field for the rune field UI to edit. Editing the copy doesn't change the saved one
         if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't load its rune field", this); return new RuneFieldData(); }
-        return _SlotRuneFields[slotIndex].Clone();
+        return _ShadeSlots[slotIndex].GetRuneFieldCopy();
     }
 
-    public void SaveRuneField(int slotIndex, RuneFieldData field)
+    public bool SaveRuneField(int slotIndex, RuneField field)
     {
-        //function the rune field UI calls when the player saves. Stores a copy and works the slot's stats out again
-        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't save its rune field", this); return; }
-        if (field == null) return;
+        //function the rune field UI calls when the player saves. Returns false if nothing was saved
+        //1. the inventory changes by the difference between the old and new saved field (added runes come out, removed runes go back)
+        //2. the field, everything it does (compiled effects) and the nodes it plugged into (snapshots) are written onto the slot
+        //3. if a gate in the open zone has power, the shade evolves
+        //4. the slot's runtime entry is rebuilt
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't save its rune field", this); return false; }
+        if (field == null) return false;
+        ShadeSO slot = _ShadeSlots[slotIndex];
+        if (field.GetRank() != slot.GetRank())
+        {
+            //the shade evolved while this draft was open, so the draft still thinks the old zone is open. Saving it could move frozen runes
+            Debug.LogWarning($"Warning! {slot.name} evolved while its rune field was open, this draft is out of date. Nothing was saved...", this);
+            return false;
+        }
 
-        _SlotRuneFields[slotIndex] = field.Clone();
-        RecalculateSlotStats(slotIndex);
+        Dictionary<ElementItemSO, int> oldCounts = slot._RuneField != null ? slot._RuneField.CountRunes() : new Dictionary<ElementItemSO, int>();
+        Dictionary<ElementItemSO, int> newCounts = field.GetData().CountRunes();
+        if (CanAffordRuneChanges(oldCounts, newCounts) == false) return false;
+        ApplyRuneChanges(oldCounts, newCounts);
+
+        field.SetMaxPower(GetCorePower(slotIndex)); //in case the shade leveled while the field was open, so a stale draft can't save the wrong power
+        slot.SaveRuneField(field.GetData(), field.CompileEffects(), field.GetPluggedNodeSnapshots());
+        bool evolved = TryEvolve(slotIndex);
+        RebuildSlot(slotIndex);
+        if (evolved) FinishEvolving(slotIndex);
+        return true;
+    }
+
+    bool CanAffordRuneChanges(Dictionary<ElementItemSO, int> oldCounts, Dictionary<ElementItemSO, int> newCounts)
+    {
+        //checks the inventory has enough of every rune the new field adds. Checked before anything changes, so a failed save changes nothing
+        //the rune field UI already refuses runes the player doesn't have, so this only fails on bad data
+        if (InventoryManager._PlayerInventory == null) return true; //no inventory (testing a scene on its own), ApplyRuneChanges warns about it
+
+        foreach (KeyValuePair<ElementItemSO, int> entry in newCounts)
+        {
+            int added = entry.Value - GetCount(oldCounts, entry.Key);
+            if (added <= 0) continue;
+
+            if (InventoryManager._PlayerInventory.GetElementCount(entry.Key) < added)
+            {
+                Debug.LogError($"Error! Can't save the rune field: it adds {added} {entry.Key.ItemName} but the inventory only has {InventoryManager._PlayerInventory.GetElementCount(entry.Key)}. Nothing was saved", this);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void ApplyRuneChanges(Dictionary<ElementItemSO, int> oldCounts, Dictionary<ElementItemSO, int> newCounts)
+    {
+        //takes added runes out of the inventory and puts removed runes back in
+        if (InventoryManager._PlayerInventory == null) { Debug.LogWarning($"Warning! No Inventory Manager found, saving the rune field without changing the inventory...", this); return; }
+
+        //runes on the new field: take out whatever was added
+        foreach (KeyValuePair<ElementItemSO, int> entry in newCounts)
+        {
+            int added = entry.Value - GetCount(oldCounts, entry.Key);
+            if (added > 0) InventoryManager._PlayerInventory.RemoveElement(entry.Key, added);
+        }
+
+        //runes on the old field: give back whatever was removed
+        foreach (KeyValuePair<ElementItemSO, int> entry in oldCounts)
+        {
+            int removed = entry.Value - GetCount(newCounts, entry.Key);
+            if (removed > 0) InventoryManager._PlayerInventory.AddElement(entry.Key, removed); //AddElement warns if this goes past the stack cap
+        }
+    }
+
+    int GetCount(Dictionary<ElementItemSO, int> counts, ElementItemSO element)
+    {
+        //how many of a rune a count has, 0 if it's not in there
+        if (counts.TryGetValue(element, out int count)) return count;
+        return 0;
+    }
+
+    public int GetSavedRuneCount(int slotIndex, ElementItemSO element)
+    {
+        //how many of a rune a slot's saved field has. The rune field UI uses this to work out how many a draft is using on top
+        if (IsValidSlot(slotIndex) == false || _ShadeSlots[slotIndex]._RuneField == null) return 0;
+        return _ShadeSlots[slotIndex]._RuneField.CountRunes(element);
+    }
+
+    void RerunSavedField(int slotIndex)
+    {
+        //runs the rules again on a slot's saved field with its current core power, using its node snapshots (no field scene needed)
+        //runes that were waiting for power light up, nodes they reach switch on, and the slot's saved field and compiled list are replaced
+        //frozen runes get their power first (see RuneField.CalculatePower)
+        ShadeSO slot = _ShadeSlots[slotIndex];
+        RuneField field = BuildSavedField(slot);
+        slot.SaveRuneField(field.GetData(), field.CompileEffects(), field.GetPluggedNodeSnapshots());
+    }
+
+    RuneField BuildSavedField(ShadeSO slot)
+    {
+        //makes the rules for a slot's saved field (a copy) from its node snapshots, with its current core power and rank. No field scene needed
+        return new RuneField(slot.GetRuneFieldCopy(), _RuneFieldSettings, slot._PluggedNodes, slot.GetCorePower(), slot.GetRank());
+    }
+
+    public int GetRank(int slotIndex)
+    {
+        //how many times a slot's shade has evolved (Bound = 0)
+        if (IsValidSlot(slotIndex) == false) return 0;
+        return _ShadeSlots[slotIndex].GetRank();
     }
 
     public int GetCorePower(int slotIndex)
     {
-        //how much power a slot's core has. todo: + the core fragment's power once fragments exist (see Rune Field Overhaul Plan)
+        //how much power a slot's core has: its level plus its fragment
         if (IsValidSlot(slotIndex) == false) return 0;
-        return _ShadeSlots[slotIndex]._shadeStats._LVL;
+        return _ShadeSlots[slotIndex].GetCorePower();
     }
 
-    public RuneFieldLayoutSO GetRuneFieldLayout()
+    public RuneFieldSettingsSO GetRuneFieldSettings()
     {
-        return _RuneFieldLayout;
+        return _RuneFieldSettings;
     }
 
-    public void SetRuneFieldLayout(RuneFieldLayoutSO layout)
+    public ShadeEvolutionSO GetBoundEvolution()
     {
-        //function the rune field UI uses to hand over the layout it built from its scene, when none is assigned here
-        //every slot's stats get worked out again now that the ability nodes are known
-        _RuneFieldLayout = layout;
-        for (int i = 0; i < _SlotRuneFields.Count; i++)
+        //the form every shade starts in (null if it isn't set)
+        return _BoundEvolution;
+    }
+    #endregion
+
+    #region Evolving
+    bool TryEvolve(int slotIndex)
+    {
+        //function that evolves a slot's shade if a gate in its open zone has power (its saved field, so this works anywhere, even mid-dungeon)
+        //the gate is recorded (rank goes up) and the slot swaps to the gate's form, then the field runs again so the zone it left counts as frozen
+        //returns true if it evolved. The caller rebuilds the runtime entry and then calls FinishEvolving
+        ShadeSO slot = _ShadeSlots[slotIndex];
+        RuneField field = BuildSavedField(slot);
+
+        int gate = field.GetEvolvingGate();
+        if (gate == -1) return false;
+
+        ShadeEvolutionSO evolution = field.GetNode(gate).GetEvolution();
+        if (evolution == null) { Debug.LogError($"Error! {slot.name}'s gate {field.GetNode(gate)._Name} has power but no evolution set on its Evolve effect, it can't evolve", this); return false; }
+
+        slot.Evolve(gate, evolution);
+        RerunSavedField(slotIndex);
+        return true;
+    }
+
+    void FinishEvolving(int slotIndex)
+    {
+        //after an evolve and the rebuild: swaps the art on the shade if it's out right now, then tells listeners (the rune field reloads)
+        if (slotIndex == currentShadeSelected)
         {
-            RecalculateSlotStats(i);
+            if (_TetheredShade != null) _TetheredShade.RefreshForm();
+            if (_ReleasedShade != null) _ReleasedShade.RefreshForm();
         }
+        OnShadeEvolved?.Invoke(slotIndex);
+    }
+    #endregion
+
+    #region Runtime Entries
+    void InitializeRuntimeEntries()
+    {
+        //builds every slot's runtime entry when the game starts. Shades start the session at full health
+        _RuntimeEntries.Clear();
+        for (int i = 0; i < _ShadeSlots.Count; i++)
+        {
+            _RuntimeEntries.Add(null);
+            RebuildSlot(i);
+        }
+    }
+
+    public void RebuildSlot(int slotIndex)
+    {
+        //works a slot's runtime entry out again from its slot asset. Call this whenever something deliberate changes the slot
+        //(saving its field, leveling, evolving, and later slotting a shard). Also on the Shade Manager Wrapper for events
+        //the same entry object is kept and filled in again, so summoned shades pointing at it stay pointed at it
+        if (IsValidSlot(slotIndex) == false || slotIndex >= _RuntimeEntries.Count) return;
+        ShadeSO slot = _ShadeSlots[slotIndex];
+
+        ShadeRuntimeEntry entry = _RuntimeEntries[slotIndex];
+        bool firstBuild = entry == null;
+        if (firstBuild)
+        {
+            entry = new ShadeRuntimeEntry();
+            _RuntimeEntries[slotIndex] = entry;
+        }
+
+        int oldMaxHealth = entry.GetMaxHealth();
+        int oldHealth = entry.GetCurrentHealth();
+
+        entry._SlotName = slot.name;
+        entry._HardStats = BuildHardStats(slot);
+        entry._Abilities = BuildAbilityList(slot);
+
+        //max HP rule: when max HP changes, current HP moves by the same amount (and can't go above the new max or below 0)
+        int newMaxHealth = entry._HardStats._HP;
+        int newHealth;
+        if (firstBuild) newHealth = newMaxHealth; //first build of the session: full health
+        else if (oldHealth <= 0) newHealth = 0; //an already fallen shade stays down, it doesn't get revived by a stat change
+        else newHealth = oldHealth + (newMaxHealth - oldMaxHealth);
+        newHealth = Mathf.Clamp(newHealth, 0, Mathf.Max(0, newMaxHealth));
+
+        if (firstBuild == false && oldHealth > 0 && newHealth <= 0)
+        {
+            //todo: the shade falls here (Fail State work). Even a shade that's put away can fall this way
+            Debug.LogWarning($"Warning! {slot.name}'s max HP dropped low enough to take its health to 0. Falling isn't built yet, it just stays at 0...", this);
+        }
+
+        RebuildLiveStats(entry, newHealth);
+    }
+
+    void RebuildLiveStats(ShadeRuntimeEntry entry, int currentHealth)
+    {
+        //live stats = hard stats with the current health. todo: timed effects (buffs, debuffs, potions) and equipment get added here later
+        entry._LiveStats = CopyStats(entry._HardStats);
+        entry._LiveStats._Health = currentHealth;
+    }
+
+    public ShadeRuntimeEntry GetRuntimeEntry(int slotIndex)
+    {
+        //returns a slot's runtime entry, or null if the slot doesn't exist
+        if (IsValidSlot(slotIndex) == false || slotIndex >= _RuntimeEntries.Count) return null;
+        return _RuntimeEntries[slotIndex];
+    }
+
+    public ShadeRuntimeEntry GetRuntimeEntry(ShadeSO slot)
+    {
+        //same as above, found by the slot asset (what the summoned shades are handed)
+        if (slot == null) return null;
+        return GetRuntimeEntry(_ShadeSlots.IndexOf(slot));
     }
 
     public ShadeStats GetSlotStats(int slotIndex)
     {
-        //returns a slot's stats with its saved runes applied
-        if (IsValidSlot(slotIndex) == false || slotIndex >= _SlotStats.Count) return null;
-        return _SlotStats[slotIndex];
+        //returns a slot's live stats (its Health is its current health)
+        ShadeRuntimeEntry entry = GetRuntimeEntry(slotIndex);
+        if (entry == null) return null;
+        return entry._LiveStats;
     }
 
     public ShadeStats GetCurrentShadeStats()
@@ -420,37 +550,128 @@ public class ShadeManager : MonoBehaviour
     }
     #endregion
 
-    #region Stat Calculation
-    void RecalculateSlotStats(int slotIndex)
+    #region Health
+    public void Heal(int slotIndex, int amount)
     {
-        //works a slot's stats out from scratch: its base stats plus every powered rune in its saved field
+        //heals a slot's shade, never above its max HP. A fallen shade (0 health) isn't healed back up, that's for the Fail State work
+        ShadeRuntimeEntry entry = GetRuntimeEntry(slotIndex);
+        if (entry == null || amount <= 0) return;
+        if (entry.GetCurrentHealth() <= 0) return;
+
+        entry._LiveStats._Health = Mathf.Min(entry.GetCurrentHealth() + amount, entry.GetMaxHealth());
+    }
+
+    public void RefillHealth(int slotIndex)
+    {
+        //puts a slot's shade back to full health (entering the hub, the rest floor refill)
+        //todo: nothing calls this on entering the hub yet, there's no "entered the hub" moment in the code
+        ShadeRuntimeEntry entry = GetRuntimeEntry(slotIndex);
+        if (entry == null) return;
+        entry._LiveStats._Health = entry.GetMaxHealth();
+    }
+
+    public void RefillAllHealth()
+    {
+        //puts every slot's shade back to full health
+        for (int i = 0; i < _RuntimeEntries.Count; i++)
+        {
+            RefillHealth(i);
+        }
+    }
+    #endregion
+
+    #region Leveling
+    public void SetSlotLevel(int slotIndex, int level)
+    {
+        //changes a slot's level (minimum 1), runs its saved rune field again with the new core power, then rebuilds its runtime entry
+        //if the extra power reaches a plugged gate, the shade evolves right here (even mid-fight)
+        //works anywhere, including mid-dungeon, since it doesn't need the rune field scene
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't change its level", this); return; }
+
+        _ShadeSlots[slotIndex].SetLevel(level);
+        RerunSavedField(slotIndex);
+        bool evolved = TryEvolve(slotIndex);
+        RebuildSlot(slotIndex);
+        if (evolved) FinishEvolving(slotIndex);
+    }
+
+    public void AddLevels(int slotIndex, int amount)
+    {
+        //adds (or takes away, if negative) levels from a slot
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't change its level", this); return; }
+        SetSlotLevel(slotIndex, _ShadeSlots[slotIndex]._Level + amount);
+    }
+    #endregion
+
+    #region Stat Calculation
+    ShadeStats BuildHardStats(ShadeSO slot)
+    {
+        //works a slot's hard stats out from scratch: its evolution's base stats plus every stat change in its saved (compiled) effect list
         //nothing is added or taken away bit by bit, so the stats can't drift out of sync with the runes
-        if (IsValidSlot(slotIndex) == false) return;
+        if (slot._CurrentEvolution == null) Debug.LogWarning($"Warning! {slot.name} has no evolution, its base stats are all 0...", this);
+        ShadeStats result = CopyStats(slot._CurrentEvolution != null ? slot._CurrentEvolution._BaseStats : null);
 
-        ShadeStats baseStats = _ShadeSlots[slotIndex]._shadeStats;
-        ShadeStats result = CopyStats(baseStats);
+        //the personal parts come from the slot, not the evolution
+        result._LVL = slot._Level;
+        result._XP = slot._XP;
+        result._LIFE = slot._Lives;
 
-        //a throwaway RuneField over a copy of the saved data, only used for its power and stat math
-        RuneField field = new RuneField(_SlotRuneFields[slotIndex].Clone(), _RuneFieldLayout, GetCorePower(slotIndex));
-        Dictionary<DamageType.StatType, int> totals = field.GetStatTotals();
+        Dictionary<DamageType.StatType, int> totals = RuneEffect.AddUpStats(slot._CompiledEffects);
 
-        //todo: evolution rank multiplier and Hazen's share of the runes (see Element Rune and Evolution in the GDD)
+        //todo: Hazen's share of the runes (see Element Rune in the GDD)
         foreach (KeyValuePair<DamageType.StatType, int> entry in totals)
         {
             AddToStat(result, entry.Key, entry.Value);
         }
 
-        _SlotStats[slotIndex] = result;
+        result._Health = result._HP; //in hard stats Health just matches max. The shade's current health lives in its live stats
+        return result;
+    }
+
+    List<AbilitySO> BuildAbilityList(ShadeSO slot)
+    {
+        //every ability the shade has: its evolution's natural abilities and ultimate, plus every Grant Ability effect in its saved compiled list
+        //repeats are only listed once. Nothing reads this yet, shades use their abilities later
+        List<AbilitySO> abilities = new List<AbilitySO>();
+
+        ShadeEvolutionSO evolution = slot._CurrentEvolution;
+        if (evolution != null)
+        {
+            if (evolution._NaturalAbilities != null)
+            {
+                for (int i = 0; i < evolution._NaturalAbilities.Count; i++)
+                {
+                    AddAbility(abilities, evolution._NaturalAbilities[i]);
+                }
+            }
+            AddAbility(abilities, evolution._UltimateAbility);
+        }
+
+        if (slot._CompiledEffects != null)
+        {
+            for (int i = 0; i < slot._CompiledEffects.Count; i++)
+            {
+                GrantAbilityEffect grant = slot._CompiledEffects[i] as GrantAbilityEffect;
+                if (grant != null) AddAbility(abilities, grant._Ability);
+            }
+        }
+        return abilities;
+    }
+
+    void AddAbility(List<AbilitySO> abilities, AbilitySO ability)
+    {
+        //adds an ability to a list if it's set and not already in there
+        if (ability == null || abilities.Contains(ability)) return;
+        abilities.Add(ability);
     }
 
     ShadeStats CopyStats(ShadeStats source)
     {
-        //makes a full copy of a set of stats, so changing the copy never touches the slot asset
+        //makes a full copy of a set of stats, so changing the copy never touches the original
         //JsonUtility turns the stats into text and back into a brand new object. It works because ShadeStats is plain data
         if (source == null) return new ShadeStats();
         return JsonUtility.FromJson<ShadeStats>(JsonUtility.ToJson(source));
     }
-
     void AddToStat(ShadeStats target, DamageType.StatType stat, int amount)
     {
         //adds a rune bonus to one stat. Negative runes can't push a stat below 1 (unless it already started below 1)
@@ -506,4 +727,62 @@ public class ShadeManager : MonoBehaviour
         return currentShadeSelected;
     }
     #endregion
+
+    #region Test Tools
+    [FoldoutGroup("Test Tools"), Button("Level Up Current Slot")]
+    void TestLevelUp()
+    {
+        //editor button (play mode only): +1 level on the selected slot, re-running its saved rune field
+        if (Application.isPlaying == false) { Debug.LogWarning("Warning! Level Up only works in play mode, the runtime entries don't exist yet..."); return; }
+        AddLevels(currentShadeSelected, 1);
+    }
+
+    [FoldoutGroup("Test Tools"), Button("Hurt Current Slot")]
+    void TestHurt(int amount = 5)
+    {
+        //editor button (play mode only): takes health off the selected slot's shade, for testing healing and the max HP rule
+        if (Application.isPlaying == false) return;
+        ShadeRuntimeEntry entry = GetRuntimeEntry(currentShadeSelected);
+        if (entry == null) return;
+        entry._LiveStats._Health = Mathf.Max(0, entry.GetCurrentHealth() - amount);
+    }
+
+    [FoldoutGroup("Test Tools"), Button("Refill All Health")]
+    void TestRefillAll()
+    {
+        //editor button (play mode only)
+        if (Application.isPlaying == false) return;
+        RefillAllHealth();
+    }
+    #endregion
+}
+
+//one shade slot's runtime side: what the shade is like right now. Built from its slot asset by ShadeManager.RebuildSlot
+//summoned shades point at their slot's entry instead of copying it, so putting a shade away or switching loses nothing
+[System.Serializable]
+public class ShadeRuntimeEntry
+{
+    [Tooltip("The slot asset this entry was built from")]
+    public string _SlotName;
+
+    [Tooltip("Base stats + everything the saved rune field does + the slot's level, XP and lives. Only changes at deliberate moments (saving the field, leveling, evolving)")]
+    public ShadeStats _HardStats;
+
+    [Tooltip("Hard stats + timed effects and equipment (later). Its Health is the shade's current health. This is what combat should read")]
+    public ShadeStats _LiveStats;
+
+    [Tooltip("Every ability the shade has: natural, ultimate and granted by the rune field. Not used yet")]
+    public List<AbilitySO> _Abilities = new List<AbilitySO>();
+
+    public int GetCurrentHealth()
+    {
+        if (_LiveStats == null) return 0;
+        return _LiveStats._Health;
+    }
+
+    public int GetMaxHealth()
+    {
+        if (_HardStats == null) return 0;
+        return _HardStats._HP;
+    }
 }
