@@ -107,7 +107,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 5. ~~**Inventory list**: count, pending count, greyed at 0~~ *Built Oct 9, 2026. Runes the draft took off with 0 in the inventory aren't listed until saved*
 6. ~~**Rune footprints**: overlap check, invalid feedback, looser snap~~ *Built Oct 9, 2026. The core has its own `_CoreSize`. A refused drop puts the rune back as if the drag never happened, including bridges torn during the drag*
 7. ~~**Zones**: rings (one zone width), snap tool and ring gizmos, locked zones, gates, evolve when the gate gets power (on save or level-up) with the confirm at save time, freezing, add-only toggle, plug-based two-way lockouts~~ *Built Oct 9, 2026. Also decided: `_ZoneCount` (4, one per rank) with the last ring as the field's edge and `_EdgeBleed` past it (replacing `_FieldRadius`); gates in the same zone lock each other automatically; a **Snap To Next Ring Out** button; one shared Bound form on the Shade Manager for Reset Slot; gizmos instead of field visuals for now. No add-only toggle*
-8. **3D prototype** (see The View)
+8. **3D prototype** (see The View). *Planned Oct 10, 2026 in [[Rune Field 3D Plan]], on its own branch*
 
 *Later:* timed effects and the game clock (with the buff/debuff system), core fragments, the disk save.
 

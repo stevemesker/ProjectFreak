@@ -41,6 +41,10 @@ public class RuneFieldSettingsSO : ScriptableObject
     [Tooltip("How wide a rune's footprint is, in field units. Runes can't overlap each other, the core or a node (nodes are rune sized, since each holds one rune)")]
     [Min(1f)] public float _RuneSize = 100f;
 
+    [Header("3D View")]
+    [Tooltip("How many field units fit in one meter of the 3D scene. At 100, a rune (100 field units) is 1 m wide and the core (200) is 2 m")]
+    [Min(0.01f)] public float _FieldUnitsPerMeter = 100f;
+
     #region Zone Math
     public float GetRingRadius(int ring)
     {
@@ -81,6 +85,27 @@ public class RuneFieldSettingsSO : ScriptableObject
         //the closest ring further out than this spot. A spot already sitting on a ring gets the one after it
         //the tolerance is added first, so "on ring 1" (even a hair inside it) rounds up to ring 2
         return Mathf.CeilToInt((distance + RingTolerance) / _ZoneWidth);
+    }
+
+    public int GetPreviousRingIn(float distance)
+    {
+        //the closest ring further in than this spot. A spot already sitting on a ring gets the one before it. 0 means there's no ring inside it
+        //the tolerance is taken off first, so "on ring 2" (even a hair outside it) rounds down to ring 1
+        return Mathf.FloorToInt((distance - RingTolerance) / _ZoneWidth);
+    }
+    #endregion
+
+    #region Units
+    public float ToMeters(float fieldUnits)
+    {
+        //turns a length in field units (what the rules use) into meters (what the 3D scene uses)
+        return fieldUnits / _FieldUnitsPerMeter;
+    }
+
+    public float ToFieldUnits(float meters)
+    {
+        //turns a length in meters back into field units
+        return meters * _FieldUnitsPerMeter;
     }
     #endregion
 

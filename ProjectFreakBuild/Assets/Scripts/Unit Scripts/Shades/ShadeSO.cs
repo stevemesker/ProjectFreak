@@ -96,7 +96,7 @@ public class ShadeSO : ScriptableObject
     }
 
     [Button("Reset Slot (playtests)"), GUIColor(1f, 0.6f, 0.6f)]
-    void ResetSlot()
+    public void ResetSlot() //public so the 3D test kit's Reset Slot button can call it
     {
         //editor button that starts this shade over: empty field, level 1, no fragment, no gates, back in the Bound form
         //the Bound form is set on the Shade Manager, so it only comes back in play mode. Outside play mode the form is left as it is

@@ -41,6 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5801632409695565735}
+  - component: {fileID: 2915158360563515997}
   m_Layer: 0
   m_Name: PFB_Bridge_3D
   m_TagString: Untagged
@@ -64,6 +65,28 @@ Transform:
   - {fileID: 3667813913934121382}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2915158360563515997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331097765669872734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd933b5403894300a77252e883da9db4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _HeightOffset: 0
+  _ColorProperty: _BaseColor
+  _TearColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  _PullTearRequiredTime: 1.5
+  _MaxPullStrength: 200
+  _PullTickTime: 0.1
+  _PullDampening: 150
+  _Ends: {x: 0, y: 0}
+  _Tearing: 0
+  _PullCurrentTime: 0
 --- !u!1001 &1553581519313620043
 PrefabInstance:
   m_ObjectHideFlags: 0

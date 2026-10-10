@@ -9,7 +9,7 @@ using Sirenix.OdinInspector;
 
 //the 2D rune field UI. It's only a view now: every rule lives in RuneField (Scripts/Rune Field), this script draws the field
 //and passes the player's drags to it. It kept its old name and fields so the scene and prefabs didn't need setting up again
-public class RuneFieldManager : MonoBehaviour
+public class RuneFieldManager : MonoBehaviour, IRuneFieldView //IRuneFieldView: the inventory list and slot buttons work with this or the 3D field
 {
     [Header("Settings")]
     [Tooltip("How far past its reach a rune has to be pulled before its bridges start tearing, in field units")]

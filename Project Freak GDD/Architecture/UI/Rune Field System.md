@@ -214,12 +214,14 @@ Shows its state with the scene's state backgrounds: **Enabled** while on, **Lock
 
 ---
 ## Inventory Side Panel
-- `IngredientListWindow` shows one `ElementDataObject` button per element rune in the inventory (the ingredient version is commented out). It refreshes when it's enabled, on the [[Inventory Manager]]'s `OnInventoryChanged`, and on `RuneFieldManager.OnDraftChanged` (the field is read from its existing `RuneFieldPointer`, so no new setup)
+- `IngredientListWindow` shows one `ElementDataObject` button per element rune in the inventory (the ingredient version is commented out). It refreshes when it's enabled, on the [[Inventory Manager]]'s `OnInventoryChanged`, and on the field's `OnDraftChanged` (the field is read from its existing `RuneFieldPointer`, so no new setup)
 - Dropping an `ElementDataObject` on the object tagged **UI Drag Field** calls `RuneFieldManager.PlaceRuneFromInventory`. Runes only leave the inventory when the field is saved (see **Draft and Saving**)
+- *Oct 10, 2026:* `ElementDataObject` adds a `Button` to itself if the prefab has none, so the list works with gamepad navigation. Pressing it only does something on the 3D field (takes the rune out on the reticle)
+- *Oct 10, 2026:* these scripts and `ShadeSlotManager` talk to the field through `IRuneFieldView`, which `RuneFieldManager` and the 3D field both have. With nothing on `RuneFieldPointer` they use the 3D field (see [[Rune Field 3D View]])
 - **Counts** *(overhaul step 5, Oct 9, 2026)*: each button shows the inventory count (`_CountText`, `_CountColor`, black by default) and how many the draft is using on top of the saved field (`_PendingText`, `_PendingColor`, brighter, written with `_PendingFormat` = `-{0}`, hidden at 0). With none left to place it fades to `_UnavailableAlpha` (0.4) and can't be dragged, but stays in the list. A rune only leaves the list when a save takes the inventory to 0. While dragging a button over the field, it tints with the field's `_InvalidColor` over a spot where the rune can't go (`_TintTarget`, the root image if left empty)
 - Runes the draft took off whose inventory count is 0 aren't listed until the save puts them back (decided Oct 9)
 - **Setup:** open the button prefab (`IngredientListWindow.ButtonListPrefab`) in prefab mode, select its root and press **Build Count Labels** on `ElementDataObject`. It adds the two texts on the right edge; move and restyle them as you like [[Notes for the future]]
-- `SideWindowManager.CloseWindow(window)` slides the side panel open/closed and switches windows
+- `SideWindowManager.CloseWindow(window)` slides the side panel open/closed and switches windows. `ToggleSidePanel()` *(Oct 10, 2026)* opens it on the last window used (`_DefaultWindow`, or the inventory list the first time) or closes it; the 3D field calls it for gamepad Y / Tab. `IsOpen()`, `Contains(object)` and `GetFirstSelectable()` (first item in the open window, else the first tab) are used for gamepad focus
 
 ## Shade Slots
 `ShadeSlotManager` shows one button per unlocked slot and calls `SelectSlot(index)` when one is clicked (it asks about unsaved changes first). It currently uses the player's level from [[Game Manager]] to decide how many slots are unlocked.

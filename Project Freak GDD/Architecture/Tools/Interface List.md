@@ -39,6 +39,13 @@ All interfaces currently in the project, grouped by the file they live in.
 | `IUnitMover` | Anything an AI brain can steer: `SetDestination`, `StopMoving`, `HasArrived`, `IsActive`. Implemented by `EnemyMovement` and `NavGuideDriver`. See [[Unit Targeting#IUnitMover]] |
 
 ---
+**Rune Field** (`RuneFieldInterface.cs`)
+
+| Interface        | Description                                                                                  |
+| :--------------- | :------------------------------------------------------------------------------------------- |
+| `IRuneFieldView` | A rune field view the inventory list and shade slot buttons can talk to: draft counts (`GetPendingUse`, `GetAvailable`), placing from the inventory, the invalid tint, `SelectSlot` and `OnDraftChanged`. On `RuneFieldManager` (2D) and `RuneField3DObject` (3D). See [[Rune Field 3D View]] |
+
+---
 **Rune Field / Map Nodes** (`EvolutionInterfaces.cs`)
 
 | Interface        | Description                                                                                  |

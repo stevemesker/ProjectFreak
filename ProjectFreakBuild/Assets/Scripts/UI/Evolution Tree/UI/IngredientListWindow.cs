@@ -13,14 +13,30 @@ public class IngredientListWindow : MonoBehaviour
     private List<GameObject> currentListAssets;
 
     //local variables
-    RuneFieldManager _runeField; //read from RuneFieldPointer. Gives each button how many of its rune the draft is using
+    IRuneFieldView _runeField; //the 2D field on RuneFieldPointer, or the scene's 3D field. Gives each button how many of its rune the draft is using
+
+    private void Start()
+    {
+        //second try at finding the field: every Awake has run by Start, so the 3D field's singleton is set even if this list was enabled first
+        if (_runeField != null) return;
+        ConnectRuneField();
+        if (_runeField == null) Debug.LogWarning($"Warning! No rune field found for {gameObject.name} (nothing on Rune Field Pointer and no 3D field in the scene), the list won't show how many runes the field is using...", this);
+        UpdateList();
+    }
+
+    void ConnectRuneField()
+    {
+        //finds the field (the 2D one on Rune Field Pointer, otherwise the scene's 3D field) and listens for draft changes. Does nothing if already connected
+        if (_runeField != null) return;
+        if (RuneFieldPointer != null) RuneFieldPointer.TryGetComponent(out _runeField); //TryGetComponent works with interfaces too
+        if (_runeField == null) _runeField = RuneField3DObject._Field3D;
+        if (_runeField != null) _runeField.OnDraftChanged += UpdateList;
+    }
 
     private void OnEnable()
     {
         //listens for inventory changes and draft changes, then fills the list straight away
-        if (RuneFieldPointer != null) _runeField = RuneFieldPointer.GetComponent<RuneFieldManager>();
-        if (_runeField != null) _runeField.OnDraftChanged += UpdateList;
-        else Debug.LogWarning($"Warning! No RuneFieldManager on Rune Field Pointer for {gameObject.name}, the list won't show how many runes the field is using...", this);
+        ConnectRuneField();
 
         if (InventoryManager._PlayerInventory == null)
         {
@@ -36,6 +52,7 @@ public class IngredientListWindow : MonoBehaviour
     {
         //stops listening. Both are checked first, since either can be missing when testing a scene on its own
         if (_runeField != null) _runeField.OnDraftChanged -= UpdateList;
+        _runeField = null; //so OnEnable connects again
         if (InventoryManager._PlayerInventory != null) InventoryManager._PlayerInventory.OnInventoryChanged -= UpdateList;
     }
 

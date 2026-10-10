@@ -12,79 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502f0ffe7b80a5947bdaaa346a14c599, type: 3}
   m_Name: SO_Shade_Slot0
   m_EditorClassIdentifier: 
-  _shadeStats:
-    _HP: 0
-    _Health: 0
-    _STR: 0
-    _DEF: 0
-    _AGI: 0
-    _INT: 0
-    _SPR: 0
-    _WIS: 0
-    _LVL: 0
-    _Name: 
-    PhysicalPrimaryStat: 2
-    PhysicalSecondaryStat: 4
-    MagicalPrimaryStat: 5
-    MagicalSecondaryStat: 5
-    PhysicalDefMod: 3
-    MagicalDefMod: 6
-    AttackTypeResistance: 
-    ElementTypeResistance: 
-    AttackTypeImmunity: 
-    ElementTypeImmunity: 
-    _XP: 0
-    _Danger:
-      _DangerLevels: []
-    _CurrentDangerType: 0
-    _DIS: 0
-    _WILD: 0
-  _AlteredStats:
-    _HP: 19
-    _Health: 19
-    _STR: 16
-    _DEF: 0
-    _AGI: 0
-    _INT: 17
-    _SPR: 0
-    _WIS: 0
-    _LVL: 0
-    _Name: 
-    PhysicalPrimaryStat: 2
-    PhysicalSecondaryStat: 4
-    MagicalPrimaryStat: 5
-    MagicalSecondaryStat: 5
-    PhysicalDefMod: 3
-    MagicalDefMod: 6
-    AttackTypeResistance: 
-    ElementTypeResistance: 
-    AttackTypeImmunity: 
-    ElementTypeImmunity: 
-    _XP: 0
-    _Danger:
-      _DangerLevels: []
-    _CurrentDangerType: 0
-    _DIS: 0
-    _WILD: 0
   _CurrentEvolution: {fileID: 11400000, guid: c46287d04494e97458b17d159937a386, type: 2}
-  _RuneFieldPackage:
-    _Runes:
-    - _elementDataPointer: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4,
-        type: 2}
-      _elementPosition: {x: -208.15643, y: -114.63687, z: 0}
-      _connectionIndexRef: 01000000
-      _currentPower: 1
-    - _elementDataPointer: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2,
-        type: 2}
-      _elementPosition: {x: -188.8916, y: -313.70688, z: 0}
-      _connectionIndexRef: 00000000
-      _currentPower: 1
-    - _elementDataPointer: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702,
-        type: 2}
-      _elementPosition: {x: 72.40222, y: -193.0726, z: 0}
-      _connectionIndexRef: ffffffff
-      _currentPower: 1
-    _Nodes: []
-    _Core:
-      _CoreCurrentPower: 1
-      _ConnectionIndexRef: 0000000002000000
+  _GatesTaken: 
+  _Level: 7
+  _XP: 0
+  _Lives: 3
+  _FragmentPower: 0
+  _RuneField:
+    _Runes: []
+    _Bridges: []
+    _Plugs: []
+    _ActiveNodes: 
+    _NextRuneID: 0
+  _CompiledEffects: []
+  _PluggedNodes: []
+  references:
+    version: 2
+    RefIds: []

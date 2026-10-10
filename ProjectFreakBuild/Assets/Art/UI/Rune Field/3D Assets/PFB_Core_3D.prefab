@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4626076831852414150}
+  - component: {fileID: 2079126597522869404}
   m_Layer: 0
   m_Name: PFB_Core_3D
   m_TagString: Untagged
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 5747282682720944748}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2079126597522869404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1190106320832415052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b3fd3389a0f4dc0a716a51d51a6cd0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _MaxPower: 0
+  _PowerLeft: 0
 --- !u!1 &7662078576051257469
 GameObject:
   m_ObjectHideFlags: 0

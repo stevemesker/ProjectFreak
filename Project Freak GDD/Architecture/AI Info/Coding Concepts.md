@@ -159,4 +159,101 @@ Every asset has a `.meta` file holding a GUID (a unique ID). Assets point at eac
 
 ### Drawing in the scene: `OnDrawGizmos` and `Handles`
 `OnDrawGizmos` runs every time the scene view draws, so a component can draw guides (ranges, rings, paths). `Gizmos` draws lines, spheres and boxes; the editor's `Handles` adds flat circles (`DrawWireDisc`) and text (`Label`). Both show in the Scene view, in the Game view while its Gizmos toggle is on, and never in a build.
-**Used in:** `RuneFieldManager` (zone rings, edge bleed, frozen rune outlines).
+**Used in:** `RuneFieldManager` (zone rings, edge bleed, frozen rune outlines), `RuneFieldCameraObject` (zoom curve, edge circle).
+
+### Easing toward a value: `Mathf.SmoothDamp`
+Moves a value toward a target a little each frame, fast at first and slowing as it arrives, without overshooting. It needs a variable to remember the current speed (passed with `ref`, so the function can change it).
+```csharp
+_CurrentZoom = Mathf.SmoothDamp(_CurrentZoom, _TargetZoom, ref _zoomVelocity, smoothTime, Mathf.Infinity, deltaTime);
+```
+`smoothTime` is roughly how long it takes to get there. Lower = snappier.
+**Used in:** `RuneFieldCameraObject` (zoom).
+
+### Time that ignores pausing: `Time.unscaledDeltaTime`
+`Time.deltaTime` becomes 0 when the game is paused (`Time.timeScale = 0`). `Time.unscaledDeltaTime` keeps counting, so menus and menu cameras still move while the game is paused.
+**Used in:** `RuneFieldCameraObject`.
+
+### Smoothing that's the same at any frame rate: `Mathf.Exp`
+Multiplying a speed by a fixed number every frame (like `* 0.9f`) slows it down faster at 144 fps than at 30 fps. Using `Mathf.Exp(-rate * deltaTime)` gives the same slowdown per second at any frame rate.
+```csharp
+_slideVelocity *= Mathf.Exp(-friction * deltaTime);
+```
+**Used in:** `RuneFieldCameraObject` (slide, drag speed tracking).
+
+### A flat surface in math: `Plane` and `Raycast`
+`Plane` is an endless flat surface that only exists in code, so there's no collider to set up. `plane.Raycast(ray, out distance)` says where a ray (like one from the camera through the mouse) hits it.
+```csharp
+Plane field = new Plane(Vector3.up, fieldCenter);
+Ray ray = _Camera.ScreenPointToRay(mousePosition);
+if (field.Raycast(ray, out float distance)) point = ray.GetPoint(distance);
+```
+**Used in:** `RuneFieldCameraObject` (grab-drag, zoom toward cursor).
+
+### Sideways directions: `Vector3.Cross`
+The cross product of two directions gives a third direction at right angles to both. In Unity, `Vector3.Cross(up, forward)` is "right", and `Vector3.Cross(forward, right)` is "up".
+**Used in:** `RuneFieldCameraObject` (which way the camera faces, keeping its up steady so it never flips).
+
+### Curves through points: Catmull-Rom
+A way to draw a smooth curve that passes through every point it's given (unlike Bezier handles, which pull the curve without touching it). Each piece between two points also looks at the point before and after. The "centripetal" version spaces things by distance so close points don't make loops.
+**Used in:** `RuneFieldCameraSO` (the zoom curve through the zoom layers).
+
+### Filling in defaults when a component is added: `Reset()`
+Unity calls `Reset()` when a component is first added (or Reset is picked from its menu). Good for finding references automatically so nothing has to be dragged in.
+**Used in:** `RuneFieldCameraObject` (finds the main camera and both settings assets).
+
+### One material, many colors: `MaterialPropertyBlock`
+Changing `renderer.material.color` makes a copy of the material for that renderer. A `MaterialPropertyBlock` instead overrides a value for one renderer only, with no copies, and `SetPropertyBlock(null)` puts the material's own value back.
+```csharp
+renderer.GetPropertyBlock(block);
+block.SetColor(colorID, Color.red);   //colorID = Shader.PropertyToID("_BaseColor")
+renderer.SetPropertyBlock(block);
+```
+**Used in:** `RuneFieldTint` (runes, nodes and bridges on the 3D field).
+
+### Plain C# helper classes
+Not everything has to be a component. A class without `MonoBehaviour` is made with `new` and lives inside whatever made it. Good for shared logic that doesn't need to sit on an object.
+**Used in:** `RuneField` (the rules), `RuneFieldTint`.
+
+### How far along a direction: `Vector3.Dot`
+`Vector3.Dot(offset, direction)` (with a direction of length 1) says how far `offset` goes along that direction. It's how a world position is turned into field X and Y.
+**Used in:** `RuneField3DObject.WorldToField`.
+
+### Pointing at something: `Quaternion.LookRotation`
+Turns an object so its forward (+Z) faces a direction, with a second direction saying which way is up.
+**Used in:** `Bridge3DObject` (pointing the bridge at its other end), `RuneFieldCameraObject`.
+
+### Waiting while paused: `WaitForSecondsRealtime`
+`WaitForSeconds` uses game time, so it freezes while the game is paused. `WaitForSecondsRealtime` uses real time.
+**Used in:** `Bridge3DObject` (tear timer).
+
+### Every value of an enum: `System.Enum.GetValues`
+Lists every value an enum has, so a loop can cover new values without the code changing.
+**Used in:** `RuneField3DObject` (Fill Element Colors).
+
+### Choosing who runs first: `[DefaultExecutionOrder]`
+Unity runs every script's `Update` (and `LateUpdate`) in an order it picks. `[DefaultExecutionOrder(100)]` on a class makes it run after scripts with a lower number (the default is 0).
+**Used in:** `RuneField3DObject` (runs after the camera, so a dragged rune is placed with this frame's camera).
+
+### Needing another component: `[RequireComponent]`
+`[RequireComponent(typeof(Other))]` on a class makes Unity add `Other` whenever this component is added in the editor, and stops `Other` from being removed while this one is there.
+**Used in:** `RuneField3DObject` (always has a `RuneFieldPointerObject`).
+
+### Interfaces as a type
+A variable can be an interface (`IRuneFieldView _runeField`) instead of a class. It can then hold any object that has that interface, and only the interface's functions can be called on it. `TryGetComponent(out IRuneFieldView view)` finds any component that has it.
+**Used in:** `IngredientListWindow`, `ElementDataObject`, `ShadeSlotManager` (they work with the 2D or the 3D field).
+
+### Pretend input devices: `InputSystem.AddDevice` and `InputState.Change`
+The Input System can make a device that isn't real (`InputSystem.AddDevice<Mouse>("Name")`). `InputState.Change` writes straight into its state (position, buttons), and everything that listens to mice, like the canvas, reacts to it like a real one. Remove it with `InputSystem.RemoveDevice` when done.
+**Used in:** `RuneFieldPointerObject` (the gamepad reticle's virtual mouse).
+
+### World to screen: `Camera.WorldToScreenPoint`
+Turns a spot in the world into a pixel on screen. The z of the result is how far in front of the camera it is (negative = behind, so it shouldn't be drawn). On a Screen Space Overlay canvas, a UI object's position *is* in screen pixels, so the result can be used directly.
+**Used in:** `RuneFieldLabelsObject`.
+
+### Building UI from code: layout groups and size fitters
+A `VerticalLayoutGroup` stacks its children; a `ContentSizeFitter` makes the box grow to fit them; a `LayoutElement` tells the layout how big a child wants to be. Together they lay out a panel without placing anything by hand.
+**Used in:** `RuneFieldTestKitObject` (its button and controls panels).
+
+### Values Unity doesn't save: `[System.NonSerialized]`
+Marks a field Unity shouldn't save, even on an asset. Handy for caches that get rebuilt, like the zoom curve's measured points.
+**Used in:** `RuneFieldCameraSO`.

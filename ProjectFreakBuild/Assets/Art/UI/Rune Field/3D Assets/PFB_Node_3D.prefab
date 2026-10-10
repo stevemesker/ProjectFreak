@@ -41,6 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8832217812314201754}
+  - component: {fileID: 3621168948157972786}
   m_Layer: 0
   m_Name: PFB_Node_3D
   m_TagString: Untagged
@@ -64,6 +65,35 @@ Transform:
   - {fileID: 2231748433840748395}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3621168948157972786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6836272137955453818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01480e3d15ac4b38af3b2180e750d34c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Unlocks: []
+  _Lockouts: []
+  _Effects: []
+  _ColorProperty: _BaseColor
+  _LockedColor: {r: 0.45, g: 0.2, b: 0.2, a: 1}
+  _OnEffect: {fileID: 0}
+  _ActivationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _DeactivationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _Active: 0
+  _Locked: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!1001 &7130082852230475253
 PrefabInstance:
   m_ObjectHideFlags: 0

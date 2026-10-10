@@ -38,6 +38,9 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
     [Tooltip("How see-through the button is when none are left to place (0 = invisible, 1 = solid)")]
     [SerializeField, Range(0f, 1f)] float _UnavailableAlpha = 0.4f;
 
+    [Tooltip("Tint while the button is selected with a gamepad (only used when the prefab has no Button of its own)")]
+    [SerializeField] Color _SelectedColor = new Color(1f, 0.85f, 0.4f, 1f);
+
     [Header("<====Current Data=====>")]
     public ElementItemSO Item;
     public int itemAmount;
@@ -57,6 +60,31 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
         if (TryGetComponent(out _canvasGroup) == false) _canvasGroup = gameObject.AddComponent<CanvasGroup>();
         if (_TintTarget == null) _TintTarget = GetComponent<Graphic>(); //Graphic is the parent of Image, RawImage and text, so any of them works
         if (_TintTarget != null) _normalTint = _TintTarget.color;
+        SetUpGamepadButton();
+    }
+
+    void SetUpGamepadButton()
+    {
+        //makes the rune selectable with a gamepad (D-pad / stick moves between buttons, A presses). A Button is added if the prefab doesn't have one
+        //pressing it with a gamepad starts carrying this rune on the 3D field. Mouse clicks are ignored by the field (the mouse drags instead)
+        Button button = GetComponent<Button>();
+        if (button == null)
+        {
+            button = gameObject.AddComponent<Button>();
+            button.targetGraphic = GetComponent<Graphic>(); //the image that lights up while selected
+            ColorBlock colors = button.colors;
+            colors.selectedColor = _SelectedColor;
+            colors.highlightedColor = Color.white; //no change on mouse hover, only gamepad selection shows
+            button.colors = colors;
+        }
+        button.onClick.AddListener(PickForGamepad);
+    }
+
+    void PickForGamepad()
+    {
+        //A on this rune (gamepad): the 3D field takes it out on the reticle, if there's one left to place
+        if (_AvailableAmount <= 0) return;
+        if (RuneField3DObject._Field3D != null) RuneField3DObject._Field3D.BeginCarryFromInventory(Item);
     }
 
     [Button("Activate Item Test")]
@@ -93,6 +121,7 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
         //only lets the drag start if there's one left to place
         _dragging = _AvailableAmount > 0;
         _startPosition = transform.position;
+        if (_dragging && _canvasGroup != null) _canvasGroup.blocksRaycasts = false; //so the button following the pointer doesn't count as UI under the pointer
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -101,7 +130,7 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
         if (_dragging == false) return;
         transform.position = eventData.position;
 
-        RuneFieldManager runeField = FindRuneFieldUnderPointer(eventData);
+        IRuneFieldView runeField = FindRuneFieldUnderPointer(eventData);
         bool blocked = runeField != null && runeField.CanPlaceFromInventory(Item, eventData.position) == false;
         if (_TintTarget != null) _TintTarget.color = blocked ? runeField.GetInvalidColor() : _normalTint;
     }
@@ -113,21 +142,24 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
         _dragging = false;
         if (_TintTarget != null) _TintTarget.color = _normalTint;
 
-        RuneFieldManager runeField = FindRuneFieldUnderPointer(eventData);
+        IRuneFieldView runeField = FindRuneFieldUnderPointer(eventData); //asked while the button still ignores clicks, or it would find itself under the pointer
         if (runeField != null) runeField.PlaceRuneFromInventory(Item, eventData.position); //the rune field makes the rune object itself, with this element's data
 
         transform.position = _startPosition;
+        if (_canvasGroup != null) _canvasGroup.blocksRaycasts = true; //back in the list, it can be clicked again
     }
 
-    RuneFieldManager FindRuneFieldUnderPointer(PointerEventData eventData)
+    IRuneFieldView FindRuneFieldUnderPointer(PointerEventData eventData)
     {
-        //returns the rune field under the pointer (the object tagged UI Drag Field), or null
+        //returns the rune field under the pointer, or null
+        //2D field: the object tagged UI Drag Field. 3D field: the pointer isn't over any UI at all (so it's over the 3D scene)
         if (EventSystem.current == null) return null;
         var hits = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventData, hits);
 
         var hit = hits.FirstOrDefault(t => t.gameObject.CompareTag("UI Drag Field")); //the first hit with that tag, or an empty result if none
-        if (hit.isValid && hit.gameObject.TryGetComponent(out RuneFieldManager runeField)) return runeField;
+        if (hit.isValid && hit.gameObject.TryGetComponent(out IRuneFieldView runeField)) return runeField;
+        if (hits.Count == 0 && RuneField3DObject._Field3D != null) return RuneField3DObject._Field3D;
         return null;
     }
 
