@@ -58,6 +58,9 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     [Tooltip("Spawned for every bridge (PFB_Bridge_3D). Its mesh must start at its origin and run 1 m along +Z. Gets a Bridge3DObject added if it doesn't have one")]
     [SerializeField] GameObject _BridgePrefab;
 
+    [Tooltip("Spawned bridges go under this, to keep the hierarchy tidy. Left empty, a '<===== Bridged =====>' divider is made under this object the first time a bridge spawns. Keep it unscaled, bridges use their scale for their length")]
+    [SerializeField] Transform _BridgeHolder;
+
     [Tooltip("The popup that asks Save / Discard / Cancel and confirms evolving. Without one, unsaved changes are thrown away (with a warning) and saving doesn't ask")]
     [SerializeField] ConfirmPopup _Popup;
 
@@ -870,7 +873,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             Transform endB = GetEndTransform(bridges[i]._B);
             if (endA == null || endB == null) continue;
 
-            GameObject spawned = Instantiate(_BridgePrefab, endA.position, transform.rotation, transform);
+            GameObject spawned = Instantiate(_BridgePrefab, endA.position, transform.rotation, GetBridgeHolder());
             spawned.name = $"Bridge {bridges[i]._A} - {bridges[i]._B}";
 
             Bridge3DObject bridge = spawned.GetComponent<Bridge3DObject>();
@@ -927,6 +930,13 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             if (_bridgeViews[i] != null) Destroy(_bridgeViews[i].gameObject);
         }
         _bridgeViews.Clear();
+    }
+
+    Transform GetBridgeHolder()
+    {
+        //where spawned bridges go: Bridge Holder, or a "Bridged" divider made the first time it's needed
+        if (_BridgeHolder == null) _BridgeHolder = MakeDivider("Bridged");
+        return _BridgeHolder;
     }
 
     Transform GetEndTransform(int id)
@@ -1020,6 +1030,34 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             added++;
         }
         if (added == 0) Debug.LogWarning($"Warning! No new nodes found under {gameObject.name}. Nodes need a Node3DObject and to be children of the field...", this);
+    }
+
+    [FoldoutGroup("Tools"), Button("Create Dividers")]
+    void CreateDividers(string labels = "Divider")
+    {
+        //editor button: makes a '<===== label =====>' divider under this object for each label, sitting on the field's center. Parent nodes to them to group them
+        //several at once: separate the labels with commas ("Core, Evolution Gates, Ability Nodes"). The field stays selected, so the button can be pressed again
+        //don't move, turn or scale a divider once nodes are under it, they'd move with it (and gates would slide off their rings)
+        if (string.IsNullOrWhiteSpace(labels)) return;
+        string[] split = labels.Split(','); //cuts the text at every comma
+
+        for (int i = 0; i < split.Length; i++)
+        {
+            string label = split[i].Trim(); //Trim removes the spaces around each label
+            if (label == "") continue;
+            Transform divider = MakeDivider(label);
+#if UNITY_EDITOR
+            UnityEditor.Undo.RegisterCreatedObjectUndo(divider.gameObject, "Create Divider"); //Ctrl+Z removes them again
+#endif
+        }
+    }
+
+    Transform MakeDivider(string label)
+    {
+        //an empty object named '<===== label =====>' under this object, with no offset, turn or scale
+        GameObject divider = new GameObject($"<===== {label} =====>");
+        divider.transform.SetParent(transform, false); //false keeps the local position at zero, so it sits right on the field's center
+        return divider.transform;
     }
 
     [FoldoutGroup("Tools"), Button("Fill Element Colors")]
