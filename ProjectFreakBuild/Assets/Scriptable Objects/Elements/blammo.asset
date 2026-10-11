@@ -17,44 +17,13 @@ MonoBehaviour:
   ItemDescription: Nothing special about this
   dropArt: {fileID: 0}
   ItemRarity: 0
+  itemStackSizeMax: 99
   itemSprite: {fileID: 0}
-  mypackage:
-  - _linkedElement: {fileID: 11400000}
-    _ElementConnect: {fileID: 0}
-    _statToChange: 5
-    _ChangeAmount: 1
-  statusEffectEnable:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530, type: 2}
-        m_TargetAssemblyTypeName: ElementManagerSO, Assembly-CSharp
-        m_MethodName: BoostStats
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000}
-          m_ObjectArgumentAssemblyTypeName: ElementItemSO, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  statusEffectDisable:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 11400000, guid: 7e6cf91050ce70446a745eca50734530, type: 2}
-        m_TargetAssemblyTypeName: ElementManagerSO, Assembly-CSharp
-        m_MethodName: ReduceStats
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000}
-          m_ObjectArgumentAssemblyTypeName: ElementItemSO, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  _StatBoosts:
+  - _Stat: 5
+    _Amount: 1
   element: 0
   materialType: 0
   connectionsAllowed: 3
-  connectionDistance: 150
+  connectionDistance: 250
   powerNeeded: 1

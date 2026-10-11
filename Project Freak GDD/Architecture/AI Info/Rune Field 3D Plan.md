@@ -3,7 +3,9 @@ The plan for the 3D rune field test (step 8 of the [[Rune Field Overhaul Plan]])
 
 Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
-**Status (Oct 10, 2026):** signed off. All 7 steps built (camera feel signed off; the rest not tested in Unity yet). Built pieces are written up in [[Rune Field 3D View]] [[Notes for the future]]
+**Status (Oct 10, 2026):** signed off. All 7 steps built (camera feel signed off).
+
+**Oct 11, 2026:** tested in Unity and playtested with friends. Steve's verdict: a big success, and it feels better than the 2D version. Next up: tools to make it feel intuitive (new chat), and live gates (see Future Ideas in [[Rune Field Overhaul Plan]]). Keep an eye out for the camera slipping past the field (not seen since). Built pieces are written up in [[Rune Field 3D View]] [[Notes for the future]]
 
 **Branch:** `dev > rune field overhaul > 3d rune field test`. If the test doesn't work out, the branch gets dropped and the 2D view stays.
 
@@ -153,11 +155,11 @@ For the build sent to friends:
 ---
 ## Unity Setup (Steve)
 Things that are safer done in the editor than by editing scene files:
-1. Copy the canvas from `Evolution_UI_scene` into `3d_Evolution_UI_scene` (select it, Ctrl+C, open the other scene, Ctrl+V)
+1. ~~Copy the canvas from `Evolution_UI_scene` into `3d_Evolution_UI_scene` (select it, Ctrl+C, open the other scene, Ctrl+V)
 2. ~~Add a **RuneField** layer~~ *Not needed: picking is math, not colliders (Oct 10, 2026)*
-3. Add `Node3DObject` to `PFB_Node_3D` and `Core3DObject` to `PFB_Core_3D` (the rune and bridge prefabs get their scripts added at spawn if missing). *No picking colliders needed*
+3. ~~Add `Node3DObject` to `PFB_Node_3D` and `Core3DObject` to `PFB_Core_3D` (the rune and bridge prefabs get their scripts added at spawn if missing). *No picking colliders needed*
 4. ~~Retune `SO_RuneField_Settings`~~ *Done Oct 10, 2026 (step 1)*
-5. Reset the shade slots before testing and before building
+5. ~~Reset the shade slots before testing and before building
 6. Put the scene in Build Settings for the friends build
 
 Anything with a setup button (camera rig, labels, reticle) will say so when it's built.

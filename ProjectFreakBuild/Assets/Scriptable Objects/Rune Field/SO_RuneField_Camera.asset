@@ -13,19 +13,21 @@ MonoBehaviour:
   m_Name: SO_RuneField_Camera
   m_EditorClassIdentifier: 
   _FollowDistance: {x: 0, y: 4}
-  _CameraHeight: 14
+  _CameraHeight: 20
   _ZoomLayers:
-  - _OutwardPush: 6
+  - _OutwardPush: 4.18
     _HeightOffset: 0
-  - _OutwardPush: 3
-    _HeightOffset: 0
+  - _OutwardPush: 4
+    _HeightOffset: 0.459
+  - _OutwardPush: -2.32
+    _HeightOffset: 0.324
   - _OutwardPush: -3.5
     _HeightOffset: 0
-  _ZoomRange: {x: 0.25, y: 1}
+  _ZoomRange: {x: 0.125, y: 1}
   _StartZoom: 0.8
   _AimOffset: {x: 0, y: 0, z: 0}
-  _ScrollStep: 0.08
-  _HeldZoomSpeed: 0.7
+  _ScrollStep: 0.15
+  _HeldZoomSpeed: 1
   _HeldZoomResponse:
     serializedVersion: 2
     m_Curve:

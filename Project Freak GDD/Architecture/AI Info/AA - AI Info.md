@@ -13,8 +13,8 @@ Home for notes and rules about working with Claude on Project Freak.
 Plans and to-do lists for upcoming work live here. Once a piece is built, it moves into its system's note in Architecture.
 [[AI Movement & Dungeon Loading Plan]] - AI movement, brain and dungeon loading (built)
 [[Shade Forms Plan]] - tethered / released shade prefabs, tether, release and return abilities (code built, Unity setup to do)
-[[Rune Field Overhaul Plan]] - rune field rebuild, core fragments and shade death rules (steps 1–7 built)
-[[Rune Field 3D Plan]] - 3D rune field test, overhaul step 8 (all 7 steps built, not tested in Unity yet)
+[[Rune Field Overhaul Plan]] - rune field rebuild, core fragments and shade death rules (steps 1–8 built, step 8 is the 3D test)
+[[Rune Field 3D Plan]] - 3D rune field test, overhaul step 8 (all 7 steps built and playtested Oct 11, 2026)
 
 ---
 ## How this connects to Claude
