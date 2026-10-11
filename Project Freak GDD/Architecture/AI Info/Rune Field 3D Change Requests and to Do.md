@@ -5,7 +5,7 @@ Overall results very positive. System works better than original 2d canvas versi
 
 ---
 Things to address
-- [ ] Add current shade info tab
+- [x] Add current shade info tab
 - along with the shade slot and rune inventory tab, need an area that shows current stats of the shade
 - thinking it will be another tab but could possibly be its own window at the bottom that stays open
 - Should show base stats, stats that are changing because of runes, and possibly show either an image of the current shade evolution or an actual render of it
@@ -15,16 +15,16 @@ Things to address
 - need clear walls to define borders between zones. I like the idea of some sort of crack in the floow with a wall of magic light emitting. Need to talk to claude about how to achieve that
 - Need to color the floor to show the difference between active zones, previous zones, and future zones
 
-- [ ] Allow moving of nodes in previous zones but don't allow bridges to sever if locked
+- [x] Allow moving of nodes in previous zones but don't allow bridges to sever if locked
 - makes sure evolutions and abilities can't be depowered
 - need to handle if other branches are made shorter than the one that makes the evolution that that evolution never loses power
 - keep slotted nodes locked if zone lock happens
 - allow rune placement in forward zones but cut bridges before saving
 
-- [ ] Panning when a dragged rune is held near the screen edge
+- [x] Panning when a dragged rune is held near the screen edge
 
 - [ ] Need to hide the button when dragging to rune field
-- Currently the full button pulls out and obscures the area being placed
+- ~~Currently the full button pulls out and obscures the area being placed
 - would be nice if we could animate it into a circle or something before it collapses and reforms if brought back to the list (will probably add that in a future polish pass)
 
 - [ ] Bridge Tear Shader
@@ -49,14 +49,14 @@ Things to address
 - needs to dim when out of power
 - not sure if it should dim as you plug in runes or only when there's not enough power for all the chains
 
-- [ ] Add dead zone for rune tear
+- [x] Add dead zone for rune tear
 - area that shows the tear effect on the shader but does not start the tearing time
 
-- [ ] D-pad quick select from the inventory list
+- [x] D-pad quick select from the inventory list
 
 - [ ] Info popup for runes and nodes (needs a button now that Y opens the side panel)
 
-- [ ] Shards: dragging a shard into the core, orbiting shard per tier
+- [x] Shards: dragging a shard into the core, orbiting shard per tier
 - Need to make page for this in the side menu
 
 *Finish*

@@ -13,19 +13,191 @@ MonoBehaviour:
   m_Name: SO_Shade_Slot0
   m_EditorClassIdentifier: 
   _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-  _GatesTaken: 
-  _Level: 1
+  _GatesTaken: 090000000a000000
+  _Level: 9
   _XP: 0
   _Lives: 3
-  _FragmentPower: 0
+  _Shard: {fileID: 0}
   _RuneField:
-    _Runes: []
-    _Bridges: []
-    _Plugs: []
-    _ActiveNodes: 
-    _NextRuneID: 0
-  _CompiledEffects: []
-  _PluggedNodes: []
+    _Runes:
+    - _ID: 0
+      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
+      _Position: {x: -209.74153, y: -136.0459}
+    - _ID: 1
+      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
+      _Position: {x: -354, y: -281}
+    - _ID: 2
+      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
+      _Position: {x: 237.30962, y: -78.639305}
+    - _ID: 3
+      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
+      _Position: {x: 408.85773, y: 69.786934}
+    - _ID: 4
+      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
+      _Position: {x: 647.13904, y: 191.92719}
+    - _ID: 5
+      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
+      _Position: {x: 870.842, y: 23.531837}
+    - _ID: 6
+      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
+      _Position: {x: 1120.5898, y: 12.3064}
+    - _ID: 7
+      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
+      _Position: {x: 1349.7971, y: 23.401474}
+    - _ID: 8
+      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
+      _Position: {x: 1609.6238, y: -80.95424}
+    _Bridges:
+    - _A: 0
+      _B: -1
+    - _A: 1
+      _B: 0
+    - _A: 2
+      _B: -1
+    - _A: 3
+      _B: 2
+    - _A: 4
+      _B: 3
+    - _A: 5
+      _B: 4
+    - _A: 6
+      _B: 5
+    - _A: 7
+      _B: 6
+    - _A: 8
+      _B: 7
+    _Plugs:
+    - _NodeIndex: 15
+      _RuneID: 1
+    - _NodeIndex: 9
+      _RuneID: 4
+    - _NodeIndex: 10
+      _RuneID: 7
+    _ActiveNodes: 0f000000090000000a000000
+    _NextRuneID: 9
+    _FrozenRunes: 0000000001000000020000000300000004000000050000000600000007000000
+    _FrozenBridges:
+    - _A: 0
+      _B: -1
+    - _A: 1
+      _B: 0
+    - _A: 2
+      _B: -1
+    - _A: 3
+      _B: 2
+    - _A: 4
+      _B: 3
+    - _A: 5
+      _B: 4
+    - _A: 6
+      _B: 5
+    - _A: 7
+      _B: 6
+    _LockedRunes: 010000000400000007000000
+  _CompiledEffects:
+  - rid: 211481427596279910
+  - rid: 211481427596279911
+  - rid: 211481427596279912
+  - rid: 211481427596279913
+  - rid: 211481427596279914
+  - rid: 211481427596279915
+  - rid: 211481427596279916
+  - rid: 211481427596279917
+  - rid: 211481427596279918
+  - rid: 211481427596279919
+  - rid: 211481427596279920
+  - rid: 211481427596279921
+  _PluggedNodes:
+  - _NodeIndex: 9
+    _Name: PFB_Node_3D (3)
+    _Position: {x: 647.13904, y: 191.92719}
+    _Unlocks: 
+    _Lockouts: 
+    _Effects:
+    - rid: 211481427596279922
+  - _NodeIndex: 10
+    _Name: PFB_Node_3D (9)
+    _Position: {x: 1349.7971, y: 23.401474}
+    _Unlocks: 
+    _Lockouts: 
+    _Effects:
+    - rid: 211481427596279923
+  - _NodeIndex: 15
+    _Name: PFB_Node_3D
+    _Position: {x: -354, y: -281}
+    _Unlocks: 
+    _Lockouts: 
+    _Effects:
+    - rid: 211481427596279924
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 211481427596279910
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 1
+        _Amount: 1
+    - rid: 211481427596279911
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 5
+        _Amount: 1
+    - rid: 211481427596279912
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 5
+        _Amount: 1
+    - rid: 211481427596279913
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 1
+        _Amount: 1
+    - rid: 211481427596279914
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 2
+        _Amount: 1
+    - rid: 211481427596279915
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 1
+        _Amount: 1
+    - rid: 211481427596279916
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 5
+        _Amount: 1
+    - rid: 211481427596279917
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 2
+        _Amount: 1
+    - rid: 211481427596279918
+      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Stat: 5
+        _Amount: 1
+    - rid: 211481427596279919
+      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}
+    - rid: 211481427596279920
+      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+    - rid: 211481427596279921
+      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+    - rid: 211481427596279922
+      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+    - rid: 211481427596279923
+      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+    - rid: 211481427596279924
+      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
+      data:
+        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}

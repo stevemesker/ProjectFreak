@@ -155,37 +155,10 @@ public class ConfirmPopup : MonoBehaviour
 #endif
     }
 
-    RectTransform MakeChild(string childName, Transform parent)
-    {
-        //makes an empty UI object under a parent
-        GameObject child = new GameObject(childName, typeof(RectTransform));
-        child.transform.SetParent(parent, false); //false keeps its local position, so it lands where we set it
-        return child.GetComponent<RectTransform>();
-    }
-
-    void Stretch(RectTransform rect)
-    {
-        //makes a UI object fill its parent
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-    }
-
-    TextMeshProUGUI MakeText(string childName, Transform parent, string text, float fontSize, Vector2 position, Vector2 size)
-    {
-        //makes a centered text object
-        RectTransform rect = MakeChild(childName, parent);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = size;
-
-        TextMeshProUGUI label = rect.gameObject.AddComponent<TextMeshProUGUI>();
-        label.text = text;
-        label.fontSize = fontSize;
-        label.alignment = TextAlignmentOptions.Center;
-        label.color = Color.white;
-        return label;
-    }
+    //the layout helpers below pass straight through to UIBuildTools, which ShadeInfoWindow uses too
+    RectTransform MakeChild(string childName, Transform parent) { return UIBuildTools.MakeChild(childName, parent); }
+    void Stretch(RectTransform rect) { UIBuildTools.Stretch(rect); }
+    TextMeshProUGUI MakeText(string childName, Transform parent, string text, float fontSize, Vector2 position, Vector2 size) { return UIBuildTools.MakeText(childName, parent, text, fontSize, position, size); }
 
     PopupButtonEntry MakeButton(string childName, Transform parent, string text)
     {

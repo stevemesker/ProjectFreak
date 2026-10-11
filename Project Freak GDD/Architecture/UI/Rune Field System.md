@@ -18,7 +18,7 @@ Shade Manager writes the field, its compiled effects and node snapshots onto the
 
 | Script | Role |
 | :--- | :--- |
-| `RuneFieldData` | The saved state of one slot's field: runes, bridges, plugs, active nodes. Plain data |
+| `RuneFieldData` | The saved state of one slot's field: runes, bridges, plugs, active nodes, and the frozen lists (frozen runes, frozen bridges, locked-in runes). Plain data |
 | `RuneFieldSettingsSO` | The numbers every slot shares: core reach and max bridges, edge bleed, node snap radius, zones, rune size. Also the zone math (which zone a spot is in, rings) |
 | `AbilityNodeEntry` | One ability node as the rules see it (index, position, unlocks, lockouts, effects). Built from the scene's nodes, and saved on the slot as snapshots. In `RuneFieldData.cs` |
 | `RuneField` | The rules. A plain C# class, not a component |
@@ -32,7 +32,7 @@ Shade Manager writes the field, its compiled effects and node snapshots onto the
 | `ShadeSlotManager` | Shade slot buttons that open a slot's field (asking about unsaved changes first) |
 | `ConfirmPopup` | Reusable Save / Discard / Cancel style popup (see [[Confirm Popup]]) |
 | `SideWindowManager` | Opens/closes side panel windows |
-| `RuneFieldLogicTester` (Dev Scripts) | Odin button that tests the rules on made-up fields |
+| `RuneFieldLogicTester` (Dev Scripts) | Odin button that tests the rules on made-up fields (frozen cases added Oct 11, 2026) |
 
 ---
 ## The Rules (RuneField)
@@ -44,17 +44,17 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Bridges:** allowed if neither end is full and the distance is within the bigger of the two reaches. Runes use their `ElementItemSO`'s `connectionDistance` (reach), `connectionsAllowed` (max bridges) and `powerNeeded`. The core uses the settings' `_CoreReach` and `_CoreMaxBridges` (0 = no limit). Dropping a rune bridges it to the closest things in reach, up to its free slots. New bridges always use that normal reach (`GetBaseReach`). An existing bridge on a rune sitting in a node gets the settings' `_SnapStretch` on top (`GetBridgeReach`), so a snap that stretched it doesn't count as overstretched.
 
-**Power:** handed out in layers by **fewest bridges from the core**; inside a layer, the rune placed first goes first. A rune the core can't afford stays dark and power doesn't flow through it, but cheaper runes on other branches still get power. It's all or nothing per rune. **Frozen runes go first** (see **Zones**): a first pass powers them outward along the frozen chain, then the normal pass hands out what's left, with frozen runes passing power on for free.
+**Power:** handed out in layers by **fewest bridges from the core**; inside a layer, the rune placed first goes first. A rune the core can't afford stays dark and power doesn't flow through it, but cheaper runes on other branches still get power. It's all or nothing per rune. **Frozen runes go first** (see **Zones and Evolving**): a first pass powers them outward along frozen bridges only, then the normal pass hands out what's left, with frozen runes passing power on for free. **Past the open zone** *(Oct 11, 2026)*: runes that aren't frozen (planning runes) never get power, and a bridge crossing the open zone's outer ring only carries power if it's frozen, so nothing can power a locked zone early.
 
 **Ability nodes:** a node is on when a powered rune is plugged in, every node in its unlock list is on, and it isn't locked out. Active nodes are saved with the field.
 
 **Lockouts** *(step 7)*: trigger on **plugging, not power**. A rune plugged into X locks every node X lists, even with no power. A locked-out node won't take a rune (refused, red). If two rivals both hold runes (old data), the one plugged first wins. **Evolution gates in the same zone lock each other automatically**, nothing to wire. Lockouts are always two-way: `RuneField.FixOneWayLockouts` fills in a missing reverse link and `RuneFieldManager` logs a `Debug.LogError` naming both nodes, once, when it builds the node list. Unlocks stay power-based. A dragged rune ignores its own plug, so it can move straight from one rival node to the other.
 
-**Footprints** *(overhaul step 6, Oct 9, 2026)*: every rune is a circle `_RuneSize` wide; nodes are rune sized (each holds one rune) and the core is `_CoreSize` wide. `IsSpotFree` refuses a spot outside the open zone, or one that overlaps another rune (frozen ones too), the core or a node. `CanDropAt(rune, position)` is the one check for placing and dropping: an empty node in snap range means "land on its center" if the node can take the rune (`CanPlugInto`: open zone, not locked out, snapping allowed), otherwise the drop is refused; anything else has to be free. Snap radius is smaller than rune size, so **landing near a node always means snapping into it**. A bad spot is refused, nothing gets pushed into a gap. Fields saved before footprints may overlap; they're left alone, the check only runs on placing and dropping.
+**Footprints** *(overhaul step 6, Oct 9, 2026)*: every rune is a circle `_RuneSize` wide; nodes are rune sized (each holds one rune) and the core is `_CoreSize` wide. `IsSpotFree` refuses a spot outside the field (any zone is fine since Oct 11, 2026), or one that overlaps another rune (frozen ones too), the core or a node. `CanDropAt(rune, position)` is the one check for placing and dropping: an empty node in snap range means "land on its center" if the node can take the rune (`CanPlugInto`: not locked out, not a frozen rune past the open zone, snapping allowed), otherwise the drop is refused; anything else has to be free. Snap radius is smaller than rune size, so **landing near a node always means snapping into it**. A bad spot is refused, nothing gets pushed into a gap. Fields saved before footprints may overlap; they're left alone, the check only runs on placing and dropping.
 
 **Snapping:** allowed if every bridge on the rune would be at most `_SnapStretch` (30) past its normal reach.
 
-**Dragging:** `ClampToBridges` keeps a rune within reach of every bridge it has, and `GetBridgeStretch` says how far past reach a bridge is being pulled (the dragged rune counts as out of its node, so normal reach applies). `ClampToBridges` also keeps it within the outer ring plus `_EdgeBleed`, so it can be pulled a little past the edge (shown red) but no further. `TryDropRune(rune, position)` moves it if `CanDropAt` allows, unplugging from its old node and plugging into a new one if needed; otherwise nothing changes. Frozen runes can't be dropped, removed or unplugged, and frozen bridges can't be disconnected (the rules refuse, not just the UI). `RestoreBridges(rune, ids)` puts back bridges it had (used when a drop is refused).
+**Dragging:** `ClampToBridges` keeps a rune within reach of every bridge it has, and `GetBridgeStretch` says how far past reach a bridge is being pulled (the dragged rune counts as out of its node, so normal reach applies). `ClampToBridges` also keeps it within the outer ring plus `_EdgeBleed`, so it can be pulled a little past the edge (shown red) but no further. `TryDropRune(rune, position)` moves it if `CanDropAt` allows, unplugging from its old node and plugging into a new one if needed; otherwise nothing changes. Frozen runes can be moved but not removed, locked-in runes can't be moved or unplugged, and frozen bridges can't be disconnected or stretched (the rules refuse, not just the UI; see **Frozen** under **Zones and Evolving**). `RestoreBridges(rune, ids)` puts back bridges it had (used when a drop is refused).
 
 **Loading:** bad saved entries (missing runes, repeated bridges, plugs into nodes the field doesn't know) are cleaned out first. With no settings asset, the defaults are used and a warning is logged.
 
@@ -75,12 +75,17 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 | `FindBridgeTargets(id, position)` | What a rune would bridge to if dropped here |
 | `ClampToBridges` / `GetBridgeStretch` | Drag limits and tear pull |
 | `FindNodeAt` / `CanSnapToNode` / `CanPlugInto` / `TryPlugRune` / `UnplugRune` | Ability node plugging |
-| `IsNodeLockedOut(index)` / `IsNodeBlocked(index)` | Locked out by a plug / can't take a rune right now (outside the open zone or locked out) |
+| `IsNodeLockedOut(index)` / `IsNodeBlocked(index)` | Locked out by a plug / can't take a rune right now (locked out) |
 | `GetOpenZone()` / `GetZone(position)` / `IsInOpenZone` / `IsInsideField` | Zones |
-| `IsRuneFrozen(id)` / `IsBridgeFrozen(a, b)` | Frozen checks |
+| `IsPastOpenZone(position or id)` / `CrossesOpenRing(a, b)` | Past the open zone's outer ring (planning runes) / a bridge with one end on each side of it |
+| `GetBridgesToCut()` / `CutOpenRingBridges()` | Bridges saving would cut / cut them (run on save, fires `OnBridgesCut` with copies of the cut bridges) |
+| `IsRuneFrozen(id)` / `IsBridgeFrozen(a, b)` / `IsRuneLockedIn(id)` | Frozen checks (read from the saved lists) |
+| `FreezeClosedZones()` | Freezes the closed zones' runes, bridges and plugged runes (run on evolve) |
+| `GetFrozenRunesToLockIn()` / `LockInFrozenPlugs()` | Frozen runes plugged in this draft and not locked yet / lock them in (run on save) |
 | `GetPluggedGate()` / `GetEvolvingGate()` | The open zone's gate with a rune in it / that's on (the shade evolves through it). -1 if none |
 | `FixOneWayLockouts(nodes)` / `CheckGates(nodes, settings)` (static) | Setup checks. Return the problems as text ("" if none) |
 | `SetMaxPower` | Core power changed (shade level) |
+| `HasRunesWaitingForPower()` | A rune that could have power doesn't (planning runes don't count). For the core's look |
 | `CompileEffects()` | Every effect from powered runes and active nodes, as copies |
 | `GetStatTotals()` | Adds up the stat changes in the compiled list |
 | `GetPluggedNodeSnapshots()` | Copies of every node with a rune plugged in |
@@ -92,13 +97,36 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Rings:** the field is `_ZoneCount` (4) rings around the core, one per rank (Bound, Unbound, Ascendant, Legend), each `_ZoneWidth` (300) wide. Ring k is k × width from the core and is zone k's outer edge. A spot's zone goes by its center, and a spot **on** ring k counts as zone k (within `RingTolerance`, 1 field unit), so a gate on ring 1 belongs to zone 1. Ring 4 is the field's edge; `_EdgeBleed` (100) is extra room past it for the background and dragging, but runes can't be placed there.
 
-**The open zone:** a shade of rank R can only build in zone **R + 1** (Bound uses zone 1). Zones further out are **locked**; zones further in are **frozen**. Placing or dropping outside the open zone is refused (red), and nodes outside it show their Locked background.
+**The open zone:** for a shade of rank R it's zone **R + 1** (Bound uses zone 1): the zone it evolves out of next. Zones further out are **locked**; zones further in are **closed**. *Since Oct 11, 2026 (Playtest 0 build step 2) runes can go in any zone inside the field:*
+- **Closed zones:** new runes there are normal runes (movable, removable, powered after the frozen runes). Their ability nodes take runes again, with the usual unlocks and lockouts. Old gates stay closed (see **Gates**)
+- **Locked zones (planning runes):** runes can be placed there to plan ahead. They never get power, come out of the inventory like any rune and save with the field. They can snap into nodes, but the node stays off. Lockouts still trigger on plugging, so a planning rune in a future gate locks its rival until it's pulled out
+- **Cut on save:** in the draft, bridges work normally, including ones crossing the open zone's outer ring (they just don't carry power across). When the field is saved (`ShadeManager.SaveRuneField` runs `CutOpenRingBridges`), every bridge crossing that ring that isn't frozen is cut, and `OnBridgesCut` fires with them (for the break effect later [[Notes for the future]]). Bridges between two runes past the ring stay, so a planned chain keeps its shape; when the zone opens, one bridge reconnects it. *A planned chain that runs into the next locked zone gets cut there at the first save after its own zone opens*
+- Loading and saving never drop or refuse runes past the open zone
+- Zone colors and the crack in the floor are in the Art Pile ([[Rune Field 3D Plan]]) [[Notes for the future]]
 
-**Frozen:** a rune is frozen if it's in a zone ≤ rank, a bridge if both ends are (the core counts as frozen). Frozen runes can't be picked up, removed or unplugged, frozen bridges can't tear, and frozen runes get power first. They can still take new bridges from the open zone if they have free slots. "Frozen" isn't saved, it comes from the rank. *No add-only option (decided Oct 9, not needed).*
+**Frozen** *(saved since Oct 11, 2026, Playtest 0 build step 1, see [[Rune Field 3D Plan]])*: `RuneFieldData` saves three lists, so moving a frozen rune doesn't thaw it:
+- `_FrozenRunes`: rune IDs. The core counts as frozen
+- `_FrozenBridges`: pairs, kept as their own list (not "both ends are frozen"), so a bridge made later between two frozen runes stays normal until the next evolve
+- `_LockedRunes`: frozen runes plugged into a node
 
-**Gates:** a node with an Evolve effect. The shade evolves when a gate in the open zone is **on** (`GetEvolvingGate`). Gates in the same zone lock each other, so only one can hold a rune. After evolving, the taken gate stays on (its rune is frozen) and the zone's other gates are closed for good, since they're no longer in the open zone.
+**Freezing:** `FreezeClosedZones()` runs when the shade evolves (`ShadeManager.TryEvolve`): every rune in a zone ≤ rank freezes, every bridge with both ends frozen at that moment becomes a frozen bridge, and every frozen rune in a node is locked in. It only adds, so runes frozen before stay frozen wherever they've been moved.
 
-**When it evolves:** `ShadeManager.TryEvolve` runs after every save and every level-up, on the slot's saved field (snapshots, no scene needed, works mid-fight). See [[Shade Manager]].
+**The rules that keep a gate powered:**
+- **A.** A locked-in rune never moves or unplugs (`TryDropRune`, `CanDropAt`, `UnplugRune` refuse)
+- **B.** A frozen bridge is never cut: `Disconnect` refuses and `GetBridgeStretch` returns 0, so it never tears. It's a **hard leash**: `CanDropAt` refuses a spot past its reach, and `ClampToBridges` keeps the dragged view inside it
+- **C.** Frozen runes get power first, along frozen bridges only, so a newer bridge can't change their order
+
+**Moving frozen runes:** anywhere inside the field (any zone), never removed. They can still take new bridges if they have free slots. A frozen rune can be plugged into an open zone node in the draft and taken out again; **saving locks it in** (`ShadeManager.SaveRuneField` runs `LockInFrozenPlugs`). `GetFrozenRunesToLockIn()` lists them beforehand, for the confirm popup in build step 3 [[Notes for the future]]
+
+**Past the open zone:** a frozen rune can sit there and keeps its power (passing it on along frozen bridges), but can't plug into a node out there (`CanPlugInto`).
+
+**Old fields:** a field past Bound with all three lists empty gets them built once from positions (the old zone rule) when it loads; an evolved shade always has at least its gate rune frozen, so empty lists there only mean old data. Missing (null) lists are made on load. Load cleanup also drops frozen or locked IDs of missing runes, repeats, frozen bridges with no real bridge behind them (with a warning, rather than putting the bridge back over a rune's limit) and locked runes that aren't frozen and plugged.
+
+*The 2D and 3D views still refuse to pick up frozen runes until build step 3* [[Notes for the future]]. *No add-only option (decided Oct 9, not needed).*
+
+**Gates:** a node with an Evolve effect. The shade evolves when a gate in the open zone is **on** (`GetEvolvingGate`). Gates in the same zone lock each other, so only one can hold a rune. After evolving, the taken gate stays on (its rune is locked in) and the zone's other gates are closed for good: the taken gate's locked-in rune keeps them locked out, and only gates in the open zone can evolve.
+
+**When it evolves:** `ShadeManager.TryEvolve` runs after every save and every level-up, on the slot's saved field (snapshots, no scene needed, works mid-fight), then freezes the zone it left (`FreezeClosedZones`). See [[Shade Manager]].
 
 **Confirm on save:** if the draft has a rune in a gate that the saved field didn't, saving asks first (`_EvolveTitle`, and `_EvolveNowMessage` if the gate already has power or `_EvolveLaterMessage` if not; `{0}` = form name, `{1}` = zone). Save goes ahead, Cancel keeps the draft. Saving again later doesn't ask again. Before the gate gets power, the rune can still be taken out.
 
@@ -204,7 +232,7 @@ Draws the line between its two ends. While a rune is pulled past reach, `StartTe
 Shows the core's power (`CoreNodeCurrentPower` = left, `CoreNodeMaxPower`). Optional `_PowerLabel` text shows "left / total".
 
 ### EvolutionNode (ability nodes)
-Shows its state with the scene's state backgrounds: **Enabled** while on, **Locked** while it can't take a rune (outside the open zone or locked out), none otherwise. Fires `ActivationEvent` / `DeactivationEvent` when it switches while the player is editing. Its `unlocks` and `Lockouts` lists are read when the node list is built from the scene.
+Shows its state with the scene's state backgrounds: **Enabled** while on, **Locked** while it can't take a rune (locked out), none otherwise. Fires `ActivationEvent` / `DeactivationEvent` when it switches while the player is editing. Its `unlocks` and `Lockouts` lists are read when the node list is built from the scene.
 
 **Effects:** what the node does is its `_Effects` list (see **Effects** above), filled in on the node object in the scene. Building the node list from the scene copies it into the node's `AbilityNodeEntry`. Shows an inspector warning for broken effects. `IsGate()` is true when the list has an Evolve effect.
 

@@ -81,6 +81,19 @@ public class RuneFieldCameraSO : ScriptableObject
     [Tooltip("The fastest a slide can start, in meters per second. Stops a wild flick from throwing the camera across the field")]
     [SerializeField, Min(0f)] float _MaxSlideSpeed = 40f;
 
+    [Header("Edge Panning")]
+    [Tooltip("While dragging a rune, holding the pointer near a screen edge pans the camera that way. Off = no edge panning")]
+    [SerializeField] bool _UseEdgePan = true;
+
+    [Tooltip("How wide the edge margin is, as a fraction of the screen's shorter side (0.08 = 8%). Same feel at any resolution")]
+    [SerializeField, Range(0.01f, 0.3f), ShowIf("_UseEdgePan")] float _EdgePanMargin = 0.08f;
+
+    [Tooltip("How fast edge panning goes at the very edge of the screen, as a multiple of the Move speed at the current zoom (so it covers about the same amount of screen at any zoom)")]
+    [SerializeField, Min(0f), ShowIf("_UseEdgePan")] float _EdgePanSpeed = 1f;
+
+    [Tooltip("How speed builds up through the margin. X = how deep into the margin (0 = its inner line, 1 = the screen edge), Y = how much of Edge Pan Speed is used")]
+    [SerializeField, ShowIf("_UseEdgePan")] AnimationCurve _EdgePanCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
     //local variables
     [System.NonSerialized] bool _curveDirty = true; //NonSerialized: Unity doesn't save this, so it's true again every time the asset loads
     [System.NonSerialized] List<Vector2> _samples = new List<Vector2>(); //points along the curve (x = out from the target, y = height)
@@ -127,6 +140,20 @@ public class RuneFieldCameraSO : ScriptableObject
     {
         //move speed at this zoom, blending from the zoomed in speed to the zoomed out speed
         return Mathf.Lerp(_MoveSpeedZoomedIn, _MoveSpeedZoomedOut, zoom);
+    }
+
+    public bool GetUseEdgePan() { return _UseEdgePan; }
+
+    public float GetEdgePanMargin(float screenWidth, float screenHeight)
+    {
+        //how wide the edge margin is on this screen, in pixels
+        return _EdgePanMargin * Mathf.Min(screenWidth, screenHeight);
+    }
+
+    public float GetEdgePanSpeed(float depth, float zoom)
+    {
+        //edge panning speed this deep into the margin (0 to 1) at this zoom, in meters per second
+        return _EdgePanCurve.Evaluate(Mathf.Clamp01(depth)) * _EdgePanSpeed * GetMoveSpeed(zoom);
     }
 
     public float GetBoost(float heldTime)

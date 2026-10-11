@@ -127,11 +127,16 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
     public void OnDrag(PointerEventData eventData)
     {
         //follows the pointer, and tints red over a spot on the field where the rune can't go
+        //3D field: once the pointer leaves the panel, the button hides and the field shows a stand-in rune where it would land instead
         if (_dragging == false) return;
         transform.position = eventData.position;
 
         IRuneFieldView runeField = FindRuneFieldUnderPointer(eventData);
-        bool blocked = runeField != null && runeField.CanPlaceFromInventory(Item, eventData.position) == false;
+        bool overField3D = runeField is RuneField3DObject; //"is" checks what kind of object it is: true only over the 3D field, not the 2D one
+        SetHiddenWhileDragging(overField3D);
+        if (RuneField3DObject._Field3D != null) RuneField3DObject._Field3D.UpdateListDrag(Item, eventData.position, overField3D);
+
+        bool blocked = overField3D == false && runeField != null && runeField.CanPlaceFromInventory(Item, eventData.position) == false; //the 3D stand-in shows its own red
         if (_TintTarget != null) _TintTarget.color = blocked ? runeField.GetInvalidColor() : _normalTint;
     }
 
@@ -139,14 +144,40 @@ public class ElementDataObject : MonoBehaviour, IDragHandler, IBeginDragHandler,
     {
         //function that drops the element onto the rune field if the pointer is over it, then snaps the button back to the list
         if (_dragging == false) return;
-        _dragging = false;
-        if (_TintTarget != null) _TintTarget.color = _normalTint;
+        StopDragLook();
 
         IRuneFieldView runeField = FindRuneFieldUnderPointer(eventData); //asked while the button still ignores clicks, or it would find itself under the pointer
         if (runeField != null) runeField.PlaceRuneFromInventory(Item, eventData.position); //the rune field makes the rune object itself, with this element's data
 
         transform.position = _startPosition;
         if (_canvasGroup != null) _canvasGroup.blocksRaycasts = true; //back in the list, it can be clicked again
+    }
+
+    private void OnDisable()
+    {
+        //the list can refresh (and turn this button off) in the middle of a drag. This makes sure the stand-in on the field doesn't get left behind
+        if (_dragging == false) return;
+        StopDragLook();
+        transform.position = _startPosition;
+        if (_canvasGroup != null) _canvasGroup.blocksRaycasts = true;
+    }
+
+    void StopDragLook()
+    {
+        //ends a drag's looks: the button shows again with its normal tint, and the 3D field's stand-in goes away
+        //runs before placing the rune, since placing refreshes the list, which sets the button's fade for how many are left
+        _dragging = false;
+        SetHiddenWhileDragging(false);
+        if (_TintTarget != null) _TintTarget.color = _normalTint;
+        if (RuneField3DObject._Field3D != null) RuneField3DObject._Field3D.EndListDrag();
+    }
+
+    void SetHiddenWhileDragging(bool hidden)
+    {
+        //hides the dragged button while the 3D field's stand-in rune shows instead. Shown again, it goes back to its normal fade (see FillData)
+        if (_canvasGroup == null) return;
+        if (hidden) _canvasGroup.alpha = 0f;
+        else _canvasGroup.alpha = _AvailableAmount > 0 ? 1f : _UnavailableAlpha;
     }
 
     IRuneFieldView FindRuneFieldUnderPointer(PointerEventData eventData)

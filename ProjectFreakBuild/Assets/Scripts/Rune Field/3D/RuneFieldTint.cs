@@ -41,6 +41,41 @@ public class RuneFieldTint
         }
     }
 
+    //setting several values at once (the bridges use this for their end colors, tear and strain):
+    //StartValues, then any number of PutColor / PutFloat / PutTint, then ApplyValues. Anything not put goes back to the material's own value
+    public void StartValues()
+    {
+        //starts a fresh set of values
+        _block.Clear();
+    }
+
+    public void PutColor(int propertyID, Color color)
+    {
+        //adds a color to the set (propertyID from Shader.PropertyToID)
+        _block.SetColor(propertyID, color);
+    }
+
+    public void PutFloat(int propertyID, float value)
+    {
+        //adds a number to the set (propertyID from Shader.PropertyToID)
+        _block.SetFloat(propertyID, value);
+    }
+
+    public void PutTint(Color color)
+    {
+        //adds the tint color (the color property this tint was made with) to the set
+        _block.SetColor(_colorID, color);
+    }
+
+    public void ApplyValues()
+    {
+        //puts the set on every renderer in the group. Values a shader doesn't have are just ignored, so the names can be set up before the shader exists
+        for (int i = 0; i < _renderers.Count; i++)
+        {
+            if (_renderers[i] != null) _renderers[i].SetPropertyBlock(_block);
+        }
+    }
+
     public static List<Renderer> FindRenderers(Transform root, Transform skip)
     {
         //every renderer under root, leaving out anything under skip (like a node's OnEffect mesh). skip can be null

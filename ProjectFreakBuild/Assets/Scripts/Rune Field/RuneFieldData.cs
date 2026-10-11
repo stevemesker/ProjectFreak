@@ -23,6 +23,16 @@ public class RuneFieldData
     [Tooltip("The ID the next placed rune will get. IDs never get reused, so saved bridges and plugs can't end up pointing at the wrong rune")]
     public int _NextRuneID = 0;
 
+    [Header("Frozen")]
+    [Tooltip("IDs of frozen runes: runes in a zone the shade has evolved out of. They can be moved but never removed, and get power first. Saved instead of worked out from position, so moving one doesn't thaw it")]
+    public List<int> _FrozenRunes = new List<int>();
+
+    [Tooltip("Frozen bridges. They never tear or get cut, so dragging a frozen rune can't pull past them. Their own list (not 'both ends are frozen'), so a new bridge between two frozen runes stays normal until the next evolve")]
+    public List<RuneBridgeEntry> _FrozenBridges = new List<RuneBridgeEntry>();
+
+    [Tooltip("IDs of locked-in runes: frozen runes plugged into a node. They never move or unplug")]
+    public List<int> _LockedRunes = new List<int>();
+
     #region Tools
     public Dictionary<ElementItemSO, int> CountRunes()
     {
@@ -67,13 +77,7 @@ public class RuneFieldData
             copy._Runes.Add(rune);
         }
 
-        for (int i = 0; i < _Bridges.Count; i++)
-        {
-            RuneBridgeEntry bridge = new RuneBridgeEntry();
-            bridge._A = _Bridges[i]._A;
-            bridge._B = _Bridges[i]._B;
-            copy._Bridges.Add(bridge);
-        }
+        CopyBridges(_Bridges, copy._Bridges);
 
         for (int i = 0; i < _Plugs.Count; i++)
         {
@@ -84,7 +88,26 @@ public class RuneFieldData
         }
 
         copy._ActiveNodes.AddRange(_ActiveNodes); //ints copy by value, so AddRange is enough here
+
+        //the frozen lists can be null on data saved before they existed, so each one is checked first
+        if (_FrozenRunes != null) copy._FrozenRunes.AddRange(_FrozenRunes);
+        if (_LockedRunes != null) copy._LockedRunes.AddRange(_LockedRunes);
+        CopyBridges(_FrozenBridges, copy._FrozenBridges);
         return copy;
+    }
+
+    void CopyBridges(List<RuneBridgeEntry> from, List<RuneBridgeEntry> to)
+    {
+        //function that adds a new copy of every bridge in one list to another. Used for both the bridges and the frozen bridges
+        if (from == null) return;
+        for (int i = 0; i < from.Count; i++)
+        {
+            if (from[i] == null) continue;
+            RuneBridgeEntry bridge = new RuneBridgeEntry();
+            bridge._A = from[i]._A;
+            bridge._B = from[i]._B;
+            to.Add(bridge);
+        }
     }
     #endregion
 }

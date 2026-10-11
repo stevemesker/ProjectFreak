@@ -16,5 +16,7 @@ MonoBehaviour:
   _SaveChapter: 0
   _PlayerTamerLevel: 0
   _ShadeSlotSelection: 0
+  _SeenEvolutions:
+  - {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
   _CurrentScene: 
   _CurrentSceneReadable: 

@@ -83,6 +83,7 @@ public class RuneFieldCameraObject : MonoBehaviour
     Vector3 _grabPoint; //the spot on the field that stays under the cursor while dragging
     float _moveHeldTime; //how long a move direction has been held, for the hold boost
     bool _usingMouse = true; //which device was used last (from the scene's pointer when there is one)
+    bool _edgePanArmed; //true once the pointer has been outside the edge margin during the current drag (see UpdateEdgePan)
     bool _warnedNoFieldSettings;
 
     private void Reset()
@@ -144,6 +145,7 @@ public class RuneFieldCameraObject : MonoBehaviour
         UpdateDrag(pointer, deltaTime);
         UpdateMove(deltaTime);
         UpdateSlide(deltaTime);
+        UpdateEdgePan(pointer, deltaTime);
         ClampToEdge();
         PlaceCamera(_CurrentZoom);
     }
@@ -279,6 +281,41 @@ public class RuneFieldCameraObject : MonoBehaviour
 
         MoveFocus(_slideVelocity * deltaTime);
         _slideVelocity *= Mathf.Exp(-_CameraSettings.GetSlideFriction() * deltaTime); //Exp makes the slow down the same at any frame rate
+    }
+
+    void UpdateEdgePan(Vector2 pointer, float deltaTime)
+    {
+        //while a rune is being dragged (on the field, carried out of the list, or a list button), holding the pointer near a screen edge pans the camera that way,
+        //faster the deeper into the edge margin. The field's edge limit still applies (ClampToEdge runs after this)
+        //it only starts once the pointer has been outside the margin since the drag began, so a drag starting at the inventory (on the right edge) doesn't pan straight away
+        bool dragging = RuneField3DObject._Field3D != null && RuneField3DObject._Field3D.IsDraggingAnything();
+        if (_CameraSettings.GetUseEdgePan() == false || dragging == false) { _edgePanArmed = false; return; }
+
+        Vector2 depth = GetEdgeDepth(pointer);
+        if (depth == Vector2.zero) { _edgePanArmed = true; return; } //outside the margin: edge panning can start from now on
+        if (_edgePanArmed == false) return;
+        if (IsPointerOverCanvas()) return; //over the side panel (or other UI), like taking a rune back to the inventory list: no panning
+
+        //screen right is the camera's right, screen up is the way the camera faces along the field
+        GetFacing(out Vector3 forward, out Vector3 right);
+        float speedX = _CameraSettings.GetEdgePanSpeed(Mathf.Abs(depth.x), _CurrentZoom) * Mathf.Sign(depth.x);
+        float speedY = _CameraSettings.GetEdgePanSpeed(Mathf.Abs(depth.y), _CurrentZoom) * Mathf.Sign(depth.y);
+        MoveFocus((right * speedX + forward * speedY) * deltaTime);
+    }
+
+    Vector2 GetEdgeDepth(Vector2 pointer)
+    {
+        //how deep the pointer is into the edge margin on each axis: 0 = not in it, 1 = at (or past) the screen edge
+        //negative = the left / bottom edge, positive = the right / top edge
+        float margin = _CameraSettings.GetEdgePanMargin(Screen.width, Screen.height);
+        if (margin <= 0f) return Vector2.zero;
+
+        Vector2 depth = Vector2.zero;
+        if (pointer.x < margin) depth.x = -Mathf.Clamp01((margin - pointer.x) / margin);
+        else if (pointer.x > Screen.width - margin) depth.x = Mathf.Clamp01((pointer.x - (Screen.width - margin)) / margin);
+        if (pointer.y < margin) depth.y = -Mathf.Clamp01((margin - pointer.y) / margin);
+        else if (pointer.y > Screen.height - margin) depth.y = Mathf.Clamp01((pointer.y - (Screen.height - margin)) / margin);
+        return depth;
     }
 
     void MoveFocus(Vector3 change)

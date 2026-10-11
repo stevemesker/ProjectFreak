@@ -27,6 +27,11 @@ public class InventoryManager : MonoBehaviour
     //Element Variables//
     public Dictionary<ElementItemSO, int> playerElements = new Dictionary<ElementItemSO, int>();
 
+    //Shard Variables//
+    [Tooltip("Shards (core fragments) and how many of each tier the player has. One asset per tier, so they stack like any item")]
+    [ShowInInspector] //Unity can't show a Dictionary, Odin can (read it while playing)
+    public Dictionary<ShardItemSO, int> playerShards = new Dictionary<ShardItemSO, int>();
+
     public IReadOnlyDictionary<IngredientItem, int> Ingredients
         => playerIngredients;
     public IReadOnlyDictionary<ElementItemSO, int> Elements
@@ -88,6 +93,9 @@ public class InventoryManager : MonoBehaviour
                 break;
             case ElementItemSO element:
                 AddElement(item as ElementItemSO, amount);
+                break;
+            case ShardItemSO shard:
+                AddShard(shard, amount);
                 break;
 
             default:
@@ -228,6 +236,48 @@ public class InventoryManager : MonoBehaviour
         //returns how many of this element rune the player has (0 if none)
         if (item == null) return 0;
         if (playerElements.TryGetValue(item, out int current)) return current;
+        return 0;
+    }
+    #endregion
+
+    #region Shards
+    [Button]
+    public bool AddShard(ShardItemSO shard, int amountAdded)
+    {
+        //function that adds shards to the inventory, capped at the max stack size (with a warning)
+        if (shard == null || amountAdded < 1) return false;
+        int newCount = GetShardCount(shard) + amountAdded;
+        bool fit = newCount <= ItemStackSizeMax;
+        if (fit == false) Debug.LogWarning($"Warning! Maximum item amount has been surpassed for {shard.ItemName}, capping it at {ItemStackSizeMax}...");
+
+        playerShards[shard] = Mathf.Min(newCount, ItemStackSizeMax); //[key] = value adds the entry if it isn't there yet, or replaces it
+        OnInventoryChanged?.Invoke();
+        return fit;
+    }
+
+    [Button]
+    public bool RemoveShard(ShardItemSO shard, int amountRemoved)
+    {
+        //function that takes shards out of the inventory (like slotting one into a shade). Returns false and changes nothing if there aren't enough
+        if (shard == null || amountRemoved < 1) return false;
+        int current = GetShardCount(shard);
+        if (current < amountRemoved)
+        {
+            Debug.LogWarning($"Warning! Tried to remove {amountRemoved} {shard.ItemName} but the inventory only has {current}, nothing removed...");
+            return false;
+        }
+
+        if (current - amountRemoved <= 0) playerShards.Remove(shard);
+        else playerShards[shard] = current - amountRemoved;
+        OnInventoryChanged?.Invoke();
+        return true;
+    }
+
+    public int GetShardCount(ShardItemSO shard)
+    {
+        //returns how many of this shard tier the player has (0 if none)
+        if (shard == null) return 0;
+        if (playerShards.TryGetValue(shard, out int current)) return current;
         return 0;
     }
     #endregion

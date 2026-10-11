@@ -7,9 +7,94 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 **Oct 11, 2026:** tested in Unity and playtested with friends. Steve's verdict: a big success, and it feels better than the 2D version. Next up: tools to make it feel intuitive (new chat), and live gates (see Future Ideas in [[Rune Field Overhaul Plan]]). Keep an eye out for the camera slipping past the field (not seen since). Built pieces are written up in [[Rune Field 3D View]] [[Notes for the future]]
 
+**Oct 11, 2026 (later):** went through [[Rune Field 3D Change Requests and to Do]] with Claude. Systems and gameplay come first, art waits for its own talks. The plan for that round is **Playtest 0 Changes** below; everything under it (Decisions through Open Questions) is the record of the first build.
+
+**Oct 11, 2026 (evening):** Playtest 0 build steps 1 (frozen saved and moving) and 2 (runes in any zone) built in the rules, see **Zones and Evolving** in [[Rune Field System]]. Steps 3 (the 3D view for them), 4 (dragging and gamepad), 5 (code ready for the art), 6 (shade info window) and 7 (shard data) built, see [[Rune Field 3D View]]. **Every Playtest 0 build step is built.** Left from that round: the Art Pile (own talks) and the shard page
+
 **Branch:** `dev > rune field overhaul > 3d rune field test`. If the test doesn't work out, the branch gets dropped and the 2D view stays.
 
 **Goal:** a build of `3d_Evolution_UI_scene` that runs on its own and can be sent to friends to play with. Loading it into the real game (Hazen terminal, additive scene, camera blend) comes after the test.
+
+---
+## Playtest 0 Changes
+*Agreed Oct 11, 2026, from [[Rune Field 3D Change Requests and to Do]].* **Systems and gameplay first.** Anything touching art (shaders, effects, zone visuals, the info popup's look) is in the **Art Pile** and gets its own talk. Where art needs code to drive it, the code side gets set up now so the shader only has to read it.
+
+### Frozen runes can move
+Playtest feedback: not being able to touch old runes felt bad. Frozen runes can now be picked up and moved **anywhere on the field**, as long as these always hold:
+- **A. A frozen rune plugged into a node never moves or unplugs.** Only frozen runes: runes in the open zone can still be tried in and out of nodes as much as the player wants
+- **B. A frozen bridge is never cut.** Not by tearing, not by the forward zone cut (below), not by anything. Dragging a frozen rune is a **hard leash**: it can't be pulled past a frozen bridge's reach, so there's no tearing at all
+- **C. A frozen rune's place in the power order never changes.** Frozen runes are powered first, along frozen bridges only (the rules already do this). Since frozen bridges can't break and placement order never changes, a new short chain to the core can't take power away from the old chain. *Example: a 20 rune chain to the evolve gate, then a new 2 rune chain at level 21. Without this the 2 new runes would be powered first and the gate's chain could lose power*
+
+Together these stop anything cutting an evolution gate (or any frozen node) off from power.
+
+**Frozen is saved, not worked out from position.** Right now a rune is frozen because of the zone it's in. Once frozen runes can move, that stops working (drag one into the open zone and it would thaw). So `RuneFieldData` saves three lists:
+- **Frozen runes** (IDs)
+- **Frozen bridges** (pairs), saved as their own list rather than "both ends are frozen", so a new bridge made later between two frozen runes doesn't become permanent by accident
+- **Locked-in runes:** frozen runes plugged into a node, which rule A covers
+
+**When things freeze:** when the shade evolves, every rune inside the zone being closed (or further in) freezes, every bridge with both ends frozen at that moment is added to the frozen bridges, and every frozen rune in a node is locked in. Runes placed later in old zones are normal runes until the next evolve freezes them too.
+
+**Locking in on save:** a frozen rune can be plugged into a node in the draft (to try out an old ability). It's only locked in once the field is **saved**, and saving asks first, like the gate confirm: "These frozen runes will be locked into their nodes permanently." Before saving it can still come back out.
+
+**Frozen runes past the open zone:** allowed, so nothing ever has to be dragged back. Out there a frozen rune keeps its power and keeps passing it along frozen bridges (rule C), but:
+- it **can't plug into a node** past the open zone (a powered frozen rune is the only thing that could turn a future node on early)
+- runes past the open zone that **aren't frozen never get power**, even bridged to a powered frozen rune, so nobody can power a future zone early
+
+**Old fields:** slots saved before this have no frozen lists. When a slot with rank above Bound loads with empty lists, they're built once from positions (the old zone rule), so nothing saved breaks. Slots get reset for testing anyway.
+
+### Runes in any zone
+- **Old (frozen) zones:** new runes can be placed there. They're normal runes (movable, removable, powered after the frozen runes). Ability nodes in old zones take runes again, with the usual unlocks and lockouts. Old gates stay closed: the taken gate's rune is locked in, so it keeps its rivals locked out, and evolving only ever checks gates in the open zone
+- **Future (locked) zones:** runes can be placed there to **plan ahead**. They never get power, come out of the inventory like any rune, and save with the field. They **can snap into nodes**, but with no power the node stays off. Lockouts still trigger on plugging, so a planning rune in a future gate locks its rival until it's pulled out
+- **Cut on save:** in the draft, bridges work normally, including ones crossing the open zone's outer ring (they just don't carry power across). **When the field is saved, every bridge that crosses that ring and isn't frozen is cut.** Bridges between two runes past the ring stay, so a planned chain keeps its shape; when the zone opens, one bridge reconnects it. The cut fires an event listing the cut bridges, for the break effect later
+- **Load and save checks** in `RuneField` must not drop or refuse runes past the open zone. *Check everything that assumes every rune is in the open zone or further in.* This is the "runes left in a closed zone" half of live gates (Future Ideas in [[Rune Field Overhaul Plan]]); evolving without saving is still for later
+
+**Logic tester cases** (`RuneFieldLogicTester`): the 20 chain vs 2 chain example, moving frozen runes (inside the leash, refused past it), refusing to unplug a locked-in rune, a frozen rune past the open zone (keeps power, can't plug, doesn't power planning runes), planning runes never powered, the cut on save (frozen crossing bridges kept), old gates staying closed, and an old slot with no frozen lists.
+
+### Dragging and gamepad
+- **Hide the inventory button over the field:** once a rune dragged from the list leaves the panel, the button hides and the gamepad's stand-in rune shows on the field instead. Back over the list, the button comes back. *The shrink-to-a-circle animation is for a polish pass* [[Notes for the future]]
+- **Edge panning:** while dragging a rune (mouse, gamepad carry, stand-in, or a list drag), holding the pointer near the screen edge pans the camera, faster the deeper into the margin. Settings on `SO_RuneField_Camera` (margin, speed, curve). It only starts once the pointer has been out of the margin once, so drags starting at the inventory on the right edge don't pan straight away. The field edge limit still applies
+- **D-pad focus fix:** with the side panel open and nothing in the list selected (after a mouse click, or focus dropping off), D-pad down selects the top rune. With a rune selected, normal navigation moves to the next one, as now
+
+### Code ready for the art
+- **Hovering nodes and the core:** picking only finds runes now. Nodes (rune sized) and the core (`_CoreSize`) get picked the same way (math on the field's plane), and the pointer says what's hovered (rune, node, core or nothing) with an event when it changes. The info popup will hook in here once it's designed
+- **Core state:** `Core3DObject` exposes spare power, total power, and whether any rune on the field has no power, so the core shader (Steve's) can show bright / normal / dull purple. Property names become inspector fields once the shader exists
+- **Bridge end colors:** each bridge gets the colors of the two runes it joins (the core counts as a color too), plus its tear amount (0 to 1) and its strain (how far into `_TearSlack` it's pulled, before the timer starts, for the tear dead zone look). All per bridge through `RuneFieldTint`'s `MaterialPropertyBlock`, so it's **one shared material**, no material per color combo and no copy while tearing. Names become inspector fields once Steve's shader exists
+- **Rune color and glyph data:** `ElementItemSO` gets a `ColorPaletteSO` and a glyph texture. Runes use the palette's primary color (a plain tint until the shader exists); the field's temp `_ElementColors` list stays only as a fallback for runes with no palette yet. *Later the color may be worked out from the rune's stats* [[undecided]]
+
+### Shade info window
+A window in the side panel (with the inventory and shade slots), showing the open slot's shade:
+- **Stats:** base stats (from the evolution), what the saved runes and nodes add, and what the draft would change, shown apart until saved
+- **Render:** a render texture camera showing the evolution's art (`_TetheredArt`), spawned out of sight
+- **Seen evolutions:** a saved list of evolutions the player has seen. One not seen yet shows blacked out. For now an evolution counts as seen when the shade evolves; later, when its evolve cutscene plays [[Notes for the future]]
+- Layout, the blacked out look and the render's lighting are part of the art pass
+
+### Shard data
+Only the data now; the shard page, dragging a shard into the core and the orbiting shard need a bigger talk (the page may be its own inventory window) [[Notes for the future]]
+- **`ShardItemSO`** (an `ItemSO`): its tier and power. One asset per tier, they stack like other items (see Core Fragments in [[Rune Field Overhaul Plan]])
+- **One shard per shade:** `ShadeSO` holds its slotted shard. Core power = level + the shard's power (replacing the plain `_FragmentPower` number). Slotting is permanent and refused if the shade already has one; the Shade Manager does it and takes the shard out of the inventory
+- Dropping shards when a shade dies or is broken down is part of the fail state, not this round
+
+### Build Order
+Each step gets tested in Unity before the next.
+1. ~~**Frozen saved and moving:**~~ *Built Oct 11, 2026, see [[Rune Field System]]. The 20 vs 2 chain test is shortened to a 6 rune chain (same rule). Frozen bridges with no real bridge behind them are dropped on load with a warning. The frozen-only plug check for nodes past the open zone gets its own tester case in step 2, once those nodes open. The views still can't pick up frozen runes until step 3.* the three frozen lists, freezing on evolve, filling them for old slots, frozen runes movable with the hard leash, locked-in runes, frozen-first power from the saved lists, frozen runes can't plug past the open zone. Tester cases
+2. ~~**Runes in any zone:**~~ *Built Oct 11, 2026, see [[Rune Field System]]. No load or save code assumed runes were in the open zone, so nothing needed changing there. Nodes outside the open zone no longer show the Locked look, only locked-out ones do.* placing in old and future zones, old ability nodes open again, no power past the open zone, the cut on save with its event, load / save checks. Tester cases
+3. ~~**3D view for the new rules:**~~ *Built Oct 11, 2026, see [[Rune Field 3D View]]. Cut bridges disappear through the reload after saving; the view also passes them on (`OnBridgesCut`) for the break effect. The evolve popup's default text was updated for frozen runes moving. The 2D view is left as it is (it still can't pick up frozen runes).* dragging frozen runes, the lock-in confirm on save, X / sending to inventory refused for frozen runes, cut bridges removed on save
+4. ~~**Dragging and gamepad:**~~ *Built Oct 11, 2026, see [[Rune Field 3D View]]. Edge panning also skips while the pointer is over the canvas, so taking a rune back to the list doesn't pan. Its speed is a multiple of the Move speed, so it scales with zoom. The D-pad fix also needed the pointer to count the D-pad as gamepad use.* hidden button with the stand-in, edge panning, D-pad focus fix
+5. ~~**Code ready for the art:**~~ *Built Oct 11, 2026, see [[Rune Field 3D View]]. The hover lives on the field (it does the picking), not the pointer. Bridge shader property names are already inspector fields with placeholder names. Planning runes don't count as "a rune with no power" for the core.* hovering nodes and the core, core state, bridge end colors / tear / strain, rune color and glyph data
+6. ~~**Shade info window**~~ *Built Oct 11, 2026, see **ShadeInfoWindow** in [[Rune Field 3D View]]. Seen forms are saved on the save slot. The window builds its own layout; adding it to the side panel and its tab is Steve's (two steps in the note).*
+7. ~~**Shard data**~~ *Built Oct 11, 2026, see [[Items & Pickups]] (`ShardItemSO`) and [[Shade Manager]] (`SlotShard`). The Shade Manager also got `OnCorePowerChanged`, so the open 3D field picks up new core power (level or shard) by itself*
+
+### Art Pile (own talks)
+- Zone visuals: the crack in the floor with a wall of magic light, and floor colors for frozen / open / locked zones
+- Bridge tear shader (builds up and changes color with the tear), the break effect (tears, the cut on save, anything severed), the tear dead zone look
+- Node glow shader: fades on / off and to the locked look. *Idea: the shader runs the fade itself from a start time set once, so there's nothing to tick per node*
+- Core shader (Steve makes it and shares the control variables)
+- Bridge end color gradient (Steve's shader, fed by step 5)
+- Rune color and glyph shader
+- Range visualizer while placing (reach ring, preview bridges)
+- Info popup for runes, nodes and the core: a hover panel with a 3D feel. Steve mocks it up first; canvas or not is decided then
+- Shade info window look, the blacked out render
+- Shards: page, dragging into the core, orbiting shard per tier
 
 ---
 ## Decisions
@@ -185,10 +270,7 @@ Starting rune assets for the test: Steve makes these.
 
 ---
 ## Later (not in this test)
-- Panning when a dragged rune is held near the screen edge [[Notes for the future]]
-- D-pad quick select from the inventory list [[Notes for the future]]
-- Info popup for runes and nodes (needs a button now that Y opens the side panel) [[Notes for the future]]
-- Shards: dragging a shard into the core, orbiting shard per tier [[Notes for the future]]
+*Oct 11, 2026: edge panning, the D-pad, the info popup and shards moved into **Playtest 0 Changes** above (the info popup is now a mouse hover panel, so it no longer needs a button).*
 - Loading into the real game: Hazen terminal, additive scene, camera blend, pause, input map switch, safe rooms [[Notes for the future]]
 - Real feedback visuals (shaders, zone borders, rune glyphs) once 2D vs 3D is decided [[Notes for the future]]
 - Speed and sensitivity options in the settings menu [[Notes for the future]]

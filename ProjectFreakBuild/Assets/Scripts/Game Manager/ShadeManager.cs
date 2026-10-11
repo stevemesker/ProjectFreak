@@ -49,6 +49,7 @@ public class ShadeManager : MonoBehaviour
     List<ShadeRuntimeEntry> _RuntimeEntries = new List<ShadeRuntimeEntry>();
 
     public event System.Action<int> OnShadeEvolved; //fires with the slot index after a shade evolves (from a save or a level-up). The rune field listens to reload
+    public event System.Action<int> OnCorePowerChanged; //fires with the slot index when its core power changes (a level change or a slotted shard). The 3D rune field listens, so an open draft gets the new power
 
     [Header("Local Variables")]
     [SerializeField] float _switchTimeIn = .5f;
@@ -309,7 +310,8 @@ public class ShadeManager : MonoBehaviour
     {
         //function the rune field UI calls when the player saves. Returns false if nothing was saved
         //1. the inventory changes by the difference between the old and new saved field (added runes come out, removed runes go back)
-        //2. the field, everything it does (compiled effects) and the nodes it plugged into (snapshots) are written onto the slot
+        //2. frozen runes in nodes lock in, bridges crossing the open ring are cut, then the field, everything it does (compiled effects)
+        //   and the nodes it plugged into (snapshots) are written onto the slot
         //3. if a gate in the open zone has power, the shade evolves
         //4. the slot's runtime entry is rebuilt
         if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't save its rune field", this); return false; }
@@ -328,6 +330,8 @@ public class ShadeManager : MonoBehaviour
         ApplyRuneChanges(oldCounts, newCounts);
 
         field.SetMaxPower(GetCorePower(slotIndex)); //in case the shade leveled while the field was open, so a stale draft can't save the wrong power
+        field.LockInFrozenPlugs(); //frozen runes plugged into nodes in this draft are locked in for good (the view asks the player first)
+        field.CutOpenRingBridges(); //bridges from the open zone into a locked zone are cut (frozen ones stay). The field fires OnBridgesCut for the view
         slot.SaveRuneField(field.GetData(), field.CompileEffects(), field.GetPluggedNodeSnapshots());
         bool evolved = TryEvolve(slotIndex);
         RebuildSlot(slotIndex);
@@ -389,13 +393,15 @@ public class ShadeManager : MonoBehaviour
         return _ShadeSlots[slotIndex]._RuneField.CountRunes(element);
     }
 
-    void RerunSavedField(int slotIndex)
+    void RerunSavedField(int slotIndex, bool freezeClosedZones = false)
     {
         //runs the rules again on a slot's saved field with its current core power, using its node snapshots (no field scene needed)
         //runes that were waiting for power light up, nodes they reach switch on, and the slot's saved field and compiled list are replaced
         //frozen runes get their power first (see RuneField.CalculatePower)
+        //freezeClosedZones: used right after evolving, so the zone the shade left freezes along with its bridges and plugged runes
         ShadeSO slot = _ShadeSlots[slotIndex];
         RuneField field = BuildSavedField(slot);
+        if (freezeClosedZones) field.FreezeClosedZones();
         slot.SaveRuneField(field.GetData(), field.CompileEffects(), field.GetPluggedNodeSnapshots());
     }
 
@@ -414,7 +420,7 @@ public class ShadeManager : MonoBehaviour
 
     public int GetCorePower(int slotIndex)
     {
-        //how much power a slot's core has: its level plus its fragment
+        //how much power a slot's core has: its level plus its slotted shard's power
         if (IsValidSlot(slotIndex) == false) return 0;
         return _ShadeSlots[slotIndex].GetCorePower();
     }
@@ -435,7 +441,7 @@ public class ShadeManager : MonoBehaviour
     bool TryEvolve(int slotIndex)
     {
         //function that evolves a slot's shade if a gate in its open zone has power (its saved field, so this works anywhere, even mid-dungeon)
-        //the gate is recorded (rank goes up) and the slot swaps to the gate's form, then the field runs again so the zone it left counts as frozen
+        //the gate is recorded (rank goes up) and the slot swaps to the gate's form, then the field runs again and freezes the zone it left
         //returns true if it evolved. The caller rebuilds the runtime entry and then calls FinishEvolving
         ShadeSO slot = _ShadeSlots[slotIndex];
         RuneField field = BuildSavedField(slot);
@@ -447,19 +453,48 @@ public class ShadeManager : MonoBehaviour
         if (evolution == null) { Debug.LogError($"Error! {slot.name}'s gate {field.GetNode(gate)._Name} has power but no evolution set on its Evolve effect, it can't evolve", this); return false; }
 
         slot.Evolve(gate, evolution);
-        RerunSavedField(slotIndex);
+        RerunSavedField(slotIndex, true);
         return true;
     }
 
     void FinishEvolving(int slotIndex)
     {
-        //after an evolve and the rebuild: swaps the art on the shade if it's out right now, then tells listeners (the rune field reloads)
+        //after an evolve and the rebuild: swaps the art on the shade if it's out right now, marks the new form as seen, then tells listeners (the rune field reloads)
         if (slotIndex == currentShadeSelected)
         {
             if (_TetheredShade != null) _TetheredShade.RefreshForm();
             if (_ReleasedShade != null) _ReleasedShade.RefreshForm();
         }
+        MarkEvolutionSeen(_ShadeSlots[slotIndex]._CurrentEvolution); //todo: later this happens when the evolve cutscene plays instead
         OnShadeEvolved?.Invoke(slotIndex);
+    }
+
+    public bool IsEvolutionSeen(ShadeEvolutionSO evolution)
+    {
+        //has the player seen this form yet? Forms not seen show blacked out in the shade info window
+        //the Bound form always counts (every shade starts in it). With no save slot to check (testing a scene on its own), everything counts as seen
+        if (evolution == null || evolution == _BoundEvolution) return true;
+        SaveSlotSO save = GetSaveData();
+        if (save == null) return true;
+        return save.HasSeenEvolution(evolution);
+    }
+
+    void MarkEvolutionSeen(ShadeEvolutionSO evolution)
+    {
+        //adds a form to the active save slot's seen list
+        SaveSlotSO save = GetSaveData();
+        if (save == null) { Debug.LogWarning($"Warning! No save slot found, {(evolution != null ? evolution.name : "this form")} isn't remembered as seen...", this); return; }
+        save.MarkEvolutionSeen(evolution);
+    }
+
+    SaveSlotSO GetSaveData()
+    {
+        //the active save slot, or null if there's no Save Manager or no slot at its index
+        SaveManager saveManager = SaveManager._save;
+        if (saveManager == null || saveManager._saveSlotList == null) return null;
+        int index = saveManager.GetCurrentActiveSaveSlot();
+        if (index < 0 || index >= saveManager._saveSlotList.Count) return null;
+        return saveManager._saveSlotList[index];
     }
     #endregion
 
@@ -589,10 +624,18 @@ public class ShadeManager : MonoBehaviour
         if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't change its level", this); return; }
 
         _ShadeSlots[slotIndex].SetLevel(level);
+        AfterCorePowerChange(slotIndex);
+    }
+
+    void AfterCorePowerChange(int slotIndex)
+    {
+        //after a slot's core power changed (level or shard): runs its saved rune field again with the new power, evolves it if that powered a gate,
+        //rebuilds its runtime entry, then tells listeners
         RerunSavedField(slotIndex);
         bool evolved = TryEvolve(slotIndex);
         RebuildSlot(slotIndex);
         if (evolved) FinishEvolving(slotIndex);
+        OnCorePowerChanged?.Invoke(slotIndex);
     }
 
     public void AddLevels(int slotIndex, int amount)
@@ -600,6 +643,27 @@ public class ShadeManager : MonoBehaviour
         //adds (or takes away, if negative) levels from a slot
         if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't change its level", this); return; }
         SetSlotLevel(slotIndex, _ShadeSlots[slotIndex]._Level + amount);
+    }
+    #endregion
+
+    #region Shards
+    public bool SlotShard(int slotIndex, ShardItemSO shard)
+    {
+        //slots a shard (core fragment) into a shade's core for good: it takes one out of the inventory and adds its power to the core
+        //refused (false, nothing changes) if the shade already has a shard or the inventory has none. The confirm box comes with the shard page later
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't slot a shard", this); return false; }
+        if (shard == null) return false;
+        ShadeSO slot = _ShadeSlots[slotIndex];
+        if (slot.HasShard()) { Debug.LogWarning($"Warning! {slot.name} already has {slot._Shard.name} slotted, a shade only takes one. Nothing changed...", this); return false; }
+
+        InventoryManager inventory = InventoryManager._PlayerInventory;
+        if (inventory != null && inventory.GetShardCount(shard) < 1) { Debug.LogWarning($"Warning! No {shard.ItemName} in the inventory to slot into {slot.name}. Nothing changed...", this); return false; }
+        if (inventory == null) Debug.LogWarning($"Warning! No Inventory Manager found, slotting {shard.name} into {slot.name} without taking it from the inventory...", this);
+
+        if (inventory != null) inventory.RemoveShard(shard, 1);
+        slot.SlotShard(shard);
+        AfterCorePowerChange(slotIndex); //more power can light runes up, and even reach a gate
+        return true;
     }
     #endregion
 
@@ -735,6 +799,14 @@ public class ShadeManager : MonoBehaviour
         //editor button (play mode only): +1 level on the selected slot, re-running its saved rune field
         if (Application.isPlaying == false) { Debug.LogWarning("Warning! Level Up only works in play mode, the runtime entries don't exist yet..."); return; }
         AddLevels(currentShadeSelected, 1);
+    }
+
+    [FoldoutGroup("Test Tools"), Button("Slot Shard Into Current Slot")]
+    void TestSlotShard(ShardItemSO shard)
+    {
+        //editor button (play mode only): slots a shard into the selected slot, the same way the shard page will. Needs one in the inventory (if there's an Inventory Manager)
+        if (Application.isPlaying == false) { Debug.LogWarning("Warning! Slot Shard only works in play mode..."); return; }
+        SlotShard(currentShadeSelected, shard);
     }
 
     [FoldoutGroup("Test Tools"), Button("Hurt Current Slot")]

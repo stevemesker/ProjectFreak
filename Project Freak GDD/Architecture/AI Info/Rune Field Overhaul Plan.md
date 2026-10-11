@@ -186,7 +186,7 @@ When a shade dies or is broken down, the player gets a **core fragment** (a "sha
 
 The power more than doubles each tier on purpose, so sacrificing one high-level shade beats several small ones. Watch for big gaps between tiers (lvl 40 gives 7, lvl 41 gives 15): players will level to the next tier's start before sacrificing. Fine if that feels good, flatten it if not. [[undecided]]
 
-**As items:** each tier is a normal item asset (one `ItemSO` per tier, holding its power value). Shards have no per-shard data, so two of the same tier stack in the inventory like any other item. [[Notes for the future]]
+**As items:** each tier is a normal item asset (one `ItemSO` per tier, holding its power value). Shards have no per-shard data, so two of the same tier stack in the inventory like any other item. *Built Oct 11, 2026 (3D Playtest 0 build step 7): `ShardItemSO`, the slot's `_Shard` (replacing `_FragmentPower`) and `ShadeManager.SlotShard`, see [[Items & Pickups]] and [[Shade Manager]]. The shard page, dragging a shard into the core, the confirm box and dropping shards are still to do* [[Notes for the future]]
 
 *Revisit if something needs shards to carry their own data* (like a memorial "Shard of Ignis, Ascendant, Lv 23", or crafting that cares about which shade it came from). That needs item instances in the inventory, which runes will probably need anyway for rolled stats (see Open Questions). Kept simple until then.
 

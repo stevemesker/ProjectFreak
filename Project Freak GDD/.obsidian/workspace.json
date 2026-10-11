@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/Rune Field 3D Plan.md",
+                "file": "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune Field 3D Plan"
+              "title": "Rune Field 3D Change Requests and to Do"
             }
           }
         ]
@@ -45,12 +45,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Shade Info/Tethered.md",
+                "file": "Architecture/AI Info/Rune Field 3D Plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Tethered"
+              "title": "Rune Field 3D Plan"
             }
           }
         ],
@@ -242,22 +242,26 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Architecture/AI Info/Rune Field 3D Plan.md",
+    "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
+    "Architecture/AI Info/Known Issues.md",
+    "Architecture/AI Info/Coding Concepts.md",
+    "Architecture/AI Info/Code Style Rules.md",
+    "Shade Info/Evolution Type.md",
+    "Shade Info/Evolution.md",
+    "UI/Rune Field/Core Node.md",
+    "UI/Rune Field/Ability Node.md",
+    "Shade Info/Tethered.md",
     "UI/Rune Field/Rune Field 3D.md",
     "Architecture/UI/Rune Field 3D View.md",
-    "Architecture/AI Info/Rune Field 3D Plan.md",
     "zzz Extras/Attachments/Pasted image 20261010045505.png",
     "Shade Info/Shade Stats.md",
     "Architecture/AI Info/Shade Forms Plan.md",
     "Architecture/AI Info/Rune Field Overhaul Plan.md",
-    "Architecture/AI Info/Coding Concepts.md",
     "Architecture/UI/Confirm Popup.md",
-    "Shade Info/Tethered.md",
     "UI/Rune Field/Rune Field.md",
     "UI/Rune Field/Element Rune.md",
-    "UI/Rune Field/Core Node.md",
     "UI/Rune Field/Bridge.md",
-    "UI/Rune Field/Ability Node.md",
-    "Shade Info/Evolution.md",
     "Architecture/Shades/Tethered Shade.md",
     "Architecture/Shades/Shade (Runtime).md",
     "Shade Info/Attached.md",
@@ -265,11 +269,7 @@
     "Character Traits/Main Character Abilities/Release Shade.md",
     "Character Traits/Main Character Abilities/Tether Shade.md",
     "Architecture/Shades/Shade Forms Plan.md",
-    "Shade Info/Shade.md",
     "zzz Extras/Attachments/Pasted image 20261007135323.png",
-    "Shade Info/Evolution Type.md",
-    "Combat/Fail State.md",
-    "Character Traits/Character Stats.md",
     "Architecture/AI",
     "Architecture/Enemies",
     "Architecture/UI",

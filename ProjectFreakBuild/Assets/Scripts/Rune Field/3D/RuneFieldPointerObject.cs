@@ -162,7 +162,8 @@ public class RuneFieldPointerObject : MonoBehaviour
         if (gamepad == null) return;
         bool used = gamepad.leftStick.ReadValue().magnitude > _StickDeadzone || gamepad.rightStick.ReadValue().magnitude > _StickDeadzone
             || gamepad.leftTrigger.ReadValue() > 0.1f || gamepad.rightTrigger.ReadValue() > 0.1f
-            || gamepad.buttonSouth.isPressed || gamepad.buttonWest.isPressed || gamepad.buttonEast.isPressed;
+            || gamepad.buttonSouth.isPressed || gamepad.buttonWest.isPressed || gamepad.buttonEast.isPressed
+            || gamepad.dpad.ReadValue().sqrMagnitude > 0.1f; //the D-pad counts too, so D-pad navigation in the side panel doesn't drop back to mouse mode
         if (used == false) return;
 
         if (_UsingMouse)

@@ -13,6 +13,7 @@ Reached with `InventoryManager._PlayerInventory`.
 | `pickupChannel`     | `PickupEventChannelSO` the manager listens to                                                   |
 | `playerIngredients` | `Dictionary<IngredientItem, int>` of ingredients and counts                                     |
 | `playerElements`    | `Dictionary<ElementItemSO, int>` of element runes and counts (used by the [[Rune Field]])       |
+| `playerShards` | *Oct 11, 2026.* `Dictionary<ShardItemSO, int>` of shards (core fragments) by tier. Shown with Odin while playing |
 | `ItemStackSizeMax`  | Max count for any single item                                                                   |
 | `OnInventoryChanged` | C# event fired when the inventory changes, so UI can refresh                                   |
 
@@ -27,6 +28,7 @@ Something raises PickupEventChannelSO.Raise(item, amount, source)
 HandlePickup()
     ├── IngredientItem → AddIngredient()
     ├── ElementItemSO  → AddElement()
+    ├── ShardItemSO    → AddShard()
     └── WeaponItem     → (not handled here)
     ↓
 OnInventoryChanged
@@ -45,6 +47,7 @@ OnInventoryChanged
 | `AddElement(item, amount)`              | Adds element runes, capped at `ItemStackSizeMax`. Fires `OnInventoryChanged` (since Oct 9, 2026) |
 | `RemoveElement(item, amount)`           | Takes element runes out. Refuses (warning, returns false) if there aren't enough. A rune at 0 leaves the list. Fires `OnInventoryChanged` |
 | `GetElementCount(item)`                 | How many of an element rune the player has (0 if none) |
+| `AddShard(shard, amount)` / `RemoveShard(shard, amount)` / `GetShardCount(shard)` | *Oct 11, 2026.* The same for shards. `RemoveShard` refuses if there aren't enough. Used by `ShadeManager.SlotShard` |
 
 Rune field saves use `RemoveElement` / `AddElement` for the difference between the old and new saved field (see [[Rune Field System]], Draft and Saving).
 

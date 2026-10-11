@@ -44,6 +44,7 @@ Created from **Create → Rune Field → Camera**. One asset, `SO_RuneField_Came
 | `_MoveRampTime` | Time to reach full speed and to stop |
 | `_UseHoldBoost` / `_BoostDelay` / `_BoostCurve` | Speed up after holding a direction (off by default) |
 | `_SlideFriction` / `_MinSlideSpeed` / `_MaxSlideSpeed` | The slide after letting go of a fast drag |
+| `_UseEdgePan` / `_EdgePanMargin` / `_EdgePanSpeed` / `_EdgePanCurve` | *Oct 11, 2026.* Edge panning while dragging a rune: on / off, the margin (fraction of the screen's shorter side, 0.08), the speed at the very edge (a multiple of the Move speed at the current zoom, 1) and how speed builds up through the margin (X = depth into it, 0 to 1) |
 
 **How zoom works:** the layers make a Catmull-Rom curve (it passes through every point). The curve is cut into small pieces and measured, so **zoom 0 to 1 is distance along the curve**: the camera moves at the same speed along it however the layers are spaced. The curve is only rebuilt when a value changes (checked with a signature of the curve's values, so no edit gets missed). The camera always looks at the aim spot, so the tilt comes from where it sits on the curve.
 
@@ -64,8 +65,9 @@ Goes on an empty object: that object **is** the focus target. Adding the compone
 1. **Zoom:** scroll notches and held zoom move the target; the current zoom eases toward it with `SmoothDamp`. If it moved, the focus shifts so the field spot under the pointer stays under it
 2. **Grab-drag:** a middle click anywhere, or a left click on empty field that isn't over the canvas, grabs the field spot under the cursor and keeps it under the cursor. Letting go of a fast drag starts a slide
 3. **Move:** WASD / left stick, relative to the way the camera faces, ramped, faster when zoomed out, with the optional hold boost. Stops any slide
-4. **Edge:** the focus can't go past the outer ring plus edge bleed. Movement pushing outward is cut, so sliding along the edge works. *A hard stop for now, not an eased one* [[undecided]]
-5. **Place the camera** on the curve and point it at the aim spot. Its "up" comes from its fixed right side, so it never flips, even passing straight overhead
+4. **Edge panning** *(Oct 11, 2026)*: while any rune is being dragged (`RuneField3DObject.IsDraggingAnything`: a field rune, a gamepad carry, or a list button), the pointer in the edge margin pans that way, faster the deeper it goes (`_EdgePanCurve`). It only starts once the pointer has been outside the margin during that drag, so drags starting at the inventory on the right edge don't pan straight away, and never while the pointer is over the canvas (like taking a rune back to the list)
+5. **Edge:** the focus can't go past the outer ring plus edge bleed. Movement pushing outward is cut, so sliding along the edge works. *A hard stop for now, not an eased one* [[undecided]]
+6. **Place the camera** on the curve and point it at the aim spot. Its "up" comes from its fixed right side, so it never flips, even passing straight overhead
 
 **Pointer:** asks the scene's `RuneFieldPointerObject` (see **The Field**). Without one (a scene with no field) it falls back to the mouse, or the screen center on gamepad. A left click on a rune grabs the rune instead of panning (`RuneField3DObject.IsHoveringRune`).
 
@@ -109,8 +111,9 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 
 | Variable | Description |
 | :--- | :--- |
-| `_ElementColors` | Rune color per element until the rune shader exists. **Fill Element Colors** (Tools) adds one entry per element |
-| `_DefaultRuneColor` | For elements not in the list |
+| `_ElementColors` | *Fallback since Oct 11, 2026:* rune color per element, only for element assets with no `_Palette` yet. **Fill Element Colors** (Tools) adds one entry per element |
+| `_DefaultRuneColor` | For runes with no palette and no entry in the list |
+| `_CoreColor` | *Oct 11, 2026.* The core's color, used for the core's end of bridges (purple) |
 | `_Core` | The core. Moved to this object's position on start. Optional (bridges then end at this object) |
 | `_Nodes` | Every ability node. A node's spot is its index, which saved fields point at, so *don't reorder it once fields are saved*. **Fill Node List** (Tools) adds nodes under this object at the end |
 | `_RunePrefab` / `_BridgePrefab` | `PFB_Rune_3D` / `PFB_Bridge_3D`. The scripts get added at spawn if the prefabs don't have them |
@@ -129,25 +132,26 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 - **Create Dividers** (Tools, Oct 11, 2026): makes a `<===== label =====>` empty under the field for each label (comma-separated for several at once, the field stays selected), on its center, to group nodes in the hierarchy (core / gates / ability nodes). Nodes can sit under dividers at any depth: Fill Node List searches every level, positions are world space, and node indexes come from the Nodes list, not the hierarchy. *Don't move, turn or scale a divider once nodes are under it*
 - **Test Tools foldout:** **Test Place Rune** (a rune asset and a spot in field units: a rune is 100 wide, zone 1's edge is 400 out) for quick tests in the editor
 
-**More settings (step 3):** `_TearSlack` (field units past reach before tearing starts), `_InvalidColor`, `_DragLift` (how high a dragged rune floats, meters), `_PickPadding` (extra grab room around a rune, field units), the evolve popup texts (`_EvolveTitle`, `_EvolveNowMessage`, `_EvolveLaterMessage`), `_Popup` ([[Confirm Popup]]), `_SaveButton` (optional, greyed out with nothing to save) and `_OnLeave` (runs after leaving).
+**More settings (step 3):** `_TearSlack` (field units past reach before tearing starts), `_InvalidColor`, `_DragLift` (how high a dragged rune floats, meters), `_PickPadding` (extra grab room around a rune, field units), the evolve popup texts (`_EvolveTitle`, `_EvolveNowMessage`, `_EvolveLaterMessage`), the lock-in popup texts (`_LockInTitle`, `_LockInMessage`, `{0}` = how many runes; *added Oct 11, 2026*), `_Popup` ([[Confirm Popup]]), `_SaveButton` (optional, greyed out with nothing to save) and `_OnLeave` (runs after leaving).
 
 ### Dragging (mouse)
 *Built Oct 10, 2026 (step 3).* Same rules and order as the 2D field:
-- **Picking is math, no colliders:** the pointer hits the field's plane, and the rune whose footprint (half `_RuneSize` plus `_PickPadding`) covers that spot is the one under it. The rules already know where every rune is, so there are no colliders or layers to set up. The hovered rune brightens
-- **Grab:** a left click on a rune (not over the canvas). Frozen runes can't be grabbed
-- **Drag:** the rune follows the pointer on the field, floating `_DragLift` up, kept within reach of its bridges (`ClampToBridges`). It shows where it would land (snapped into a node when on one) or turns `_InvalidColor` over a bad spot. Bridges pulled more than `_TearSlack` past reach start tearing. The camera can still be moved with middle mouse or WASD while dragging
-- **Let go:** over the inventory list it comes off the field; on an allowed spot it moves there and bridges to what's in reach; anywhere else it goes back with any torn bridges put back, as if the drag never happened
+- **Picking is math, no colliders:** the pointer hits the field's plane, and the rune whose footprint (half `_RuneSize` plus `_PickPadding`) covers that spot is the one under it. The rules already know where every rune is, so there are no colliders or layers to set up. The hovered rune brightens. *Oct 11, 2026:* nodes (rune sized) and the core (`_CoreSize`) are picked the same way, runes first, then nodes, then the core. `GetHoverKind()` / `GetHoverID()` say what's hovered (`RuneFieldType.Hover`: Nothing, Rune, Node, Core; the ID is a rune ID, a node index or `RuneField.CoreID`) and `OnHoverChanged` fires when it changes. Nothing listens yet: the info popup hooks in here once it's designed [[Notes for the future]]. *The plan put this on the pointer; it lives on the field since the field already does the picking math*
+- **Grab:** a left click on a rune (not over the canvas). *Since Oct 11, 2026 (Playtest 0 build step 3)* frozen runes can be grabbed too; only locked-in runes (frozen runes plugged into a node) can't
+- **Drag:** the rune follows the pointer on the field, floating `_DragLift` up, kept within reach of its bridges (`ClampToBridges`). It shows where it would land (snapped into a node when on one) or turns `_InvalidColor` over a bad spot. Bridges pulled more than `_TearSlack` past reach start tearing. Frozen bridges never tear: they're a hard leash, so a frozen rune stops at the end of them. The camera can still be moved with middle mouse or WASD while dragging
+- **Let go:** over the inventory list it comes off the field (a frozen rune shows `_InvalidColor` there and goes back instead); on an allowed spot it moves there and bridges to what's in reach; anywhere else it goes back with any torn bridges put back, as if the drag never happened
 - **Escape / B while dragging** puts it back the same way
 
 ### Draft and Saving
-Copied from the 2D field (see [[Rune Field System]], Draft and Saving): **Save Current Field** / `SaveRuneSlot` (asks first when a gate was newly plugged), **Discard Changes**, **Test Clear**, `SelectSlot(index)` and `RequestLeave()` (both ask Save / Discard / Cancel with unsaved changes), `GetPendingUse` / `GetAvailable`, and `PlaceRuneFromInventory` / `CanPlaceFromInventory` (used by the inventory list). Escape / B closes the popup if one is open, otherwise asks to leave. `RefreshCorePower()` gives the open draft the slot's current core power after a level change (used by the test kit).
+Copied from the 2D field (see [[Rune Field System]], Draft and Saving): **Save Current Field** / `SaveRuneSlot` (asks first when frozen runes would be locked into their nodes, then when a gate was newly plugged; Cancel on either keeps the draft), **Discard Changes**, **Test Clear**, `SelectSlot(index)` and `RequestLeave()` (both ask Save / Discard / Cancel with unsaved changes), `GetPendingUse` / `GetAvailable`, and `PlaceRuneFromInventory` / `CanPlaceFromInventory` (used by the inventory list). Escape / B closes the popup if one is open, otherwise asks to leave. `RefreshCorePower()` gives the open draft the slot's current core power after a level change (used by the test kit).
+- **Cut bridges** *(Oct 11, 2026)*: saving cuts normal bridges crossing the open zone's outer ring (see **Zones and Evolving** in [[Rune Field System]]). They disappear when the saved field reloads. Just before that, the field's `OnBridgesCut` event passes them on, for the break effect (Art Pile in [[Rune Field 3D Plan]]) [[Notes for the future]]
 
 ### Gamepad
 *Built Oct 10, 2026 (step 5).*
 - **Y** opens and closes the side panel (inventory and shade slots), on the last window used or the inventory the first time. The field finds the scene's `SideWindowManager` on start (`_SidePanel`)
-- **Panel focus** *(Oct 10, 2026)*: opening the panel with Y selects its first item (the first rune in the list, otherwise the first tab). The D-pad / left stick move between items and A presses (normal Unity UI navigation). While the panel has focus the left stick doesn't move the camera, A doesn't grab runes on the field, and the reticle hides. B closes the panel. Using the mouse, or the panel closing, ends focus
+- **Panel focus** *(Oct 10, 2026)*: opening the panel with Y selects its first item (the first rune in the list, otherwise the first tab). The D-pad / left stick move between items and A presses (normal Unity UI navigation). While the panel has focus the left stick doesn't move the camera, A doesn't grab runes on the field, and the reticle hides. B closes the panel. Using the mouse, or the panel closing, ends focus. *Oct 11, 2026:* with the panel open but not focused (after a mouse click, or focus dropping off), **D-pad down** gives it focus: nothing selected selects the top rune, a rune already selected stays and navigation moves on from it. The D-pad now counts as gamepad use for the pointer, so it doesn't drop straight back to mouse mode
 - **Taking a rune out of the list (gamepad):** A on a rune in the list closes the panel and puts a stand-in rune on the reticle (red over a bad spot). A places it, B or X put it back, Y puts it back and reopens the list. Rune buttons get a `Button` added if their prefab has none (`ElementDataObject._SelectedColor` is its selected tint). Mouse clicks on the list don't do this, the mouse drags instead
-- **A** on a rune picks it up (frozen runes can't be). It's **carried**: it follows the reticle and the left stick can pan while carrying. **A** again drops it (same rules as letting go of a mouse drag, including over the inventory list). **X** sends the hovered or carried rune back to the inventory. **B** puts a carried rune back, closes the popup, or asks to leave
+- **A** on a rune picks it up (locked-in runes can't be). It's **carried**: it follows the reticle and the left stick can pan while carrying. **A** again drops it (same rules as letting go of a mouse drag, including over the inventory list). **X** sends the hovered or carried rune back to the inventory (refused for frozen runes; a carried one stays carried). **B** puts a carried rune back, closes the popup, or asks to leave
 - **The canvas on gamepad:** the reticle drives a **virtual mouse** (a pretend mouse device). Pressing A while the reticle is over the canvas holds its left button until A is let go, so the inventory list can be dragged from (hold A, move, let go over the field) and popup buttons pressed. A on the field is left to the field
 - Only the **real** mouse counts as "using the mouse", so the virtual one never flips the pointer back to mouse mode
 
@@ -163,8 +167,20 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 ### Inventory and Shade Slots
 *Built Oct 10, 2026 (step 4).* The 2D UI scripts work with either view through `IRuneFieldView` (in `Scripts/Rune Field/RuneFieldInterface.cs`, see [[Interface List]]). `RuneField3DObject` and `RuneFieldManager` both have it.
 - **`IngredientListWindow`**: uses the 2D field on `RuneFieldPointer` if set, otherwise the scene's 3D field. Nothing to assign in the 3D scene
-- **`ElementDataObject`**: dragging a button over the 3D field (anywhere the pointer isn't over UI) tints it over a bad spot and drops the rune there. While dragged, the button stops blocking clicks so it doesn't count as UI under the pointer
+- **`ElementDataObject`**: dragging a button over the 3D field (anywhere the pointer isn't over UI) drops the rune there. While dragged, the button stops blocking clicks so it doesn't count as UI under the pointer. *Oct 11, 2026:* once it leaves the panel the button hides and the field shows a stand-in rune where it would land (red over a bad spot, `RuneField3DObject.UpdateListDrag` / `EndListDrag`); back over the list the button shows again. Works for the mouse and the gamepad's hold-A drag. *The shrink-to-a-circle animation is for a polish pass* [[Notes for the future]]
 - **`ShadeSlotManager`**: uses the 2D field if set, otherwise the 3D field
+
+### ShadeInfoWindow
+*Built Oct 11, 2026 (Playtest 0 build step 6).* A side panel window (next to the inventory and the shade slots) showing the open slot's shade. In `Scripts/UI/Evolution Tree/UI`. Works with the 3D field.
+- **Title:** the slot's name, its form and level. *Uses asset names until forms get display names* [[Notes for the future]]
+- **Stats:** one row per entry in `_ShownStats` (stat + label, HP to WILD by default): base (the form's `_BaseStats`), what the saved runes and nodes add (`_BonusColor`), the total (the [[Shade Manager]]'s numbers, so the "can't go below 1" rule shows), and the draft's change in brackets (`_DraftUpColor` / `_DraftDownColor`) until it's saved. Refreshes on the field's `OnDraftChanged` and the Shade Manager's `OnShadeEvolved`
+- **Render:** the form's `_TetheredArt` (with its rig's Tethered parts) on a stage spawned at `_StagePosition` (1000 m below the field), seen by a camera rendering into a texture shown by `_RenderImage`. Framed to fit (`_ViewDirection`, `_FieldOfView`, `_FramePadding`), turning at `_SpinSpeed`. The camera only renders while the window is open. `_StagePrefab` (optional) is a prefab with the camera and lights, for the lighting pass; without it a plain camera is made [[Notes for the future]]
+- **Seen forms:** a form the player hasn't seen shows blacked out (`_UnseenColor` on the render, a "?" over it, "???" as its name). Seen forms are a list on the save slot (see [[Save slot]]). *The real blacked out look is part of the art pass* [[Notes for the future]]
+- **Buttons:** **Refresh**, **Build Default Layout** (Tools), **Forget Current Form (play mode)** (takes the open form off the seen list, to check the blacked out look)
+
+**Setup (Steve):**
+1. Under the side panel, next to the inventory and shade slot windows, add an empty UI object (**Shade Info Window**), add `ShadeInfoWindow` and press **Build Default Layout**. It stretches to fill its parent like the other windows. Turn it off (closed windows start off)
+2. Duplicate a tab button, point its On Click at `SideWindowManager.CloseWindow` with the new window, and change its label
 
 ### RuneFieldLabelsObject
 *Built Oct 10, 2026 (step 6).* Lives on the field object (the field adds it). Labels are text on the canvas placed at each rune's screen position, so they stay readable at any zoom and never clip into meshes. They're pooled (made once, reused) and drawn behind the rest of the canvas.
@@ -180,19 +196,26 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 - Slot changes only last one play session in a build (assets can't be saved outside the editor)
 
 ### Rune3DObject
-Colored by element, darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit). `_TintRenderers` picks which renderers are colored (empty = all of them).
+Colored by its element's `_Palette` primary color (`ElementItemSO`, *Oct 11, 2026*; the field's `_ElementColors` list is the fallback), darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit). `_TintRenderers` picks which renderers are colored (empty = all of them).
 
 ### Bridge3DObject
 Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y scale are kept). `_HeightOffset` lifts it off the field. The tear timer is the 2D one (`_PullTearRequiredTime`, `_MaxPullStrength`, `_PullTickTime`, `_PullDampening`), tinted `_TearColor` while tearing, and it runs on real time so it works while the game is paused.
+
+*Oct 11, 2026, for the bridge shader (Steve's):* every bridge sends its own values through `RuneFieldTint`'s `MaterialPropertyBlock`, so all bridges share **one material** (no material per color combo, no copy while tearing). Values a shader doesn't have are ignored, so this works before the shader exists:
+- **End colors:** `_ColorA` / `_ColorB`, the colors of the two things it joins (a rune's palette color, or the field's `_CoreColor`)
+- **Tear:** `_Tear`, 0 to 1, how close the tear timer is to snapping it (updated every tick)
+- **Strain:** `_Strain`, 0 to 1, how far into the field's `_TearSlack` it's pulled before the timer starts, for the tear dead zone look
+
+The property names are inspector fields (**Shader Properties** header: `_ColorAProperty`, `_ColorBProperty`, `_TearProperty`, `_StrainProperty`), with placeholder names to match once the shader exists [[Notes for the future]]. The `_TearColor` tint stays until the shader shows tearing itself
 
 ### Node3DObject
 The 3D `EvolutionNode`: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor`. `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
 
 ### Core3DObject
-Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`.
+Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`. *Oct 11, 2026:* also `HasRunesWaiting()` (`RuneField.HasRunesWaitingForPower`: a rune that could have power doesn't; planning runes don't count), for the core shader's bright / normal / dull purple. The shader's property names become inspector fields here once it exists [[Notes for the future]]
 
 ### RuneFieldTint
-A small shared helper (plain C# class) that colors a group of renderers with a `MaterialPropertyBlock`, so every rune can have its own color without copying materials. Used by runes, nodes and bridges.
+A small shared helper (plain C# class) that colors a group of renderers with a `MaterialPropertyBlock`, so every rune can have its own color without copying materials. Used by runes, nodes and bridges. *Oct 11, 2026:* `StartValues` / `PutColor` / `PutFloat` / `PutTint` / `ApplyValues` set several shader values at once (the bridges use it)
 
 ### Setup
 1. Add `Node3DObject` to `PFB_Node_3D` and `Core3DObject` to `PFB_Core_3D` (open the prefab, add the component). The scene's copies get it too

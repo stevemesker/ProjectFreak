@@ -17,11 +17,14 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     public static RuneField3DObject _Field3D; //the 3D field in this scene (one per scene)
 
     [Header("Data")]
-    [Tooltip("Rune colors by element, until the rune shader exists. Elements not in the list use Default Rune Color")]
+    [Tooltip("Fallback rune colors by element, for runes whose element asset has no Palette yet. Elements not in the list use Default Rune Color")]
     [SerializeField] List<ElementColorEntry> _ElementColors = new List<ElementColorEntry>();
 
-    [Tooltip("Color for runes whose element isn't in Element Colors")]
+    [Tooltip("Color for runes with no Palette whose element isn't in Element Colors")]
     [SerializeField] Color _DefaultRuneColor = Color.white;
+
+    [Tooltip("The core's color, used for the core's end of bridges (the bridge shader blends the two end colors)")]
+    [SerializeField] Color _CoreColor = new Color(0.6f, 0.3f, 1f, 1f);
 
     [Header("Settings")]
     [Tooltip("How far past its reach a rune has to be pulled before its bridges start tearing, in field units")]
@@ -40,10 +43,16 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     [SerializeField] string _EvolveTitle = "Evolve?";
 
     [Tooltip("Popup message when the gate already has power, so saving evolves the shade right away. {0} = the form's name, {1} = the zone that locks")]
-    [SerializeField, TextArea] string _EvolveNowMessage = "Saving will evolve this shade into {0} right away. Zone {1} locks for good: its runes and bridges can't be moved, removed or torn anymore.";
+    [SerializeField, TextArea] string _EvolveNowMessage = "Saving will evolve this shade into {0} right away. Zone {1} freezes for good: its runes can still be moved but never taken off, its bridges can never tear, and runes in its nodes stay there.";
 
     [Tooltip("Popup message when the gate doesn't have power yet. {0} = the form's name, {1} = the zone that locks")]
-    [SerializeField, TextArea] string _EvolveLaterMessage = "This shade will evolve into {0} as soon as the gate has power, locking zone {1} for good. Until then you can still take the rune out of the gate.";
+    [SerializeField, TextArea] string _EvolveLaterMessage = "This shade will evolve into {0} as soon as the gate has power, freezing zone {1} for good. Until then you can still take the rune out of the gate.";
+
+    [Tooltip("Popup title when saving would lock frozen runes into the nodes they were plugged into")]
+    [SerializeField] string _LockInTitle = "Lock In Runes?";
+
+    [Tooltip("Popup message when saving would lock frozen runes into their nodes. {0} = how many runes")]
+    [SerializeField, TextArea] string _LockInMessage = "{0} frozen rune(s) will be locked into their nodes permanently. Locked-in runes can never be moved or taken out again.";
 
     [Header("References")]
     [Tooltip("The core in the scene. It gets moved to this object's position (the field's center) on start")]
@@ -101,6 +110,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     [SerializeField] Color _BleedColor = new Color(1f, 1f, 1f, 0.25f);
 
     public event System.Action OnDraftChanged; //fires whenever the draft changes or a field loads, so other UI (inventory counts, labels) can update
+    public event System.Action<RuneFieldType.Hover, int> OnHoverChanged; //fires when what's under the pointer changes: the kind, and a rune ID / node index / RuneField.CoreID. The info popup hooks in here later
+    public event System.Action<List<RuneBridgeEntry>> OnBridgesCut; //fires when a save cuts bridges across the open ring, before the field reloads (so their ends can still be looked up). For the break effect later
 
     //local variables
     RuneField _field; //the rules for the field being shown
@@ -111,6 +122,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     RuneFieldPointerObject _pointer;
     PlayerInput _input;
     int _hoveredRuneID = RuneField.NoRuneID; //rune under the pointer, or NoRuneID
+    RuneFieldType.Hover _hoverKind = RuneFieldType.Hover.Nothing; //what kind of thing is under the pointer (see UpdateHover)
+    int _hoverID = RuneField.NoRuneID; //which one: a rune ID, a node index, or RuneField.CoreID
     int _draggingRuneID = RuneField.NoRuneID; //rune being dragged right now, or NoRuneID
     Vector2 _dragDropPosition; //where the dragged rune would be dropped (kept within reach of its bridges), in field units
     List<int> _dragStartBridges = new List<int>(); //what the dragged rune was bridged to when the drag started, put back if the drop is refused
@@ -120,6 +133,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     ElementItemSO _carryElement; //a rune taken out of the inventory list with a gamepad, not placed yet. Null when not carrying one
     Rune3DObject _carryGhost; //the stand-in object showing that rune on the reticle
     int _carryStartFrame = -1; //the frame it was taken out, so the same A press doesn't place it straight away
+    ElementItemSO _listDragElement; //a rune being dragged out of the inventory list right now (mouse, or gamepad hold A). Null when not
+    Rune3DObject _listDragGhost; //the stand-in object showing that rune on the field while the pointer is off the panel
     int _panelFocusEndFrame = -1; //the frame the panel lost focus, so the A press that closed it doesn't also grab a rune
 
     private void Reset()
@@ -176,15 +191,25 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
         if (ShadeManager._ShadeManager == null) { Debug.LogWarning($"Warning! No Shade Manager found, {gameObject.name} can't load a shade slot. Leaving the field empty...", this); return; }
         ShadeManager._ShadeManager.OnShadeEvolved += OnShadeEvolved; //subscribed here, not OnEnable, because the manager's Awake has run by Start
+        ShadeManager._ShadeManager.OnCorePowerChanged += OnSlotCorePowerChanged;
         LoadRuneField(ShadeManager._ShadeManager.GetShadeSelectionIndex());
     }
 
     private void OnDestroy()
     {
         //stops listening so nothing calls into a destroyed object, and clears the singleton if it's this one
-        if (_field != null) _field.OnFieldChanged -= OnFieldChanged;
-        if (ShadeManager._ShadeManager != null) ShadeManager._ShadeManager.OnShadeEvolved -= OnShadeEvolved;
+        if (_field != null)
+        {
+            _field.OnFieldChanged -= OnFieldChanged;
+            _field.OnBridgesCut -= OnFieldBridgesCut;
+        }
+        if (ShadeManager._ShadeManager != null)
+        {
+            ShadeManager._ShadeManager.OnShadeEvolved -= OnShadeEvolved;
+            ShadeManager._ShadeManager.OnCorePowerChanged -= OnSlotCorePowerChanged;
+        }
         EndCarryFromInventory();
+        EndListDrag();
         if (_Field3D == this) _Field3D = null;
     }
 
@@ -196,6 +221,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         if (_field == null || _pointer == null) return;
 
         UpdateHover();
+        CheckPanelDpad();
         UpdatePanelFocus();
 
         InputAction select = _input.RuneField.Select;
@@ -249,10 +275,15 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     void StartField(RuneFieldData data)
     {
         //swaps in a new field and redraws everything
-        if (_field != null) _field.OnFieldChanged -= OnFieldChanged;
+        if (_field != null)
+        {
+            _field.OnFieldChanged -= OnFieldChanged;
+            _field.OnBridgesCut -= OnFieldBridgesCut;
+        }
 
         _field = new RuneField(data, _settings, _nodeEntries, ShadeManager._ShadeManager.GetCorePower(_SlotIndex), ShadeManager._ShadeManager.GetRank(_SlotIndex));
         _field.OnFieldChanged += OnFieldChanged;
+        _field.OnBridgesCut += OnFieldBridgesCut;
 
         _draggingRuneID = RuneField.NoRuneID;
         _hoveredRuneID = RuneField.NoRuneID;
@@ -273,19 +304,38 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
     void TrySave(System.Action afterSave)
     {
-        //saves, asking first if a gate was newly plugged. afterSave runs only once the save actually happened (Cancel skips it)
+        //saves, asking first about anything the save makes permanent: frozen runes locking into their nodes, then a newly plugged gate
+        //each question passes "what to do next" on to the one after it, so Cancel on either stops the save. afterSave runs only once the save actually happened
         if (_field == null || ShadeManager._ShadeManager == null) return;
+        ConfirmLockIn(() => ConfirmEvolve(() => SaveNow(afterSave)));
+    }
 
+    void ConfirmLockIn(System.Action continueWith)
+    {
+        //asks before frozen runes plugged into nodes in this draft get locked in for good (saving does that, see RuneField.LockInFrozenPlugs)
+        int count = _field.GetFrozenRunesToLockIn().Count;
+        if (count == 0) { continueWith?.Invoke(); return; }
+        AskBeforeSaving(_LockInTitle, string.Format(_LockInMessage, count), continueWith); //puts the count where {0} is
+    }
+
+    void ConfirmEvolve(System.Action continueWith)
+    {
+        //asks before a newly plugged gate commits the shade to evolving
         int gate = GetNewGatePlug();
-        if (gate == -1) { SaveNow(afterSave); return; }
+        if (gate == -1) { continueWith?.Invoke(); return; }
+        AskBeforeSaving(_EvolveTitle, GetEvolveMessage(gate), continueWith);
+    }
+
+    void AskBeforeSaving(string title, string message, System.Action continueWith)
+    {
+        //shows a Save / Cancel question. Save runs continueWith, Cancel keeps the draft as it is. With no popup it warns and goes ahead
         if (_Popup == null)
         {
-            Debug.LogWarning($"Warning! No popup assigned on {gameObject.name} to confirm evolving, saving without asking...", this);
-            SaveNow(afterSave);
+            Debug.LogWarning($"Warning! No popup assigned on {gameObject.name} to ask \"{title}\", saving without asking...", this);
+            continueWith?.Invoke();
             return;
         }
-
-        _Popup.Show(_EvolveTitle, GetEvolveMessage(gate), "Save", () => SaveNow(afterSave), "Cancel", null);
+        _Popup.Show(title, message, "Save", continueWith, "Cancel", null);
     }
 
     void SaveNow(System.Action afterSave)
@@ -342,6 +392,20 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         //gives the open field the slot's current core power (after a level change). The draft keeps its unsaved changes
         if (_field == null || ShadeManager._ShadeManager == null) return;
         _field.SetMaxPower(ShadeManager._ShadeManager.GetCorePower(_SlotIndex)); //recalculates the field, which redraws it
+    }
+
+    void OnFieldBridgesCut(List<RuneBridgeEntry> cutBridges)
+    {
+        //saving cut bridges across the open ring. They disappear from the view when the saved field reloads right after
+        //this passes them on before the reload, while their ends can still be looked up. //todo: the break effect (Art Pile) hooks in here
+        OnBridgesCut?.Invoke(cutBridges);
+    }
+
+    void OnSlotCorePowerChanged(int slotIndex)
+    {
+        //the Shade Manager changed a slot's core power (a level change or a slotted shard). If it's the open slot, the draft gets the new power and keeps its unsaved changes
+        if (slotIndex != _SlotIndex) return;
+        RefreshCorePower();
     }
 
     void OnShadeEvolved(int slotIndex)
@@ -426,6 +490,20 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         if (first != null) EventSystem.current.SetSelectedGameObject(first.gameObject);
     }
 
+    void CheckPanelDpad()
+    {
+        //D-pad down with the side panel open but without gamepad focus (after a mouse click, or after focus dropped off) gives the panel focus
+        //nothing selected in it: the top rune gets selected. A rune already selected: it stays, and normal UI navigation moves on from it this frame
+        //reads the gamepad directly (like the pointer does), since the RuneField action map has no D-pad action
+        if (_panelFocus || _SidePanel == null || _SidePanel.IsOpen() == false) return;
+        Gamepad gamepad = Gamepad.current;
+        if (gamepad == null || gamepad.dpad.down.wasPressedThisFrame == false) return;
+
+        bool hasSelection = EventSystem.current != null && _SidePanel.Contains(EventSystem.current.currentSelectedGameObject);
+        if (hasSelection) _panelFocus = true;
+        else SetPanelFocus(true); //selects the first rune in the list
+    }
+
     void UpdatePanelFocus()
     {
         //drops panel focus when the panel closes (a tab pressed again) or the mouse is used, and selects something again if the selection got lost (like the list refreshing)
@@ -466,14 +544,64 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     #region Player Actions
     void UpdateHover()
     {
-        //finds the rune under the pointer (not while over the canvas), and lights it up
-        int hovered = RuneField.NoRuneID;
-        if (_draggingRuneID == RuneField.NoRuneID && _pointer.IsOverCanvas() == false && _pointer.TryGetFieldPoint(out Vector3 point)) hovered = FindRuneAt(WorldToField(point));
-        if (hovered == _hoveredRuneID) return;
+        //works out what's under the pointer (a rune, a node, the core or nothing), lights up a hovered rune, and fires OnHoverChanged when it changes
+        //nothing is hovered while dragging or while the pointer is over the canvas
+        RuneFieldType.Hover kind = RuneFieldType.Hover.Nothing;
+        int id = RuneField.NoRuneID;
+        if (_draggingRuneID == RuneField.NoRuneID && _pointer.IsOverCanvas() == false && _pointer.TryGetFieldPoint(out Vector3 point)) FindHoverAt(WorldToField(point), out kind, out id);
 
-        if (_runeViews.TryGetValue(_hoveredRuneID, out Rune3DObject oldView) && oldView != null) oldView.ShowHover(false);
-        _hoveredRuneID = hovered;
-        if (_runeViews.TryGetValue(_hoveredRuneID, out Rune3DObject newView) && newView != null) newView.ShowHover(true);
+        //the rune's own hover look
+        int hoveredRune = kind == RuneFieldType.Hover.Rune ? id : RuneField.NoRuneID;
+        if (hoveredRune != _hoveredRuneID)
+        {
+            if (_runeViews.TryGetValue(_hoveredRuneID, out Rune3DObject oldView) && oldView != null) oldView.ShowHover(false);
+            _hoveredRuneID = hoveredRune;
+            if (_runeViews.TryGetValue(_hoveredRuneID, out Rune3DObject newView) && newView != null) newView.ShowHover(true);
+        }
+
+        if (kind == _hoverKind && id == _hoverID) return;
+        _hoverKind = kind;
+        _hoverID = id;
+        OnHoverChanged?.Invoke(kind, id);
+    }
+
+    void FindHoverAt(Vector2 fieldPosition, out RuneFieldType.Hover kind, out int id)
+    {
+        //what's at this spot. Runes come first (a rune in a node sits on top of it), then nodes, then the core
+        //id is the rune's ID, the node's index, or RuneField.CoreID
+        kind = RuneFieldType.Hover.Nothing;
+        id = RuneField.NoRuneID;
+
+        int rune = FindRuneAt(fieldPosition);
+        if (rune != RuneField.NoRuneID) { kind = RuneFieldType.Hover.Rune; id = rune; return; }
+
+        int node = FindNodeAt(fieldPosition);
+        if (node != -1) { kind = RuneFieldType.Hover.Node; id = node; return; }
+
+        if (_settings != null && fieldPosition.magnitude <= _settings._CoreSize * 0.5f + _PickPadding) //the core sits at (0, 0)
+        {
+            kind = RuneFieldType.Hover.Core;
+            id = RuneField.CoreID;
+        }
+    }
+
+    int FindNodeAt(Vector2 fieldPosition)
+    {
+        //the node whose footprint (rune sized, plus Pick Padding) covers this spot, closest one first. -1 if none
+        if (_settings == null || _nodeEntries == null) return -1;
+        float reach = _settings._RuneSize * 0.5f + _PickPadding;
+        int closest = -1;
+        float closestDistance = reach;
+
+        for (int i = 0; i < _nodeEntries.Count; i++)
+        {
+            if (_nodeEntries[i] == null) continue;
+            float distance = Vector2.Distance(_nodeEntries[i]._Position, fieldPosition);
+            if (distance > closestDistance) continue;
+            closestDistance = distance;
+            closest = _nodeEntries[i]._NodeIndex;
+        }
+        return closest;
     }
 
     int FindRuneAt(Vector2 fieldPosition)
@@ -510,9 +638,10 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     void BeginRuneDrag(int runeID)
     {
         //the player picked up a rune. Its saved spot doesn't change until it's dropped somewhere allowed
-        //frozen runes (in a zone the shade evolved out of) can't be picked up at all
+        //frozen runes can be picked up too: their frozen bridges hold them like a leash (ClampToBridges) and never tear
+        //locked-in runes (frozen runes plugged into a node) can't be picked up at all
         if (_field.GetRune(runeID) == null) return;
-        if (_field.IsRuneFrozen(runeID)) return;
+        if (_field.IsRuneLockedIn(runeID)) return;
 
         _draggingRuneID = runeID;
         _dragDropPosition = _field.GetPosition(runeID);
@@ -534,8 +663,9 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
         bool allowed = _field.CanDropAt(_draggingRuneID, _dragDropPosition, out Vector2 landingPosition, out int nodeIndex);
         bool overList = _pointer.IsOverInventoryList(); //over the list, letting go takes it off the field, so it isn't shown as invalid
+        bool frozen = _field.IsRuneFrozen(_draggingRuneID); //frozen runes can't come off the field, so they're invalid over the list
         view.transform.position = FieldToWorld(allowed ? landingPosition : _dragDropPosition) + transform.up * _DragLift;
-        view.ShowInvalid(allowed == false && overList == false, _InvalidColor);
+        view.ShowInvalid(overList ? frozen : allowed == false, _InvalidColor); //over the list: invalid only if frozen. On the field: invalid if the spot isn't allowed
 
         UpdateBridgePositions();
         UpdateTearing(_draggingRuneID, desired);
@@ -544,7 +674,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     void EndRuneDrag()
     {
         //the player let go of a rune:
-        //on the inventory list it comes off the field. On an allowed spot it moves there (plugging into a node if it's on one) and bridges to what's in reach
+        //on the inventory list it comes off the field (frozen runes can't, they go back instead). On an allowed spot it moves there (plugging into a node if it's on one) and bridges to what's in reach
         //anywhere else it goes back to where it was, with any bridges torn during the drag put back, as if the drag never happened
         int runeID = _draggingRuneID;
         StopAllTearing();
@@ -555,8 +685,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
         if (_pointer.IsOverInventoryList())
         {
-            _field.RemoveRune(runeID); //takes its bridges and plug with it. It goes back to the inventory when the field is saved
-            SetUnsavedChanges(true);
+            if (_field.RemoveRune(runeID)) SetUnsavedChanges(true); //takes its bridges and plug with it. It goes back to the inventory when the field is saved
+            else PutRuneBack(runeID); //refused (a frozen rune)
             return;
         }
 
@@ -564,13 +694,9 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         {
             _field.ConnectNearby(runeID);
             SetUnsavedChanges(true);
+            RefreshView(true); //puts the rune exactly where the data says
         }
-        else
-        {
-            _field.RestoreBridges(runeID, _dragStartBridges);
-            SetUnsavedChanges(_unsavedBeforeDrag); //nothing changed, so the save button goes back to how it was
-        }
-        RefreshView(true); //puts the rune exactly where the data says
+        else PutRuneBack(runeID);
     }
 
     void CancelRuneDrag()
@@ -583,9 +709,16 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         if (_runeViews.TryGetValue(runeID, out Rune3DObject view) && view != null) view.ShowInvalid(false, _InvalidColor);
         if (_field.GetRune(runeID) == null) return;
 
+        PutRuneBack(runeID);
+    }
+
+    void PutRuneBack(int runeID)
+    {
+        //a drag that ended without moving the rune (refused, cancelled, or a frozen rune let go over the list): it goes back to its spot
+        //with any bridges torn during the drag put back, and the save button goes back to how it was, as if the drag never happened
         _field.RestoreBridges(runeID, _dragStartBridges);
         SetUnsavedChanges(_unsavedBeforeDrag);
-        RefreshView(true);
+        RefreshView(true); //puts the rune exactly where the data says
     }
 
     public void BeginCarryFromInventory(ElementItemSO element)
@@ -600,13 +733,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         SetPanelFocus(false);
         EndCarryFromInventory();
 
-        GameObject spawned = Instantiate(_RunePrefab, transform.position, transform.rotation, transform);
-        spawned.name = $"Carried Rune ({element.name})";
-        _carryGhost = spawned.GetComponent<Rune3DObject>();
-        if (_carryGhost == null) _carryGhost = spawned.AddComponent<Rune3DObject>();
-        _carryGhost.Setup(RuneField.NoRuneID, element, GetElementColor(element));
-        _carryGhost.ShowPower(true, element.powerNeeded);
-
+        _carryGhost = SpawnGhost(element, "Carried Rune");
         _carryElement = element;
         _carryStartFrame = Time.frameCount;
     }
@@ -618,10 +745,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         if (_carryGhost == null || _pointer.TryGetFieldPoint(out Vector3 point) == false) return;
 
         Vector2 position = WorldToField(point);
-        bool allowed = _field.CanDropAt(RuneField.NoRuneID, position, out Vector2 landingPosition, out int nodeIndex); //called first, so landingPosition always gets a value
-        if (GetAvailable(_carryElement) <= 0) allowed = false;
-        _carryGhost.transform.position = FieldToWorld(allowed ? landingPosition : position) + transform.up * _DragLift;
-        _carryGhost.ShowInvalid(allowed == false, _InvalidColor);
+        bool allowed = MoveGhost(_carryGhost, _carryElement, position);
 
         if (gamepadPress == false || Time.frameCount == _carryStartFrame || allowed == false) return;
         ElementItemSO element = _carryElement;
@@ -644,10 +768,66 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return _carryElement != null;
     }
 
+    public void UpdateListDrag(ElementItemSO element, Vector2 screenPosition, bool overField)
+    {
+        //function the inventory list calls every frame one of its buttons is dragged (ElementDataObject.OnDrag)
+        //over the field, the button hides (the list does that) and this stand-in rune shows where the rune would land instead. Back over the list, it goes away
+        if (_field == null || element == null) return;
+        if (_listDragGhost != null && element != _listDragElement) HideListDragGhost(); //a different rune than the stand-in shows
+        _listDragElement = element;
+
+        if (overField == false || _pointer.TryScreenToField(screenPosition, out Vector3 point) == false) { HideListDragGhost(); return; }
+        if (_listDragGhost == null) _listDragGhost = SpawnGhost(element, "List Drag Rune");
+        MoveGhost(_listDragGhost, element, WorldToField(point));
+    }
+
+    public void EndListDrag()
+    {
+        //function the inventory list calls when its button is let go (placed or not): the stand-in goes away
+        _listDragElement = null;
+        HideListDragGhost();
+    }
+
+    void HideListDragGhost()
+    {
+        if (_listDragGhost != null) Destroy(_listDragGhost.gameObject);
+        _listDragGhost = null;
+    }
+
+    Rune3DObject SpawnGhost(ElementItemSO element, string label)
+    {
+        //makes a stand-in rune (not on the field yet) for a rune coming out of the inventory list. Used by gamepad carrying and list drags
+        GameObject spawned = Instantiate(_RunePrefab, transform.position, transform.rotation, transform);
+        spawned.name = $"{label} ({element.name})";
+        Rune3DObject ghost = spawned.GetComponent<Rune3DObject>();
+        if (ghost == null) ghost = spawned.AddComponent<Rune3DObject>();
+        ghost.Setup(RuneField.NoRuneID, element, GetElementColor(element));
+        ghost.ShowPower(true, element.powerNeeded);
+        return ghost;
+    }
+
+    bool MoveGhost(Rune3DObject ghost, ElementItemSO element, Vector2 position)
+    {
+        //puts a stand-in rune where a rune from the list would land (snapped into a node if it's on one), red over a spot it can't go
+        //returns whether it can go there (the spot is allowed and one is left to place)
+        bool allowed = _field.CanDropAt(RuneField.NoRuneID, position, out Vector2 landingPosition, out int nodeIndex); //called first, so landingPosition always gets a value
+        if (GetAvailable(element) <= 0) allowed = false;
+        ghost.transform.position = FieldToWorld(allowed ? landingPosition : position) + transform.up * _DragLift;
+        ghost.ShowInvalid(allowed == false, _InvalidColor);
+        return allowed;
+    }
+
+    public bool IsDraggingAnything()
+    {
+        //true while any rune is being moved: a rune on the field (mouse or gamepad), a rune carried out of the list, or a list button dragged
+        //the camera uses this for edge panning
+        return _draggingRuneID != RuneField.NoRuneID || _carryElement != null || _listDragElement != null;
+    }
+
     void ReturnRuneToInventory(int runeID)
     {
         //gamepad X: takes a rune off the field (the hovered one, or the one being carried). It goes back to the inventory when the field is saved
-        //frozen runes can't be taken off
+        //frozen runes can't be taken off. A carried frozen rune stays carried
         if (runeID == RuneField.NoRuneID || _field.GetRune(runeID) == null) return;
         if (_field.IsRuneFrozen(runeID)) return;
 
@@ -702,6 +882,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     public RuneField GetField() { return _field; }
     public Core3DObject GetCore() { return _Core; }
     public int GetHoveredRuneID() { return _hoveredRuneID; }
+    public RuneFieldType.Hover GetHoverKind() { return _hoverKind; }
+    public int GetHoverID() { return _hoverID; }
     public int GetDraggingRuneID() { return _draggingRuneID; }
 
     public Rune3DObject GetRuneView(int runeID)
@@ -814,7 +996,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             _Nodes[i].ShowState(active, active == false && _field.IsNodeBlocked(i), fireNodeEvents); //locked look: can't take a rune (locked zone, frozen gate, or locked out)
         }
 
-        if (_Core != null) _Core.ShowPower(_field.GetPowerLeft(), _field.GetMaxPower());
+        if (_Core != null) _Core.ShowPower(_field.GetPowerLeft(), _field.GetMaxPower(), _field.HasRunesWaitingForPower());
         OnDraftChanged?.Invoke();
     }
 
@@ -878,7 +1060,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
             Bridge3DObject bridge = spawned.GetComponent<Bridge3DObject>();
             if (bridge == null) bridge = spawned.AddComponent<Bridge3DObject>();
-            bridge.Setup(bridges[i]._A, bridges[i]._B, endA, endB, transform.up);
+            bridge.Setup(bridges[i]._A, bridges[i]._B, endA, endB, transform.up, GetEndColor(bridges[i]._A), GetEndColor(bridges[i]._B));
             _bridgeViews.Add(bridge);
         }
 
@@ -897,14 +1079,17 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     void UpdateTearing(int runeID, Vector2 desiredPosition)
     {
         //starts tearing every bridge on this rune that's being pulled past its reach, and stops the rest
+        //also tells each one its strain: how far into Tear Slack it's pulled (0 to 1), for the bridge shader's tear dead zone look
         for (int i = 0; i < _bridgeViews.Count; i++)
         {
             Bridge3DObject bridge = _bridgeViews[i];
             if (bridge == null || bridge.Touches(runeID) == false) continue;
 
             float stretch = _field.GetBridgeStretch(runeID, desiredPosition, bridge.GetOtherEnd(runeID));
+            float strain = _TearSlack > 0f ? stretch / _TearSlack : (stretch > 0f ? 1f : 0f); //no slack: any stretch is full strain
             if (stretch > _TearSlack) bridge.StartTearing(stretch);
-            else bridge.StopTearing();
+            else bridge.StopTearing(); //also puts strain back to 0, set again just below
+            bridge.ShowStrain(strain); //clamped to 0 to 1 by the bridge
         }
     }
 
@@ -939,6 +1124,14 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return _BridgeHolder;
     }
 
+    Color GetEndColor(int id)
+    {
+        //the color at one end of a bridge: the core's color, or the rune's element color
+        if (id == RuneField.CoreID) return _CoreColor;
+        PlacedRuneEntry rune = _field.GetRune(id);
+        return GetElementColor(rune != null ? rune._Element : null);
+    }
+
     Transform GetEndTransform(int id)
     {
         //the object at one end of a bridge: the core (or this object if there's no core) or a rune
@@ -949,8 +1142,10 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
     Color GetElementColor(ElementItemSO element)
     {
-        //the rune's color from Element Colors, or the default
+        //the rune's color: its element's Palette (primary color), otherwise the fallback Element Colors list, otherwise the default
+        //todo: later the color may be worked out from the rune's stats [undecided]
         if (element == null) return _DefaultRuneColor;
+        if (element._Palette != null) return element._Palette._PrimaryColor;
         for (int i = 0; i < _ElementColors.Count; i++)
         {
             if (_ElementColors[i] != null && _ElementColors[i]._Element == element.element) return _ElementColors[i]._Color;
