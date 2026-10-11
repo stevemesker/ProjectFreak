@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502f0ffe7b80a5947bdaaa346a14c599, type: 3}
   m_Name: SO_Shade_Slot0
   m_EditorClassIdentifier: 
-  _CurrentEvolution: {fileID: 11400000, guid: c46287d04494e97458b17d159937a386, type: 2}
+  _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
   _GatesTaken: 
-  _Level: 7
+  _Level: 1
   _XP: 0
   _Lives: 3
   _FragmentPower: 0
