@@ -16,7 +16,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 ## The Look
 *Agreed Oct 12, 2026 (Steve's sketches).*
 
-Each zone is its own piece of floor: zone 1 is a disc around the core, zones 2 to 4 are rings (pipe shapes). The art is rough rock with cracks in it.
+Each zone is its own piece of floor: zone 1 is a disc around the core, zones 2 to 4 are rings (pipe shapes). The art is rough rock with cracks in it. The zone art is a single game objects with several models and decals parented under it per zone
 
 **Everything comes from one number, the open zone (N).** The field already works it out (`GetOpenZone()`), so the visuals don't need rules of their own:
 

@@ -1,0 +1,1 @@
+shader used for the perimeter around the active zones in the [[Rune Field]]. Needs to tile from left to right, have a strength control, and a smoking effect built in for the frozen sections behind the forward border so we can use 1 mesh for it all. The wall also has some unevenness to it where border nodes intersect.
