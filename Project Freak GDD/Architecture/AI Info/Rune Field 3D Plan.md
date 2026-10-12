@@ -11,6 +11,8 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 **Oct 11, 2026 (evening):** Playtest 0 build steps 1 (frozen saved and moving) and 2 (runes in any zone) built in the rules, see **Zones and Evolving** in [[Rune Field System]]. Steps 3 (the 3D view for them), 4 (dragging and gamepad), 5 (code ready for the art), 6 (shade info window) and 7 (shard data) built, see [[Rune Field 3D View]]. **Every Playtest 0 build step is built.** Left from that round: the Art Pile (own talks) and the shard page
 
+**Oct 12, 2026:** zone visuals talked through and planned, see [[Zone Visuals Plan]] (its own plan and build order, art briefs in `Art/UI/Rune Field/3D Assets/Zones`).
+
 **Branch:** `dev > rune field overhaul > 3d rune field test`. If the test doesn't work out, the branch gets dropped and the 2D view stays.
 
 **Goal:** a build of `3d_Evolution_UI_scene` that runs on its own and can be sent to friends to play with. Loading it into the real game (Hazen terminal, additive scene, camera blend) comes after the test.
@@ -85,7 +87,7 @@ Each step gets tested in Unity before the next.
 7. ~~**Shard data**~~ *Built Oct 11, 2026, see [[Items & Pickups]] (`ShardItemSO`) and [[Shade Manager]] (`SlotShard`). The Shade Manager also got `OnCorePowerChanged`, so the open 3D field picks up new core power (level or shard) by itself*
 
 ### Art Pile (own talks)
-- Zone visuals: the crack in the floor with a wall of magic light, and floor colors for frozen / open / locked zones
+- ~~Zone visuals: the crack in the floor with a wall of magic light, and floor colors for frozen / open / locked zones~~ *Planned Oct 12, 2026, see [[Zone Visuals Plan]]*
 - Bridge tear shader (builds up and changes color with the tear), the break effect (tears, the cut on save, anything severed), the tear dead zone look
 - Node glow shader: fades on / off and to the locked look. *Idea: the shader runs the fade itself from a start time set once, so there's nothing to tick per node*
 - Core shader (Steve makes it and shares the control variables)
@@ -272,7 +274,7 @@ Starting rune assets for the test: Steve makes these.
 ## Later (not in this test)
 *Oct 11, 2026: edge panning, the D-pad, the info popup and shards moved into **Playtest 0 Changes** above (the info popup is now a mouse hover panel, so it no longer needs a button).*
 - Loading into the real game: Hazen terminal, additive scene, camera blend, pause, input map switch, safe rooms [[Notes for the future]]
-- Real feedback visuals (shaders, zone borders, rune glyphs) once 2D vs 3D is decided [[Notes for the future]]
+- Real feedback visuals (shaders, zone borders, rune glyphs) once 2D vs 3D is decided [[Notes for the future]] *Zone borders: planned Oct 12, 2026 in [[Zone Visuals Plan]]*
 - Speed and sensitivity options in the settings menu [[Notes for the future]]
 - **Picking at low tilt:** picking is math on the ground plane, so pointing at the top of a rune at a low camera angle can land behind it. Switch to colliders (or a ray-vs-cylinder test) if it's noticeable in testing. Colliders would also cover hovering nodes and the core [[Notes for the future]]
 - **Less hand setup:** self-wiring buttons (a small component with a Save / Discard / Leave dropdown that finds the field itself), UI that registers with the field, and one rig prefab (field, camera, canvas, popup) once the test settles [[Notes for the future]]

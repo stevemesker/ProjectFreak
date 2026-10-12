@@ -102,7 +102,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 - **Locked zones (planning runes):** runes can be placed there to plan ahead. They never get power, come out of the inventory like any rune and save with the field. They can snap into nodes, but the node stays off. Lockouts still trigger on plugging, so a planning rune in a future gate locks its rival until it's pulled out
 - **Cut on save:** in the draft, bridges work normally, including ones crossing the open zone's outer ring (they just don't carry power across). When the field is saved (`ShadeManager.SaveRuneField` runs `CutOpenRingBridges`), every bridge crossing that ring that isn't frozen is cut, and `OnBridgesCut` fires with them (for the break effect later [[Notes for the future]]). Bridges between two runes past the ring stay, so a planned chain keeps its shape; when the zone opens, one bridge reconnects it. *A planned chain that runs into the next locked zone gets cut there at the first save after its own zone opens*
 - Loading and saving never drop or refuse runes past the open zone
-- Zone colors and the crack in the floor are in the Art Pile ([[Rune Field 3D Plan]]) [[Notes for the future]]
+- Zone colors and the crack in the floor are planned in [[Zone Visuals Plan]] (Oct 12, 2026) [[Notes for the future]]
 
 **Frozen** *(saved since Oct 11, 2026, Playtest 0 build step 1, see [[Rune Field 3D Plan]])*: `RuneFieldData` saves three lists, so moving a frozen rune doesn't thaw it:
 - `_FrozenRunes`: rune IDs. The core counts as frozen
@@ -139,7 +139,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 - **Snap buttons** on `EvolutionNode` (**Zone Tools** foldout): **Snap To Next Ring Out** moves the node out to the closest ring past it, keeping its angle around the core; a node already on a ring goes up to the next one. **Snap To Ring** takes a ring number. Gate rings only (1 to `_ZoneCount` − 1). Ctrl+Z works
 - Both find the settings asset in the project by themselves (`RuneFieldSettingsSO.FindInProject`), nothing to assign
 
-*Feedback visuals (frozen runes, locked zones) are gizmos for now, until 2D vs 3D is decided* [[Notes for the future]]
+*Feedback visuals (frozen runes, locked zones) are gizmos for now, until 2D vs 3D is decided. The 3D zone look is planned in [[Zone Visuals Plan]]* [[Notes for the future]]
 
 ---
 ## Effects

@@ -120,7 +120,7 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 | `_BridgeHolder` | Where spawned bridges go. Empty = a `<===== Bridged =====>` divider is made under the field the first time a bridge spawns (in play mode it's gone after stopping). Keep it unscaled |
 | `_OnEvolved` | Runs when the open shade evolves, after the field reloads |
 | `_SlotIndex` / `_HasUnsavedChanges` | Read only |
-| Zone Gizmos foldout | Ring colors, same as the 2D field: rings flat on the field, colored frozen / open / locked in play mode, frozen runes outlined |
+| Zone Gizmos foldout | Ring colors, same as the 2D field: rings flat on the field, colored frozen / open / locked in play mode, frozen runes outlined. *The real zone look (raised floors, border tear and smoke) is planned in [[Zone Visuals Plan]]* [[Notes for the future]] |
 
 - **Adding the component** finds the core and nodes under it and both prefabs by name, so nothing needs dragging in
 - **Start:** puts the core at the center, then opens the selected slot (`LoadRuneField`), the same as the 2D field

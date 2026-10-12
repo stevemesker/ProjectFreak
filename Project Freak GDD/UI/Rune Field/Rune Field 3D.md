@@ -51,3 +51,8 @@ The shard is a separate mesh from the core because I like the idea of having dif
 We want to keep the same functionality from the 2d version where the player can't scroll past the rune field so the edge goes no farther than the bleed area passing the center of the screen.
 
 For zones just use the same debug circle in inspector. We'll deal with the visuals when we lock down which version we want to use
+
+### Zone visuals *(Oct 12, 2026)*
+Each zone is its own piece of rough rock floor, a disc for zone 1 and pipe-shaped rings for the rest. When a zone unlocks it lifts up a little to the same level as the zones before it, so everything unlocked reads as one flat plane, and the crack on its forward border lights up with a wall of magic light. The zone you just left turns a duller, bluer "frozen" color and its old crack turns to smoky grey; the smoke from the border before that turns off. Locked zones further out sit a bit lower and are tinted darker. The wall of light has gaps at the evolution nodes so they stand out, and glowing cracks run out across the floor from the border, collapsing down to nothing.
+
+The change plays when you save into an evolution, or the next time you open the slot if the shade evolved somewhere else. Full plan in [[Zone Visuals Plan]]

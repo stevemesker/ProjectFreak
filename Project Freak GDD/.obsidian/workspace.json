@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 42.191066188457775,
+        "dimension": 42.19106618845777,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
+                "file": "Architecture/AI Info/Zone Visuals Plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune Field 3D Change Requests and to Do"
+              "title": "Zone Visuals Plan"
             }
           }
         ]
@@ -243,7 +243,9 @@
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
     "Architecture/AI Info/Rune Field 3D Plan.md",
+    "Architecture/AI Info/Zone Visuals Plan.md",
     "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
+    "zzz Extras/Attachments/Pasted image 20261012075302.png",
     "Architecture/AI Info/Known Issues.md",
     "Architecture/AI Info/Coding Concepts.md",
     "Architecture/AI Info/Code Style Rules.md",
@@ -268,7 +270,6 @@
     "Character Traits/Main Character Abilities/Return Shade.md",
     "Character Traits/Main Character Abilities/Release Shade.md",
     "Character Traits/Main Character Abilities/Tether Shade.md",
-    "Architecture/Shades/Shade Forms Plan.md",
     "zzz Extras/Attachments/Pasted image 20261007135323.png",
     "Architecture/AI",
     "Architecture/Enemies",
