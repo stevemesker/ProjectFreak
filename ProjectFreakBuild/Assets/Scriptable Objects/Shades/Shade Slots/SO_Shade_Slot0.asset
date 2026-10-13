@@ -13,47 +13,36 @@ MonoBehaviour:
   m_Name: SO_Shade_Slot0
   m_EditorClassIdentifier: 
   _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-  _GatesTaken: 090000000a000000
-  _Level: 9
+  _GatesTaken: 0300000005000000
+  _Level: 11
   _XP: 0
   _Lives: 3
   _Shard: {fileID: 0}
   _RuneField:
     _Runes:
-    - _ID: 0
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: -209.74153, y: -136.0459}
     - _ID: 1
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: -354, y: -281}
+      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
+      _Position: {x: -121.89278, y: -218.27081}
     - _ID: 2
       _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: 237.30962, y: -78.639305}
+      _Position: {x: -196.40027, y: -456.90994}
     - _ID: 3
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: 408.85773, y: 69.786934}
+      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
+      _Position: {x: -266.1577, y: -620.3105}
     - _ID: 4
-      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
-      _Position: {x: 647.13904, y: 191.92719}
-    - _ID: 5
       _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: 870.842, y: 23.531837}
+      _Position: {x: -480.2434, y: -800.77466}
+    - _ID: 5
+      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
+      _Position: {x: -430.38144, y: -1045.7517}
     - _ID: 6
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: 1120.5898, y: 12.3064}
-    - _ID: 7
       _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
-      _Position: {x: 1349.7971, y: 23.401474}
-    - _ID: 8
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: 1609.6238, y: -80.95424}
+      _Position: {x: -416.25305, y: -1284.2249}
     _Bridges:
-    - _A: 0
-      _B: -1
     - _A: 1
-      _B: 0
-    - _A: 2
       _B: -1
+    - _A: 2
+      _B: 1
     - _A: 3
       _B: 2
     - _A: 4
@@ -62,27 +51,19 @@ MonoBehaviour:
       _B: 4
     - _A: 6
       _B: 5
-    - _A: 7
-      _B: 6
-    - _A: 8
-      _B: 7
     _Plugs:
-    - _NodeIndex: 15
-      _RuneID: 1
-    - _NodeIndex: 9
-      _RuneID: 4
-    - _NodeIndex: 10
-      _RuneID: 7
-    _ActiveNodes: 0f000000090000000a000000
-    _NextRuneID: 9
-    _FrozenRunes: 0000000001000000020000000300000004000000050000000600000007000000
+    - _NodeIndex: 3
+      _RuneID: 3
+    - _NodeIndex: 5
+      _RuneID: 6
+    _ActiveNodes: 0300000005000000
+    _NextRuneID: 7
+    _FrozenRunes: 010000000200000003000000040000000500000006000000
     _FrozenBridges:
-    - _A: 0
-      _B: -1
     - _A: 1
-      _B: 0
-    - _A: 2
       _B: -1
+    - _A: 2
+      _B: 1
     - _A: 3
       _B: 2
     - _A: 4
@@ -91,113 +72,78 @@ MonoBehaviour:
       _B: 4
     - _A: 6
       _B: 5
-    - _A: 7
-      _B: 6
-    _LockedRunes: 010000000400000007000000
+    _LockedRunes: 0300000006000000
   _CompiledEffects:
-  - rid: 211481427596279910
-  - rid: 211481427596279911
-  - rid: 211481427596279912
-  - rid: 211481427596279913
-  - rid: 211481427596279914
-  - rid: 211481427596279915
-  - rid: 211481427596279916
-  - rid: 211481427596279917
-  - rid: 211481427596279918
-  - rid: 211481427596279919
-  - rid: 211481427596279920
-  - rid: 211481427596279921
+  - rid: 211481460180516864
+  - rid: 211481460180516865
+  - rid: 211481460180516866
+  - rid: 211481460180516867
+  - rid: 211481460180516868
+  - rid: 211481460180516869
+  - rid: 211481460180516870
+  - rid: 211481460180516871
   _PluggedNodes:
-  - _NodeIndex: 9
-    _Name: PFB_Node_3D (3)
-    _Position: {x: 647.13904, y: 191.92719}
+  - _NodeIndex: 3
+    _Name: PFB_Node_3D (1)
+    _Position: {x: -266.1577, y: -620.3105}
     _Unlocks: 
     _Lockouts: 
     _Effects:
-    - rid: 211481427596279922
-  - _NodeIndex: 10
-    _Name: PFB_Node_3D (9)
-    _Position: {x: 1349.7971, y: 23.401474}
+    - rid: 211481460180516872
+  - _NodeIndex: 5
+    _Name: PFB_Node_3D (6)
+    _Position: {x: -416.25305, y: -1284.2249}
     _Unlocks: 
     _Lockouts: 
     _Effects:
-    - rid: 211481427596279923
-  - _NodeIndex: 15
-    _Name: PFB_Node_3D
-    _Position: {x: -354, y: -281}
-    _Unlocks: 
-    _Lockouts: 
-    _Effects:
-    - rid: 211481427596279924
+    - rid: 211481460180516873
+  _SeenOpenZone: 3
   references:
     version: 2
     RefIds:
-    - rid: 211481427596279910
+    - rid: 211481460180516864
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 1
         _Amount: 1
-    - rid: 211481427596279911
+    - rid: 211481460180516865
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 5
         _Amount: 1
-    - rid: 211481427596279912
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481427596279913
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 1
-        _Amount: 1
-    - rid: 211481427596279914
+    - rid: 211481460180516866
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 2
         _Amount: 1
-    - rid: 211481427596279915
+    - rid: 211481460180516867
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 1
         _Amount: 1
-    - rid: 211481427596279916
+    - rid: 211481460180516868
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 5
         _Amount: 1
-    - rid: 211481427596279917
+    - rid: 211481460180516869
       type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
       data:
         _Stat: 2
         _Amount: 1
-    - rid: 211481427596279918
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481427596279919
-      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}
-    - rid: 211481427596279920
+    - rid: 211481460180516870
       type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
       data:
         _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279921
+    - rid: 211481460180516871
       type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
       data:
         _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279922
+    - rid: 211481460180516872
       type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
       data:
         _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279923
+    - rid: 211481460180516873
       type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
       data:
         _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279924
-      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}

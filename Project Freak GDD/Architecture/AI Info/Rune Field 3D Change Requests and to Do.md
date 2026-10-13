@@ -11,11 +11,12 @@ Things to address
 - Should show base stats, stats that are changing because of runes, and possibly show either an image of the current shade evolution or an actual render of it
 - if we include that render of the shade, I want to eventually set it so that if you have not had that shade evolution before it's blacked out and you don't know what it looks like until you watch the evolution cutscene
 
-- [ ] Defining zones visually
+- [x] Defining zones visually
 - need clear walls to define borders between zones. I like the idea of some sort of crack in the floor with a wall of magic light emitting. Need to talk to claude about how to achieve that
 - Need to color the floor to show the difference between active zones, previous zones, and future zones
 - ![[Pasted image 20261012075302.png]]
-- *Talked through with Claude Oct 12, 2026: planned in [[Zone Visuals Plan]] (raised floors, tear on the forward border, smoke on the one behind, gaps at evolution nodes, ring wall and crack tools). Art briefs in `Art/UI/Rune Field/3D Assets/Zones`*
+- *Talked through with Claude Oct 12, 2026: planned in [[Zone Visuals Plan]] (raised floors, tear on the forward border, smoke on the one behind, gaps at evolution nodes, ring wall and crack tools). Art briefs: [[Zones - Art To Do]]*
+- *Built Oct 12, 2026 and working in Unity with stand-in art (floors, tint, walls, cracks, smoke, the zone opening). How to change it: [[How To - Zone Visuals]]. The art pass is Steve's ([[Zones - Art To Do]])*
 
 - [x] Allow moving of nodes in previous zones but don't allow bridges to sever if locked
 - makes sure evolutions and abilities can't be depowered

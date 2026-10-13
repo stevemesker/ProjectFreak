@@ -112,6 +112,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     public event System.Action OnDraftChanged; //fires whenever the draft changes or a field loads, so other UI (inventory counts, labels) can update
     public event System.Action<RuneFieldType.Hover, int> OnHoverChanged; //fires when what's under the pointer changes: the kind, and a rune ID / node index / RuneField.CoreID. The info popup hooks in here later
     public event System.Action<List<RuneBridgeEntry>> OnBridgesCut; //fires when a save cuts bridges across the open ring, before the field reloads (so their ends can still be looked up). For the break effect later
+    public event System.Action OnFieldLoaded; //fires every time a field is swapped in (opening a slot, switching slots, a save or evolve reloading it, Test Clear). The zone visuals listen to show the open zone
 
     //local variables
     RuneField _field; //the rules for the field being shown
@@ -292,6 +293,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         ClearViews();
         RefreshView(false); //node events don't fire on load, the nodes were already on/off when this field was saved
         SetUnsavedChanges(false);
+        OnFieldLoaded?.Invoke();
     }
 
     [Button("Save Current Field")]
@@ -885,6 +887,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     public RuneFieldType.Hover GetHoverKind() { return _hoverKind; }
     public int GetHoverID() { return _hoverID; }
     public int GetDraggingRuneID() { return _draggingRuneID; }
+    public int GetSlotIndex() { return _SlotIndex; }
+    public List<Node3DObject> GetNodeObjects() { return _Nodes; } //the node objects in the scene (the zone borders look for gates in here)
 
     public Rune3DObject GetRuneView(int runeID)
     {

@@ -43,6 +43,9 @@ public class ShadeSO : ScriptableObject
     [Tooltip("A copy of every node the saved field has a rune plugged into, powered or not (read only). Lets the rules run again without the field scene, like on a level-up")]
     [ReadOnly] public List<AbilityNodeEntry> _PluggedNodes = new List<AbilityNodeEntry>();
 
+    [Tooltip("The last open zone the player actually saw on this slot's 3D rune field. 0 = never seen. When the field opens and the real open zone is further out, the zone opening transition plays. Set it lower by hand to see the transition again")]
+    [Min(0)] public int _SeenOpenZone = 0;
+
     #region Getters
     public int GetRank()
     {
@@ -105,6 +108,13 @@ public class ShadeSO : ScriptableObject
         return true;
     }
 
+    public void SetSeenOpenZone(int zone)
+    {
+        //function the Shade Manager calls once the rune field has shown this slot's open zone. Never below 0
+        _SeenOpenZone = Mathf.Max(0, zone);
+        MarkChanged();
+    }
+
     public void Evolve(int gateIndex, ShadeEvolutionSO evolution)
     {
         //function the Shade Manager calls when a gate gets power: records the gate (rank goes up by 1) and swaps to the new form
@@ -119,7 +129,7 @@ public class ShadeSO : ScriptableObject
     [Button("Reset Slot (playtests)"), GUIColor(1f, 0.6f, 0.6f)]
     public void ResetSlot() //public so the 3D test kit's Reset Slot button can call it
     {
-        //editor button that starts this shade over: empty field, level 1, no shard, no gates, back in the Bound form
+        //editor button that starts this shade over: empty field, level 1, no shard, no gates, no seen zone, back in the Bound form
         //the Bound form is set on the Shade Manager, so it only comes back in play mode. Outside play mode the form is left as it is
         ShadeEvolutionSO bound = ShadeManager._ShadeManager != null ? ShadeManager._ShadeManager.GetBoundEvolution() : null;
         if (bound != null) _CurrentEvolution = bound;
@@ -132,6 +142,7 @@ public class ShadeSO : ScriptableObject
         _Level = 1;
         _XP = 0;
         _Shard = null;
+        _SeenOpenZone = 0; //never seen, so the field snaps to zone 1 next time it opens
         MarkChanged();
 
         if (ShadeManager._ShadeManager != null) ShadeManager._ShadeManager.RebuildSlot(ShadeManager._ShadeManager._ShadeSlots.IndexOf(this)); //in play mode, the stats catch up right away

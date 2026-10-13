@@ -120,13 +120,14 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 | `_BridgeHolder` | Where spawned bridges go. Empty = a `<===== Bridged =====>` divider is made under the field the first time a bridge spawns (in play mode it's gone after stopping). Keep it unscaled |
 | `_OnEvolved` | Runs when the open shade evolves, after the field reloads |
 | `_SlotIndex` / `_HasUnsavedChanges` | Read only |
-| Zone Gizmos foldout | Ring colors, same as the 2D field: rings flat on the field, colored frozen / open / locked in play mode, frozen runes outlined. *The real zone look (raised floors, border tear and smoke) is planned in [[Zone Visuals Plan]]* [[Notes for the future]] |
+| Zone Gizmos foldout | Ring colors, same as the 2D field: rings flat on the field, colored frozen / open / locked in play mode, frozen runes outlined. The real zone look is **Zones** below (floors and lights, Oct 12, 2026); *the border tear and smoke are still planned in [[Zone Visuals Plan]]* [[Notes for the future]] |
 
 - **Adding the component** finds the core and nodes under it and both prefabs by name, so nothing needs dragging in
 - **Start:** puts the core at the center, then opens the selected slot (`LoadRuneField`), the same as the 2D field
 - **Nodes:** built once from `_Nodes` (position, unlocks, lockouts, a copy of the effects) with the same setup checks as 2D (one-way lockouts, gates off a ring)
 - **Drawing:** spawns a rune object per rune and places it, rebuilds every bridge, shows power and frozen on runes, on / locked on nodes, and power on the core. Fires `OnDraftChanged`
 - `TearBridge(a, b)` removes a bridge (called by a bridge when its tear timer fills)
+- **`OnFieldLoaded`** *(Oct 12, 2026)*: fires every time a field is swapped in (opening or switching a slot, the reload after a save or evolve, Reset Slot, Test Clear). The zones listen to it. `GetSlotIndex()` gives the open slot
 - **Runs after the camera** each frame (`[DefaultExecutionOrder(100)]`), so a dragged rune follows the pointer with the camera already moved
 - **Zone tools:** `SnapNodeToRing` / `GetNextRingOut`, used by the nodes' snap buttons. They keep the node's height
 - **Create Dividers** (Tools, Oct 11, 2026): makes a `<===== label =====>` empty under the field for each label (comma-separated for several at once, the field stays selected), on its center, to group nodes in the hierarchy (core / gates / ability nodes). Nodes can sit under dividers at any depth: Fill Node List searches every level, positions are world space, and node indexes come from the Nodes list, not the hierarchy. *Don't move, turn or scale a divider once nodes are under it*
@@ -227,3 +228,184 @@ A small shared helper (plain C# class) that colors a group of renderers with a `
 7. Copy the canvas (without `Navigation Area`) and the EventSystem in from `Evolution_UI_scene`. The inventory list and slot buttons find the 3D field by themselves
 7b. **Swap the EventSystem's input module:** select the EventSystem and press **Replace with InputSystemUIInputModule** on its Standalone Input Module. The old module can't see the new Input System (no virtual mouse, no gamepad navigation). The pointer logs a warning on start while the old one is there
 8. Test build: add an empty object `Test Kit` with `RuneFieldTestKitObject` and fill in Starting Runes. Put `3d_Evolution_UI_scene` in Build Settings [[Notes for the future]]
+
+---
+## Zones
+*Built Oct 12, 2026 ([[Zone Visuals Plan]]): step 1 (floors, lights, seen zone) working in Unity; steps 2 to 5 (walls, cracks, border looks, the zone opening) the same evening, all working in Unity with stand-in art.* Scripts in `Scripts/Rune Field/3D`. How to change all of it: [[How To - Zone Visuals]]. Everything comes from one number, the open zone (`RuneField.GetOpenZone()`):
+
+| Zone | Height | Zone light |
+| :--- | :--- | :--- |
+| Below the open zone (**frozen**) | Raised (the field's height) | `_FrozenLight` (a bit blue) |
+| The **open** zone | Raised | `_OpenLight` (neutral) |
+| Past it (**locked**) | Lowered by `_LiftHeight` | `_LockedLight` (muted, darker) |
+
+| Border (ring k = zone k's outer edge) | Look |
+| :--- | :--- |
+| Ring N (the forward border) | **Tear**: bright, cracks lit |
+| Ring N − 1 | **Smoke**: smoky, cracks faded out |
+| Older rings | **Off** |
+| The field's edge (last ring) | No border at all (never glows) |
+
+```text
+RuneField3DObject ──OnFieldLoaded──► RuneFieldZonesObject ──ShowState──► Zone3DObject (one per zone)
+                                        │ compares with the slot's seen zone        │ lifts / lowers everything under it
+                                        │ (ShadeSO._SeenOpenZone), then saves it    │ its renderers on its light layer
+                                        ▼                                           ▼
+                                   SO_RuneField_Zones (lift, light looks)      its zone light (color, intensity)
+                                        │
+                                        └──ShowLook(tear, smoke, reveal)──► ZoneBorder3DObject (one per gate ring)
+                                                                              │ wall (stays put) + cracks (ride the zone outside)
+                                                                              ▼
+                                                                         MaterialPropertyBlock: _Tear, _Smoke, _Reveal, _Overcharge
+```
+
+### The seen zone
+Each slot saves the last open zone the player saw (`_SeenOpenZone` on the slot, see [[Shade (Runtime)]]). Every time the field loads it compares:
+- **Same, or never seen (0):** snaps to the look
+- **Behind** (the shade evolved since): the zone opening plays (see **Zone opening**), and the seen zone is saved once it finishes. If something else loads first (another slot), it's dropped and plays again next time
+- **Ahead** (the slot was reset): snaps
+- Otherwise the real open zone is saved as seen straight away. Evolving on save reloads the field, so the opening plays right after the save; leveling into a gate mid-fight plays it the next time that slot's field opens
+
+### Light layers
+The floors are tinted with HDRP **light layers**, not materials, so kit pieces need nothing special:
+- Zone N's renderers are on the **default** layer plus **Light Layer N** (decal layers are left alone). The key light lights the default layer, so it still lights and shadows the floors; each zone light only lights its own layer
+- Runes, nodes, the core and anything not under a zone stay on the default layer only, so they're never tinted
+- **`ZoneTintSkipObject`**: a marker. Renderers on it or under it stay on the default layer only (glowing crystals, magic bits)
+- Zone lights are copies of the key light with shadows, the sky (`interactsWithSky`), fog (`affectsVolumetric`) and color temperature turned off, and their light layer set to their zone's
+- HDRP has 8 light layers and layer 0 is the default, so the field can have up to 7 zones
+
+### RuneFieldZonesSO
+Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`. **Changes made while playing stay after stopping.** The code only reads it.
+
+| Variable | Description |
+| :--- | :--- |
+| `_LiftHeight` | How far a locked zone sits below the raised level (meters, 0.25). Tuned by feel [[undecided]] |
+| `_OpenLight` / `_FrozenLight` / `_LockedLight` | Each state's zone light: `_Color` and `_Intensity` (in the key light's unit, lux for the scene's directional Sun, which is 130000). Defaults are a starting guess: 30000 neutral, 30000 blue, 8000 muted purple. Final colors [[undecided]] |
+
+| `_WallStrip` / `_CrackStrip` | The strip the walls (and cracks) are built from. Wall empty = a stand-in card (3 m, 0.4 m under to 1 m up, two-sided). Crack empty = the wall strip. Saving over either from Maya rebuilds every border by itself |
+| `_StripScale` / `_FlipLength` / `_FlipDepth` | Fixes for a strip that comes in at the wrong size or turned around. The strip's +Z faces the core by default |
+| `_BorderMaterial` | One material for every wall and crack (Steve's `MAT_RuneField_Zone_Border_0` later). Empty = HDRP's default material |
+| `_MeshFolder` | Where the baked wall and crack meshes are saved (`Assets/Generated/Rune Field Zones`) |
+| `_TearProperty` / `_SmokeProperty` / `_RevealProperty` / `_OverchargeProperty` | The border shader's Reference names (`_Tear`, `_Smoke`, `_Reveal`, `_Overcharge`) |
+| `_UseStandInLook` | Tints walls and cracks by color until the shader exists (`_StandInColorProperty`, `_StandInTearColor`, `_StandInSmokeColor`, `_StandInOffColor`). Turn off once the shader is in [[Notes for the future]] |
+| `_HideWhenOff` | Turns walls and cracks off completely while they're off (the stand-in material can't fade) |
+| `_SmokePrefab` | Steve's smoke particles (Simulation Space World, moves its own particles). Empty = stand-in grey puffs (`_StandInSmokeLifetime`, `_StandInSmokeSize`, `_StandInSmokeRise`, `_StandInPuffColor`) [[Notes for the future]] |
+| `_SmokePerMeter` | Puffs per second per meter of ring at full smoke (1.5) |
+| `_RiseTime` / `_RiseCurve` | The zone opening: the zone rising and its light changing (1.2 s) |
+| `_BorderBlendTime` / `_BorderBlendCurve` | Tear to smoke and smoke to off (1 s) |
+| `_RevealDelay` / `_RevealTime` / `_RevealCurve` | The new border's light-up sweep: when it starts (0.6 s in) and how long it takes (2 s) |
+| `_StepGap` | Pause between steps when catching up more than one zone (0.3 s) |
+
+### RuneFieldZonesObject
+On the field object, next to `RuneField3DObject` (it requires one). Adding it finds the zones asset and any zones under the field.
+
+| Variable | Description |
+| :--- | :--- |
+| `_Settings` | `SO_RuneField_Zones` |
+| `_LiveTuning` | Editor play mode only: shows the asset's values every frame, so tuning shows straight away (on by default) |
+| `_StandInSkirtDepth` / `_StandInSegments` / `_StandInMaterial` | The stand-in floors: rock face depth (0.5 m), roundness (128), material (empty = HDRP's default) |
+| `_Zones` | Every `Zone3DObject`. A warning shows if it's empty, has an empty entry, or two zones share a number |
+| `_Borders` | Every `ZoneBorder3DObject`. **Set Up Borders** makes them and fills this in |
+| `_KeyLight` | The shadowed directional light the zone lights copy. Empty = found by **Set Up Zone Lighting** |
+| `_ShownOpenZone` / `_PlayingOpening` | Read only |
+
+- **Start:** puts every zone's renderers on its light layer (so kit pieces never need setting by hand), then listens to the field's `OnFieldLoaded` (and catches a field that already loaded)
+- `ShowOpenZone(zone)` snaps every zone and border to its look; `GetZoneState(zone, openZone)` says frozen / open / locked
+- **Tools foldout:**
+  - `_PreviewOpenZone` slider: shows any open zone in edit mode without pressing play (Ctrl+Z works). 4 = every zone open
+  - **Set Up Zones:** makes any missing `Zone 1` to `Zone N` (the field's zone count) under a `Zone Floors` object at the field's center, gives zones with nothing to draw a stand-in floor, fills the list and applies the layers. Safe to press again
+  - **Set Up Borders:** presses Set Up Zones first, then makes any missing `Ring k Border` (ring 1 to the last gate ring) under a `Zone Borders` object at the field's center and builds them all. Safe to press again
+  - **Rebuild All Borders**, **Fill Border List**
+  - **Rebuild Stand-In Floors:** remakes them (after a zone width, skirt or material change)
+  - **Set Up Zone Lighting:** gives every zone a light under a `Zone Lights` object (a copy of the key light, see Light layers). Pressing it again keeps them and turns them to match the key light
+  - **Name Light Layers:** names Light Layers 1 to 4 "Zone 1" to "Zone 4" in the HDRP Global Settings. Only layers still on their default name are renamed
+  - **Apply Zone Layers**, **Fill Zone List**
+- **Test Tools:** **Replay From Seen Zone (play mode)** sets the open slot's seen zone to a number and reloads the field, as if the shade evolved while the field was closed, so the zone opening plays (throws away unsaved changes)
+
+### Zone3DObject
+One zone: everything under it is that zone's floor (Steve's floor mesh, kit rocks, the cracks of the ring inside it, later burn decals) and lifts with it.
+
+| Variable | Description |
+| :--- | :--- |
+| `_ZoneNumber` | 1 is the disc around the core, then rings outward. Also its light layer |
+| `_ZoneLight` | Its shadowless zone light (filled by Set Up Zone Lighting) |
+| `_State` | Read only |
+
+- `ShowState(state, settings)` snaps to a state; `ApplyLook(drop, color, intensity)` sets the height and light directly (the zone opening blends through it)
+- Only its height along its parent's up changes, so the raised level is its parent's center height (the field's plane)
+- `ApplyZoneLayer()` (also a Tools button on the zone)
+- **Stand-in floor:** a disc or ring made by code (top at the zone's height, a rock face down from the outer edge), saved inside the scene as a `Stand-In Floor` child. Delete it once the real floor is under the zone [[Notes for the future]]
+
+### Zone opening
+*Built Oct 12, 2026 (step 5).* When the seen zone is behind, `RuneFieldZonesObject` snaps to the seen zone, then plays one step per new zone N (a coroutine on real time, so it works while paused; input is never blocked):
+1. Zone N rises (`_LiftHeight` → 0) and its light goes locked → open; zone N − 1's light goes open → frozen (`_RiseTime`, `_RiseCurve`)
+2. Border N − 1 goes tear → smoke and border N − 2 smoke → off (`_BorderBlendTime`, `_BorderBlendCurve`). Cracks fade with the tear
+3. After `_RevealDelay`, border N lights up: `_Reveal` 0 → 1 over `_RevealTime`. The mesh's reveal order (UV2.x) makes the light sweep around the ring and out along its cracks in Steve's shader. The edge ring has no border, so the last zone skips this
+
+Catching up more than one zone plays the steps one after another with `_StepGap` between, then snaps to the end look and saves the seen zone. A save that evolves reloads the field twice; the second load is ignored if the same opening is already playing. *A camera move during it, the bridge break before it and the overcharge pulse are still to come* [[Notes for the future]]
+
+### ZoneBorder3DObject
+*Built Oct 12, 2026 (steps 2 and 4).* One gate ring's border: `Zone Borders/Ring k Border`. Holds the **ring wall tool** and shows the border's look.
+
+| Variable | Description |
+| :--- | :--- |
+| `_Ring` | Which ring (1 = zone 1's outer edge) |
+| Wall Shape: `_BottomDepth` | How far below the raised floor the wall's bottom reaches (0.4 m). The strip's part under its Y = 0 is stretched to this, so the wall always goes under a lowered zone. *This is how Steve's card (bottom at −0.24 m) works without changing it in Maya* |
+| Wall Shape: `_HeightScale`, `_RadiusOffset` | Height multiplier; moves the wall out or in (m) |
+| Wall Shape: `_RevealStartAngle` | Where the sweep starts (degrees, 0 = field right, 90 = field forward). It spreads both ways and meets on the far side |
+| Lean: `_LeanAngle`, `_LeanCurve` | Tilt outward the higher it goes (degrees), and the tilt's shape up the wall (straight line = straight slant) |
+| Noise: `_HeightNoise`, `_WobbleNoise`, `_LeanNoise`, `_NoiseBumps`, `_NoiseSeed` | Height (fraction), in / out (m) and lean (degrees) wobble, how bumpy, and the pattern. Read around a circle, so it loops with no seam |
+| Hand Spots: `_Spots`, `_SpotFalloff` | Hand-placed changes (`WallSpotEntry`: `_Angle`, `_Width` in m each side, `_HeightBoost`, `_Push` m, `_Lean` degrees), faded toward their edges by the curve. Dragged around the ring with scene handles |
+| Gate Gaps: `_GapMargin`, `_GapRampWidth`, `_GapRampCurve` | Around each evolution gate on the ring the wall is gone across the gate plus the margin (0.3 m), then slopes back up over the ramp (1.5 m). Gates are found from the field's node list (`RuneField3DObject.GetNodeObjects()`, nodes with an Evolve effect sitting on this ring) |
+| `_WallRenderer` | The `Wall` child. Made by Rebuild Ring |
+| `_CrackRenderer` | `Ring k Cracks`, under zone k + 1 (so it lifts with that floor), with a `ZoneTintSkipObject`. Made by Rebuild Ring |
+| `_Cracks` | This ring's cracks, branches included (**Fill Crack List**) |
+| Runtime Data | `_Radius`, `_StripLength` (should say 4 for Steve's card), `_CopyCount`, `_GateAngles`, `_GateHalfWidth`, `_Look` (tear, smoke, reveal) |
+
+**Rebuild Ring** (Tools, edit mode only; also run by Set Up Borders, Rebuild All Borders, a crack's Rebuild My Ring, and the strip being reimported):
+1. Reads the strip (`ZoneStripBuilder`). Warns if its end edges don't match (the copies then aren't welded)
+2. Fits a whole number of copies around the ring (stretched a little so the circle closes exactly) and welds each copy's start edge onto the one before. The first and last copy aren't welded, so U can count up all the way round
+3. Bends every vertex onto the circle: along the strip = around the ring, the strip's depth = radius (its +Z faces the core), height stays height, then the noise, spots, gate gaps and lean
+4. Builds this ring's cracks into one mesh in the crack renderer's space
+5. Saves both as `M_RuneField_ZoneWall_Ring{k}` / `M_RuneField_ZoneCracks_Ring{k}` in `_MeshFolder` (an existing asset is overwritten in place, so references keep working)
+
+**Baked channels** (match [[Zones - Shader Graph Recipe]]): UV0 = the strip's UVs with U carried on copy to copy; UV2.x = reveal order (0 to 1, distance the sweep travels to get there, divided by the longest on this ring, so walls and cracks light at the same speed); UV2.y = height up the strip (0 bottom, 1 top); UV3.x = gate gap mask (1 normal, 0 in a gap; always 1 on cracks); UV3.y = distance along a crack (0 on walls).
+
+**Look** (`ShowLook(tear, smoke, reveal, settings)`): sends `_Tear`, `_Smoke`, `_Reveal` and `_Overcharge` (always 0 for now) to the wall, and the same with smoke 0 to the cracks, through `RuneFieldTint` (one material for every wall and crack). With `_UseStandInLook` it also tints the material's color (off → smoke → tear, as far as the reveal has got; the stand-in can't sweep). With `_HideWhenOff` an off renderer is turned off.
+
+**Smoke:** while smoky (play mode), puffs are emitted at random spots on the ring, less often inside gate gaps, `_SmokePerMeter` × circumference × smoke per second (real time, at most 200 a frame). The emitter is made the first time: an instance of `_SmokePrefab`, or a stand-in particle system (grey opaque squares that rise and shrink).
+
+**Tools:** **Rebuild Ring**, **Fill Crack List**, **Add Crack** (an angle in degrees: makes a 3-point crack heading straight out, under zone k + 1, and selects it). **Gizmos** when selected: the ring (white), gate gaps (red) and their slopes (orange), hand spots' reach (cyan).
+
+### ZoneCrackPath
+*Built Oct 12, 2026 (step 3).* One floor crack: the wall's strip laid along a path instead of a circle, tall where it leaves the ring and shrinking to nothing at its tip. Keep crack objects under the zone outside their ring.
+
+| Variable | Description |
+| :--- | :--- |
+| `_StartBorder` | The ring it leaves from |
+| `_ParentCrack` / `_BranchAt` | Optional: makes it a branch starting on another crack, this far along it (0 to 1). A branch belongs to its parent's ring |
+| `_Points` | The path, start to tip, relative to this object. The first point snaps onto the ring (keeping its angle) or the parent crack, and keeps its own height |
+| `_HeightScale` / `_WidthScale` | Size compared to the strip (0.5 / 1) |
+| `_HeightCurve` | Height along the crack (1 at the start to 0 at the tip) |
+| Noise: `_HeightNoise`, `_WobbleNoise`, `_NoiseBumps` (per meter), `_NoiseSeed` | Same idea as the wall's |
+
+- **Buttons:** **Add Point** (1 m past the tip, same heading), **Remove Last Point** (keeps at least 2), **Rebuild My Ring**
+- **Reveal order** carries on from the ring: the sweep's distance around the ring to where the crack leaves (a branch: to its parent's start plus along the parent), then along the crack, so cracks light as the sweep passes them
+- The strip below its Y = 0 is only scaled by `_HeightScale`, so it stays in its trench; above it follows the curve and noise
+- Parent loops (a crack set as its own parent through others) are caught after 32 steps with a warning
+- **Gizmo:** its path as a pink line, always shown
+
+### ZoneStripBuilder
+A plain C# helper (like `RuneFieldTint`) shared by the walls and cracks: reads a strip mesh (or makes the stand-in card), applies the scale and flips (one flip also reverses the triangles so the faces stay the right way out), pairs each start-edge vertex with its matching end-edge vertex, lays copies end to end (`Layout`), and builds / saves meshes (`MakeMesh`, `SaveMesh`; UV channels 2 and 3 are Shader Graph's UV2 and UV3). If the strip's data can't be read (Read/Write off, in play mode) it says so.
+
+### Editor tools (`Editor/ZoneToolsEditor.cs`)
+- **Scene handles** (`ZoneToolsEditor`, hooked into the scene view on load): with a border selected, a cyan dot per hand spot to drag around the ring; with a crack selected, a pink dot per point to drag across the floor (a snapped start shows as a white ring). Undo works. Press Rebuild to see the change on the mesh
+- **Auto rebuild** (`ZoneStripImportWatcher`, an `AssetPostprocessor`): when the zones asset's wall or crack strip is reimported (saved over from Maya), every border in the open scenes rebuilds right after the import (edit mode only)
+
+### Setup (Steve)
+1. On the `Rune Field` object, add `RuneFieldZonesObject`. *Oct 12, 2026:* if there's no `SO_RuneField_Zones` yet, the Tools buttons, the slider or pressing play make one next to `SO_RuneField_Settings` and fill it in (editor only)
+2. Open **Tools**, press **Set Up Zones**, then **Set Up Zone Lighting**, then **Name Light Layers**, then **Set Up Borders** (Oct 12, 2026)
+2b. Drag `M_ZoneWall_WallEffectCard`'s mesh into the zones asset's `_WallStrip` and press **Rebuild All Borders**. Check a border's `_StripLength` says 4; if not, fix `_StripScale`. Add cracks with a border's **Add Crack**
+3. Move the slider to check each open zone. Then press play and use the test kit
+4. If the zone lights don't tint anything: check the rune field camera's Frame Settings have **Light Layers** on (camera → Rendering → Custom Frame Settings, or the default in HDRP Global Settings → Frame Settings → Camera → Lighting)
+5. Real floors: put them (and kit pieces) under `Zone Floors/Zone N`, top surface at the zone object's height, then delete that zone's `Stand-In Floor`

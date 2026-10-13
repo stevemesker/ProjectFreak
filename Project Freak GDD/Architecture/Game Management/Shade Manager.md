@@ -109,6 +109,7 @@ Fade screen back in
 | `GetSavedRuneCount(slot, element)` | How many of a rune the slot's saved field has (the rune field UI uses it for pending counts) |
 | `GetCorePower(slot)` | The slot's core power: its level + its slotted shard's power |
 | `GetRank(slot)` | How many times the slot's shade has evolved (Bound = 0) |
+| `GetSeenOpenZone(slot)` / `SetSeenOpenZone(slot, zone)` | *Oct 12, 2026.* The last open zone the player saw on the slot's 3D rune field (0 = never seen), for the zone visuals (see **Zones** in [[Rune Field 3D View]]) |
 | `GetBoundEvolution()` | The shared Bound form |
 | `GetRuneFieldSettings()` | The shared rune field settings |
 | `IsValidSlot(slot)` | Checks a slot index points at a real slot |

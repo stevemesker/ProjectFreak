@@ -11,7 +11,7 @@ Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
 **Oct 11, 2026 (evening):** Playtest 0 build steps 1 (frozen saved and moving) and 2 (runes in any zone) built in the rules, see **Zones and Evolving** in [[Rune Field System]]. Steps 3 (the 3D view for them), 4 (dragging and gamepad), 5 (code ready for the art), 6 (shade info window) and 7 (shard data) built, see [[Rune Field 3D View]]. **Every Playtest 0 build step is built.** Left from that round: the Art Pile (own talks) and the shard page
 
-**Oct 12, 2026:** zone visuals talked through and planned, see [[Zone Visuals Plan]] (its own plan and build order, art briefs in `Art/UI/Rune Field/3D Assets/Zones`).
+**Oct 12, 2026:** zone visuals talked through and planned, see [[Zone Visuals Plan]] (its own plan and build order, art briefs in [[Zones - Art To Do]]).
 
 **Branch:** `dev > rune field overhaul > 3d rune field test`. If the test doesn't work out, the branch gets dropped and the 2D view stays.
 

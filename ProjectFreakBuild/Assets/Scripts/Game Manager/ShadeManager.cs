@@ -425,6 +425,20 @@ public class ShadeManager : MonoBehaviour
         return _ShadeSlots[slotIndex].GetCorePower();
     }
 
+    public int GetSeenOpenZone(int slotIndex)
+    {
+        //the last open zone the player saw on a slot's 3D rune field (0 = never seen). The zone visuals compare it to the real open zone
+        if (IsValidSlot(slotIndex) == false) return 0;
+        return _ShadeSlots[slotIndex]._SeenOpenZone;
+    }
+
+    public void SetSeenOpenZone(int slotIndex, int zone)
+    {
+        //saves the open zone the player just saw on a slot's 3D rune field
+        if (IsValidSlot(slotIndex) == false) { Debug.LogError($"Error! Shade slot {slotIndex} doesn't exist on {gameObject.name}, can't save its seen zone", this); return; }
+        _ShadeSlots[slotIndex].SetSeenOpenZone(zone);
+    }
+
     public RuneFieldSettingsSO GetRuneFieldSettings()
     {
         return _RuneFieldSettings;

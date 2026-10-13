@@ -24,6 +24,7 @@ One asset per shade slot. Created from **Create → ScriptableObjects → Shades
 | `_RuneField` | The saved [[Rune Field]] (`RuneFieldData`). Was `_StartingRuneField` (kept through `FormerlySerializedAs`) |
 | `_CompiledEffects` | Everything the saved field does, worked out on save (read only). The [[Shade Manager]] builds stats from this |
 | `_PluggedNodes` | Snapshots of every node the saved field has a rune plugged into (read only). Lets the rules run again without the field scene |
+| `_SeenOpenZone` | *Oct 12, 2026.* The last open zone the player actually saw on this slot's 3D rune field (0 = never seen). When the field opens further out than this, the zone opening plays (see **Zones** in [[Rune Field 3D View]]). Set by `SetSeenOpenZone(zone)` through the [[Shade Manager]]. Set it lower by hand to see the opening again; Reset Slot puts it back to 0 |
 
 `SaveRuneField(field, effects, nodes)` replaces all three rune field lists at once (never adds to them) and marks the asset changed so the editor saves it to disk.
 
