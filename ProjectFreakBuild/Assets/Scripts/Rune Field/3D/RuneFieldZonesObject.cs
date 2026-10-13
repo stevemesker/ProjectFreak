@@ -161,8 +161,10 @@ public class RuneFieldZonesObject : MonoBehaviour
     {
         //one zone opening, all on real time (works while the game is paused):
         //1. the zone rises and its light goes from locked to open, while the zone behind goes from open to frozen
-        //2. the border behind goes from tear to smoke, and the one behind that from smoke to off (its cracks fade with the tear)
-        //3. after Reveal Delay, the new border lights up: the sweep runs around the ring and out along its cracks (the field's edge has no border, so it skips this)
+        //2. the border behind swaps from tear to smoke: the tear wall (and its cracks) animates out, then the smoke wall animates in (Swap Point splits the time).
+        //   The border behind that animates its smoke out
+        //3. after Reveal Delay, the new border's tear wall and cracks animate in, with the light-up sweep running at the same time
+        //   (the field's edge has no border, so the last zone skips this)
         Zone3DObject opening = GetZone(zone);
         Zone3DObject behind = GetZone(zone - 1);
         ZoneBorder3DObject newBorder = GetBorder(zone);
@@ -182,14 +184,27 @@ public class RuneFieldZonesObject : MonoBehaviour
 
             if (opening != null) opening.ApplyLook(Mathf.Lerp(_Settings._LiftHeight, 0f, rise), Color.Lerp(locked._Color, open._Color, rise), Mathf.Lerp(locked._Intensity, open._Intensity, rise));
             if (behind != null) behind.ApplyLook(0f, Color.Lerp(open._Color, frozen._Color, rise), Mathf.Lerp(open._Intensity, frozen._Intensity, rise));
-            if (oldBorder != null) oldBorder.ShowLook(1f - blend, blend, 1f, _Settings);
-            if (olderBorder != null) olderBorder.ShowLook(0f, 1f - blend, 1f, _Settings);
-            if (newBorder != null) newBorder.ShowLook(1f, 0f, reveal, _Settings);
+            if (oldBorder != null) ShowTearToSmoke(oldBorder, blend);
+            if (olderBorder != null) olderBorder.ShowLook(blend < 1f ? RuneFieldType.BorderLook.Smoke : RuneFieldType.BorderLook.Off, 1f - blend, 0f, 1f, _Settings);
+            if (newBorder != null) newBorder.ShowLook(RuneFieldType.BorderLook.Tear, reveal, reveal, reveal, _Settings);
 
             if (time >= length) yield break; //yield break ends the coroutine
             yield return null; //waits one frame
             time += Time.unscaledDeltaTime;
         }
+    }
+
+    void ShowTearToSmoke(ZoneBorder3DObject border, float blend)
+    {
+        //blend 0 to Swap Point: the tear wall and its cracks animate out. Swap Point to 1: the smoke wall animates in
+        float swap = _Settings._SwapPoint;
+        if (blend < swap)
+        {
+            float tearHeight = 1f - blend / swap;
+            border.ShowLook(RuneFieldType.BorderLook.Tear, tearHeight, tearHeight, 1f, _Settings);
+            return;
+        }
+        border.ShowLook(RuneFieldType.BorderLook.Smoke, (blend - swap) / (1f - swap), 0f, 1f, _Settings);
     }
 
     void StopOpening()
@@ -203,7 +218,7 @@ public class RuneFieldZonesObject : MonoBehaviour
 
     public void ShowOpenZone(int openZone)
     {
-        //snaps every zone and border to its look for this open zone. Border N (the forward one) is the tear, border N - 1 smokes, the rest are off
+        //snaps every zone and border to its look for this open zone. Border N (the forward one) is the tear with its cracks, border N - 1 smokes (cracks off), the rest are off
         if (_Settings == null) return;
         for (int i = 0; i < _Zones.Count; i++)
         {
@@ -214,7 +229,9 @@ public class RuneFieldZonesObject : MonoBehaviour
         {
             if (_Borders[i] == null) continue;
             int ring = _Borders[i].GetRing();
-            _Borders[i].ShowLook(ring == openZone ? 1f : 0f, ring == openZone - 1 ? 1f : 0f, 1f, _Settings);
+            if (ring == openZone) _Borders[i].ShowLook(RuneFieldType.BorderLook.Tear, 1f, 1f, 1f, _Settings);
+            else if (ring == openZone - 1) _Borders[i].ShowLook(RuneFieldType.BorderLook.Smoke, 1f, 0f, 1f, _Settings);
+            else _Borders[i].ShowLook(RuneFieldType.BorderLook.Off, 0f, 0f, 1f, _Settings);
         }
         _ShownOpenZone = openZone;
     }

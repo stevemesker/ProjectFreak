@@ -7,7 +7,8 @@ using Sirenix.OdinInspector;
 //ring k is zone k's outer edge. Only gate rings get one (1 to zone count - 1): the field's edge never glows
 //editor: holds the ring wall tool. Rebuild Ring bends copies of the strip around the ring (lean, noise, hand spots, gaps at evolution gates)
 //and bakes the wall and its cracks into mesh assets. The wall sits under the field and stays put; the cracks sit under the zone outside the ring and lift with it
-//play: shows tear / smoke / off and the light-up sweep through a MaterialPropertyBlock per renderer, so every wall and crack shares one material
+//play: swaps the wall between the tear material (forward border) and the smoke material (the border behind), and animates their shared height value
+//(through a MaterialPropertyBlock per renderer) so a wall can animate out, swap, and animate back in. Cracks only ever show the tear
 [DisallowMultipleComponent]
 public class ZoneBorder3DObject : MonoBehaviour
 {
@@ -90,14 +91,22 @@ public class ZoneBorder3DObject : MonoBehaviour
     [Tooltip("Half a gate's width at the last build, in meters (read only)")]
     [SerializeField, ReadOnly] float _GateHalfWidth = 0.5f;
 
-    [Tooltip("The look being shown: tear, smoke and reveal, 0 to 1 (read only)")]
-    [SerializeField, ReadOnly] Vector3 _Look;
+    [Tooltip("The tear material: the one on the wall strip model, found on the last Rebuild (read only). The zones asset's Tear Material overrides it")]
+    [SerializeField, ReadOnly] Material _StripMaterial;
+
+    [Tooltip("Which material the wall is showing (read only)")]
+    [SerializeField, ReadOnly] RuneFieldType.BorderLook _Look = RuneFieldType.BorderLook.Off;
+
+    [Tooltip("How far up the wall is animated, 0 (gone) to 1 (full) (read only)")]
+    [SerializeField, ReadOnly] float _Height;
 
     //local variables
     RuneFieldTint _wallTint; //sets the shader values on the wall
     RuneFieldTint _crackTint; //and on the cracks
     RuneFieldZonesSO _lookSettings; //the zones asset last used to show a look (for the smoke)
     ParticleSystem _smokeEmitter;
+    bool _warnedTear; //already warned about a missing tear material
+    bool _warnedSmoke; //already warned about a missing smoke material
     float _smokeToEmit; //smoke particles owed but not made yet (fractions add up over frames)
     const string WallName = "Wall";
     const int MaxSmokePerFrame = 200; //so a long hitch can't burst thousands of puffs at once
@@ -105,28 +114,35 @@ public class ZoneBorder3DObject : MonoBehaviour
     private void Update()
     {
         //makes smoke along the ring while this border is smoky. Real time, so it works while the game is paused
-        if (_Look.y <= 0.001f || _lookSettings == null || Application.isPlaying == false) return;
+        if (_lookSettings == null || _lookSettings._UseSmokeParticles == false || Application.isPlaying == false) return;
+        if (_Look != RuneFieldType.BorderLook.Smoke || _Height <= 0.001f) return;
         ParticleSystem emitter = GetSmokeEmitter();
         if (emitter == null) return;
 
-        _smokeToEmit += _lookSettings._SmokePerMeter * GetCircumference() * _Look.y * Time.unscaledDeltaTime;
+        _smokeToEmit += _lookSettings._SmokePerMeter * GetCircumference() * _Height * Time.unscaledDeltaTime;
         int count = Mathf.Min(Mathf.FloorToInt(_smokeToEmit), MaxSmokePerFrame);
         _smokeToEmit -= Mathf.FloorToInt(_smokeToEmit);
         for (int i = 0; i < count; i++) EmitSmoke(emitter);
     }
 
     #region Look
-    public void ShowLook(float tear, float smoke, float reveal, RuneFieldZonesSO lookSettings)
+    public void ShowLook(RuneFieldType.BorderLook look, float height, float crackHeight, float reveal, RuneFieldZonesSO lookSettings)
     {
-        //shows how much of the tear, the smoke and the light-up sweep this border has (each 0 to 1)
-        //cracks never smoke: they get the tear and fade out with it as the wall turns to smoke
+        //shows the wall with the tear or smoke material (or hides it), animated "height" of the way up (0 gone, 1 full)
+        //the cracks show the tear material at crackHeight while the wall is the tear, and are hidden otherwise (they never smoke)
+        //reveal is the light-up sweep (0 to 1), for a tear material that reads it
         if (lookSettings == null) return;
-        _Look = new Vector3(Mathf.Clamp01(tear), Mathf.Clamp01(smoke), Mathf.Clamp01(reveal));
+        _Look = look;
+        _Height = Mathf.Clamp01(height);
         _lookSettings = lookSettings;
         if (_wallTint == null || _crackTint == null) MakeTints(lookSettings);
 
-        ApplyLook(_wallTint, _WallRenderer, _Look.x, _Look.y, _Look.z, lookSettings);
-        ApplyLook(_crackTint, _CrackRenderer, _Look.x, 0f, _Look.z, lookSettings);
+        Material wallMaterial = look == RuneFieldType.BorderLook.Smoke ? GetSmokeMaterial(lookSettings) : GetTearMaterial(lookSettings);
+        bool wallOn = look != RuneFieldType.BorderLook.Off && _Height > 0.001f;
+        ApplyLook(_wallTint, _WallRenderer, wallOn, wallMaterial, _Height, reveal, look == RuneFieldType.BorderLook.Smoke ? lookSettings._StandInSmokeColor : lookSettings._StandInTearColor, lookSettings);
+
+        bool cracksOn = look == RuneFieldType.BorderLook.Tear && crackHeight > 0.001f;
+        ApplyLook(_crackTint, _CrackRenderer, cracksOn, GetTearMaterial(lookSettings), Mathf.Clamp01(crackHeight), reveal, lookSettings._StandInTearColor, lookSettings);
     }
 
     void MakeTints(RuneFieldZonesSO lookSettings)
@@ -136,32 +152,55 @@ public class ZoneBorder3DObject : MonoBehaviour
         _crackTint = new RuneFieldTint(new List<Renderer> { _CrackRenderer }, lookSettings._StandInColorProperty);
     }
 
-    void ApplyLook(RuneFieldTint tint, Renderer target, float tear, float smoke, float reveal, RuneFieldZonesSO lookSettings)
+    void ApplyLook(RuneFieldTint tint, Renderer target, bool on, Material material, float height, float reveal, Color standInColor, RuneFieldZonesSO lookSettings)
     {
-        //sends the values to one renderer. Names the shader doesn't have are ignored, so this works before Steve's shader exists
+        //turns a renderer on or off, swaps its material if needed, and sends its values
+        //the height value goes from Hidden Height (0) to the material's own value (1), so each material keeps its full height on the material itself
         if (target == null) return;
-        bool on = tear > 0.001f || smoke > 0.001f;
-        bool visible = on || lookSettings._HideWhenOff == false;
-        if (target.enabled != visible) target.enabled = visible;
+        if (target.enabled != on) target.enabled = on;
+        if (on == false) return;
+        if (material != null && target.sharedMaterial != material) target.sharedMaterial = material; //sharedMaterial swaps without making a copy of the material
+
+        int heightID = Shader.PropertyToID(lookSettings._HeightProperty);
+        float fullHeight = material != null && material.HasProperty(heightID) ? material.GetFloat(heightID) : 1f; //the value set on the material
 
         tint.StartValues();
-        tint.PutFloat(Shader.PropertyToID(lookSettings._TearProperty), tear);
-        tint.PutFloat(Shader.PropertyToID(lookSettings._SmokeProperty), smoke);
+        tint.PutFloat(heightID, Mathf.Lerp(lookSettings._HiddenHeight, fullHeight, height));
         tint.PutFloat(Shader.PropertyToID(lookSettings._RevealProperty), reveal);
         tint.PutFloat(Shader.PropertyToID(lookSettings._OverchargeProperty), 0f); //todo: the overcharge pulse before a cut on save [Notes for the future]
-        if (lookSettings._UseStandInLook) tint.PutTint(GetStandInColor(tear, smoke, reveal, lookSettings));
+        if (material == GetDefaultMaterial()) tint.PutTint(standInColor); //only the stand-in gets tinted, a real material keeps its own colors
         tint.ApplyValues();
     }
 
-    Color GetStandInColor(float tear, float smoke, float reveal, RuneFieldZonesSO lookSettings)
+    Material GetTearMaterial(RuneFieldZonesSO lookSettings)
     {
-        //a flat color standing in for the shader: off, blended toward smoke, then toward the tear as far as the reveal has got
-        //the stand-in can't sweep around the ring, so the whole wall brightens as the reveal goes from 0 to 1
-        Color color = Color.Lerp(lookSettings._StandInOffColor, lookSettings._StandInSmokeColor, smoke);
-        return Color.Lerp(color, lookSettings._StandInTearColor, tear * reveal);
+        //the zones asset's Tear Material, otherwise the strip model's own material, otherwise the stand-in (with a warning, once)
+        if (lookSettings._TearMaterial != null) return lookSettings._TearMaterial;
+#if UNITY_EDITOR
+        if (_StripMaterial == null) _StripMaterial = FindStripMaterial(lookSettings._WallStrip); //editor: picks up a strip set since the last Rebuild
+#endif
+        if (_StripMaterial != null) return _StripMaterial;
+        WarnStandIn(ref _warnedTear, "tear", "Set Wall Strip on the zones asset (its model's material is used) and press Rebuild All Borders, or set Tear Material");
+        return GetDefaultMaterial();
     }
 
-    public Vector3 GetLook() { return _Look; }
+    Material GetSmokeMaterial(RuneFieldZonesSO lookSettings)
+    {
+        //the zones asset's Smoke Material, otherwise the stand-in (with a warning, once)
+        if (lookSettings._SmokeMaterial != null) return lookSettings._SmokeMaterial;
+        WarnStandIn(ref _warnedSmoke, "smoke", "Set Smoke Material on the zones asset");
+        return GetDefaultMaterial();
+    }
+
+    void WarnStandIn(ref bool warned, string lookName, string fix)
+    {
+        //says once per border (per session) that a wall is falling back to the stand-in material. "ref" lets this change the bool passed in
+        if (warned) return;
+        warned = true;
+        Debug.LogWarning($"Warning! {gameObject.name} has no {lookName} material, showing HDRP's default material instead. {fix}...", this);
+    }
+
+    public RuneFieldType.BorderLook GetLook() { return _Look; }
     #endregion
 
     #region Smoke
@@ -312,6 +351,7 @@ public class ZoneBorder3DObject : MonoBehaviour
         _Radius = fieldSettings.ToMeters(fieldSettings.GetRingRadius(_Ring)) + _RadiusOffset;
         _StripLength = wallStrip._Length;
         _GateHalfWidth = fieldSettings.ToMeters(fieldSettings._RuneSize) * 0.5f; //nodes are rune sized
+        _StripMaterial = FindStripMaterial(lookSettings._WallStrip);
         FindGates(fieldSettings);
         FillCrackList();
 
@@ -472,9 +512,25 @@ public class ZoneBorder3DObject : MonoBehaviour
             }
         }
 
-        Material material = lookSettings._BorderMaterial != null ? lookSettings._BorderMaterial : GetDefaultMaterial();
-        SetMaterial(_WallRenderer, material);
-        SetMaterial(_CrackRenderer, material);
+        SetMaterial(_WallRenderer, GetTearMaterial(lookSettings)); //the look swaps it while showing, this is just what shows in the scene by default
+        SetMaterial(_CrackRenderer, GetTearMaterial(lookSettings));
+    }
+
+    Material FindStripMaterial(Mesh strip)
+    {
+        //editor only: the material the strip model shows its mesh with (set in the model's import settings). Null with no strip, or none found
+        if (strip == null) return null;
+        GameObject model = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(UnityEditor.AssetDatabase.GetAssetPath(strip)); //the FBX loads as a GameObject
+        if (model == null) return null;
+
+        MeshFilter[] filters = model.GetComponentsInChildren<MeshFilter>(true);
+        for (int i = 0; i < filters.Length; i++)
+        {
+            if (filters[i].sharedMesh != strip) continue;
+            MeshRenderer modelRenderer = filters[i].GetComponent<MeshRenderer>();
+            if (modelRenderer != null && modelRenderer.sharedMaterial != null) return modelRenderer.sharedMaterial;
+        }
+        return null;
     }
 
     MeshRenderer MakeRendererObject(string objectName, Transform parent)

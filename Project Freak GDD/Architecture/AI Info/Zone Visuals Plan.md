@@ -3,7 +3,7 @@ How the rune field's zones look and change in the 3D view: the raised floors, th
 
 Back to [[AA - AI Info]] · [[Architecture Atlas]]
 
-**Status (Oct 12, 2026):** all five build steps built and working in Unity with stand-in art. Written up in **Zones** in [[Rune Field 3D View]]; how to change it all is [[How To - Zone Visuals]]. Next: the art pass (Steve, [[Zones - Art To Do]]), then a run-through of the guide [[Notes for the future]]
+**Status (Oct 12, 2026):** all five build steps built and working in Unity with stand-in art. Written up in **Zones** in [[Rune Field 3D View]]; how to change it all is [[How To - Zone Visuals]]. *Oct 13, 2026: the walls now swap between a tear material and a smoke material (sharing a height value the code animates), and smoke particles are off by default (Steve does the smoke in the shader). See **Zones** in [[Rune Field 3D View]].* Next: the art pass (Steve, [[Zones - Art To Do]]), then a run-through of the guide [[Notes for the future]]
 
 **Art briefs for Steve** (in `UI/Rune Field/Zone Art`):
 - [[Zones - Art To Do]]: every mesh, material and effect to make, with sizes

@@ -67,6 +67,15 @@ Tasks to be done after locking in the final prototype and deciding to go with th
 
 - [ ] **Code walkthrough with Steve** of the 3D view scripts, once the 2D vs 3D decision is made
 
+- [ ] **Inspector clean-up** *(asked Oct 13, 2026, for the post-prototype talk)*: the rune field and zone components have too many buttons and settings, and it's hard to remember what they do
+- **Why it happened (Steve):** we build in steps and never go back to remove the buttons and settings each step added, and we haven't been looking at it as building tools for a designer
+- **The lens for the clean-up:** treat the inspector as UX for a forgetful designer. Arrange everything in the order you'd build out and then adjust the system (set up → place → tune), so the next thing to do is always the next thing you see. Once the clean-up shows what that takes, decide how to phrase it in the code style skill
+- Go through every button on `Rune Field` (field, pointer, labels, zones) and the zone / border / crack objects: drop the ones that aren't needed any more, merge setup steps into fewer buttons (one "Set Up Everything"?), and give every button a clear label (and a tooltip or info box saying what it does)
+- Put rarely touched settings into closed foldouts (stand-in floors, stand-in look, smoke particles, strip scale and flips, mesh folder, shader property names), so the inspector shows what gets tuned day to day first
+- Consider moving setup-only tools to a separate editor window or a "Setup" foldout that stays closed
+- Make the tear material easier to find: falling back to the strip model's material (needs Wall Strip set and a rebuild) was confusing on Oct 13. Tear Material is set by hand on `SO_RuneField_Zones` for now. Decide on one obvious place for it
+- Update [[How To - Zone Visuals]] and [[Rune Field 3D View]] after
+
 - [ ] Loading into the real game: Hazen terminal, additive scene, camera blend, pause, input map switch, safe rooms
 
 - [ ] Speed and sensitivity options in the settings menu [[Notes for the future]]

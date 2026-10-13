@@ -284,11 +284,12 @@ Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`
 
 | `_WallStrip` / `_CrackStrip` | The strip the walls (and cracks) are built from. Wall empty = a stand-in card (3 m, 0.4 m under to 1 m up, two-sided). Crack empty = the wall strip. Saving over either from Maya rebuilds every border by itself |
 | `_StripScale` / `_FlipLength` / `_FlipDepth` | Fixes for a strip that comes in at the wrong size or turned around. The strip's +Z faces the core by default |
-| `_BorderMaterial` | One material for every wall and crack (Steve's `MAT_RuneField_Zone_Border_0` later). Empty = HDRP's default material |
+| `_TearMaterial` / `_SmokeMaterial` | *Oct 13, 2026: two materials the walls swap between (replaced the single `_BorderMaterial`).* Tear = the forward wall and every crack; empty = the strip model's own material (`MAT_ZoneWall_Flame`, found on Rebuild). Smoke = the wall behind; empty = a grey stand-in |
+| `_HeightProperty` / `_HiddenHeight` / `_SwapPoint` | The height value both materials share (`_GradiantHeight`). The code animates it from `_HiddenHeight` (gone) to the material's own value (full). `_SwapPoint` (0.5) is where in the tear → smoke blend the tear wall finishes going out and the smoke wall starts coming in |
 | `_MeshFolder` | Where the baked wall and crack meshes are saved (`Assets/Generated/Rune Field Zones`) |
-| `_TearProperty` / `_SmokeProperty` / `_RevealProperty` / `_OverchargeProperty` | The border shader's Reference names (`_Tear`, `_Smoke`, `_Reveal`, `_Overcharge`) |
-| `_UseStandInLook` | Tints walls and cracks by color until the shader exists (`_StandInColorProperty`, `_StandInTearColor`, `_StandInSmokeColor`, `_StandInOffColor`). Turn off once the shader is in [[Notes for the future]] |
-| `_HideWhenOff` | Turns walls and cracks off completely while they're off (the stand-in material can't fade) |
+| `_RevealProperty` / `_OverchargeProperty` | Optional extra values for the tear material: the light-up sweep (0 to 1, read with the mesh's UV2.x) and the overcharge pulse (always 0 for now) |
+| `_StandInColorProperty` / `_StandInTearColor` / `_StandInSmokeColor` | The stand-in tint, only used where a material is empty and HDRP's default material stands in |
+| `_UseSmokeParticles` | *Oct 13, 2026, off by default:* smoke particles on the smoky border. Steve handles the smoke in the shader |
 | `_SmokePrefab` | Steve's smoke particles (Simulation Space World, moves its own particles). Empty = stand-in grey puffs (`_StandInSmokeLifetime`, `_StandInSmokeSize`, `_StandInSmokeRise`, `_StandInPuffColor`) [[Notes for the future]] |
 | `_SmokePerMeter` | Puffs per second per meter of ring at full smoke (1.5) |
 | `_RiseTime` / `_RiseCurve` | The zone opening: the zone rising and its light changing (1.2 s) |
@@ -339,8 +340,8 @@ One zone: everything under it is that zone's floor (Steve's floor mesh, kit rock
 ### Zone opening
 *Built Oct 12, 2026 (step 5).* When the seen zone is behind, `RuneFieldZonesObject` snaps to the seen zone, then plays one step per new zone N (a coroutine on real time, so it works while paused; input is never blocked):
 1. Zone N rises (`_LiftHeight` → 0) and its light goes locked → open; zone N − 1's light goes open → frozen (`_RiseTime`, `_RiseCurve`)
-2. Border N − 1 goes tear → smoke and border N − 2 smoke → off (`_BorderBlendTime`, `_BorderBlendCurve`). Cracks fade with the tear
-3. After `_RevealDelay`, border N lights up: `_Reveal` 0 → 1 over `_RevealTime`. The mesh's reveal order (UV2.x) makes the light sweep around the ring and out along its cracks in Steve's shader. The edge ring has no border, so the last zone skips this
+2. Border N − 1 swaps tear → smoke: its tear wall and cracks animate out, then (past `_SwapPoint`) its smoke wall animates in. Border N − 2's smoke animates out (`_BorderBlendTime`, `_BorderBlendCurve`)
+3. After `_RevealDelay`, border N's tear wall and cracks animate in, and `_Reveal` runs 0 → 1 with them (`_RevealTime`, `_RevealCurve`). The edge ring has no border, so the last zone skips this
 
 Catching up more than one zone plays the steps one after another with `_StepGap` between, then snaps to the end look and saves the seen zone. A save that evolves reloads the field twice; the second load is ignored if the same opening is already playing. *A camera move during it, the bridge break before it and the overcharge pulse are still to come* [[Notes for the future]]
 
@@ -371,9 +372,9 @@ Catching up more than one zone plays the steps one after another with `_StepGap`
 
 **Baked channels** (match [[Zones - Shader Graph Recipe]]): UV0 = the strip's UVs with U carried on copy to copy; UV2.x = reveal order (0 to 1, distance the sweep travels to get there, divided by the longest on this ring, so walls and cracks light at the same speed); UV2.y = height up the strip (0 bottom, 1 top); UV3.x = gate gap mask (1 normal, 0 in a gap; always 1 on cracks); UV3.y = distance along a crack (0 on walls).
 
-**Look** (`ShowLook(tear, smoke, reveal, settings)`): sends `_Tear`, `_Smoke`, `_Reveal` and `_Overcharge` (always 0 for now) to the wall, and the same with smoke 0 to the cracks, through `RuneFieldTint` (one material for every wall and crack). With `_UseStandInLook` it also tints the material's color (off → smoke → tear, as far as the reveal has got; the stand-in can't sweep). With `_HideWhenOff` an off renderer is turned off.
+**Look** (`ShowLook(look, height, crackHeight, reveal, settings)`, *changed Oct 13, 2026*): `look` (`RuneFieldType.BorderLook`: Off, Tear, Smoke) picks the wall's material, swapped on `sharedMaterial` (no copies). `height` (0 to 1) is sent as the height value, from `_HiddenHeight` to the material's own value, through `RuneFieldTint`. Cracks show the tear material at `crackHeight` only while the wall is the tear, and are off otherwise. Anything at height 0 or Off has its renderer turned off. `_Reveal` and `_Overcharge` (0) are sent too. Only the stand-in (HDRP's default material) gets tinted.
 
-**Smoke:** while smoky (play mode), puffs are emitted at random spots on the ring, less often inside gate gaps, `_SmokePerMeter` × circumference × smoke per second (real time, at most 200 a frame). The emitter is made the first time: an instance of `_SmokePrefab`, or a stand-in particle system (grey opaque squares that rise and shrink).
+**Smoke:** *off unless `_UseSmokeParticles` is ticked.* While smoky (play mode), puffs are emitted at random spots on the ring, less often inside gate gaps, `_SmokePerMeter` × circumference × smoke per second (real time, at most 200 a frame). The emitter is made the first time: an instance of `_SmokePrefab`, or a stand-in particle system (grey opaque squares that rise and shrink).
 
 **Tools:** **Rebuild Ring**, **Fill Crack List**, **Add Crack** (an angle in degrees: makes a 3-point crack heading straight out, under zone k + 1, and selects it). **Gizmos** when selected: the ring (white), gate gaps (red) and their slopes (orange), hand spots' reach (cyan).
 

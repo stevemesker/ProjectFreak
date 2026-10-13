@@ -14,8 +14,8 @@ Back to [[Architecture Atlas]]
 - [[#Part 2 - Floors and Kit Pieces]]
 - [[#Part 3 - Ring Walls]]
 - [[#Part 4 - Cracks]]
-- [[#Part 5 - Plug In the Shader]]
-- [[#Part 6 - Smoke]]
+- [[#Part 5 - Plug In the Wall Materials]]
+- [[#Part 6 - Smoke Particles]]
 - [[#Part 7 - The Zone Opening]]
 - [[#Part 8 - Changing the System Itself]]
 - [[#Testing Checklist]]
@@ -32,7 +32,7 @@ Back to [[Architecture Atlas]]
 | **Ring** | The circle where one zone ends and the next starts. Ring k is zone k's outer edge. Evolution gates sit on rings 1 to 3; ring 4 is the field's edge |
 | **Open zone (N)** | The zone the shade can build in right now (rank + 1). Everything else follows from this one number |
 | **Frozen / Open / Locked** | Zones below N / zone N / zones past N |
-| **Border** | One ring's wall of light, its cracks and its smoke. Looks: **tear** (bright, ring N), **smoke** (ring N − 1), **off** (older rings) |
+| **Border** | One ring's wall of light and its cracks. Looks: **tear** (the tear material, ring N, cracks lit), **smoke** (the smoke material, ring N − 1, cracks off), **off** (older rings) |
 | **Strip** | The short straight piece of wall Steve models in Maya. The tool bends copies of it around each ring and along each crack |
 | **Rebuild** | Making a border's wall and crack meshes again from the strip and the settings. They're saved as mesh assets (baked), not made while playing |
 | **Seen zone** | The last open zone the player saw on a shade slot. If the real one is further out, the zone opening plays |
@@ -92,7 +92,7 @@ Everything you'd tune lives on **`SO_RuneField_Zones`**. Changes made while play
 
 1. Press **Play**, then select `SO_RuneField_Zones`
 2. **Floors:** change `_OpenLight`, `_FrozenLight` and `_LockedLight` (color and intensity), and `_LiftHeight`
-3. **Walls (stand-in):** `_StandInTearColor`, `_StandInSmokeColor`. Once the shader is in, the colors are on its material instead (see Part 5)
+3. **Walls:** tune the tear and smoke materials themselves (their values work live while playing, except the height, which the code animates). The stand-in colors only matter while a material is empty
 4. **Zone opening timings:** see Part 7
 5. To flip between states while playing, use the test kit's **Level Up** (into a powered gate), or the zones component's **Replay From Seen Zone**
 
@@ -167,22 +167,30 @@ Press **Rebuild All Borders**. Gates are found by looking for nodes with an Evol
 **Keep crack objects under their zone** (zone k + 1 for ring k), or they won't lift with the floor. Add Crack puts them there. The trenches in the floor mesh and the burn decals (HDRP Decal Projectors) are placed by hand under the same zone.
 
 ---
-## Part 5 - Plug In the Shader
-The shader recipe is in [[Zones - Shader Graph Recipe]]. Once it exists:
-1. Drag its material into `_BorderMaterial` on `SO_RuneField_Zones`, then **Rebuild All Borders** (this puts it on every wall and crack)
-2. Untick **`_UseStandInLook`** (the color tint) and **`_HideWhenOff`** (the shader fades walls out itself)
-3. If your Shader Graph properties have different Reference names, type them into `_TearProperty`, `_SmokeProperty`, `_RevealProperty`, `_OverchargeProperty`
+## Part 5 - Plug In the Wall Materials
+*Changed Oct 13, 2026: the walls swap between two materials.*
 
-What the code sends each wall and crack: `_Tear`, `_Smoke` (always 0 on cracks), `_Reveal`, `_Overcharge` (always 0 for now). What the mesh carries: UV2.x reveal order, UV2.y height, UV3.x gate gap mask, UV3.y distance along a crack. While playing the code overrides those four values, so test them on the material outside play mode.
+| Look | Material | Cracks |
+| :--- | :--- | :--- |
+| Tear (forward border) | `_TearMaterial`, or if empty the strip model's own material (`MAT_ZoneWall_Flame`) | Shown, same material |
+| Smoke (border behind) | `_SmokeMaterial` | Off |
+
+1. Make sure `_WallStrip` on `SO_RuneField_Zones` has the strip's mesh in it (the tear material is read from that model)
+2. Drag the smoke material into `_SmokeMaterial`
+3. Press **Rebuild All Borders** (picks up the strip's material)
+4. Both materials need the **same height property** (`_HeightProperty`, `_GradiantHeight` now). Set each material's full height on the material itself; the code animates from `_HiddenHeight` (gone) up to that value. If "gone" isn't 0 for your shader, change `_HiddenHeight`
+5. Optional on the tear material: `_Reveal` (0 to 1, the sweep, read with UV2.x) and `_Overcharge` (later)
+
+**How the swap plays** when a zone opens: the old tear wall and its cracks animate out, the smoke wall animates in (`_SwapPoint` splits `_BorderBlendTime`), the smoke behind it animates out, then the new tear wall and cracks animate in. Height is set per wall in play mode, so to check a material's full look outside play mode, use the **Preview Open Zone** slider.
+
+What the mesh carries for the shader: UV2.x reveal order, UV2.y height up the strip, UV3.x gate gap mask, UV3.y distance along a crack.
 
 ---
-## Part 6 - Smoke
-- Make a particle system prefab. Set **Simulation Space: World**, turn off **Emission** (the code places every puff), and move the particles with **Velocity over Lifetime** or **Force over Lifetime**
-- Drag it into `_SmokePrefab` on `SO_RuneField_Zones`
-- `_SmokePerMeter` sets how thick it is. The code skips the gate gaps
-- Smoke only runs in play mode
-
-Without a prefab you get stand-in grey squares (`_StandInSmoke...` settings).
+## Part 6 - Smoke Particles
+*Off by default since Oct 13, 2026* (the smoke material does the look). To turn them on, tick `_UseSmokeParticles` on `SO_RuneField_Zones`. Then:
+- Optional prefab in `_SmokePrefab`: **Simulation Space: World**, **Emission** off (the code places every puff), moved by **Velocity over Lifetime**
+- `_SmokePerMeter` sets how thick it is. The code skips the gate gaps. Play mode only
+- Without a prefab: stand-in grey squares (`_StandInSmoke...` settings)
 
 ---
 ## Part 7 - The Zone Opening
@@ -210,7 +218,8 @@ Where to look for common changes:
 | Add a new value to a zone's look (say, fog) | `RuneFieldZonesSO` (the value), `Zone3DObject` | `ShowState` / `ApplyLook` |
 | Add a step to the zone opening (camera move, sound) | `RuneFieldZonesObject` | `PlayOpeningStep` (per zone) or `PlayOpeningSteps` (before / after all of them) |
 | Play something when the opening ends | `RuneFieldZonesObject` | the end of `PlayOpeningSteps`. A UnityEvent there would let it be hooked up in the inspector |
-| Send another value to the border shader | `RuneFieldZonesSO` (property name), `ZoneBorder3DObject` | `ApplyLook` |
+| Send another value to the wall materials | `RuneFieldZonesSO` (property name), `ZoneBorder3DObject` | `ApplyLook` |
+| Change how tear swaps to smoke | `RuneFieldZonesObject` | `ShowTearToSmoke` |
 | Change how the wall bends or what the noise does | `ZoneBorder3DObject` | `BuildWallMesh` |
 | Change how cracks are shaped | `ZoneCrackPath` | `AppendMesh` |
 | Change how the strip is read or welded | `ZoneStripBuilder` | `FromMesh`, `MeasureAndMatchEnds`, `Layout` |
@@ -234,8 +243,8 @@ Where to look for common changes:
 - [ ] Add a hand spot, drag it, rebuild: the wall changes there
 - [ ] **Add Crack**, drag points, add a branch, rebuild: the cracks show and lift with their zone in the preview
 - [ ] Save over the strip in Maya: the walls rebuild by themselves
-- [ ] Play: smoke on the smoky ring, none in the gate gaps
-- [ ] **Replay From Seen Zone**: the zone rises, the old tear smokes, the new border lights up
+- [ ] Preview: the forward ring shows the tear material with cracks, the ring behind shows the smoke material without cracks
+- [ ] **Replay From Seen Zone**: the zone rises, the old tear animates out and the smoke animates in, the new tear animates in
 - [ ] Level a shade into a gate, close and reopen the field: the opening plays once, then never again
 
 ---
@@ -249,7 +258,7 @@ Where to look for common changes:
 | No gap at a gate | The gate isn't exactly on the ring (use the node's snap buttons), or it has no Evolve effect. Then **Rebuild All Borders** |
 | A crack doesn't lift with its floor | Its object (and `Ring k Cracks`) must be under zone k + 1 |
 | A crack doesn't show after rebuild | It needs at least two points apart from each other, and a Start Border (or a parent on a ring) |
-| Walls invisible after adding the shader | Untick `_HideWhenOff` only once the shader fades them itself; check the property names match |
+| A wall is invisible | Its height property name must match `_HeightProperty` on both materials, and `_HiddenHeight` must be the 'gone' value, not the full one |
 | The opening doesn't play | The seen zone must be lower than the open zone and above 0. Check the slot's `_SeenOpenZone` |
 | Pink smoke | The smoke prefab's material is missing or not HDRP |
 

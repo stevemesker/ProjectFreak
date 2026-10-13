@@ -13,137 +13,23 @@ MonoBehaviour:
   m_Name: SO_Shade_Slot0
   m_EditorClassIdentifier: 
   _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-  _GatesTaken: 0300000005000000
-  _Level: 11
+  _GatesTaken: 
+  _Level: 1
   _XP: 0
   _Lives: 3
   _Shard: {fileID: 0}
   _RuneField:
-    _Runes:
-    - _ID: 1
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: -121.89278, y: -218.27081}
-    - _ID: 2
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: -196.40027, y: -456.90994}
-    - _ID: 3
-      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
-      _Position: {x: -266.1577, y: -620.3105}
-    - _ID: 4
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: -480.2434, y: -800.77466}
-    - _ID: 5
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: -430.38144, y: -1045.7517}
-    - _ID: 6
-      _Element: {fileID: 11400000, guid: 8b841e2e3e02d5542bcdc11dc199b702, type: 2}
-      _Position: {x: -416.25305, y: -1284.2249}
-    _Bridges:
-    - _A: 1
-      _B: -1
-    - _A: 2
-      _B: 1
-    - _A: 3
-      _B: 2
-    - _A: 4
-      _B: 3
-    - _A: 5
-      _B: 4
-    - _A: 6
-      _B: 5
-    _Plugs:
-    - _NodeIndex: 3
-      _RuneID: 3
-    - _NodeIndex: 5
-      _RuneID: 6
-    _ActiveNodes: 0300000005000000
-    _NextRuneID: 7
-    _FrozenRunes: 010000000200000003000000040000000500000006000000
-    _FrozenBridges:
-    - _A: 1
-      _B: -1
-    - _A: 2
-      _B: 1
-    - _A: 3
-      _B: 2
-    - _A: 4
-      _B: 3
-    - _A: 5
-      _B: 4
-    - _A: 6
-      _B: 5
-    _LockedRunes: 0300000006000000
-  _CompiledEffects:
-  - rid: 211481460180516864
-  - rid: 211481460180516865
-  - rid: 211481460180516866
-  - rid: 211481460180516867
-  - rid: 211481460180516868
-  - rid: 211481460180516869
-  - rid: 211481460180516870
-  - rid: 211481460180516871
-  _PluggedNodes:
-  - _NodeIndex: 3
-    _Name: PFB_Node_3D (1)
-    _Position: {x: -266.1577, y: -620.3105}
-    _Unlocks: 
-    _Lockouts: 
-    _Effects:
-    - rid: 211481460180516872
-  - _NodeIndex: 5
-    _Name: PFB_Node_3D (6)
-    _Position: {x: -416.25305, y: -1284.2249}
-    _Unlocks: 
-    _Lockouts: 
-    _Effects:
-    - rid: 211481460180516873
-  _SeenOpenZone: 3
+    _Runes: []
+    _Bridges: []
+    _Plugs: []
+    _ActiveNodes: 
+    _NextRuneID: 0
+    _FrozenRunes: 
+    _FrozenBridges: []
+    _LockedRunes: 
+  _CompiledEffects: []
+  _PluggedNodes: []
+  _SeenOpenZone: 1
   references:
     version: 2
-    RefIds:
-    - rid: 211481460180516864
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 1
-        _Amount: 1
-    - rid: 211481460180516865
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481460180516866
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 2
-        _Amount: 1
-    - rid: 211481460180516867
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 1
-        _Amount: 1
-    - rid: 211481460180516868
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481460180516869
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 2
-        _Amount: 1
-    - rid: 211481460180516870
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481460180516871
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481460180516872
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481460180516873
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+    RefIds: []

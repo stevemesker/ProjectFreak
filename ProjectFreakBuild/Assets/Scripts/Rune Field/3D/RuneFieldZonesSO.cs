@@ -39,45 +39,46 @@ public class RuneFieldZonesSO : ScriptableObject
     [Tooltip("Turns the strips' front and back around. By default the strip's +Z side faces the core")]
     public bool _FlipDepth = false;
 
-    [Tooltip("The material on every wall and crack (MAT_RuneField_Zone_Border_0 once it exists). Empty = HDRP's default material, tinted by the stand-in look")]
-    public Material _BorderMaterial;
-
     [Tooltip("Where Rebuild saves the wall and crack meshes (one asset per ring each). Made if it doesn't exist")]
     public string _MeshFolder = "Assets/Generated/Rune Field Zones";
 
+    [Header("Wall Materials")]
+    [Tooltip("Optional. The forward border's wall and its cracks (the tear). Empty = the material on the wall strip model (its import settings), worked out on Rebuild")]
+    public Material _TearMaterial;
+
+    [Tooltip("The border behind's wall (the smoke). Its cracks are off. Empty = a stand-in, HDRP's default material tinted grey")]
+    public Material _SmokeMaterial;
+
+    [Tooltip("The height value both wall materials share (the Reference name in Shader Graph). The walls animate it to swap out and in. Each material's own value on the material is its full height")]
+    public string _HeightProperty = "_GradiantHeight";
+
+    [Tooltip("The height value that means 'gone' (the wall fully animated out)")]
+    public float _HiddenHeight = 0f;
+
+    [Tooltip("The tear-to-smoke swap: how far through Border Blend Time the tear wall finishes animating out and the smoke wall starts animating in (0.5 = halfway)")]
+    [Range(0.05f, 0.95f)] public float _SwapPoint = 0.5f;
+
     [Header("Shader Properties")]
-    [Tooltip("The border shader's tear amount (0 to 1). The Reference name in Shader Graph")]
-    public string _TearProperty = "_Tear";
-
-    [Tooltip("The border shader's smoke amount (0 to 1, always 0 on cracks)")]
-    public string _SmokeProperty = "_Smoke";
-
-    [Tooltip("The border shader's light-up sweep (0 = dark, 1 = fully lit)")]
+    [Tooltip("The light-up sweep on the tear material (0 = dark, 1 = fully lit), read with the mesh's reveal order (UV2.x). Optional: the height also rises with it")]
     public string _RevealProperty = "_Reveal";
 
-    [Tooltip("The border shader's overcharge pulse (later, always 0 for now)")]
+    [Tooltip("The overcharge pulse (later, always 0 for now)")]
     public string _OverchargeProperty = "_Overcharge";
 
     [Header("Stand-In Look")]
-    [Tooltip("Tints the walls and cracks by color while there's no border shader yet, so tear / smoke / off can be seen. Turn off once Steve's shader is on Border Material")]
-    public bool _UseStandInLook = true;
-
-    [Tooltip("Hides walls (and cracks) completely while they're off. The stand-in material can't fade out, Steve's shader can")]
-    public bool _HideWhenOff = true;
-
-    [Tooltip("The material color the stand-in look tints: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
+    [Tooltip("The material color the stand-in tints (_BaseColor for HDRP Lit). Only used where a wall material is empty and HDRP's default material stands in")]
     public string _StandInColorProperty = "_BaseColor";
 
-    [Tooltip("Stand-in color of the bright tear")]
+    [Tooltip("Stand-in color of the tear wall")]
     public Color _StandInTearColor = new Color(0.75f, 0.45f, 1f, 1f);
 
-    [Tooltip("Stand-in color of the smoky border")]
+    [Tooltip("Stand-in color of the smoke wall")]
     public Color _StandInSmokeColor = new Color(0.35f, 0.35f, 0.38f, 1f);
 
-    [Tooltip("Stand-in color while off (only seen with Hide When Off unticked)")]
-    public Color _StandInOffColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+    [Header("Smoke Particles")]
+    [Tooltip("Smoke particles along the smoky border. Off: the smoke material handles the look on its own")]
+    public bool _UseSmokeParticles = false;
 
-    [Header("Smoke")]
     [Tooltip("Optional smoke particle prefab (Steve's). Its Simulation Space must be World and it should move its own particles (Velocity over Lifetime). Empty = stand-in grey puffs made by code")]
     public ParticleSystem _SmokePrefab;
 

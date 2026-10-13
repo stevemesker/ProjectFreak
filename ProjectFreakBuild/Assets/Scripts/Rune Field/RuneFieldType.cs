@@ -5,4 +5,7 @@ namespace RuneFieldType
 
     //how a zone looks on the 3D rune field, from the open zone: below it frozen, at it open, past it locked. Used as RuneFieldType.ZoneState
     public enum ZoneState { Open, Frozen, Locked }
+
+    //which material a ring border's wall shows: the forward tear, the smoky one behind it, or nothing. Used as RuneFieldType.BorderLook
+    public enum BorderLook { Off, Tear, Smoke }
 }
