@@ -17,7 +17,7 @@ MonoBehaviour:
   _Level: 4
   _XP: 0
   _Lives: 3
-  _FragmentPower: 0
+  _Shard: {fileID: 0}
   _RuneField:
     _Runes:
     - _ID: 0
@@ -81,6 +81,7 @@ MonoBehaviour:
     _Lockouts: 
     _Effects:
     - rid: 211481427596279892
+  _SeenOpenZone: 2
   references:
     version: 2
     RefIds:

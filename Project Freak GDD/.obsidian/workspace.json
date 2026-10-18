@@ -6,18 +6,20 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 42.19106618845777,
+        "dimension": 60.93902836648191,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "zzz Extras/Attachments/Zones - Reference.png"
+                "file": "Architecture/AI Info/Rune Field 3D Plan.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-image",
-              "title": "Zones - Reference"
+              "icon": "lucide-file",
+              "title": "Rune Field 3D Plan"
             }
           }
         ]
@@ -25,7 +27,7 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 40.91946527551353,
+        "dimension": 22.13889794587545,
         "children": [
           {
             "id": "a492a5f394994b7d",
@@ -57,7 +59,7 @@
       {
         "id": "61347cd08ee47fa1",
         "type": "tabs",
-        "dimension": 16.889468536028694,
+        "dimension": 16.922073687642648,
         "children": [
           {
             "id": "8f34965267559858",
@@ -240,38 +242,42 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
+    "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
+    "zzz Extras/Attachments/Ability Node Example.png",
+    "zzz Extras/Attachments/ArcMover Example.png",
+    "zzz Extras/Attachments/Core Node.png",
+    "zzz Extras/Attachments/Element node.png",
+    "zzz Extras/Attachments/Pasted image 20261007135323.png",
+    "zzz Extras/Attachments/Pasted image 20261010045505.png",
+    "zzz Extras/Attachments/Pasted image 20261012075302.png",
+    "zzz Extras/Attachments/Rune Field AI mockup.png",
+    "zzz Extras/Attachments/Zones - Reference.png",
+    "Shade Info/Evolution.md",
+    "Architecture/UI/Confirm Popup.md",
+    "Architecture/UI/Rune Field 3D View.md",
+    "Architecture/Architecture Atlas.md",
+    "Architecture/UI/Rune Field System.md",
     "Architecture/Guides/How To - Zone Visuals.md",
     "UI/Rune Field/Zone Art/Zones - Lighting Guide.md",
     "UI/Rune Field/Zone Art/Zones - Shader Graph Recipe.md",
     "UI/Rune Field/Zone Art/Zones - Art To Do.md",
     "UI/Rune Field/Zone Art",
     "VFX/Zones - Shader Graph Recipe.md",
-    "zzz Extras/Attachments/Zones - Reference.png",
     "VFX/Zones - Art To Do.md",
     "VFX/Zone barrier effect.md",
     "Architecture/AI Info/Zone Visuals Plan.md",
     "VFX",
     "Architecture/AI Info/Rune Field 3D Plan.md",
-    "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
-    "zzz Extras/Attachments/Pasted image 20261012075302.png",
     "Architecture/AI Info/Known Issues.md",
     "Architecture/AI Info/Coding Concepts.md",
     "Architecture/AI Info/Code Style Rules.md",
     "Shade Info/Evolution Type.md",
-    "Shade Info/Evolution.md",
     "UI/Rune Field/Core Node.md",
     "UI/Rune Field/Ability Node.md",
     "Shade Info/Tethered.md",
     "UI/Rune Field/Rune Field 3D.md",
-    "Architecture/UI/Rune Field 3D View.md",
-    "zzz Extras/Attachments/Pasted image 20261010045505.png",
     "Shade Info/Shade Stats.md",
     "Architecture/AI Info/Shade Forms Plan.md",
-    "Architecture/AI Info/Rune Field Overhaul Plan.md",
-    "Architecture/UI/Confirm Popup.md",
-    "UI/Rune Field/Rune Field.md",
-    "UI/Rune Field/Element Rune.md",
-    "zzz Extras/Attachments/Pasted image 20261007135323.png",
     "Architecture/AI",
     "Architecture/Enemies",
     "Architecture/UI",
@@ -279,11 +285,6 @@
     "Architecture/Items",
     "Architecture/AI Info",
     "Architecture/Player",
-    "Architecture/Dungeons",
-    "zzz Extras/Attachments/ArcMover Example.png",
-    "zzz Extras/Attachments/Rune Field AI mockup.png",
-    "zzz Extras/Attachments/Ability Node Example.png",
-    "zzz Extras/Attachments/Element node.png",
-    "zzz Extras/Attachments/Core Node.png"
+    "Architecture/Dungeons"
   ]
 }
