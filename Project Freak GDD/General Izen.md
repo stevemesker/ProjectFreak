@@ -1,0 +1,1 @@
+Memeber of the [[Lumina Council]] and leader of the [[Lumina Guard]]. Responsible for running the operation that wiped out the [[Keepers]] and killed [[Hazen]]'s former master.

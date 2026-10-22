@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 60.93902836648191,
+        "dimension": 70.71742313323573,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,52 +14,20 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Architecture/AI Info/Rune Field 3D Plan.md",
+                "file": "Combat/Enemy Types/Fiend/Fiend Enemies.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune Field 3D Plan"
+              "title": "Fiend Enemies"
             }
           }
         ]
       },
       {
-        "id": "eac25e156f0891bc",
-        "type": "tabs",
-        "dimension": 22.13889794587545,
-        "children": [
-          {
-            "id": "a492a5f394994b7d",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
-            }
-          },
-          {
-            "id": "ecc4a37c8f083c41",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Architecture/AI Info/Rune Field 3D Plan.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Rune Field 3D Plan"
-            }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
         "id": "61347cd08ee47fa1",
         "type": "tabs",
-        "dimension": 16.922073687642648,
+        "dimension": 29.28257686676428,
         "children": [
           {
             "id": "8f34965267559858",
@@ -67,12 +35,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "File Naming Conventions.md",
+                "file": "Combat/Enemy Types/Enemies.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "File Naming Conventions"
+              "title": "Enemies"
             }
           }
         ]
@@ -242,7 +210,36 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
-    "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
+    "Combat/Enemy Types/Enemies.md",
+    "Combat/Enemy Types/Fiend/Fiend Enemies.md",
+    "File Naming Conventions.md",
+    "Narrative/Factions/Lumina Archon.md",
+    "General Izen.md",
+    "Dungeons/Bosses.md",
+    "Narrative/Cataclysm.md",
+    "Narrative/Random Name Ideas.md",
+    "Narrative/Main Narrative.md",
+    "VFX/Zone barrier effect.md",
+    "Combat/Enemy Types/Lumina",
+    "Combat/Enemy Types/Fiend",
+    "Combat/Enemy Types",
+    "zzz Extras/Attachments/Zones - Reference.png",
+    "VFX/Zones - Shader Graph Recipe.md",
+    "VFX/Zones - Art To Do.md",
+    "UI/Rune Field/Zone Art/Zones - Shader Graph Recipe.md",
+    "UI/Rune Field/Zone Art/Zones - Lighting Guide.md",
+    "UI/Rune Field/Zone Art/Zones - Art To Do.md",
+    "UI/Rune Field/Zone Art",
+    "Architecture/Guides/How To - Zone Visuals.md",
+    "Architecture/AI Info/AI Movement & Dungeon Loading Plan.md",
+    "VFX",
+    "Architecture/AI Info/Code Style Rules.md",
+    "Architecture/AI Info/Coding Concepts.md",
+    "Architecture/AI Info/Known Issues.md",
+    "Architecture/AI Info/Shade Forms Plan.md",
+    "Architecture/AI Info/Zone Visuals Plan.md",
+    "Architecture/AI Info/Rune Field Overhaul Plan.md",
+    "Architecture/AI Info/Rune Field 3D Plan.md",
     "zzz Extras/Attachments/Ability Node Example.png",
     "zzz Extras/Attachments/ArcMover Example.png",
     "zzz Extras/Attachments/Core Node.png",
@@ -251,40 +248,12 @@
     "zzz Extras/Attachments/Pasted image 20261010045505.png",
     "zzz Extras/Attachments/Pasted image 20261012075302.png",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
-    "zzz Extras/Attachments/Zones - Reference.png",
-    "Shade Info/Evolution.md",
-    "Architecture/UI/Confirm Popup.md",
-    "Architecture/UI/Rune Field 3D View.md",
-    "Architecture/Architecture Atlas.md",
-    "Architecture/UI/Rune Field System.md",
-    "Architecture/Guides/How To - Zone Visuals.md",
-    "UI/Rune Field/Zone Art/Zones - Lighting Guide.md",
-    "UI/Rune Field/Zone Art/Zones - Shader Graph Recipe.md",
-    "UI/Rune Field/Zone Art/Zones - Art To Do.md",
-    "UI/Rune Field/Zone Art",
-    "VFX/Zones - Shader Graph Recipe.md",
-    "VFX/Zones - Art To Do.md",
-    "VFX/Zone barrier effect.md",
-    "Architecture/AI Info/Zone Visuals Plan.md",
-    "VFX",
-    "Architecture/AI Info/Rune Field 3D Plan.md",
-    "Architecture/AI Info/Known Issues.md",
-    "Architecture/AI Info/Coding Concepts.md",
-    "Architecture/AI Info/Code Style Rules.md",
+    "Architecture/AI Info/Rune Field 3D Change Requests and to Do.md",
     "Shade Info/Evolution Type.md",
-    "UI/Rune Field/Core Node.md",
-    "UI/Rune Field/Ability Node.md",
-    "Shade Info/Tethered.md",
-    "UI/Rune Field/Rune Field 3D.md",
-    "Shade Info/Shade Stats.md",
-    "Architecture/AI Info/Shade Forms Plan.md",
     "Architecture/AI",
     "Architecture/Enemies",
     "Architecture/UI",
     "Architecture/Shades",
-    "Architecture/Items",
-    "Architecture/AI Info",
-    "Architecture/Player",
-    "Architecture/Dungeons"
+    "Architecture/Items"
   ]
 }
