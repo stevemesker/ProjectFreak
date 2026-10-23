@@ -280,7 +280,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.5327544, g: 0, b: 1, a: 1}
+    - _Color: {r: 0.09500711, g: 0.5754717, b: 0.23695485, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
@@ -288,7 +288,7 @@ Material:
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _SecondaryColor: {r: 1.9766747, g: 0, b: 1.3964642, a: 0}
+    - _SecondaryColor: {r: 1.3838617, g: 2.041503, b: 0.24074322, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _TextSpeed: {r: 0, g: -0.75, b: 0, a: 0}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}

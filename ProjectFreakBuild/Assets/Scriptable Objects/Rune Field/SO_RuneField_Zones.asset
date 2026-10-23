@@ -29,7 +29,7 @@ MonoBehaviour:
   _FlipDepth: 0
   _MeshFolder: Assets/Generated/Rune Field Zones
   _TearMaterial: {fileID: 2100000, guid: 6c06e4a05106e23448409fc33d518749, type: 2}
-  _SmokeMaterial: {fileID: 0}
+  _SmokeMaterial: {fileID: 2100000, guid: eb0bfa04ab06b644b9049b90c7fc9bba, type: 2}
   _HeightProperty: _GradiantHeight
   _HiddenHeight: 0
   _SwapPoint: 0.5

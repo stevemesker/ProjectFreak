@@ -264,10 +264,33 @@ public class ZoneStripBuilder
             UnityEditor.AssetDatabase.CreateAsset(built, path);
             return built;
         }
-        UnityEditor.EditorUtility.CopySerialized(built, existing); //copies all the mesh data into the existing asset
+        CopyMeshInto(built, existing);
         UnityEditor.EditorUtility.SetDirty(existing);
         Object.DestroyImmediate(built); //the copy in memory isn't needed any more
         return existing;
+    }
+
+    static void CopyMeshInto(Mesh source, Mesh target)
+    {
+        //editor only: replaces an existing mesh asset's data with a freshly built mesh's, through the normal mesh setters
+        //EditorUtility.CopySerialized saved the new data to disk but didn't refresh the copy the scene draws, so walls kept their old gaps until Unity restarted
+        //going through the setters makes Unity re-send the mesh to the graphics card straight away
+        target.Clear(); //wipes the old vertices and triangles first, so a mesh with fewer vertices doesn't trip over the old triangle list
+        target.indexFormat = source.indexFormat;
+        target.SetVertices(source.vertices);
+        target.SetNormals(source.normals);
+        target.SetTangents(source.tangents);
+
+        List<Vector2> uvs = new List<Vector2>();
+        for (int channel = 0; channel < 4; channel++) //UV channels 0 to 3 (the strips use 0, 2 and 3, empty ones are skipped)
+        {
+            source.GetUVs(channel, uvs);
+            if (uvs.Count > 0) target.SetUVs(channel, uvs);
+        }
+
+        target.subMeshCount = source.subMeshCount;
+        for (int subMesh = 0; subMesh < source.subMeshCount; subMesh++) target.SetTriangles(source.GetTriangles(subMesh), subMesh);
+        target.RecalculateBounds();
     }
 
     static void MakeFolder(string folder)
