@@ -6,31 +6,26 @@ using Sirenix.OdinInspector;
 //one bridge on the 3D rune field. It's a view: it sits on one end, points at the other and stretches its Z scale to the distance
 //(the mesh starts at its origin and runs 1 m along +Z, so the Z scale is the length in meters and the tiling material follows it)
 //it also runs the tear timer while a rune pulls it past its reach (used from step 3), and asks the field to remove it when it snaps
-//for the bridge shader (Steve's), it hands each bridge its own end colors, tear amount and strain through a MaterialPropertyBlock,
+//for the bridge shader (SH_NodeBridge on MAT_Bridge), it hands each bridge its own end colors, tear progress and strain through a MaterialPropertyBlock,
 //so every bridge shares one material: no material per color combo, and no copy while tearing
+//end A is always the end closer to the core (the field sorts that out before calling Setup), so the shader's Source Color side and the tear start face the core
 public class Bridge3DObject : MonoBehaviour
 {
     [Header("Settings")]
     [Tooltip("How far above the field the bridge sits, in meters. Raise it if it disappears into the field's surface")]
     [SerializeField] float _HeightOffset = 0f;
 
-    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
-    [SerializeField] string _ColorProperty = "_BaseColor";
-
-    [Tooltip("Tint while the bridge is being torn. Temp: the bridge shader will show tearing itself from the Tear value")]
-    [SerializeField] Color _TearColor = new Color(1f, 0.35f, 0.35f, 1f);
-
     [Header("Shader Properties")]
-    [Tooltip("The bridge shader's color at end A (where the bridge starts). Placeholder name until the shader exists, then match it")]
-    [SerializeField] string _ColorAProperty = "_ColorA";
+    [Tooltip("SH_NodeBridge's color at end A, the end closer to the core (where the bridge starts, UV x = 0). Gets the color of what's at that end")]
+    [SerializeField] string _SourceColorProperty = "_SourceColor";
 
-    [Tooltip("The bridge shader's color at end B (where the bridge points). Placeholder name until the shader exists")]
-    [SerializeField] string _ColorBProperty = "_ColorB";
+    [Tooltip("SH_NodeBridge's color at end B, the end further from the core (where the bridge points, UV x = 1). Gets the color of what's at that end")]
+    [SerializeField] string _ConnectionColorProperty = "_ConnectionColor";
 
-    [Tooltip("The bridge shader's tear amount, 0 to 1 (how close the tear timer is to snapping it). Placeholder name until the shader exists")]
-    [SerializeField] string _TearProperty = "_Tear";
+    [Tooltip("SH_NodeBridge's tear progress, 0 to 1 (how close the tear timer is to snapping it). The tear color moves from end A to end B as it fills. The tear color itself is set on MAT_Bridge")]
+    [SerializeField] string _TearProgressProperty = "_TearProgress";
 
-    [Tooltip("The bridge shader's strain, 0 to 1 (how far into the field's Tear Slack it's pulled, before the tear timer starts). For the tear dead zone look. Placeholder name until the shader exists")]
+    [Tooltip("The bridge shader's strain, 0 to 1 (how far into the field's Tear Slack it's pulled, before the tear timer starts). For the tear dead zone look. SH_NodeBridge doesn't have this yet, so it's ignored until it does")]
     [SerializeField] string _StrainProperty = "_Strain";
 
     [Header("Tearing")]
@@ -47,7 +42,7 @@ public class Bridge3DObject : MonoBehaviour
     [SerializeField, Min(0.01f)] float _PullDampening = 150f;
 
     [Header("Runtime Data")]
-    [Tooltip("Rune ID at each end (-1 = the core) (read only)")]
+    [Tooltip("Rune ID at each end (-1 = the core). X is end A (closer to the core), Y is end B (read only)")]
     [SerializeField, ReadOnly] Vector2Int _Ends;
 
     [Tooltip("Is the tear timer running (read only)")]
@@ -56,10 +51,10 @@ public class Bridge3DObject : MonoBehaviour
     [Tooltip("How much pull has built up (read only)")]
     [SerializeField, ReadOnly] float _PullCurrentTime;
 
-    [Tooltip("The colors of the two things this bridge joins: the rune's color, or the field's core color (read only)")]
+    [Tooltip("The color of end A, the end closer to the core: the rune's color, or the field's core color (read only)")]
     [SerializeField, ReadOnly] Color _ColorA = Color.white;
 
-    [Tooltip("See Color A (read only)")]
+    [Tooltip("The color of end B, the end further from the core (read only)")]
     [SerializeField, ReadOnly] Color _ColorB = Color.white;
 
     [Tooltip("How far into the field's Tear Slack the bridge is pulled, 0 to 1 (read only)")]
@@ -73,18 +68,18 @@ public class Bridge3DObject : MonoBehaviour
     float _pullStrength;
     Coroutine _pullTimer;
     RuneFieldTint _tint;
-    int _colorAID; //shader property IDs, worked out once from the names above
-    int _colorBID;
-    int _tearID;
+    int _sourceColorID; //shader property IDs, worked out once from the names above
+    int _connectionColorID;
+    int _tearProgressID;
     int _strainID;
 
     private void Awake()
     {
         _baseScale = transform.localScale;
-        _tint = new RuneFieldTint(RuneFieldTint.FindRenderers(transform, null), _ColorProperty);
-        _colorAID = Shader.PropertyToID(_ColorAProperty);
-        _colorBID = Shader.PropertyToID(_ColorBProperty);
-        _tearID = Shader.PropertyToID(_TearProperty);
+        _tint = new RuneFieldTint(RuneFieldTint.FindRenderers(transform, null), null); //no single tint color here, the bridge only uses StartValues / Put / ApplyValues
+        _sourceColorID = Shader.PropertyToID(_SourceColorProperty);
+        _connectionColorID = Shader.PropertyToID(_ConnectionColorProperty);
+        _tearProgressID = Shader.PropertyToID(_TearProgressProperty);
         _strainID = Shader.PropertyToID(_StrainProperty);
     }
 
@@ -99,7 +94,8 @@ public class Bridge3DObject : MonoBehaviour
     #region Initialize
     public void Setup(int idA, int idB, Transform endA, Transform endB, Vector3 fieldUp, Color colorA, Color colorB)
     {
-        //function the field calls right after spawning this bridge. colorA / colorB are the colors of the two things it joins
+        //function the field calls right after spawning this bridge. A is the end closer to the core, B the one further out
+        //colorA / colorB are the colors of the two things it joins
         _Ends = new Vector2Int(idA, idB);
         _endA = endA;
         _endB = endB;
@@ -155,15 +151,14 @@ public class Bridge3DObject : MonoBehaviour
 
     void ApplyLook()
     {
-        //puts every shader value on the bridge at once: both end colors, tear amount and strain (plus the temp tear tint while tearing)
-        //values the material's shader doesn't have are ignored, so this is safe before the bridge shader exists
+        //puts every shader value on the bridge at once: both end colors, tear progress and strain
+        //values the material's shader doesn't have are ignored (like strain for now)
         if (_tint == null) return;
         _tint.StartValues();
-        _tint.PutColor(_colorAID, _ColorA);
-        _tint.PutColor(_colorBID, _ColorB);
-        _tint.PutFloat(_tearID, GetTearAmount());
+        _tint.PutColor(_sourceColorID, _ColorA);
+        _tint.PutColor(_connectionColorID, _ColorB);
+        _tint.PutFloat(_tearProgressID, GetTearAmount());
         _tint.PutFloat(_strainID, _Strain);
-        if (_Tearing) _tint.PutTint(_TearColor); //temp until the shader shows tearing from the Tear value
         _tint.ApplyValues();
     }
     #endregion

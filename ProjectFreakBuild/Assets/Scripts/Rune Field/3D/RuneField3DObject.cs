@@ -1053,18 +1053,29 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         _bridgeViews.Clear();
 
         List<RuneBridgeEntry> bridges = _field.GetData()._Bridges;
+        Dictionary<int, int> coreSteps = _field.GetCoreSteps(); //worked out once for all the bridges, instead of once per bridge
         for (int i = 0; i < bridges.Count; i++)
         {
-            Transform endA = GetEndTransform(bridges[i]._A);
-            Transform endB = GetEndTransform(bridges[i]._B);
+            //end A is the end closer to the core (fewer bridges away), so the shader's Source Color and the tear start on the core's side
+            //on a tie the data's order is kept. The data itself isn't changed, only which end the view starts from
+            int idA = bridges[i]._A;
+            int idB = bridges[i]._B;
+            if (GetCoreSteps(coreSteps, idB) < GetCoreSteps(coreSteps, idA))
+            {
+                idA = bridges[i]._B;
+                idB = bridges[i]._A;
+            }
+
+            Transform endA = GetEndTransform(idA);
+            Transform endB = GetEndTransform(idB);
             if (endA == null || endB == null) continue;
 
             GameObject spawned = Instantiate(_BridgePrefab, endA.position, transform.rotation, GetBridgeHolder());
-            spawned.name = $"Bridge {bridges[i]._A} - {bridges[i]._B}";
+            spawned.name = $"Bridge {idA} - {idB}";
 
             Bridge3DObject bridge = spawned.GetComponent<Bridge3DObject>();
             if (bridge == null) bridge = spawned.AddComponent<Bridge3DObject>();
-            bridge.Setup(bridges[i]._A, bridges[i]._B, endA, endB, transform.up, GetEndColor(bridges[i]._A), GetEndColor(bridges[i]._B));
+            bridge.Setup(idA, idB, endA, endB, transform.up, GetEndColor(idA), GetEndColor(idB));
             _bridgeViews.Add(bridge);
         }
 
@@ -1128,12 +1139,22 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return _BridgeHolder;
     }
 
+    int GetCoreSteps(Dictionary<int, int> coreSteps, int id)
+    {
+        //how many bridges this end is from the core. An end with no path to the core counts as infinitely far, so it's never the closer end
+        if (coreSteps.TryGetValue(id, out int steps)) return steps;
+        return int.MaxValue; //the biggest number an int can hold
+    }
+
     Color GetEndColor(int id)
     {
-        //the color at one end of a bridge: the core's color, or the rune's element color
+        //the color at one end of a bridge: the core's color, or the rune element's Palette secondary color (primary is the rune, secondary is its bridges)
+        //a palette whose secondary color was never set (fully see-through) falls back to the rune's own color, same as an element with no palette
         if (id == RuneField.CoreID) return _CoreColor;
         PlacedRuneEntry rune = _field.GetRune(id);
-        return GetElementColor(rune != null ? rune._Element : null);
+        ElementItemSO element = rune != null ? rune._Element : null;
+        if (element != null && element._Palette != null && element._Palette._SecondaryColor.a > 0f) return element._Palette._SecondaryColor;
+        return GetElementColor(element);
     }
 
     Transform GetEndTransform(int id)

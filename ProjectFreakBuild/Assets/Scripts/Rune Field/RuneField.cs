@@ -134,6 +134,36 @@ public class RuneField
         return connections;
     }
 
+    public Dictionary<int, int> GetCoreSteps()
+    {
+        //function that works out how many bridges each rune is from the core: the core is 0, a rune bridged to it is 1, and so on
+        //walks out one layer at a time like the power pass, but along every bridge and with no power rules, so it's only for looks
+        //(the 3D view uses it to point each bridge's A end at the core). Runes with no bridge path to the core aren't in the result
+        Dictionary<int, int> steps = new Dictionary<int, int>(); //rune ID -> bridges from the core
+        steps.Add(CoreID, 0);
+        List<int> currentLayer = new List<int>();
+        currentLayer.Add(CoreID);
+        int step = 0;
+
+        while (currentLayer.Count > 0)
+        {
+            step++;
+            List<int> nextLayer = new List<int>();
+            for (int i = 0; i < currentLayer.Count; i++)
+            {
+                List<int> connections = GetConnections(currentLayer[i]);
+                for (int j = 0; j < connections.Count; j++)
+                {
+                    if (steps.ContainsKey(connections[j])) continue; //already reached by a path that's as short or shorter
+                    steps.Add(connections[j], step);
+                    nextLayer.Add(connections[j]);
+                }
+            }
+            currentLayer = nextLayer;
+        }
+        return steps;
+    }
+
     public bool AreConnected(int idA, int idB)
     {
         return FindBridgeIndex(idA, idB) != -1;

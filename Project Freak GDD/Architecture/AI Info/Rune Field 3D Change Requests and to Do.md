@@ -30,7 +30,7 @@ Things to address
 - ~~Currently the full button pulls out and obscures the area being placed
 - would be nice if we could animate it into a circle or something before it collapses and reforms if brought back to the list (will probably add that in a future polish pass)
 
-- [ ] Bridge Tear Shader
+- [x] Bridge Tear Shader (SH_NodeBridge hooked up Oct 23, 2026: end A faces the core, colors and tear progress sent per bridge)
 - Need to have a shader that builds up and changes color to show the percentage of the pull tear complete
 - might need a separate particle when the pull is completed for the break or if the system has to sever the connection via zone crossing or whatever
 
