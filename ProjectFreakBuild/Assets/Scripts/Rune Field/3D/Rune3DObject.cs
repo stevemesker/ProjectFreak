@@ -23,9 +23,15 @@ public class Rune3DObject : MonoBehaviour
     [Tooltip("How much brighter the rune gets while the pointer is on it (1 = no change)")]
     [SerializeField, Min(1f)] float _HoverBrightness = 1.35f;
 
+    [Tooltip("The shader number the range highlight is sent to (0 = not lit, 1 = a rune being placed would bridge to this one). Sent to the rune's renderers and the Range Effect's. Shaders without it ignore it")]
+    [SerializeField] string _RangeHighlightProperty = "_RangeHighlight";
+
     [Header("References")]
-    [Tooltip("The renderers that get colored. Left empty, every renderer on the rune is used")]
+    [Tooltip("The renderers that get colored. Left empty, every renderer on the rune is used (except the Range Effect's)")]
     [SerializeField] List<Renderer> _TintRenderers = new List<Renderer>();
+
+    [Tooltip("Optional. The big magic effect shown while a rune being placed is close (turned on while the highlight is above 0). Left empty, a child named RangeEffect is used if there is one")]
+    [SerializeField] GameObject _RangeEffect;
 
     [Header("Runtime Data")]
     [Tooltip("This rune's ID on the field (read only)")]
@@ -40,8 +46,14 @@ public class Rune3DObject : MonoBehaviour
     [Tooltip("Does it have power right now (read only)")]
     [SerializeField, ReadOnly] bool _Powered;
 
+    [Tooltip("How lit up it is by the range overlay right now, 0 to 1 (read only)")]
+    [SerializeField, ReadOnly] float _RangeHighlight;
+
     //local variables
+    const string RangeEffectName = "RangeEffect"; //the child used for Range Effect when nothing is assigned
     RuneFieldTint _tint;
+    RuneFieldTint _effectTint; //the Range Effect's renderers, so they get the highlight number without the rune's color
+    int _rangeHighlightID;
     Color _elementColor = Color.white;
     bool _frozen;
     bool _invalid;
@@ -50,8 +62,18 @@ public class Rune3DObject : MonoBehaviour
 
     private void Awake()
     {
-        List<Renderer> renderers = _TintRenderers.Count > 0 ? _TintRenderers : RuneFieldTint.FindRenderers(transform, null);
+        if (_RangeEffect == null) _RangeEffect = RuneFieldTint.FindChild(transform, RangeEffectName);
+        Transform effect = _RangeEffect != null ? _RangeEffect.transform : null; //the effect keeps its own look, it isn't colored like the rune
+
+        List<Renderer> renderers = _TintRenderers.Count > 0 ? _TintRenderers : RuneFieldTint.FindRenderers(transform, effect);
         _tint = new RuneFieldTint(renderers, _ColorProperty);
+        _rangeHighlightID = Shader.PropertyToID(string.IsNullOrEmpty(_RangeHighlightProperty) ? "_RangeHighlight" : _RangeHighlightProperty);
+
+        if (_RangeEffect != null)
+        {
+            _effectTint = new RuneFieldTint(RuneFieldTint.FindRenderers(effect, null), _ColorProperty);
+            _RangeEffect.SetActive(false);
+        }
     }
 
     #region Initialize
@@ -101,6 +123,19 @@ public class Rune3DObject : MonoBehaviour
         _invalid = invalid;
         _invalidColor = invalidColor;
         ApplyColor();
+    }
+
+    public void ShowRangeHighlight(float intensity)
+    {
+        //function the range overlay calls while a rune is being placed nearby: 0 = not lit, 1 = it would bridge to this rune
+        //sends the number to the rune's shader and the Range Effect's, and only shows the effect while it's above 0
+        _RangeHighlight = intensity;
+        if (_tint != null) _tint.SetFloat(_rangeHighlightID, intensity);
+
+        if (_RangeEffect == null) return;
+        bool show = intensity > 0f;
+        if (_RangeEffect.activeSelf != show) _RangeEffect.SetActive(show);
+        if (_effectTint != null) _effectTint.SetFloat(_rangeHighlightID, intensity);
     }
 
     void ApplyColor()

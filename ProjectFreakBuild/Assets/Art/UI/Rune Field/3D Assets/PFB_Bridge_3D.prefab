@@ -78,8 +78,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _HeightOffset: 0
-  _ColorProperty: _BaseColor
-  _TearColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  _SourceColorProperty: _SourceColor
+  _ConnectionColorProperty: _ConnectionColor
+  _TearProgressProperty: _TearProgress
+  _StrainProperty: _Strain
   _PullTearRequiredTime: 1.5
   _MaxPullStrength: 200
   _PullTickTime: 0.1
@@ -87,6 +89,9 @@ MonoBehaviour:
   _Ends: {x: 0, y: 0}
   _Tearing: 0
   _PullCurrentTime: 0
+  _ColorA: {r: 1, g: 1, b: 1, a: 1}
+  _ColorB: {r: 1, g: 1, b: 1, a: 1}
+  _Strain: 0
 --- !u!1001 &1553581519313620043
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -144,6 +149,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: a34102fad24989845848bb90c43eb568,
+        type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a34102fad24989845848bb90c43eb568,
         type: 3}

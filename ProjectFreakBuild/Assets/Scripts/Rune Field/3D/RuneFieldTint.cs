@@ -32,6 +32,19 @@ public class RuneFieldTint
         }
     }
 
+    public void SetFloat(int propertyID, float value)
+    {
+        //puts a number on every renderer in the group, keeping the color and anything else already set (propertyID from Shader.PropertyToID)
+        //values a shader doesn't have are just ignored. Used for the range highlight
+        for (int i = 0; i < _renderers.Count; i++)
+        {
+            if (_renderers[i] == null) continue;
+            _renderers[i].GetPropertyBlock(_block);
+            _block.SetFloat(propertyID, value);
+            _renderers[i].SetPropertyBlock(_block);
+        }
+    }
+
     public void Clear()
     {
         //goes back to the materials' own colors
@@ -74,6 +87,21 @@ public class RuneFieldTint
         {
             if (_renderers[i] != null) _renderers[i].SetPropertyBlock(_block);
         }
+    }
+
+    public static GameObject FindChild(Transform parent, string childName)
+    {
+        //looks through every child (and their children) for one with this name. Null if there isn't one
+        //shared by the pieces that find an effect child by name (a node's OnEffect, a rune's or the core's RangeEffect)
+        if (parent == null) return null;
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.name == childName) return child.gameObject;
+            GameObject deeper = FindChild(child, childName);
+            if (deeper != null) return deeper;
+        }
+        return null;
     }
 
     public static List<Renderer> FindRenderers(Transform root, Transform skip)

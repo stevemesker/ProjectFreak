@@ -127,6 +127,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     int _hoverID = RuneField.NoRuneID; //which one: a rune ID, a node index, or RuneField.CoreID
     int _draggingRuneID = RuneField.NoRuneID; //rune being dragged right now, or NoRuneID
     Vector2 _dragDropPosition; //where the dragged rune would be dropped (kept within reach of its bridges), in field units
+    Vector2 _previewPosition; //where the rune being placed (dragged, carried or list dragged) is shown right now, in field units. The range overlay reads it
     List<int> _dragStartBridges = new List<int>(); //what the dragged rune was bridged to when the drag started, put back if the drop is refused
     bool _unsavedBeforeDrag; //whether there were unsaved changes before the drag, put back if the drop is refused
     bool _carrying; //true while a gamepad is carrying a rune (A picks up, A again drops), false for a mouse drag (held)
@@ -647,6 +648,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
 
         _draggingRuneID = runeID;
         _dragDropPosition = _field.GetPosition(runeID);
+        _previewPosition = _dragDropPosition;
         _dragStartBridges = _field.GetConnections(runeID);
         _unsavedBeforeDrag = _HasUnsavedChanges;
         if (_runeViews.TryGetValue(runeID, out Rune3DObject view) && view != null) view.ShowHover(false);
@@ -666,7 +668,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         bool allowed = _field.CanDropAt(_draggingRuneID, _dragDropPosition, out Vector2 landingPosition, out int nodeIndex);
         bool overList = _pointer.IsOverInventoryList(); //over the list, letting go takes it off the field, so it isn't shown as invalid
         bool frozen = _field.IsRuneFrozen(_draggingRuneID); //frozen runes can't come off the field, so they're invalid over the list
-        view.transform.position = FieldToWorld(allowed ? landingPosition : _dragDropPosition) + transform.up * _DragLift;
+        _previewPosition = allowed ? landingPosition : _dragDropPosition;
+        view.transform.position = FieldToWorld(_previewPosition) + transform.up * _DragLift;
         view.ShowInvalid(overList ? frozen : allowed == false, _InvalidColor); //over the list: invalid only if frozen. On the field: invalid if the spot isn't allowed
 
         UpdateBridgePositions();
@@ -814,9 +817,37 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         //returns whether it can go there (the spot is allowed and one is left to place)
         bool allowed = _field.CanDropAt(RuneField.NoRuneID, position, out Vector2 landingPosition, out int nodeIndex); //called first, so landingPosition always gets a value
         if (GetAvailable(element) <= 0) allowed = false;
-        ghost.transform.position = FieldToWorld(allowed ? landingPosition : position) + transform.up * _DragLift;
+        _previewPosition = allowed ? landingPosition : position;
+        ghost.transform.position = FieldToWorld(_previewPosition) + transform.up * _DragLift;
         ghost.ShowInvalid(allowed == false, _InvalidColor);
         return allowed;
+    }
+
+    public bool TryGetPlacementPreview(out Vector2 position, out float reach, out int movingRuneID)
+    {
+        //what's being placed right now, for the range overlay: where it's shown (field units), how far it reaches, and its rune ID (NoRuneID for one from the inventory)
+        //false when nothing is being placed, or a dragged rune is over the inventory list (letting go there takes it off the field)
+        position = _previewPosition;
+        reach = 0f;
+        movingRuneID = RuneField.NoRuneID;
+        if (_field == null) return false;
+
+        if (_draggingRuneID != RuneField.NoRuneID)
+        {
+            if (_pointer.IsOverInventoryList()) return false;
+            movingRuneID = _draggingRuneID;
+            reach = _field.GetReach(_draggingRuneID);
+            return true;
+        }
+
+        //a rune out of the inventory only counts while its stand-in is showing on the field
+        ElementItemSO element = null;
+        if (_carryGhost != null) element = _carryElement;
+        else if (_listDragGhost != null) element = _listDragElement;
+        if (element == null) return false;
+
+        reach = element.connectionDistance;
+        return true;
     }
 
     public bool IsDraggingAnything()

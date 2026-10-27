@@ -27,3 +27,5 @@ MonoBehaviour:
   connectionsAllowed: 3
   connectionDistance: 250
   powerNeeded: 1
+  _Palette: {fileID: 11400000, guid: f6b52fe4624422144afa97ec6dde6f4f, type: 2}
+  _Glyph: {fileID: 0}

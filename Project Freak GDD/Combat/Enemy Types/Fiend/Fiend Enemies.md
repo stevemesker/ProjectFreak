@@ -28,7 +28,8 @@ Strength Speed
 
 ---
 [[Mini Boss]]
-
+Strength Defense
+[[Cyclopse]] - 
 
 ---
 [[Boss]]

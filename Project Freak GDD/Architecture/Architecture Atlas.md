@@ -3,6 +3,7 @@ Starting point for each architecture section. Only the entry notes are linked he
 **Guides**
 [[How To - Create Enemies & Shades]]
 [[How To - Zone Visuals]] - rune field zone floors, walls, cracks, smoke and the zone opening *(draft, to run through together)*
+[[How To - Range Overlay]] - the rune field's placement range decal and rune light-up: building the decal Shader Graph, scene setup, styling *(draft)*
 
 **Game Management**
 [[AA - Managers]] - every manager, save data, scene loading, HUD, wrappers

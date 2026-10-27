@@ -46,7 +46,10 @@ Things to address
 - color for now will be in SO but will probably be algorithmically defined when we flesh out rune stats and functionality more
 - color should use the color swatch SO
 
-- [ ] add visualizer for node ranges while placing
+- [x] add visualizer for node ranges while placing
+- *Researched with Claude Oct 23, 2026 (Factorio, Satisfactory, Death Stranding, KSP). Range overlay built Oct 24, 2026: floor decal + runes lighting up from 150% of bridge length. See [[Rune Field 3D View#Range Overlay]]. Decal graph, styling and the RangeEffect are Steve's*
+
+- [ ] Placement preview: pole with a ball that hits the floor (Steve's model), ground ring turning red / green through its material, and a warped version of the bridge material showing the bridges a drop would make (straightens out once in range) [[Notes for the future]]
 
 - [ ] Core Node Shader
 - needs to dim when out of power

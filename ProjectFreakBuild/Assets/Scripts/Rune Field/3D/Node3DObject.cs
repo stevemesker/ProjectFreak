@@ -58,7 +58,7 @@ public class Node3DObject : MonoBehaviour
 
     private void Awake()
     {
-        if (_OnEffect == null) _OnEffect = FindChild(transform, OnEffectName);
+        if (_OnEffect == null) _OnEffect = RuneFieldTint.FindChild(transform, OnEffectName);
         Transform skip = _OnEffect != null ? _OnEffect.transform : null; //the OnEffect mesh keeps its own look
         _tint = new RuneFieldTint(RuneFieldTint.FindRenderers(transform, skip), _ColorProperty);
         if (_OnEffect != null) _OnEffect.SetActive(false);
@@ -101,19 +101,6 @@ public class Node3DObject : MonoBehaviour
         if (fireEvents == false || active == wasActive) return;
         if (active) _ActivationEvent?.Invoke();
         else _DeactivationEvent?.Invoke();
-    }
-
-    static GameObject FindChild(Transform parent, string childName)
-    {
-        //looks through every child (and their children) for one with this name. Null if there isn't one
-        for (int i = 0; i < parent.childCount; i++)
-        {
-            Transform child = parent.GetChild(i);
-            if (child.name == childName) return child.gameObject;
-            GameObject deeper = FindChild(child, childName);
-            if (deeper != null) return deeper;
-        }
-        return null;
     }
     #endregion
 

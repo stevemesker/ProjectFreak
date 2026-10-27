@@ -257,3 +257,15 @@ A `VerticalLayoutGroup` stacks its children; a `ContentSizeFitter` makes the box
 ### Values Unity doesn't save: `[System.NonSerialized]`
 Marks a field Unity shouldn't save, even on an asset. Handy for caches that get rebuilt, like the zoom curve's measured points.
 **Used in:** `RuneFieldCameraSO`.
+
+### Values every shader can read: `Shader.SetGlobal...`
+`Shader.SetGlobalFloat`, `SetGlobalVector`, `SetGlobalVectorArray` and `SetGlobalFloatArray` set a value once for every material at the same time. The shader just declares a variable with the same name (in a `.hlsl` file), and the material doesn't need it as a property. Arrays get their size locked the first time they're set, so they're always sent at full size with a separate count of how many entries are used.
+**Used in:** `RuneRangeOverlayObject` (sends the ranges to `RuneRangeField.hlsl`).
+
+### Shader Graph code: Custom Function nodes and `.hlsl` files
+A Custom Function node set to File runs a function from a `.hlsl` file. The function in the file ends in `_float` (`RuneRangeField_float`), and the node's Name leaves that off. Its inputs and outputs have to match the function's in order and type (`out` values are the node's outputs). Handy for things nodes can't do, like looping over a list.
+**Used in:** `RuneRangeField.hlsl` (the range overlay decal).
+
+### HDRP positions: camera relative vs Absolute World
+HDRP draws everything relative to the camera, so Shader Graph's Position node set to World gives a position measured from the camera. To compare with positions sent from C# (real world positions), use **Absolute World**.
+**Used in:** the range overlay decal graph.

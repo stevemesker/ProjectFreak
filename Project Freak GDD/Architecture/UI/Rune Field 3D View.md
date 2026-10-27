@@ -197,7 +197,7 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 - Slot changes only last one play session in a build (assets can't be saved outside the editor)
 
 ### Rune3DObject
-Colored by its element's `_Palette` primary color (`ElementItemSO`, *Oct 11, 2026*; the field's `_ElementColors` list is the fallback), darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit). `_TintRenderers` picks which renderers are colored (empty = all of them).
+Colored by its element's `_Palette` primary color (`ElementItemSO`, *Oct 11, 2026*; the field's `_ElementColors` list is the fallback), darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit). `_TintRenderers` picks which renderers are colored (empty = all of them, except the range effect). *Oct 24, 2026:* `ShowRangeHighlight` for the [[#Range Overlay|range overlay]]: `_RangeHighlightProperty` (`_RangeHighlight`) is sent to its renderers, and `_RangeEffect` (or a child named `RangeEffect`) shows while it's above 0.
 
 ### Bridge3DObject
 Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y scale are kept). `_HeightOffset` lifts it off the field. The tear timer is the 2D one (`_PullTearRequiredTime`, `_MaxPullStrength`, `_PullTickTime`, `_PullDampening`), and it runs on real time so it works while the game is paused.
@@ -215,10 +215,41 @@ The property names are inspector fields (**Shader Properties** header: `_SourceC
 The 3D `EvolutionNode`: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor`. `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
 
 ### Core3DObject
-Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`. *Oct 11, 2026:* also `HasRunesWaiting()` (`RuneField.HasRunesWaitingForPower`: a rune that could have power doesn't; planning runes don't count), for the core shader's bright / normal / dull purple. The shader's property names become inspector fields here once it exists [[Notes for the future]]
+Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`. *Oct 11, 2026:* also `HasRunesWaiting()` (`RuneField.HasRunesWaitingForPower`: a rune that could have power doesn't; planning runes don't count), for the core shader's bright / normal / dull purple. The shader's property names become inspector fields here once it exists [[Notes for the future]]. *Oct 24, 2026:* `ShowRangeHighlight` for the range overlay, same as `Rune3DObject` (`_RangeHighlightProperty`, `_RangeEffect`).
 
 ### RuneFieldTint
-A small shared helper (plain C# class) that colors a group of renderers with a `MaterialPropertyBlock`, so every rune can have its own color without copying materials. Used by runes, nodes and bridges. *Oct 11, 2026:* `StartValues` / `PutColor` / `PutFloat` / `PutTint` / `ApplyValues` set several shader values at once (the bridges use it)
+A small shared helper (plain C# class) that colors a group of renderers with a `MaterialPropertyBlock`, so every rune can have its own color without copying materials. Used by runes, nodes and bridges. *Oct 11, 2026:* `StartValues` / `PutColor` / `PutFloat` / `PutTint` / `ApplyValues` set several shader values at once (the bridges use it). *Oct 24, 2026:* `SetFloat` sets one number and keeps what's already set (the range highlight), and `FindChild` (finding an effect child by name) moved here from `Node3DObject` so runes and the core can share it
+
+### Range Overlay
+*Built Oct 24, 2026 (`RuneRangeOverlayObject`).* While a rune is being placed (dragged on the field, carried with the gamepad, or dragged out of the inventory list), the floor shows where it would bridge, and runes and the core light up as it gets close: fading in from 150% of bridge length and fully lit once a bridge would be made. The bridge length is the field's rule (`RuneField.GetBaseReach`: the bigger of the two reaches), so the overlay always agrees with what dropping the rune does. Ability nodes don't get a range, placement already snaps into them.
+
+```text
+RuneField3DObject.TryGetPlacementPreview ──► RuneRangeOverlayObject (every frame, after the field)
+   (where the rune is shown, its reach,          │ fades each rune's / the core's highlight
+    and which rune is moving)                     ├──► Rune3DObject / Core3DObject .ShowRangeHighlight(0 to 1)
+                                                  └──► global shader values ──► RuneRangeField.hlsl ──► range decal on the floor
+```
+
+- **`RuneField3DObject.TryGetPlacementPreview(out position, out reach, out movingRuneID)`**: what's being placed: the spot it's shown at (`_previewPosition`, the snapped landing spot when allowed, set in `DragRune` and `MoveGhost`), its reach (`connectionDistance`), and its rune ID (`NoRuneID` from the inventory). False when nothing is placed, or a dragged rune is over the inventory list
+- **`RuneRangeOverlayObject`** (on the `Rune Field` object, finds the field itself): for the core and every rune it works out ratio = distance / bridge length, fades the highlight toward its target, and sends the lit ones (up to 32) to the shader as **global** values (`Shader.SetGlobal...`), so the material needs no properties for them. A rune with every bridge slot used won't connect, so it's dimmer (`_FullRuneStrength`)
+- **Highlights:** `Rune3DObject` / `Core3DObject.ShowRangeHighlight` send `_RangeHighlight` (0 to 1) to their renderers through `RuneFieldTint.SetFloat`, and turn on a `RangeEffect` child while it's above 0 (the big magic effect; a child named `RangeEffect` is used if `_RangeEffect` is empty). Shaders without `_RangeHighlight` ignore it
+
+| Setting (`RuneRangeOverlayObject`) | What it does |
+| --- | --- |
+| `_ApproachRatio` | How far out runes start lighting up, as a multiple of bridge length (1.5 = 150%). Also how far the floor halo reaches |
+| `_ApproachCurve` | How the light-up builds through the approach zone (X 0 = entered it, 1 = would bridge) |
+| `_FadeSpeed` | Fades per second (6) |
+| `_FullRuneStrength` | Strength of an in-range rune with no free bridge slot (0.35) |
+| Decal foldout: `_Decal`, `_DecalMaterial`, `_DecalDepth` | The floor decal, its material (kept on the decal when changed), and its box height (3 m, has to reach every zone's floor height). **Create Range Decal** makes it centered on the field, pointing down, sized to the field edge plus edge bleed |
+| Test Tools: `_TestShowEveryRange` | Shows every range all the time in play mode, to tune the decal's look without dragging |
+
+**The shader** (`Scripts/Rune Field/3D/Shaders/RuneRangeField.hlsl`, two functions for Custom Function nodes):
+- `RuneFieldPosition(WorldPos) → FieldPosition`: a spot on the field's plane, in meters (core at 0, 0). Also good as noise UVs, so noise sticks to the floor
+- `RuneRangeField(FieldPosition, EdgeNoise) → RangeMask, RangeGradient, HaloMask, HaloGradient`: crisp masks (1 inside, 0 outside) and gradients (1 at the rune, 0 at the edge) for the range circle and the approach circle. No softness, the look is built in the graph. Overlapping ranges merge (max), and every output is multiplied by the range's fade-in. EdgeNoise is in meters. *Changed Oct 27, 2026* (was InRange / Approach / Edge with an EdgeSoftness input)
+
+**Building the decal graph and setting it up in the scene:** step by step in [[How To - Range Overlay]] (graph, decal, decal layers, the rune / core light-up, tuning, testing).
+
+Still to come: the placement pole and its ground ring (Steve's model), and the warped bridge preview (a material swap on `PFB_Bridge_3D` driven by the same ratio) [[Notes for the future]]
 
 ### Setup
 1. Add `Node3DObject` to `PFB_Node_3D` and `Core3DObject` to `PFB_Core_3D` (open the prefab, add the component). The scene's copies get it too

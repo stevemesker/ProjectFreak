@@ -236,6 +236,7 @@ Material:
     - _SupportDecals: 1
     - _SurfaceType: 0
     - _TearPercentage: 0
+    - _TearProgress: 0
     - _TexWorldScale: 1
     - _TexWorldScaleEmissive: 1
     - _Thickness: 1
@@ -280,7 +281,7 @@ Material:
     - _UVDetailsMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMaskEmissive: {r: 1, g: 0, b: 0, a: 0}
-    - _WarpSpeed: {r: 0.4, g: 0, b: 0, a: 0}
+    - _WarpSpeed: {r: -0.4, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &8549739466187460921
 MonoBehaviour:

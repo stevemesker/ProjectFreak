@@ -13,111 +13,23 @@ MonoBehaviour:
   m_Name: SO_Shade_Slot1
   m_EditorClassIdentifier: 
   _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-  _GatesTaken: 08000000
-  _Level: 4
+  _GatesTaken: 
+  _Level: 3
   _XP: 0
   _Lives: 3
   _Shard: {fileID: 0}
   _RuneField:
-    _Runes:
-    - _ID: 0
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: 30.10777, y: -248.18042}
-    - _ID: 1
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: 32, y: -423}
-    - _ID: 2
-      _Element: {fileID: 11400000, guid: f3fb65ab9ad023142b3072bf4d81a1a4, type: 2}
-      _Position: {x: 208.41162, y: -530.4481}
-    - _ID: 3
-      _Element: {fileID: 11400000, guid: 74e8a244cf42c6349a25c1a469c640d2, type: 2}
-      _Position: {x: 342.52097, y: -581.6394}
-    _Bridges:
-    - _A: 0
-      _B: -1
-    - _A: 1
-      _B: 0
-    - _A: 2
-      _B: 1
-    - _A: 3
-      _B: 2
-    _Plugs:
-    - _NodeIndex: 19
-      _RuneID: 1
-    - _NodeIndex: 8
-      _RuneID: 3
-    _ActiveNodes: 1300000008000000
-    _NextRuneID: 4
-    _FrozenRunes: 00000000010000000200000003000000
-    _FrozenBridges:
-    - _A: 0
-      _B: -1
-    - _A: 1
-      _B: 0
-    - _A: 2
-      _B: 1
-    - _A: 3
-      _B: 2
-    _LockedRunes: 0100000003000000
-  _CompiledEffects:
-  - rid: 211481427596279885
-  - rid: 211481427596279886
-  - rid: 211481427596279887
-  - rid: 211481427596279888
-  - rid: 211481427596279889
-  - rid: 211481427596279890
-  _PluggedNodes:
-  - _NodeIndex: 8
-    _Name: PFB_Node_3D (2)
-    _Position: {x: 342.52097, y: -581.6394}
-    _Unlocks: 
-    _Lockouts: 
-    _Effects:
-    - rid: 211481427596279891
-  - _NodeIndex: 19
-    _Name: PFB_Node_3D (4)
-    _Position: {x: 32, y: -423}
-    _Unlocks: 
-    _Lockouts: 
-    _Effects:
-    - rid: 211481427596279892
-  _SeenOpenZone: 2
+    _Runes: []
+    _Bridges: []
+    _Plugs: []
+    _ActiveNodes: 
+    _NextRuneID: 0
+    _FrozenRunes: 
+    _FrozenBridges: []
+    _LockedRunes: 
+  _CompiledEffects: []
+  _PluggedNodes: []
+  _SeenOpenZone: 1
   references:
     version: 2
-    RefIds:
-    - rid: 211481427596279885
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 1
-        _Amount: 1
-    - rid: 211481427596279886
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481427596279887
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 1
-        _Amount: 1
-    - rid: 211481427596279888
-      type: {class: StatChangeEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Stat: 5
-        _Amount: 1
-    - rid: 211481427596279889
-      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}
-    - rid: 211481427596279890
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279891
-      type: {class: EvolveEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Evolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
-    - rid: 211481427596279892
-      type: {class: GrantAbilityEffect, ns: , asm: Assembly-CSharp}
-      data:
-        _Ability: {fileID: 11400000, guid: ab64e3cc67d95534f9b28a1bbaea6fb1, type: 2}
+    RefIds: []
