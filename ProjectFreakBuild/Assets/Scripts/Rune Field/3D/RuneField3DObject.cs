@@ -30,6 +30,9 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     [Tooltip("How far past its reach a rune has to be pulled before its bridges start tearing, in field units")]
     [SerializeField, Min(0f)] float _TearSlack = 2f;
 
+    [Tooltip("How close to the end of its reach a bridge has to be, in field units, to count as holding the dragged rune back. Only bridges holding it back tear, so the direction the player pulls picks which bridges tear")]
+    [SerializeField, Min(0f)] float _TautPadding = 2f;
+
     [Tooltip("Tint for a rune (or inventory button) dragged over a spot it can't go")]
     [SerializeField] Color _InvalidColor = new Color(1f, 0.3f, 0.3f, 1f);
 
@@ -126,7 +129,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     RuneFieldType.Hover _hoverKind = RuneFieldType.Hover.Nothing; //what kind of thing is under the pointer (see UpdateHover)
     int _hoverID = RuneField.NoRuneID; //which one: a rune ID, a node index, or RuneField.CoreID
     int _draggingRuneID = RuneField.NoRuneID; //rune being dragged right now, or NoRuneID
-    Vector2 _dragDropPosition; //where the dragged rune would be dropped (kept within reach of its bridges), in field units
+    Vector2 _dragDropPosition; //where the dragged rune would land if let go: the closest spot it can land on (see RuneField.FindDropSpot), in field units
     Vector2 _previewPosition; //where the rune being placed (dragged, carried or list dragged) is shown right now, in field units. The range overlay reads it
     List<int> _dragStartBridges = new List<int>(); //what the dragged rune was bridged to when the drag started, put back if the drop is refused
     bool _unsavedBeforeDrag; //whether there were unsaved changes before the drag, put back if the drop is refused
@@ -663,24 +666,28 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         if (_pointer.TryGetFieldPoint(out Vector3 point) == false) return; //pointing at the sky, the rune stays where it was
 
         Vector2 desired = WorldToField(point);
-        _dragDropPosition = _field.ClampToBridges(_draggingRuneID, desired);
+        Vector2 held = _field.ClampToBridges(_draggingRuneID, desired); //as close to the pointer as its bridges let it go
 
-        bool allowed = _field.CanDropAt(_draggingRuneID, _dragDropPosition, out Vector2 landingPosition, out int nodeIndex);
+        //where it would land: that spot if it's allowed, otherwise the closest spot around it that is (the old 2D field's closest point idea)
+        bool allowed = _field.FindDropSpot(_draggingRuneID, held, out Vector2 landingPosition, out int nodeIndex);
+        _dragDropPosition = allowed ? landingPosition : held;
+
         bool overList = _pointer.IsOverInventoryList(); //over the list, letting go takes it off the field, so it isn't shown as invalid
         bool frozen = _field.IsRuneFrozen(_draggingRuneID); //frozen runes can't come off the field, so they're invalid over the list
-        _previewPosition = allowed ? landingPosition : _dragDropPosition;
+        _previewPosition = _dragDropPosition;
         view.transform.position = FieldToWorld(_previewPosition) + transform.up * _DragLift;
-        view.ShowInvalid(overList ? frozen : allowed == false, _InvalidColor); //over the list: invalid only if frozen. On the field: invalid if the spot isn't allowed
+        view.ShowInvalid(overList ? frozen : allowed == false, _InvalidColor); //over the list: invalid only if frozen. On the field: invalid only if no spot nearby works
 
         UpdateBridgePositions();
-        UpdateTearing(_draggingRuneID, desired);
+        UpdateTearing(_draggingRuneID, desired, held);
     }
 
     void EndRuneDrag()
     {
         //the player let go of a rune:
-        //on the inventory list it comes off the field (frozen runes can't, they go back instead). On an allowed spot it moves there (plugging into a node if it's on one) and bridges to what's in reach
-        //anywhere else it goes back to where it was, with any bridges torn during the drag put back, as if the drag never happened
+        //on the inventory list it comes off the field (frozen runes can't, they go back instead). Otherwise it moves to the landing spot DragRune found
+        //(the closest allowed spot, plugging into a node if it's on one) and bridges to what's in reach
+        //if no spot nearby was allowed it goes back to where it was, with any bridges torn during the drag put back, as if the drag never happened
         int runeID = _draggingRuneID;
         StopAllTearing();
         _draggingRuneID = RuneField.NoRuneID;
@@ -1077,9 +1084,15 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     void RebuildBridgeViews()
     {
         //throws away every bridge object and makes one for each bridge in the data. There are only ever a few dozen, so this is cheap
+        //the tear each one built up is remembered first and handed to its new object, so a bridge snapping mid-drag doesn't reset the others
+        Dictionary<Vector2Int, float> savedPulls = new Dictionary<Vector2Int, float>(); //bridge ends -> pull built up
         for (int i = 0; i < _bridgeViews.Count; i++)
         {
-            if (_bridgeViews[i] != null) Destroy(_bridgeViews[i].gameObject);
+            if (_bridgeViews[i] == null) continue;
+            Vector2Int ends = _bridgeViews[i].GetEnds();
+            float pull = _bridgeViews[i].GetPullBuiltUp();
+            if (pull > 0f) savedPulls[GetBridgeKey(ends.x, ends.y)] = pull;
+            Destroy(_bridgeViews[i].gameObject);
         }
         _bridgeViews.Clear();
 
@@ -1107,6 +1120,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             Bridge3DObject bridge = spawned.GetComponent<Bridge3DObject>();
             if (bridge == null) bridge = spawned.AddComponent<Bridge3DObject>();
             bridge.Setup(idA, idB, endA, endB, transform.up, GetEndColor(idA), GetEndColor(idB));
+            if (savedPulls.TryGetValue(GetBridgeKey(idA, idB), out float savedPull)) bridge.SetPullBuiltUp(savedPull); //TryGetValue looks up the key and hands back its value in one go
             _bridgeViews.Add(bridge);
         }
 
@@ -1122,29 +1136,42 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         }
     }
 
-    void UpdateTearing(int runeID, Vector2 desiredPosition)
+    void UpdateTearing(int runeID, Vector2 desiredPosition, Vector2 heldPosition)
     {
-        //starts tearing every bridge on this rune that's being pulled past its reach, and stops the rest
+        //tears every bridge on this rune that's holding it back while the pointer pulls past its reach, and pauses the rest
+        //desiredPosition is the pointer, heldPosition is where the bridges stopped the rune. Only taut bridges (the rune is at the end of their reach) get pulled,
+        //so pulling in a direction picks which bridges tear, and how far the pointer is past each one's reach sets how fast
+        //a paused bridge keeps the tear it built up until the drag ends, so the player can pull one way, then another, and come back
         //also tells each one its strain: how far into Tear Slack it's pulled (0 to 1), for the bridge shader's tear dead zone look
         for (int i = 0; i < _bridgeViews.Count; i++)
         {
             Bridge3DObject bridge = _bridgeViews[i];
             if (bridge == null || bridge.Touches(runeID) == false) continue;
 
-            float stretch = _field.GetBridgeStretch(runeID, desiredPosition, bridge.GetOtherEnd(runeID));
+            int otherID = bridge.GetOtherEnd(runeID);
+            float stretch = 0f;
+            if (_field.IsBridgeTaut(runeID, heldPosition, otherID, _TautPadding)) stretch = _field.GetBridgeStretch(runeID, desiredPosition, otherID);
+
             float strain = _TearSlack > 0f ? stretch / _TearSlack : (stretch > 0f ? 1f : 0f); //no slack: any stretch is full strain
             if (stretch > _TearSlack) bridge.StartTearing(stretch);
-            else bridge.StopTearing(); //also puts strain back to 0, set again just below
+            else bridge.PauseTearing(); //keeps its tear so far, and puts strain back to 0 (set again just below)
             bridge.ShowStrain(strain); //clamped to 0 to 1 by the bridge
         }
     }
 
     void StopAllTearing()
     {
+        //the drag ended: every bridge goes back to no tear
         for (int i = 0; i < _bridgeViews.Count; i++)
         {
-            if (_bridgeViews[i] != null) _bridgeViews[i].StopTearing();
+            if (_bridgeViews[i] != null) _bridgeViews[i].ResetTearing();
         }
+    }
+
+    static Vector2Int GetBridgeKey(int idA, int idB)
+    {
+        //the same key for a bridge whichever way round its ends are given (smaller ID first), for looking bridges up in a Dictionary
+        return new Vector2Int(Mathf.Min(idA, idB), Mathf.Max(idA, idB));
     }
 
     void ClearViews()

@@ -30,6 +30,8 @@ public class RuneFieldLogicTester : MonoBehaviour
         TestExpensiveRuneBlocksChain();
         TestLoopTear();
         TestClampToBridges();
+        TestClampToTwoBridges();
+        TestDropSearch();
         TestNodeLockoutsAndUnlocks();
         TestMaxPowerAndRemoval();
         TestCloneAndCleanUp();
@@ -177,6 +179,60 @@ public class RuneFieldLogicTester : MonoBehaviour
 
         Check(Mathf.Abs(clamped.x - 150f) < 0.01f && Mathf.Abs(clamped.y) < 0.01f, "Clamp: dragging to 400 stops at the 150 reach");
         Check(Mathf.Abs(field.GetBridgeStretch(a, new Vector2(400, 0), RuneField.CoreID) - 250f) < 0.01f, "Clamp: the bridge is stretched 250 past its reach");
+    }
+
+    void TestClampToTwoBridges()
+    {
+        //a rune held by two bridges stops at the closest spot both can reach: the corner where their circles cross when pulled straight out,
+        //and the edge of just one circle when pulled to the side. Only the bridges holding it back count as taut (and tear)
+        RuneFieldSettingsSO settings = MakeSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 200f);
+        RuneField field = new RuneField(new RuneFieldData(), settings, nodes, 10);
+
+        int a = Place(field, element, new Vector2(-150, 500), false);
+        int b = Place(field, element, new Vector2(150, 500), false);
+        int c = Place(field, element, new Vector2(0, 600), false);
+        field.Connect(c, a);
+        field.Connect(c, b);
+        Check(field.AreConnected(c, a) && field.AreConnected(c, b), "Two bridges: the rune is bridged to both");
+
+        Vector2 corner = new Vector2(0f, 500f + Mathf.Sqrt(200f * 200f - 150f * 150f)); //where the two 200 reach circles cross, above them
+        Vector2 clamped = field.ClampToBridges(c, new Vector2(0, 1500));
+        Check(Vector2.Distance(clamped, corner) < 0.1f, "Two bridges: pulling straight out stops at the corner where both reaches meet");
+        Check(field.IsBridgeTaut(c, clamped, a, 2f) && field.IsBridgeTaut(c, clamped, b, 2f), "Two bridges: at the corner both bridges are taut");
+
+        Vector2 side = field.ClampToBridges(c, new Vector2(400, 632));
+        Check(Mathf.Abs(Vector2.Distance(side, field.GetPosition(a)) - 200f) < 0.1f, "Two bridges: pulling to the side stops at the far bridge's reach");
+        Check(field.IsBridgeTaut(c, side, a, 2f) && field.IsBridgeTaut(c, side, b, 2f) == false, "Two bridges: pulling to the side only makes the far bridge taut");
+    }
+
+    void TestDropSearch()
+    {
+        //letting go on a spot the rune can't land on finds the closest spot that works, within its bridges' reach
+        RuneFieldSettingsSO settings = MakeSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 200f);
+        RuneField field = new RuneField(new RuneFieldData(), settings, nodes, 10);
+
+        int rune = Place(field, element, new Vector2(0, 300), false);
+        int other = Place(field, element, new Vector2(0, 500), false);
+        Vector2 onTop = new Vector2(0, 480); //overlaps the other rune
+
+        Check(field.CanDropAt(rune, onTop, out Vector2 refusedSpot, out int refusedNode) == false, "Drop search: the spot on top of another rune is refused");
+        bool found = field.FindDropSpot(rune, onTop, out Vector2 spot, out int nodeIndex);
+        Check(found && field.IsSpotFree(rune, spot), "Drop search: a free spot nearby is found instead");
+        Check(Vector2.Distance(spot, onTop) <= 80f + settings._DropSearchStep * 2f, "Drop search: it's about the closest free spot (the other rune's edge is 80 away, give or take the search step)");
+        Check(field.TryDropRune(rune, spot) && field.GetPosition(rune) == spot, "Drop search: dropping on the found spot works");
+
+        //bridged to a rune off to the left, the closest free spot to the right of the other rune is out of reach, so it has to find one to the left
+        int anchor = Place(field, element, field.GetPosition(rune) + new Vector2(-190, 0), false);
+        Check(field.Connect(rune, anchor), "Drop search: the rune is bridged to an anchor on its left");
+        found = field.FindDropSpot(rune, new Vector2(50, 480), out spot, out nodeIndex);
+        Check(found && Vector2.Distance(spot, field.GetPosition(anchor)) <= field.GetBridgeReach(rune, anchor) + 0.01f, "Drop search: the spot it finds never stretches a bridge");
+
+        settings._DropSearchDistance = 0f;
+        Check(field.FindDropSpot(rune, onTop, out spot, out nodeIndex) == false, "Drop search: a Drop Search Distance of 0 turns the search off");
     }
 
     void TestNodeLockoutsAndUnlocks()

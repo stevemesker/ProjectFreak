@@ -9,8 +9,9 @@ public class RuneField
 {
     public const int CoreID = -1; //the core is a bridge end like any rune, it just always has this ID
     public const int NoRuneID = -2; //means "no rune", like a rune that hasn't been placed yet
-    const int ClampPasses = 10; //how many times ClampToBridges re-checks every bridge when a rune is pulled by more than one
+    const int ClampPasses = 10; //how many times the backup clamp re-checks every bridge when the bridges can't all be reached at once (see ClampByPasses)
     const float LeashTolerance = 0.01f; //a frozen rune clamped right onto its leash can land a hair past it from rounding, this lets that through
+    const int MinSearchSpots = 8; //the fewest spots FindDropSpot tries on one ring, so the first small rings still check every direction
 
     //local variables
     RuneFieldData _data; //the field being edited. Usually a copy of the saved data (see RuneFieldData.Clone)
@@ -560,14 +561,6 @@ public class RuneField
         Recalculate();
         return true;
     }
-
-    Vector2 ClampToField(Vector2 position)
-    {
-        //pulls a dragged spot back inside the outer ring plus the edge bleed. Past the ring itself the drop is refused (red), but the rune can still be pulled a little way out
-        float maxDistance = _settings.GetFieldEdge() + _settings._EdgeBleed;
-        if (position.magnitude <= maxDistance) return position;
-        return position.normalized * maxDistance;
-    }
     #endregion
 
     #region Bridges
@@ -735,31 +728,98 @@ public class RuneField
     #region Dragging Limits
     public Vector2 ClampToBridges(int runeID, Vector2 desiredPosition)
     {
-        //function that returns the closest spot to where the player is dragging that keeps every bridge within reach
-        //each bridge is a circle around the other end, and the rune has to stay inside all of them
-        Vector2 result = ClampToField(desiredPosition);
-        List<int> connections = GetConnections(runeID);
+        //function that returns the closest spot to where the player is dragging that keeps every bridge within reach, and stays inside the field's edge bleed
+        //each bridge is a circle around its other end, and the rune has to stay inside all of them (the field's edge is one more circle, around the core)
+        //the closest spot is always one of these:
+        //1. where the player is pointing, if it's already inside every circle
+        //2. straight back onto one circle's edge, toward the pointer
+        //3. a corner where two circles cross (a rune pulled to max length by two bridges at once ends up here)
+        List<ReachCircle> circles = GetReachCircles(runeID);
+        if (IsInsideCircles(circles, desiredPosition)) return desiredPosition;
 
-        //pulling back inside one circle can push the rune out of another, so it checks a few times
-        for (int pass = 0; pass < ClampPasses; pass++)
+        List<Vector2> candidates = new List<Vector2>();
+
+        for (int i = 0; i < circles.Count; i++)
         {
-            bool moved = false;
-            for (int i = 0; i < connections.Count; i++)
-            {
-                Vector2 center = GetPosition(connections[i]);
-                float reach = GetBridgeReach(runeID, connections[i], runeID); //the dragged rune counts as out of its node
-
-                if (Vector2.Distance(result, center) > reach)
-                {
-                    result = center + (result - center).normalized * reach;
-                    moved = true;
-                }
-            }
-
-            if (moved == false) break; //inside every circle, done
+            Vector2 offset = desiredPosition - circles[i]._Center;
+            if (offset.sqrMagnitude < 0.0001f) continue; //right on the center there's no direction to push it, the other options cover it
+            candidates.Add(circles[i]._Center + offset.normalized * circles[i]._Radius);
         }
 
-        return result;
+        for (int i = 0; i < circles.Count; i++)
+        {
+            for (int j = i + 1; j < circles.Count; j++)
+            {
+                if (GetCircleCrossings(circles[i], circles[j], out Vector2 first, out Vector2 second) == false) continue;
+                candidates.Add(first);
+                candidates.Add(second);
+            }
+        }
+
+        //of the spots that fit inside every circle, the one closest to the pointer wins
+        bool found = false;
+        Vector2 best = desiredPosition;
+        float bestDistance = float.MaxValue;
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            if (IsInsideCircles(circles, candidates[i]) == false) continue;
+            float distance = Vector2.Distance(desiredPosition, candidates[i]);
+            if (distance >= bestDistance) continue;
+            best = candidates[i];
+            bestDistance = distance;
+            found = true;
+        }
+
+        if (found) return best;
+        return ClampByPasses(circles, desiredPosition); //no spot fits every bridge (only an old, overstretched save could do this), so it gets as close as it can
+    }
+
+    public bool FindDropSpot(int runeID, Vector2 position, out Vector2 finalPosition, out int nodeIndex)
+    {
+        //function for letting go of a dragged rune: finds the closest spot to "position" it can actually land on
+        //the spot itself is tried first (snapping into a node if it's on one, see CanDropAt). If that's refused (overlapping a rune or the core,
+        //a node that can't take it, past the field's edge), it tries rings of spots around it, one Drop Search Step further out each time,
+        //up to the settings' Drop Search Distance. Every spot it tries keeps all of the rune's bridges within reach, so landing never stretches one
+        //returns false if nothing fits (then the rune goes back to where it was). TryDropRune with finalPosition then moves it
+        if (CanDropAt(runeID, position, out finalPosition, out nodeIndex)) return true;
+        finalPosition = position;
+        nodeIndex = -1;
+        if (IsRuneLockedIn(runeID)) return false; //rule A: it isn't going anywhere, so there's nothing to search for
+
+        float step = _settings._DropSearchStep;
+        float maxDistance = _settings._DropSearchDistance;
+        if (step <= 0f || maxDistance <= 0f) return false; //searching is turned off
+
+        List<ReachCircle> circles = GetReachCircles(runeID);
+        for (float distance = step; distance <= maxDistance + 0.001f; distance += step) //the 0.001 makes sure the last ring isn't skipped by float rounding
+        {
+            //bigger rings get more spots, so the spots stay about one step apart all the way around
+            int spotCount = Mathf.Max(MinSearchSpots, Mathf.CeilToInt(2f * Mathf.PI * distance / step));
+            bool foundOnRing = false;
+            float bestOffset = float.MaxValue;
+
+            for (int i = 0; i < spotCount; i++)
+            {
+                float angle = i * 2f * Mathf.PI / spotCount; //in radians, which is what Mathf.Cos and Mathf.Sin use
+                Vector2 spot = position + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+                if (IsInsideCircles(circles, spot) == false) continue; //would stretch a bridge
+                if (CanDropAt(runeID, spot, out Vector2 landing, out int landingNode) == false) continue;
+
+                //a spot in a node's snap range lands on the node's center, so it's compared by where it would really end up
+                float offset = Vector2.Distance(position, landing);
+                if (offset >= bestOffset) continue;
+                bestOffset = offset;
+                finalPosition = landing;
+                nodeIndex = landingNode;
+                foundOnRing = true;
+            }
+
+            if (foundOnRing) return true; //rings go outward, so the first ring with a spot that fits has the closest one
+        }
+
+        finalPosition = position;
+        nodeIndex = -1;
+        return false;
     }
 
     public float GetBridgeStretch(int runeID, Vector2 desiredPosition, int otherID)
@@ -769,6 +829,84 @@ public class RuneField
         if (IsBridgeFrozen(runeID, otherID)) return 0f;
         float distance = Vector2.Distance(desiredPosition, GetPosition(otherID));
         return distance - GetBridgeReach(runeID, otherID, runeID); //the dragged rune counts as out of its node
+    }
+
+    public bool IsBridgeTaut(int runeID, Vector2 heldPosition, int otherID, float padding)
+    {
+        //is this bridge one of the ones holding the dragged rune back: the rune sits at the end of its reach (within padding, in field units)
+        //heldPosition is where ClampToBridges stopped the rune. The view only tears taut bridges, so the direction the player pulls picks which bridges tear
+        float distance = Vector2.Distance(heldPosition, GetPosition(otherID));
+        return distance >= GetBridgeReach(runeID, otherID, runeID) - padding; //the dragged rune counts as out of its node
+    }
+
+    List<ReachCircle> GetReachCircles(int runeID)
+    {
+        //the circles a dragged rune has to stay inside: one around the other end of each of its bridges, plus the field's edge bleed around the core
+        //past the field's ring itself the drop is refused (red), but the rune can still be pulled a little way out
+        List<ReachCircle> circles = new List<ReachCircle>();
+        circles.Add(new ReachCircle(Vector2.zero, _settings.GetFieldEdge() + _settings._EdgeBleed)); //the core sits at (0, 0)
+
+        List<int> connections = GetConnections(runeID);
+        for (int i = 0; i < connections.Count; i++)
+        {
+            circles.Add(new ReachCircle(GetPosition(connections[i]), GetBridgeReach(runeID, connections[i], runeID))); //the dragged rune counts as out of its node
+        }
+        return circles;
+    }
+
+    bool IsInsideCircles(List<ReachCircle> circles, Vector2 position)
+    {
+        //checks a spot is inside every circle. Leash Tolerance lets through spots a hair outside from float rounding (like a crossing point)
+        for (int i = 0; i < circles.Count; i++)
+        {
+            if (Vector2.Distance(position, circles[i]._Center) > circles[i]._Radius + LeashTolerance) return false;
+        }
+        return true;
+    }
+
+    static bool GetCircleCrossings(ReachCircle a, ReachCircle b, out Vector2 first, out Vector2 second)
+    {
+        //the two points where the edges of two circles cross. False if they don't cross (too far apart, one inside the other, or the same center)
+        //how it works: the crossings sit on a line straight across the gap between the centers, "along" from a's center,
+        //and "across" to either side of the line joining the two centers
+        first = Vector2.zero;
+        second = Vector2.zero;
+
+        Vector2 gap = b._Center - a._Center;
+        float distance = gap.magnitude;
+        if (distance < 0.0001f) return false; //same center: either no crossing or the whole edge is shared
+        if (distance > a._Radius + b._Radius) return false; //too far apart to touch
+        if (distance < Mathf.Abs(a._Radius - b._Radius)) return false; //one circle sits inside the other
+
+        float along = (a._Radius * a._Radius - b._Radius * b._Radius + distance * distance) / (2f * distance);
+        float across = Mathf.Sqrt(Mathf.Max(0f, a._Radius * a._Radius - along * along)); //Max stops a tiny negative from rounding turning into NaN
+        Vector2 direction = gap / distance;
+        Vector2 side = new Vector2(-direction.y, direction.x); //the direction turned 90 degrees
+
+        Vector2 middle = a._Center + direction * along;
+        first = middle + side * across;
+        second = middle - side * across;
+        return true;
+    }
+
+    Vector2 ClampByPasses(List<ReachCircle> circles, Vector2 desiredPosition)
+    {
+        //backup clamp for when no spot is inside every circle: pulls the spot back inside each circle in turn, a few times over
+        //it settles somewhere close, it just isn't always the closest spot (that's what ClampToBridges works out when the circles do overlap)
+        Vector2 result = desiredPosition;
+        for (int pass = 0; pass < ClampPasses; pass++)
+        {
+            bool moved = false;
+            for (int i = 0; i < circles.Count; i++)
+            {
+                if (Vector2.Distance(result, circles[i]._Center) <= circles[i]._Radius) continue;
+                result = circles[i]._Center + (result - circles[i]._Center).normalized * circles[i]._Radius;
+                moved = true;
+            }
+
+            if (moved == false) break; //inside every circle, done
+        }
+        return result;
     }
     #endregion
 
@@ -1369,4 +1507,17 @@ public class RuneField
         }
     }
     #endregion
+}
+
+//one circle a dragged rune has to stay inside: a bridge's reach around its other end, or the field's edge. Only used inside RuneField
+class ReachCircle
+{
+    public Vector2 _Center;
+    public float _Radius;
+
+    public ReachCircle(Vector2 center, float radius)
+    {
+        _Center = center;
+        _Radius = radius;
+    }
 }

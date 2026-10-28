@@ -30,6 +30,12 @@ public class RuneFieldSettingsSO : ScriptableObject
     [Tooltip("How far past their reach a rune's bridges may stretch when it snaps into a node, in field units. While the rune sits in the node, its bridges get this extra length")]
     [Min(0f)] public float _SnapStretch = 30f;
 
+    [Tooltip("When a dragged rune is let go on a spot it can't land on (overlapping a rune or the core, a node that can't take it), how far around that spot to look for the closest one it can land on, in field units. 0 = no search, the rune goes back to where it was")]
+    [Min(0f)] public float _DropSearchDistance = 150f;
+
+    [Tooltip("How far apart the spots the drop search tries are, in field units. Smaller finds a closer spot but checks more spots")]
+    [Min(1f)] public float _DropSearchStep = 10f;
+
     [Header("Zones")]
     [Tooltip("How many zones (rings) the field has, one per rank: Bound, Unbound, Ascendant, Legend. Evolution gates go on every ring but the last one, which is the field's outer edge")]
     [Min(1)] public int _ZoneCount = 4;

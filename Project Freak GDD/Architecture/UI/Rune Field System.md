@@ -54,7 +54,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Snapping:** allowed if every bridge on the rune would be at most `_SnapStretch` (30) past its normal reach.
 
-**Dragging:** `ClampToBridges` keeps a rune within reach of every bridge it has, and `GetBridgeStretch` says how far past reach a bridge is being pulled (the dragged rune counts as out of its node, so normal reach applies). `ClampToBridges` also keeps it within the outer ring plus `_EdgeBleed`, so it can be pulled a little past the edge (shown red) but no further. `TryDropRune(rune, position)` moves it if `CanDropAt` allows, unplugging from its old node and plugging into a new one if needed; otherwise nothing changes. Frozen runes can be moved but not removed, locked-in runes can't be moved or unplugged, and frozen bridges can't be disconnected or stretched (the rules refuse, not just the UI; see **Frozen** under **Zones and Evolving**). `RestoreBridges(rune, ids)` puts back bridges it had (used when a drop is refused).
+**Dragging:** `ClampToBridges` keeps a rune within reach of every bridge it has, and `GetBridgeStretch` says how far past reach a bridge is being pulled (the dragged rune counts as out of its node, so normal reach applies). `ClampToBridges` also keeps it within the outer ring plus `_EdgeBleed`, so it can be pulled a little past the edge but no further. *Oct 27, 2026:* it works out the true **closest spot** to the pointer (each bridge is a circle around its other end; the answer is the pointer itself, the edge of one circle, or a corner where two circles cross), so a rune pulled to max length by two bridges sits right at the corner instead of somewhere short of it. `IsBridgeTaut(rune, held, other, padding)` says whether a bridge is one of the ones holding the rune back (only those tear, see [[Rune Field 3D View]]). `FindDropSpot(rune, position)` is the drop check for a dragged rune: the spot itself if `CanDropAt` allows it, otherwise the **closest spot around it that does**, searching rings `_DropSearchStep` apart out to `_DropSearchDistance`, and only spots that keep every bridge within reach (the old 2D field's closest point idea). False if nothing fits. `TryDropRune(rune, position)` moves it if `CanDropAt` allows, unplugging from its old node and plugging into a new one if needed; otherwise nothing changes. Frozen runes can be moved but not removed, locked-in runes can't be moved or unplugged, and frozen bridges can't be disconnected or stretched (the rules refuse, not just the UI; see **Frozen** under **Zones and Evolving**). `RestoreBridges(rune, ids)` puts back bridges it had (used when a drop is refused).
 
 **Loading:** bad saved entries (missing runes, repeated bridges, plugs into nodes the field doesn't know) are cleaned out first. With no settings asset, the defaults are used and a warning is logged.
 
@@ -73,7 +73,8 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 | `ConnectNearby(id)` | Bridges a rune to the closest things in reach (what dropping does) |
 | `Connect` / `Disconnect` | Make or remove one bridge |
 | `FindBridgeTargets(id, position)` | What a rune would bridge to if dropped here |
-| `ClampToBridges` / `GetBridgeStretch` | Drag limits and tear pull |
+| `ClampToBridges` / `GetBridgeStretch` / `IsBridgeTaut` | Drag limits, tear pull, and which bridges are holding the rune back |
+| `FindDropSpot(id, position, out final, out node)` | The closest spot a dragged rune can land on (the spot itself first), within its bridges' reach |
 | `FindNodeAt` / `CanSnapToNode` / `CanPlugInto` / `TryPlugRune` / `UnplugRune` | Ability node plugging |
 | `IsNodeLockedOut(index)` / `IsNodeBlocked(index)` | Locked out by a plug / can't take a rune right now (locked out) |
 | `GetOpenZone()` / `GetZone(position)` / `IsInOpenZone` / `IsInsideField` | Zones |
@@ -170,6 +171,8 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 | `_EdgeBleed` | Extra room past the outer ring, for the background and dragging (default 100). Runes can't be placed there. *Replaced `_FieldRadius` on Oct 9* |
 | `_NodeSnapRadius` | How close to a node's center a rune has to be dropped to plug in (default 70). Keep it smaller than `_RuneSize` |
 | `_SnapStretch` | How far past their reach a rune's bridges may stretch when it snaps into a node (default 30) |
+| `_DropSearchDistance` | How far around a refused drop spot `FindDropSpot` looks for the closest spot that works (default 150). 0 = no search, the rune goes back |
+| `_DropSearchStep` | How far apart the spots the drop search tries are (default 10). Smaller is more exact but checks more spots |
 | `_ZoneCount` | How many zones (default 4, one per rank). The last ring is the field's edge |
 | `_ZoneWidth` | Width of every zone ring (default 300) |
 | `_RuneSize` | A rune's footprint (default 100). Nodes use it too |

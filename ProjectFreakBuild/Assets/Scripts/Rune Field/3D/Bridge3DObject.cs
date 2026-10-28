@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 //one bridge on the 3D rune field. It's a view: it sits on one end, points at the other and stretches its Z scale to the distance
 //(the mesh starts at its origin and runs 1 m along +Z, so the Z scale is the length in meters and the tiling material follows it)
 //it also runs the tear timer while a rune pulls it past its reach (used from step 3), and asks the field to remove it when it snaps
+//the tear only pauses when the pull stops, so it keeps what it built up for the rest of the drag. It goes back to 0 when the drag ends (ResetTearing)
 //for the bridge shader (SH_NodeBridge on MAT_Bridge), it hands each bridge its own end colors, tear progress and strain through a MaterialPropertyBlock,
 //so every bridge shares one material: no material per color combo, and no copy while tearing
 //end A is always the end closer to the core (the field sorts that out before calling Setup), so the shader's Source Color side and the tear start face the core
@@ -112,6 +113,12 @@ public class Bridge3DObject : MonoBehaviour
         return _Ends.x == id || _Ends.y == id;
     }
 
+    public Vector2Int GetEnds()
+    {
+        //the rune ID at each end (-1 = the core). X is end A, the end closer to the core
+        return _Ends;
+    }
+
     public int GetOtherEnd(int id)
     {
         //returns the ID at the opposite end from the one given
@@ -175,17 +182,39 @@ public class Bridge3DObject : MonoBehaviour
         _pullTimer = StartCoroutine(TearTimer());
     }
 
-    public void StopTearing()
+    public void PauseTearing()
     {
-        //called when the pull stops (the rune moved back in reach or was let go). Strain goes back to 0 too
-        bool changed = _Tearing || _PullCurrentTime > 0f || _Strain > 0f;
+        //called when the bridge stops being pulled during a drag (the rune moved back in reach, or the player is pulling another way so another bridge holds it)
+        //the tear built up so far stays, so the player can pull another bridge and come back to finish this one. Strain goes back to 0
+        bool changed = _Tearing || _Strain > 0f;
         _pullStrength = 0f;
-        _PullCurrentTime = 0f;
         _Tearing = false;
         _Strain = 0f;
         if (_pullTimer != null) StopCoroutine(_pullTimer);
         _pullTimer = null;
-        if (changed) ApplyLook(); //only when something was showing, since this is called every drag frame for unstretched bridges
+        if (changed) ApplyLook(); //only when something was showing, since this is called every drag frame for bridges that aren't pulled
+    }
+
+    public void ResetTearing()
+    {
+        //called when the drag ends (dropped, put back or cancelled): the bridge goes back to no tear at all
+        bool hadTear = _PullCurrentTime > 0f;
+        _PullCurrentTime = 0f;
+        PauseTearing();
+        if (hadTear) ApplyLook();
+    }
+
+    public float GetPullBuiltUp()
+    {
+        //how much pull has built up so far. The field reads it before rebuilding its bridges (a bridge snapping mid-drag rebuilds them all)
+        return _PullCurrentTime;
+    }
+
+    public void SetPullBuiltUp(float pull)
+    {
+        //hands a rebuilt bridge the pull its old object had built up, so another bridge snapping doesn't reset this one's tear
+        _PullCurrentTime = Mathf.Clamp(pull, 0f, _PullTearRequiredTime);
+        ApplyLook();
     }
 
     IEnumerator TearTimer()
