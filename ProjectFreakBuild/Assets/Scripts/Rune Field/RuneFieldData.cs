@@ -138,7 +138,7 @@ public class RuneBridgeEntry
 [System.Serializable]
 public class NodePlugEntry
 {
-    [Tooltip("Which ability node: its spot in the field scene's node list (RuneFieldManager.ListOfNodes)")]
+    [Tooltip("Which ability node: its spot in the field scene's node list (the Nodes list on RuneField3DObject)")]
     public int _NodeIndex;
 
     [Tooltip("ID of the rune plugged into it")]
@@ -150,7 +150,7 @@ public class NodePlugEntry
 [System.Serializable]
 public class AbilityNodeEntry
 {
-    [Tooltip("Which node this is: its spot in the field scene's node list (RuneFieldManager.ListOfNodes). Don't reorder that list once fields are saved")]
+    [Tooltip("Which node this is: its spot in the field scene's node list (the Nodes list on RuneField3DObject). Don't reorder that list once fields are saved")]
     public int _NodeIndex;
 
     [Tooltip("The node object's name, to tell nodes apart in the inspector")]

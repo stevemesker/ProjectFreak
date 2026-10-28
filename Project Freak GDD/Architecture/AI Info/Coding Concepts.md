@@ -269,3 +269,15 @@ A Custom Function node set to File runs a function from a `.hlsl` file. The func
 ### HDRP positions: camera relative vs Absolute World
 HDRP draws everything relative to the camera, so Shader Graph's Position node set to World gives a position measured from the camera. To compare with positions sent from C# (real world positions), use **Absolute World**.
 **Used in:** the range overlay decal graph.
+
+### Reading a key directly: `Keyboard.current`
+The Input System's keyboard, read without setting up an input action: `Keyboard.current[Key.Backquote].wasPressedThisFrame` is true on the frame the key goes down. `Keyboard.current` is null when there's no keyboard, so check that first. Fine for dev tools; real controls still go through `PlayerInput` actions so they can be rebound and work on a gamepad.
+**Used in:** `RuneFieldTestKitObject` (the key that hides its panels).
+
+### Ordering Odin groups and buttons: `FoldoutGroup` order and `[PropertyOrder]`
+Odin draws things in the order they're declared, and a group shows up where its first member is. `[FoldoutGroup("Rebuild", true, 10)]` gives a group its own order (10), so groups made of buttons can be pushed to the bottom (higher = lower down) no matter where their functions sit in the script. `[PropertyOrder(1)]` orders things inside a group, like numbered setup buttons. `true` there means the foldout starts open.
+**Used in:** `RuneFieldZonesObject`, `RuneField3DObject`, `ZoneBorder3DObject`.
+
+### Tooltips on buttons and checks in attributes: `PropertyTooltip` and `@`
+`[Tooltip]` only works on fields, so Odin buttons use `[PropertyTooltip("...")]` for their hover text. An Odin attribute value starting with `@` is a tiny bit of C# worked out in the inspector: `[ShowIf("@_TearMaterial == null")]` only shows a button while that field is empty.
+**Used in:** `RuneFieldZonesObject`, `RuneFieldZonesSO`.

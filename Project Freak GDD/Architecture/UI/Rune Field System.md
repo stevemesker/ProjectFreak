@@ -1,7 +1,7 @@
 ## Overview
 The code behind the [[Rune Field]], the UI where the player drags [[Element Rune]]s out, chains them to the [[Core Node]] for power, and plugs them into [[Ability Node]]s to upgrade a [[Shade]].
 
-*Rebuilt Oct 2026.* The rules now live in plain C# classes (`Scripts/Rune Field`) and the UI scripts (`Scripts/UI/Evolution Tree`) only draw them, so the planned 3D view can reuse the same rules (see [[Rune Field Overhaul Plan]]).
+*Rebuilt Oct 2026.* The rules live in plain C# classes (`Scripts/Rune Field`) and the view only draws them (see [[Rune Field Overhaul Plan]]). The view is the 3D field ([[Rune Field 3D View]]). *The original 2D canvas field was removed Oct 28, 2026 ([[Rune Field Clean-Up Plan]]).*
 
 ```text
 Shade slot (ShadeSO: saved field, compiled effects, node snapshots)
@@ -10,7 +10,7 @@ Shade slot (ShadeSO: saved field, compiled effects, node snapshots)
 RuneField (the rules)  ◄── RuneFieldSettingsSO (shared numbers)  ◄── node list built from the scene's node objects
     │ OnFieldChanged
     ▼
-RuneFieldManager (2D view) ── ElementItem (runes) ── NodeBridge (bridges) ── CoreNode ── EvolutionNode
+RuneField3DObject (the view) ── Rune3DObject (runes) ── Bridge3DObject (bridges) ── Core3DObject ── Node3DObject
     │ Save
     ▼
 Shade Manager writes the field, its compiled effects and node snapshots onto the slot, then works the slot's stats out again
@@ -23,11 +23,7 @@ Shade Manager writes the field, its compiled effects and node snapshots onto the
 | `AbilityNodeEntry` | One ability node as the rules see it (index, position, unlocks, lockouts, effects). Built from the scene's nodes, and saved on the slot as snapshots. In `RuneFieldData.cs` |
 | `RuneField` | The rules. A plain C# class, not a component |
 | `RuneEffect` + `StatChangeEffect`, `GrantAbilityEffect`, `EvolveEffect` | What a field does to its shade (see **Effects** below). In `Scripts/Rune Field/Effects` |
-| `RuneFieldManager` | The 2D view. Spawns/positions everything, passes drags to `RuneField`, saves to the [[Shade Manager]] |
-| `ElementItem` | A rune on the field. Shows power and forwards drags |
-| `NodeBridge` | The line between two pieces. Runs the tear timer |
-| `CoreNode` | The center of the field. Shows the core's power |
-| `EvolutionNode` | An [[Ability Node]]. Shows its state, fires its events, holds its unlock/lockout lists |
+| `RuneField3DObject` and friends | The view: spawns and places everything, passes drags to `RuneField`, saves to the [[Shade Manager]]. See [[Rune Field 3D View]] |
 | `IngredientListWindow` / `ElementDataObject` | The inventory list runes are dragged from |
 | `ShadeSlotManager` | Shade slot buttons that open a slot's field (asking about unsaved changes first) |
 | `ConfirmPopup` | Reusable Save / Discard / Cancel style popup (see [[Confirm Popup]]) |
@@ -48,7 +44,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Ability nodes:** a node is on when a powered rune is plugged in, every node in its unlock list is on, and it isn't locked out. Active nodes are saved with the field.
 
-**Lockouts** *(step 7)*: trigger on **plugging, not power**. A rune plugged into X locks every node X lists, even with no power. A locked-out node won't take a rune (refused, red). If two rivals both hold runes (old data), the one plugged first wins. **Evolution gates in the same zone lock each other automatically**, nothing to wire. Lockouts are always two-way: `RuneField.FixOneWayLockouts` fills in a missing reverse link and `RuneFieldManager` logs a `Debug.LogError` naming both nodes, once, when it builds the node list. Unlocks stay power-based. A dragged rune ignores its own plug, so it can move straight from one rival node to the other.
+**Lockouts** *(step 7)*: trigger on **plugging, not power**. A rune plugged into X locks every node X lists, even with no power. A locked-out node won't take a rune (refused, red). If two rivals both hold runes (old data), the one plugged first wins. **Evolution gates in the same zone lock each other automatically**, nothing to wire. Lockouts are always two-way: `RuneField.FixOneWayLockouts` fills in a missing reverse link and `RuneField3DObject` logs a `Debug.LogError` naming both nodes, once, when it builds the node list. Unlocks stay power-based. A dragged rune ignores its own plug, so it can move straight from one rival node to the other.
 
 **Footprints** *(overhaul step 6, Oct 9, 2026)*: every rune is a circle `_RuneSize` wide; nodes are rune sized (each holds one rune) and the core is `_CoreSize` wide. `IsSpotFree` refuses a spot outside the field (any zone is fine since Oct 11, 2026), or one that overlaps another rune (frozen ones too), the core or a node. `CanDropAt(rune, position)` is the one check for placing and dropping: an empty node in snap range means "land on its center" if the node can take the rune (`CanPlugInto`: not locked out, not a frozen rune past the open zone, snapping allowed), otherwise the drop is refused; anything else has to be free. Snap radius is smaller than rune size, so **landing near a node always means snapping into it**. A bad spot is refused, nothing gets pushed into a gap. Fields saved before footprints may overlap; they're left alone, the check only runs on placing and dropping.
 
@@ -123,7 +119,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Old fields:** a field past Bound with all three lists empty gets them built once from positions (the old zone rule) when it loads; an evolved shade always has at least its gate rune frozen, so empty lists there only mean old data. Missing (null) lists are made on load. Load cleanup also drops frozen or locked IDs of missing runes, repeats, frozen bridges with no real bridge behind them (with a warning, rather than putting the bridge back over a rune's limit) and locked runes that aren't frozen and plugged.
 
-*The 2D and 3D views still refuse to pick up frozen runes until build step 3* [[Notes for the future]]. *No add-only option (decided Oct 9, not needed).*
+*Frozen runes can be picked up and moved since Oct 11, 2026 (3D Playtest 0 build step 3).* *No add-only option (decided Oct 9, not needed).*
 
 **Gates:** a node with an Evolve effect. The shade evolves when a gate in the open zone is **on** (`GetEvolvingGate`). Gates in the same zone lock each other, so only one can hold a rune. After evolving, the taken gate stays on (its rune is locked in) and the zone's other gates are closed for good: the taken gate's locked-in rune keeps them locked out, and only gates in the open zone can evolve.
 
@@ -136,11 +132,11 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 **Setup checks** (logged once when the scene builds its node list): one-way lockouts (fixed for the run), gates not on a ring, gates on the outer edge.
 
 **Editor tools:**
-- **Zone gizmos:** `RuneFieldManager` draws the rings around the core with labels, plus the edge bleed circle. Scene view always, game view while Gizmos is on, never in a build. In play mode the rings are colored frozen / open / locked and frozen runes get an outline (colors in its **Zone Gizmos** foldout)
-- **Snap buttons** on `EvolutionNode` (**Zone Tools** foldout): **Snap To Next Ring Out** moves the node out to the closest ring past it, keeping its angle around the core; a node already on a ring goes up to the next one. **Snap To Ring** takes a ring number. Gate rings only (1 to `_ZoneCount` − 1). Ctrl+Z works
+- **Zone gizmos:** `RuneField3DObject` draws the rings around the core with labels, plus the edge bleed circle. Scene view always, game view while Gizmos is on, never in a build. In play mode the rings are colored frozen / open / locked and frozen runes get an outline (colors in its **Zone Gizmos** foldout)
+- **Snap buttons** on `Node3DObject` (**Zone Tools** foldout): **Snap To Next Ring Out** moves the node out to the closest ring past it, keeping its angle around the core; a node already on a ring goes up to the next one. **Snap To Ring** takes a ring number. Gate rings only (1 to `_ZoneCount` − 1). Ctrl+Z works
 - Both find the settings asset in the project by themselves (`RuneFieldSettingsSO.FindInProject`), nothing to assign
 
-*Feedback visuals (frozen runes, locked zones) are gizmos for now, until 2D vs 3D is decided. The 3D zone look is planned in [[Zone Visuals Plan]]* [[Notes for the future]]
+The real zone look (raised floors, zone lights, the border walls) is in [[Rune Field 3D View]] (Zones).
 
 ---
 ## Effects
@@ -179,39 +175,15 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 
 **Zone math:** `GetRingRadius(ring)`, `GetFieldEdge()`, `GetLastGateRing()`, `GetZone(distance)`, `IsOnRing(distance, out ring)`, `GetNextRingOut(distance)`. `FindInProject()` (editor only) finds the asset for editor tools.
 
-**Ability nodes aren't in here.** They're the node objects in the field scene. `RuneFieldManager` builds the rules' node list from them when a field opens, and each slot saves snapshots of the nodes it plugged into.
+**Ability nodes aren't in here.** They're the node objects in the field scene. `RuneField3DObject` builds the rules' node list from them when a field opens, and each slot saves snapshots of the nodes it plugged into.
 
 ---
-## The 2D View
-### RuneFieldManager
-Kept its name and fields, so the scene didn't need setting up again.
+## The View
+The field is drawn by `RuneField3DObject` and its helpers, see [[Rune Field 3D View]]. Draft and saving below is how it works with the rules.
 
-| Variable | Description |
-| :--- | :--- |
-| `_TearSlack` | How far past reach a rune can be pulled before its bridges start tearing (2) |
-| `_InvalidColor` | Tint for a rune or inventory button dragged over a spot it can't go (red) |
-| `_EvolveTitle` / `_EvolveNowMessage` / `_EvolveLaterMessage` | The evolve confirm popup's text (see **Zones and Evolving**) |
-| Zone Gizmos foldout | `_OpenZoneColor`, `_FrozenZoneColor`, `_LockedZoneColor`, `_BleedColor` |
-| `CorePointer` | The core object. It's the field's (0, 0) |
-| `ListOfNodes` | Ability node objects. A node's spot in this list is its index, which saved plugs and snapshots point at, so *don't reorder it once fields are saved* |
-| `ListOfRunes` | Rune objects on screen (runtime). Runes placed in the scene by hand are removed on start |
-| `elementPrefab` | Rune prefab. Its `BridgePrefabRef` is used for bridges |
-| `_Popup` | The [[Confirm Popup]] that asks Save / Discard / Cancel. Without one, unsaved changes are thrown away with a warning |
-| `_SaveButton` | Optional UI save button. Greyed out while there's nothing to save. Its On Click should call `SaveRuneSlot` |
-| `_OnLeave` | UnityEvent run when the player leaves (after any save/discard question). Hook the exit timeline here |
-| `_OnEvolved` | UnityEvent run when the open shade evolves, after the field reloads. Hook evolve effects or a timeline here |
-| `_HasUnsavedChanges` | True while the draft has unsaved changes (read only) |
+*The 2D canvas view (`RuneFieldManager`, `ElementItem`, `CoreNode`, `EvolutionNode`, and the tearing half of `NodeBridge`) was removed Oct 28, 2026 after the 3D field won. `NodeBridge` stays, cut down to the dungeon map's line (see [[Dungeon Map Manager]]).*
 
-- **Start:** removes hand-placed test runes and opens the selected slot
-- **`LoadRuneField(index)`:** opens a slot's saved field as a copy (with the slot's rank), without asking. It gets the settings from the [[Shade Manager]], and the first time it builds the node list from `ListOfNodes` (position, unlocks, lockouts, a copy of the effects) and runs the setup checks
-- **`SaveRuneSlot()`** (Odin **Save Current Field**, and the UI save button): hands the field to the [[Shade Manager]], which changes the inventory by the difference, writes the field, its compiled effects and its node snapshots onto the slot asset and rebuilds the slot's runtime entry. Then the saved field is loaded again so the draft starts over. If the save is refused, the draft stays as it is. A newly plugged gate asks first (see **Zones and Evolving**)
-- **`DiscardChanges()`** (Odin button) and **`ClearRuneField()`** (Odin **Test Clear**, counts as an unsaved change)
-- **`PlaceRuneFromInventory(element, position)`:** called by `ElementDataObject` when an element is dropped on the field. Refused if none of that rune are available (`GetAvailable`). Otherwise places it, plugs it if it's on a node, then bridges it
-- **Dragging:** `BeginRuneDrag` refuses frozen runes, otherwise remembers the rune's bridges. `DragRune` moves only the rune's **view**: clamped to its bridges, shown where it would land (snapped into a node if it's on one), tinted `_InvalidColor` over a bad spot, and driving tearing. `EndRuneDrag`: on the inventory list the rune comes off the field (anything under the `IngredientListWindow` counts, no setup needed); on an allowed spot it moves there and bridges to what's in reach; anywhere else it goes back with any bridges torn during the drag put back, as if the drag never happened (the unsaved flag goes back too). The rune stays plugged during the drag, so its node doesn't flicker off
-- **Drawing:** every `OnFieldChanged` syncs the rune objects, rebuilds the bridges, fades unpowered runes, updates node backgrounds and the core's power. Node events only fire on changes while editing, not when a field loads
-- **`UpdateScaler()`:** still called by the zoom script but does nothing now. Everything is a child of the field and the rules don't use colliders
-
-#### Draft and Saving
+### Draft and Saving
 *Added Oct 9, 2026 (overhaul step 4).* The open field is a **draft**. Nothing leaves the inventory or reaches the slot until the player saves.
 - **Unsaved changes:** placing, dragging, tearing and removing runes mark the draft as changed. Loading, saving and discarding clear it
 - **Pending runes:** `GetPendingUse(element)` = how many of that rune the draft has minus how many the saved field has. `GetAvailable(element)` = the inventory count minus the pending use. With no Inventory Manager (testing the scene on its own) there's no limit. *Only one draft exists for now; with more drafts later, pending use would add up every open draft*
@@ -220,36 +192,13 @@ Kept its name and fields, so the scene didn't need setting up again.
 - **Opening/closing:** meant to be driven by [[Timeline Runner System|timelines]]: the open timeline shows the field, a close button or Escape calls `RequestLeave`, and `_OnLeave` plays the exit timeline. *No timelines are hooked up yet* [[Notes for the future]]
 - **Evolve confirm:** saving with a newly plugged gate asks first, with the same popup. From the Save / Discard / Cancel question, Save goes through this too and only continues once the save happens
 
-**Unity setup still to do** [[Notes for the future]]:
-1. Under the field's canvas, add an empty object with `ConfirmPopup` and press **Build Default Layout** (see [[Confirm Popup]]). Drag it into `_Popup` on `RuneFieldManager`
-2. Add a save button: On Click → `RuneFieldManager.SaveRuneSlot`, then drag it into `_SaveButton`
-3. Add a close button: On Click → `RuneFieldManager.RequestLeave`, and hook `_OnLeave` to whatever closes the field
-
-### ElementItem (runes)
-Set up by the manager with its rune ID and element. Shows power (`RequiredPower` / `CurrentPower`, read only) and fades to `_UnpoweredAlpha` (0.45) without power, using a `CanvasGroup` it adds if the prefab doesn't have one. Drags go straight to the manager. `ShowInvalid` tints its `_TintTarget` (the root image if left empty) while it's over a bad spot.
-
-### NodeBridge
-Draws the line between its two ends. While a rune is pulled past reach, `StartTearing(pull)` runs a timer that fills faster the harder it's pulled; when full it calls `RuneFieldManager.TearBridge`, which removes it from the field. Settings: `PullTearRequiredTime`, `MaxPullStrength`, `pullTickTimeLength`, `pullStrengthModifierDampening`.
-
-### CoreNode
-Shows the core's power (`CoreNodeCurrentPower` = left, `CoreNodeMaxPower`). Optional `_PowerLabel` text shows "left / total".
-
-### EvolutionNode (ability nodes)
-Shows its state with the scene's state backgrounds: **Enabled** while on, **Locked** while it can't take a rune (locked out), none otherwise. Fires `ActivationEvent` / `DeactivationEvent` when it switches while the player is editing. Its `unlocks` and `Lockouts` lists are read when the node list is built from the scene.
-
-**Effects:** what the node does is its `_Effects` list (see **Effects** above), filled in on the node object in the scene. Building the node list from the scene copies it into the node's `AbilityNodeEntry`. Shows an inspector warning for broken effects. `IsGate()` is true when the list has an Evolve effect.
-
-**Zone Tools** foldout: **Snap To Next Ring Out** and **Snap To Ring** (see **Zones and Evolving**).
-
-*The "may delete" fields and the Enable/Lock/Hide buttons are from an older version of the node states.*
-
 ---
 ## Inventory Side Panel
-- `IngredientListWindow` shows one `ElementDataObject` button per element rune in the inventory (the ingredient version is commented out). It refreshes when it's enabled, on the [[Inventory Manager]]'s `OnInventoryChanged`, and on the field's `OnDraftChanged` (the field is read from its existing `RuneFieldPointer`, so no new setup)
-- Dropping an `ElementDataObject` on the object tagged **UI Drag Field** calls `RuneFieldManager.PlaceRuneFromInventory`. Runes only leave the inventory when the field is saved (see **Draft and Saving**)
+- `IngredientListWindow` shows one `ElementDataObject` button per element rune in the inventory (the ingredient version is commented out). It refreshes when it's enabled, on the [[Inventory Manager]]'s `OnInventoryChanged`, and on the field's `OnDraftChanged`
+- Dropping an `ElementDataObject` on the field (anywhere the pointer isn't over UI) calls `PlaceRuneFromInventory` on the field. Runes only leave the inventory when the field is saved (see **Draft and Saving**). *The 2D field's **UI Drag Field** tag isn't used any more (Oct 28, 2026)*
 - *Oct 10, 2026:* `ElementDataObject` adds a `Button` to itself if the prefab has none, so the list works with gamepad navigation. Pressing it only does something on the 3D field (takes the rune out on the reticle)
-- *Oct 10, 2026:* these scripts and `ShadeSlotManager` talk to the field through `IRuneFieldView`, which `RuneFieldManager` and the 3D field both have. With nothing on `RuneFieldPointer` they use the 3D field (see [[Rune Field 3D View]])
-- **Counts** *(overhaul step 5, Oct 9, 2026)*: each button shows the inventory count (`_CountText`, `_CountColor`, black by default) and how many the draft is using on top of the saved field (`_PendingText`, `_PendingColor`, brighter, written with `_PendingFormat` = `-{0}`, hidden at 0). With none left to place it fades to `_UnavailableAlpha` (0.4) and can't be dragged, but stays in the list. A rune only leaves the list when a save takes the inventory to 0. While dragging a button over the field, it tints with the field's `_InvalidColor` over a spot where the rune can't go (`_TintTarget`, the root image if left empty)
+- *Oct 10, 2026:* these scripts and `ShadeSlotManager` talk to the field through `IRuneFieldView` (see [[Rune Field 3D View]]). Only the 3D field has it since Oct 28, 2026
+- **Counts** *(overhaul step 5, Oct 9, 2026)*: each button shows the inventory count (`_CountText`, `_CountColor`, black by default) and how many the draft is using on top of the saved field (`_PendingText`, `_PendingColor`, brighter, written with `_PendingFormat` = `-{0}`, hidden at 0). With none left to place it fades to `_UnavailableAlpha` (0.4) and can't be dragged, but stays in the list. A rune only leaves the list when a save takes the inventory to 0. Over the field the button hides and the field's stand-in rune shows where it would land (red over a bad spot). *The button's own red tint (`_TintTarget`) only worked on the 2D field and was removed Oct 28, 2026*
 - Runes the draft took off whose inventory count is 0 aren't listed until the save puts them back (decided Oct 9)
 - **Setup:** open the button prefab (`IngredientListWindow.ButtonListPrefab`) in prefab mode, select its root and press **Build Count Labels** on `ElementDataObject`. It adds the two texts on the right edge; move and restyle them as you like [[Notes for the future]]
 - `SideWindowManager.CloseWindow(window)` slides the side panel open/closed and switches windows. `ToggleSidePanel()` *(Oct 10, 2026)* opens it on the last window used (`_DefaultWindow`, or the inventory list the first time) or closes it; the 3D field calls it for gamepad Y / Tab. `IsOpen()`, `Contains(object)` and `GetFirstSelectable()` (first item in the open window, else the first tab) are used for gamepad focus
@@ -259,8 +208,8 @@ Shows its state with the scene's state backgrounds: **Enabled** while on, **Lock
 
 ---
 ## Leftovers
-- `DraggableItem`, `ElementObject` and `ShadeSlotDataObject` are small early scripts that don't do anything
-- In `EvolutionInterfaces.cs`, `IConnectable`, `ICoreNode` and `iEvolutionNode` aren't used anymore. `IBridgeable` isn't used by the rune field but [[Dungeon Map Node]]s still use it, and the dungeon map draws its lines with `NodeBridge.BuildConnection` / `UpdatePosition`
+- `ShadeSlotDataObject` is a small early script that doesn't do anything
+- *Removed Oct 28, 2026 (the 2D field):* `RuneFieldManager`, `ElementItem`, `EvolutionNode`, `CoreNode`, `DraggableItem`, `ElementObject`, `P_EvoNode_Element` and `Evolution_UI_scene` (deleted by Steve in Unity), and `IConnectable`, `ICoreNode` and `iEvolutionNode` from `EvolutionInterfaces.cs`. Kept for the dungeon map: `IBridgeable` ([[Dungeon Map Node]]s use it) and `NodeBridge` (the map's lines, `BuildConnection` / `UpdatePosition`; its tearing was removed)
 - *Removed Oct 9, 2026 (overhaul step 2):* `RuneFieldPackage` (old save format), `ShadeSO._RuneFieldPackage`, `_AlteredStats` and `_shadeStats`, and `RuneFieldLayoutSO`. The emptied `RuneFieldPackage.cs` and `RuneFieldLayoutSO.cs` were deleted
 - *Removed Oct 9, 2026 (overhaul step 1):* `ElementManagerSO` / `statBoostPackage`, the element runes' `statusEffectEnable/Disable` events and `TriggerElementEffects` / `DeactivateElementEffects`, and the Shade Manager's `managerScriptableObject`, `shadeAlterPackages`, `ReceiveStatBoostPackage` / `RemoveStatBoostPackage` / `ChangeStat`
 

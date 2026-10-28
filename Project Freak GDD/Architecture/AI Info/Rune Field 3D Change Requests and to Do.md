@@ -68,9 +68,9 @@ Things to address
 *Finish*
 Tasks to be done after locking in the final prototype and deciding to go with the 3d version
 
-- [ ] **Code walkthrough with Steve** of the 3D view scripts, once the 2D vs 3D decision is made
+- [ ] **Code walkthrough with Steve** of the 3D view scripts. *Oct 27, 2026: 3D won, so this is ready to do*
 
-- [ ] **Inspector clean-up** *(asked Oct 13, 2026, for the post-prototype talk)*: the rune field and zone components have too many buttons and settings, and it's hard to remember what they do
+- [x] **Inspector clean-up** *(asked Oct 13, 2026, for the post-prototype talk)*. *Done Oct 28, 2026, along with removing the 2D field: see [[Rune Field Clean-Up Plan]]. The lens became the **Inspector layout** rule in [[Code Style Rules]]*: the rune field and zone components have too many buttons and settings, and it's hard to remember what they do
 - **Why it happened (Steve):** we build in steps and never go back to remove the buttons and settings each step added, and we haven't been looking at it as building tools for a designer
 - **The lens for the clean-up:** treat the inspector as UX for a forgetful designer. Arrange everything in the order you'd build out and then adjust the system (set up → place → tune), so the next thing to do is always the next thing you see. Once the clean-up shows what that takes, decide how to phrase it in the code style skill
 - Go through every button on `Rune Field` (field, pointer, labels, zones) and the zone / border / crack objects: drop the ones that aren't needed any more, merge setup steps into fewer buttons (one "Set Up Everything"?), and give every button a clear label (and a tooltip or info box saying what it does)

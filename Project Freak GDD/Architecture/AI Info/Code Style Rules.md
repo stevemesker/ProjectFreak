@@ -65,6 +65,13 @@ Back to [[AA - AI Info]]
 - **Polymorphic data** (like ability steps) uses `[SerializeReference]` lists of a base class
 - **Coroutines** are stored in a `Coroutine` field, then stopped and nulled on disable or interrupt
 - **Odin**: `[Button]` for editor tools and tests, `[FoldoutGroup]` for big inspectors, `[GUIColor]` for important buttons
+- **Inspector layout** *(added Oct 28, 2026, from the [[Rune Field Clean-Up Plan]])*: treat the inspector as UX for a forgetful designer
+	- Day-to-day tuning sits open at the top. Rarely touched settings (shader property names, stand-in looks, import fixes) go in closed foldouts
+	- Buttons pressed after a tweak sit in an open **Rebuild** group, next to the settings they use. If the settings live on an asset, the asset gets the button too, so a simple change never means hunting through several places
+	- One-time setup goes in a closed **First-Time Setup** foldout, numbered in the order to press them. Separate steps stay separate buttons (no forced "do everything"), and an optional "set up everything" button can sit on top
+	- Play mode and debug buttons go in a closed **Test Tools** foldout at the bottom
+	- Every button gets a clear label and a tooltip (`PropertyTooltip`), and broken setups show a warning info box (`InfoBox`) saying which button fixes them
+	- Never rename a serialized field just to tidy up (scenes and assets would lose its value). Moving it into a group is safe
 - **Shader properties** use `static readonly int` IDs and a `MaterialPropertyBlock`
 
 ---

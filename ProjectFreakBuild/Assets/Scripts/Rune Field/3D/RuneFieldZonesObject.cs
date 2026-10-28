@@ -10,6 +10,7 @@ using Sirenix.OdinInspector;
 //every time a slot's field loads it compares the open zone to the one the player last saw on that slot, shows it, and saves the new one
 //when the shade evolved since the player last looked, the zone opening plays: one step per new zone (it rises, the tints change, the old tear turns to smoke, the new border lights up)
 //it also holds the setup tools: making the zones and stand-in floors, the borders, the zone lights, the light layer names, and previewing any open zone in edit mode
+//inspector (clean-up, Oct 28, 2026): Rebuild holds the buttons pressed after a tweak (each does one job), First-Time Setup holds the steps for a new field, numbered in order
 [RequireComponent(typeof(RuneField3DObject))]
 public class RuneFieldZonesObject : MonoBehaviour
 {
@@ -21,25 +22,31 @@ public class RuneFieldZonesObject : MonoBehaviour
     [Tooltip("Editor play mode only: shows the zones asset's values every frame, so changes to the light colors and lift height show up right away while tuning")]
     [SerializeField] bool _LiveTuning = true;
 
+    [Tooltip("Edit mode: shows the field as if this zone were open, without pressing play. 1 = a Bound shade, the last zone = every zone open")]
+    [SerializeField, Range(1, Zone3DObject.MaxZone), OnValueChanged("PreviewOpenZone")] int _PreviewOpenZone = 1;
+
+    [FoldoutGroup("Stand-In Floors")]
     [Tooltip("How far the stand-in floors' rock face goes down from their outer edge, in meters. Keep it bigger than the lift height so no gap shows")]
     [SerializeField, Min(0f)] float _StandInSkirtDepth = 0.5f;
 
+    [FoldoutGroup("Stand-In Floors")]
     [Tooltip("How many steps the stand-in floors use around the circle. More = rounder")]
     [SerializeField, Range(12, 256)] int _StandInSegments = 128;
 
+    [FoldoutGroup("Stand-In Floors")]
+    [Tooltip("Material for the stand-in floors. Empty = HDRP's default material")]
+    [SerializeField] Material _StandInMaterial;
+
     [Header("References")]
-    [Tooltip("Every zone (Zone3DObject). Order doesn't matter, each zone has its own number. Set Up Zones makes them and fills this in")]
+    [Tooltip("Every zone (Zone3DObject). Order doesn't matter, each zone has its own number. Set Up Zones (First-Time Setup) makes them and fills this in")]
     [InfoBox("$GetZoneProblems", InfoMessageType.Warning, "HasZoneProblems")] //"$" shows the text the function returns
     [SerializeField] List<Zone3DObject> _Zones = new List<Zone3DObject>();
 
-    [Tooltip("Every ring border (ZoneBorder3DObject): the walls of light and their cracks. Set Up Borders makes them and fills this in")]
+    [Tooltip("Every ring border (ZoneBorder3DObject): the walls of light and their cracks. Set Up Borders (First-Time Setup) makes them and fills this in")]
     [SerializeField] List<ZoneBorder3DObject> _Borders = new List<ZoneBorder3DObject>();
 
     [Tooltip("The scene's main directional light (the one with shadows). The zone lights copy it and point the same way. Left empty, Set Up Zone Lighting finds it")]
     [SerializeField] Light _KeyLight;
-
-    [Tooltip("Material for the stand-in floors. Empty = HDRP's default material")]
-    [SerializeField] Material _StandInMaterial;
 
     [Header("Runtime Data")]
     [Tooltip("The open zone being shown (read only)")]
@@ -47,10 +54,6 @@ public class RuneFieldZonesObject : MonoBehaviour
 
     [Tooltip("True while the zone opening plays (read only)")]
     [SerializeField, ReadOnly] bool _PlayingOpening;
-
-    [FoldoutGroup("Tools")]
-    [Tooltip("Edit mode: shows the field as if this zone were open, without pressing play. 1 = a Bound shade, the last zone = every zone open")]
-    [SerializeField, Range(1, Zone3DObject.MaxZone), OnValueChanged("PreviewOpenZone")] int _PreviewOpenZone = 1;
 
     //local variables
     RuneField3DObject _field;
@@ -248,7 +251,7 @@ public class RuneFieldZonesObject : MonoBehaviour
     #endregion
 
     #region Light Layers
-    [FoldoutGroup("Tools"), Button("Apply Zone Layers")]
+    [FoldoutGroup("First-Time Setup", 20), Button("Apply Zone Layers"), PropertyOrder(7), PropertyTooltip("Puts every renderer under each zone on its light layer. Also done on play, so only needed to check the look in edit mode after adding floor pieces")]
     public void ApplyZoneLayers()
     {
         //puts every renderer under each zone on that zone's light layer (also done on start, so kit pieces never need setting by hand)
@@ -321,7 +324,7 @@ public class RuneFieldZonesObject : MonoBehaviour
     }
 #endif
 
-    [FoldoutGroup("Tools"), Button("Set Up Zones"), GUIColor(0.6f, 1f, 0.6f)]
+    [FoldoutGroup("First-Time Setup", 20), Button("2. Set Up Zones"), PropertyOrder(2), GUIColor(0.6f, 1f, 0.6f), PropertyTooltip("Makes any missing zone and gives empty zones a stand-in floor. Safe to press again")]
     void SetUpZones()
     {
         //editor button: makes any missing zone (Zone 1 to the field's zone count) under a 'Zone Floors' object, gives zones with nothing to draw a stand-in floor,
@@ -343,7 +346,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         PreviewOpenZone();
     }
 
-    [FoldoutGroup("Tools"), Button("Rebuild Stand-In Floors")]
+    [FoldoutGroup("Stand-In Floors"), Button("Rebuild Stand-In Floors"), PropertyTooltip("Remakes the stand-in floors after changing the zone width or the settings above. Real floors are left alone")]
     void RebuildStandInFloors()
     {
         //editor button: remakes every zone's stand-in floor (after changing the zone width, skirt depth or material). Real floors are left alone
@@ -412,7 +415,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         return null;
     }
 
-    [FoldoutGroup("Tools"), Button("Set Up Borders"), GUIColor(0.6f, 1f, 0.6f)]
+    [FoldoutGroup("First-Time Setup", 20), Button("3. Set Up Borders"), PropertyOrder(3), GUIColor(0.6f, 1f, 0.6f), PropertyTooltip("Makes any missing ring border and builds them all (sets up the zones first). Safe to press again")]
     void SetUpBorders()
     {
         //editor button: sets up the zones first (their floors carry the cracks), then makes any missing ring border (ring 1 to the last gate ring)
@@ -432,7 +435,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         PreviewOpenZone();
     }
 
-    [FoldoutGroup("Tools"), Button("Rebuild All Borders")]
+    [FoldoutGroup("Rebuild", true, 10), Button("Rebuild All Borders"), GUIColor(0.6f, 1f, 0.6f), PropertyTooltip("Rebuilds every ring's wall and cracks. Press after changing the zones asset's wall strip, the zone width or a gate. One ring only: Rebuild Ring on that border")]
     public void RebuildAllBorders()
     {
         //editor button: rebuilds every border's wall and cracks (after changing the strip, the zone width or a gate)
@@ -468,7 +471,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         return null;
     }
 
-    [FoldoutGroup("Tools"), Button("Fill Border List")]
+    [FoldoutGroup("First-Time Setup", 20), Button("Fill Border List"), PropertyOrder(6), PropertyTooltip("Adds borders under the field that aren't in the list, and drops empty entries")]
     void FillBorderList()
     {
         //adds every ZoneBorder3DObject under the field that isn't in the list yet, and drops empty entries
@@ -483,7 +486,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         }
     }
 
-    [FoldoutGroup("Tools"), Button("Fill Zone List")]
+    [FoldoutGroup("First-Time Setup", 20), Button("Fill Zone List"), PropertyOrder(5), PropertyTooltip("Adds zones under the field that aren't in the list, and drops empty entries")]
     void FillZoneList()
     {
         //adds every Zone3DObject under the field that isn't in the list yet, and drops empty entries
@@ -498,7 +501,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         }
     }
 
-    [FoldoutGroup("Tools"), Button("Set Up Zone Lighting"), GUIColor(0.6f, 1f, 0.6f)]
+    [FoldoutGroup("First-Time Setup", 20), Button("4. Set Up Zone Lighting"), PropertyOrder(4), GUIColor(0.6f, 1f, 0.6f), PropertyTooltip("Gives every zone its own shadowless light, copied from the key light")]
     void SetUpZoneLighting()
     {
         //editor button: gives every zone a shadowless light that only lights its own layer, under a 'Zone Lights' object
@@ -524,6 +527,13 @@ public class RuneFieldZonesObject : MonoBehaviour
             zoneLight.transform.rotation = _KeyLight.transform.rotation;
         }
         PreviewOpenZone(); //sets every light's color and brightness from the asset
+    }
+
+    [FoldoutGroup("Rebuild", true, 10), Button("Match Zone Lights To Key Light"), PropertyTooltip("Turns every zone light to match the key light. Press after moving or turning the key light")]
+    void MatchZoneLights()
+    {
+        //editor button: the same as pressing Set Up Zone Lighting again (it keeps the lights and turns them to match), under a name that says what it's for
+        SetUpZoneLighting();
     }
 
     bool FindKeyLight()
@@ -567,7 +577,7 @@ public class RuneFieldZonesObject : MonoBehaviour
         return zoneLight;
     }
 
-    [FoldoutGroup("Tools"), Button("Name Light Layers")]
+    [FoldoutGroup("First-Time Setup", 20), Button("1. Name Light Layers"), PropertyOrder(1), PropertyTooltip("Names HDRP's light layers 'Zone 1', 'Zone 2'... Only layers still on their default name are renamed")]
     void NameLightLayers()
     {
         //editor button: names HDRP's Light Layers 1 to the zone count 'Zone 1', 'Zone 2'... (Project Settings > Graphics > HDRP Global Settings)
@@ -611,11 +621,11 @@ public class RuneFieldZonesObject : MonoBehaviour
     string GetZoneProblems()
     {
         //checks the zone list: empty entries, or two zones with the same number. Shown as a warning in the inspector
-        if (_Zones.Count == 0) return "No zones yet. Press Set Up Zones (Tools).";
+        if (_Zones.Count == 0) return "No zones yet. Open First-Time Setup and press its buttons in order.";
         List<int> seen = new List<int>();
         for (int i = 0; i < _Zones.Count; i++)
         {
-            if (_Zones[i] == null) return "The zone list has an empty entry. Press Fill Zone List (Tools).";
+            if (_Zones[i] == null) return "The zone list has an empty entry. Press Fill Zone List (First-Time Setup).";
             int number = _Zones[i].GetZoneNumber();
             if (seen.Contains(number)) return $"Two zones are set to zone {number}. Each zone needs its own number.";
             seen.Add(number);
@@ -625,7 +635,7 @@ public class RuneFieldZonesObject : MonoBehaviour
     #endregion
 
     #region Test Tools
-    [FoldoutGroup("Test Tools"), Button("Replay From Seen Zone (play mode)")]
+    [FoldoutGroup("Test Tools", 30), Button("Replay From Seen Zone (play mode)")]
     void TestReplayFromSeenZone(int seenZone = 1)
     {
         //play mode: pretends the player last saw this zone open on the open slot, then reloads the field, as if the shade evolved while the field was closed

@@ -40,7 +40,7 @@ Back to [[AA - AI Info]]
 - [x] Picking a different shade slot threw away unsaved runes but kept their stat boosts. *Fixed Oct 2026: stats are worked out from the saved field only, so unsaved changes never touch them. Throwing away unsaved changes is on purpose (save button design)*
 - [x] If the runes on a loaded field use more power than the core has, they kept their power and stats. *Fixed Oct 2026: power is handed out from scratch every time, so a smaller core just powers fewer runes*
 - [ ] The [[Save Manager]] doesn't save shade slots to disk yet. *Since Oct 9, 2026 each slot's field stays on its slot asset in the editor, but a built game would lose it* (see [[Rune Field Overhaul Plan]], disk save comes later)
-- [ ] No UI save button for the rune field yet (only the Odin **Save Current Field** button on `RuneFieldManager`). Hook a button to `RuneFieldManager.SaveRuneSlot`, and later a "save before leaving?" popup. *Oct 9, 2026: the code side is done (`_SaveButton`, `_Popup`, `RequestLeave`), the buttons and popup still need adding in the scene (see [[Rune Field System]], Unity setup still to do)*
+- [ ] No UI save button for the rune field yet (only the Odin **Save Current Field** button, in Test Tools on `RuneField3DObject` since Oct 28, 2026). Hook a button to `RuneField3DObject.SaveRuneSlot`, and later a "save before leaving?" popup. *Oct 9, 2026: the code side is done (`_SaveButton`, `_Popup`, `RequestLeave`), the buttons and popup still need adding in the scene (see [[Rune Field 3D View]])*
 - [x] Runes can't be taken off the field (`RuneField.RemoveRune` exists, but nothing in the UI calls it). *Fixed Oct 9, 2026: dropping a rune on the inventory list removes it*
 - [ ] Nothing uses a slot's stats in combat yet: the released shade has no stats/health component (see [[Shade (Runtime)]]). *Since Oct 9, 2026 both shade forms hold their slot's runtime entry (live stats, current health), ready for one*
 
@@ -67,10 +67,11 @@ Back to [[AA - AI Info]]
 - [ ] `GameManagerEventSO`
 - [ ] `EnvironmentDamageable`
 - [ ] `PlayerEquipment`, `ShadeSummoner`
-- [ ] `DraggableItem`, `ElementObject`, `ShadeSlotDataObject` (early Rune Field leftovers)
+- [ ] `ShadeSlotDataObject` (early Rune Field leftover). *`DraggableItem` and `ElementObject` go with the 2D field, Oct 28, 2026 (deleted by Steve in Unity, see [[Rune Field Clean-Up Plan]])*
 - [ ] Old rune field stat path, unused since the Oct 2026 rebuild. *All removed Oct 9, 2026 (overhaul steps 1 and 2).* Still to delete in Unity: `Scripts/Common/RuneFieldPackage.cs` and `Scripts/Rune Field/RuneFieldLayoutSO.cs` (both emptied)
-- [ ] `IConnectable`, `ICoreNode`, `iEvolutionNode` in `EvolutionInterfaces.cs` are unused. Keep `IBridgeable`: the dungeon map uses it (and `NodeBridge.BuildConnection`)
-- [ ] `ElementDataObject` / `IngredientDataObject` `NodePrefabToSpawn` isn't used anymore
+- [x] `IConnectable`, `ICoreNode`, `iEvolutionNode` in `EvolutionInterfaces.cs` are unused. Keep `IBridgeable`: the dungeon map uses it (and `NodeBridge.BuildConnection`). *Removed Oct 28, 2026 with the 2D field*
+- [x] `ElementDataObject` / `IngredientDataObject` `NodePrefabToSpawn` isn't used anymore. *Removed Oct 28, 2026*
+- [ ] `DungeonManager._BridgePrefab` is never used (the dungeon map uses `DungeonMapManager._lineConnectionPrefab`). Both point at `P_EvoNode_Bridge`. *Spotted Oct 28, 2026 during the rune field clean-up*
 
 **Consistency**
 - [x] Swap `StatNameType.Stat` and `ElementType.Element` over to the `DamageType` enums (see [[Notes for the future]]). *Done Oct 2026. `StatNameType.cs` and `ElementType.cs` can now be deleted in Unity*

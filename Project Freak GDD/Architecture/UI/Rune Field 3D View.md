@@ -1,5 +1,7 @@
 ## Overview
-The 3D view of the [[Rune Field]], being tested on the `3d rune field test` branch. Same rules as the 2D view ([[Rune Field System]]), drawn in a 3D scene (`3d_Evolution_UI_scene`). The plan and build order are in [[Rune Field 3D Plan]].
+The [[Rune Field]]'s view: the rules ([[Rune Field System]]) drawn in a 3D scene (`3d_Evolution_UI_scene`). The plan and build order are in [[Rune Field 3D Plan]]. *Oct 27, 2026: the 3D field won the 2D vs 3D call, and the 2D field was removed on Oct 28 ([[Rune Field Clean-Up Plan]]).*
+
+**Inspector layout** *(clean-up, Oct 28, 2026)*: every rune field component follows the same order. Day-to-day tuning is open, the buttons pressed after a tweak sit in an open **Rebuild** group, **First-Time Setup** (numbered in the order to press them) and **Test Tools** are closed at the bottom, and shader property names and stand-in looks are in closed foldouts.
 
 *Built Oct 10, 2026: every step of the [[Rune Field 3D Plan]] (camera, drawing, dragging and saving, inventory hookup, gamepad, labels, test kit).* Not tested in Unity yet [[Notes for the future]]
 
@@ -9,7 +11,7 @@ Back to [[Rune Field System]] · [[Architecture Atlas]]
 ## Units
 The rules work in **field units** (a rune is 100 wide), the 3D scene in meters. `RuneFieldSettingsSO._FieldUnitsPerMeter` (100) converts between them with `ToMeters` / `ToFieldUnits`, so a rune is 1 m and the core 2 m.
 
-Settings retuned for 3D on Oct 10, 2026 (`SO_RuneField_Settings`): `_CoreSize` 200, `_CoreReach` 250, `_ZoneWidth` 400. The 2D scene shares the asset; its gates were placed for a zone width of 300, so its setup check will complain about gates not on a ring while on this branch.
+Settings retuned for 3D on Oct 10, 2026 (`SO_RuneField_Settings`): `_CoreSize` 200, `_CoreReach` 250, `_ZoneWidth` 400.
 
 ---
 ## Camera
@@ -111,32 +113,34 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 
 | Variable | Description |
 | :--- | :--- |
-| `_ElementColors` | *Fallback since Oct 11, 2026:* rune color per element, only for element assets with no `_Palette` yet. **Fill Element Colors** (Tools) adds one entry per element |
-| `_DefaultRuneColor` | For runes with no palette and no entry in the list |
-| `_CoreColor` | *Oct 11, 2026.* The core's color, used for the core's end of bridges (purple) |
-| `_Core` | The core. Moved to this object's position on start. Optional (bridges then end at this object) |
-| `_Nodes` | Every ability node. A node's spot is its index, which saved fields point at, so *don't reorder it once fields are saved*. **Fill Node List** (Tools) adds nodes under this object at the end |
+| Dragging & Placing (open) | `_TearSlack`, `_TautPadding`, `_InvalidColor`, `_DragLift`, `_PickPadding` (see **More settings** below). The placement pointer and connection previews get their own component later, and their settings will sit next to these [[Notes for the future]] |
+| Colors: `_CoreColor` | *Oct 11, 2026.* The core's color, used for the core's end of bridges (purple) |
+| Colors: `_ElementColors` | *Fallback since Oct 11, 2026:* rune color per element, only for element assets with no `_Palette` yet. **Fill Element Colors** (First-Time Setup) adds one entry per element |
+| Colors: `_DefaultRuneColor` | For runes with no palette and no entry in the list |
+| Popup Text | The evolve and lock-in popup texts |
+| `_Core` | The core. Moved to this object's position on start. Optional (bridges then end at this object). A warning above it lists anything missing (core, prefabs, nodes, an empty node entry) |
+| `_Nodes` | Every ability node. A node's spot is its index, which saved fields point at, so *don't reorder it once fields are saved*. **Fill Node List** (First-Time Setup) adds nodes under this object at the end |
 | `_RunePrefab` / `_BridgePrefab` | `PFB_Rune_3D` / `PFB_Bridge_3D`. The scripts get added at spawn if the prefabs don't have them |
 | `_BridgeHolder` | Where spawned bridges go. Empty = a `<===== Bridged =====>` divider is made under the field the first time a bridge spawns (in play mode it's gone after stopping). Keep it unscaled |
 | `_OnEvolved` | Runs when the open shade evolves, after the field reloads |
 | `_SlotIndex` / `_HasUnsavedChanges` | Read only |
 | Zone Gizmos foldout | Ring colors, same as the 2D field: rings flat on the field, colored frozen / open / locked in play mode, frozen runes outlined. The real zone look is **Zones** below (floors and lights, Oct 12, 2026); *the border tear and smoke are still planned in [[Zone Visuals Plan]]* [[Notes for the future]] |
 
-- **Adding the component** finds the core and nodes under it and both prefabs by name, so nothing needs dragging in
-- **Start:** puts the core at the center, then opens the selected slot (`LoadRuneField`), the same as the 2D field
-- **Nodes:** built once from `_Nodes` (position, unlocks, lockouts, a copy of the effects) with the same setup checks as 2D (one-way lockouts, gates off a ring)
+- **Adding the component** finds the core and nodes under it and both prefabs by name, so nothing needs dragging in. **First-Time Setup → Set Up Field** does the same later (only empty references are filled), plus new nodes and Element Colors entries. Fill Node List, Create Dividers and Fill Element Colors are still there one step at a time
+- **Start:** puts the core at the center, then opens the selected slot (`LoadRuneField`)
+- **Nodes:** built once from `_Nodes` (position, unlocks, lockouts, a copy of the effects) with the setup checks (one-way lockouts, gates off a ring)
 - **Drawing:** spawns a rune object per rune and places it, rebuilds every bridge, shows power and frozen on runes, on / locked on nodes, and power on the core. Fires `OnDraftChanged`
 - `TearBridge(a, b)` removes a bridge (called by a bridge when its tear timer fills)
 - **`OnFieldLoaded`** *(Oct 12, 2026)*: fires every time a field is swapped in (opening or switching a slot, the reload after a save or evolve, Reset Slot, Test Clear). The zones listen to it. `GetSlotIndex()` gives the open slot
 - **Runs after the camera** each frame (`[DefaultExecutionOrder(100)]`), so a dragged rune follows the pointer with the camera already moved
 - **Zone tools:** `SnapNodeToRing` / `GetNextRingOut`, used by the nodes' snap buttons. They keep the node's height
-- **Create Dividers** (Tools, Oct 11, 2026): makes a `<===== label =====>` empty under the field for each label (comma-separated for several at once, the field stays selected), on its center, to group nodes in the hierarchy (core / gates / ability nodes). Nodes can sit under dividers at any depth: Fill Node List searches every level, positions are world space, and node indexes come from the Nodes list, not the hierarchy. *Don't move, turn or scale a divider once nodes are under it*
-- **Test Tools foldout:** **Test Place Rune** (a rune asset and a spot in field units: a rune is 100 wide, zone 1's edge is 400 out) for quick tests in the editor
+- **Create Dividers** (First-Time Setup, Oct 11, 2026): makes a `<===== label =====>` empty under the field for each label (comma-separated for several at once, the field stays selected), on its center, to group nodes in the hierarchy (core / gates / ability nodes). Nodes can sit under dividers at any depth: Fill Node List searches every level, positions are world space, and node indexes come from the Nodes list, not the hierarchy. *Don't move, turn or scale a divider once nodes are under it*
+- **Test Tools foldout:** **Save Current Field**, **Discard Changes**, **Test Clear** (moved here Oct 28, 2026; the UI buttons call the same functions) and **Test Place Rune** (a rune asset and a spot in field units: a rune is 100 wide, zone 1's edge is 400 out) for quick tests in the editor
 
 **More settings (step 3):** `_TearSlack` (field units past reach before tearing starts), `_TautPadding` (how close to the end of its reach a bridge has to be to count as holding the rune back, field units; *added Oct 27, 2026*), `_InvalidColor`, `_DragLift` (how high a dragged rune floats, meters), `_PickPadding` (extra grab room around a rune, field units), the evolve popup texts (`_EvolveTitle`, `_EvolveNowMessage`, `_EvolveLaterMessage`), the lock-in popup texts (`_LockInTitle`, `_LockInMessage`, `{0}` = how many runes; *added Oct 11, 2026*), `_Popup` ([[Confirm Popup]]), `_SaveButton` (optional, greyed out with nothing to save) and `_OnLeave` (runs after leaving).
 
 ### Dragging (mouse)
-*Built Oct 10, 2026 (step 3).* Same rules and order as the 2D field:
+*Built Oct 10, 2026 (step 3).*
 - **Picking is math, no colliders:** the pointer hits the field's plane, and the rune whose footprint (half `_RuneSize` plus `_PickPadding`) covers that spot is the one under it. The rules already know where every rune is, so there are no colliders or layers to set up. The hovered rune brightens. *Oct 11, 2026:* nodes (rune sized) and the core (`_CoreSize`) are picked the same way, runes first, then nodes, then the core. `GetHoverKind()` / `GetHoverID()` say what's hovered (`RuneFieldType.Hover`: Nothing, Rune, Node, Core; the ID is a rune ID, a node index or `RuneField.CoreID`) and `OnHoverChanged` fires when it changes. Nothing listens yet: the info popup hooks in here once it's designed [[Notes for the future]]. *The plan put this on the pointer; it lives on the field since the field already does the picking math*
 - **Grab:** a left click on a rune (not over the canvas). *Since Oct 11, 2026 (Playtest 0 build step 3)* frozen runes can be grabbed too; only locked-in runes (frozen runes plugged into a node) can't
 - **Drag:** the rune follows the pointer on the field, floating `_DragLift` up, kept within reach of its bridges (`ClampToBridges`, the closest spot they allow). It shows where it would land: that spot (snapped into a node when on one), or if that spot is refused, the closest spot around it that works (`RuneField.FindDropSpot`, *Oct 27, 2026*), and letting go lands it there. It only turns `_InvalidColor` (and goes back on letting go) when nothing within the settings' `_DropSearchDistance` works. Bridges pulled more than `_TearSlack` past reach start tearing, but only **taut** ones (`IsBridgeTaut`: the rune sits at the end of their reach, within `_TautPadding`), so the direction the player pulls picks which bridges tear, and how far the pointer is past each one's reach sets how fast. A bridge that stops being pulled **keeps its tear** for the rest of the drag (`Bridge3DObject.PauseTearing`), and a bridge snapping doesn't reset the others (their tear is carried over when the bridge objects are rebuilt). Every tear goes back to 0 when the drag ends (`ResetTearing`). Frozen bridges never tear: they're a hard leash, so a frozen rune stops at the end of them. The camera can still be moved with middle mouse or WASD while dragging
@@ -144,7 +148,7 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 - **Escape / B while dragging** puts it back the same way
 
 ### Draft and Saving
-Copied from the 2D field (see [[Rune Field System]], Draft and Saving): **Save Current Field** / `SaveRuneSlot` (asks first when frozen runes would be locked into their nodes, then when a gate was newly plugged; Cancel on either keeps the draft), **Discard Changes**, **Test Clear**, `SelectSlot(index)` and `RequestLeave()` (both ask Save / Discard / Cancel with unsaved changes), `GetPendingUse` / `GetAvailable`, and `PlaceRuneFromInventory` / `CanPlaceFromInventory` (used by the inventory list). Escape / B closes the popup if one is open, otherwise asks to leave. `RefreshCorePower()` gives the open draft the slot's current core power after a level change (used by the test kit).
+See [[Rune Field System]], Draft and Saving: **Save Current Field** / `SaveRuneSlot` (asks first when frozen runes would be locked into their nodes, then when a gate was newly plugged; Cancel on either keeps the draft), **Discard Changes**, **Test Clear**, `SelectSlot(index)` and `RequestLeave()` (both ask Save / Discard / Cancel with unsaved changes), `GetPendingUse` / `GetAvailable`, and `PlaceRuneFromInventory` / `CanPlaceFromInventory` (used by the inventory list). Escape / B closes the popup if one is open, otherwise asks to leave. `RefreshCorePower()` gives the open draft the slot's current core power after a level change (used by the test kit).
 - **Cut bridges** *(Oct 11, 2026)*: saving cuts normal bridges crossing the open zone's outer ring (see **Zones and Evolving** in [[Rune Field System]]). They disappear when the saved field reloads. Just before that, the field's `OnBridgesCut` event passes them on, for the break effect (Art Pile in [[Rune Field 3D Plan]]) [[Notes for the future]]
 
 ### Gamepad
@@ -166,10 +170,11 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 - `_Camera` (main camera if empty), `_Canvas` (the first canvas found if empty)
 
 ### Inventory and Shade Slots
-*Built Oct 10, 2026 (step 4).* The 2D UI scripts work with either view through `IRuneFieldView` (in `Scripts/Rune Field/RuneFieldInterface.cs`, see [[Interface List]]). `RuneField3DObject` and `RuneFieldManager` both have it.
-- **`IngredientListWindow`**: uses the 2D field on `RuneFieldPointer` if set, otherwise the scene's 3D field. Nothing to assign in the 3D scene
+*Built Oct 10, 2026 (step 4).* The side panel scripts (canvas UI, in `Scripts/UI/Evolution Tree/UI`) talk to the field through `IRuneFieldView` (in `Scripts/Rune Field/RuneFieldInterface.cs`, see [[Interface List]]). Only `RuneField3DObject` has it since the 2D field was removed (Oct 28, 2026).
+- **`IngredientListWindow`**: uses the scene's 3D field. Nothing to assign
 - **`ElementDataObject`**: dragging a button over the 3D field (anywhere the pointer isn't over UI) drops the rune there. While dragged, the button stops blocking clicks so it doesn't count as UI under the pointer. *Oct 11, 2026:* once it leaves the panel the button hides and the field shows a stand-in rune where it would land (red over a bad spot, `RuneField3DObject.UpdateListDrag` / `EndListDrag`); back over the list the button shows again. Works for the mouse and the gamepad's hold-A drag. *The shrink-to-a-circle animation is for a polish pass* [[Notes for the future]]
-- **`ShadeSlotManager`**: uses the 2D field if set, otherwise the 3D field
+- **`ShadeSlotManager`**: uses the scene's 3D field (its old 2D field slot was removed Oct 28, 2026)
+- *Oct 28, 2026:* the list buttons' old red tint over a bad spot (`_TintTarget`) only worked on the 2D field and was removed. The stand-in rune on the field shows red instead
 
 ### ShadeInfoWindow
 *Built Oct 11, 2026 (Playtest 0 build step 6).* A side panel window (next to the inventory and the shade slots) showing the open slot's shade. In `Scripts/UI/Evolution Tree/UI`. Works with the 3D field.
@@ -190,14 +195,15 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 - Settings: `_RuneLabelHeight` / `_CoreLabelHeight` (meters above), `_FontSize` / `_CoreFontSize`, `_PoweredColor` / `_UnpoweredColor`. References: `_Canvas`, `_CameraRig` (both found on start if empty)
 
 ### RuneFieldTestKitObject
-*Built Oct 10, 2026 (step 7). Temp: only for the test build, delete it after the test* [[Notes for the future]]
+*Built Oct 10, 2026 (step 7). Temp: a dev tool. It stays until the dev command console exists (spawning items, enemies and so on), where these tools will probably move* [[Notes for the future]]
+- *Oct 28, 2026:* `_ToggleKey` (\` by default, Backslash works too) hides and shows its panels
 - On start, puts `_StartingRunes` (rune + count) into the inventory
 - Builds its own panels on the canvas: top-left the open slot's name, level and form, plus **Level Up**, **Level Down**, **Reset Slot** (calls the slot's own Reset Slot, now public on `ShadeSO`, then reloads the field), **Refill Runes** (tops the inventory back up to the starting counts) and **Quit**. Bottom-left the controls (`_ControlsText`)
 - Settings: `_ShowPanels`, `_FontSize`, `_PanelColor`, `_ButtonColor`, `_Canvas`
 - Slot changes only last one play session in a build (assets can't be saved outside the editor)
 
 ### Rune3DObject
-Colored by its element's `_Palette` primary color (`ElementItemSO`, *Oct 11, 2026*; the field's `_ElementColors` list is the fallback), darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit). `_TintRenderers` picks which renderers are colored (empty = all of them, except the range effect). *Oct 24, 2026:* `ShowRangeHighlight` for the [[#Range Overlay|range overlay]]: `_RangeHighlightProperty` (`_RangeHighlight`) is sent to its renderers, and `_RangeEffect` (or a child named `RangeEffect`) shows while it's above 0.
+Colored by its element's `_Palette` primary color (`ElementItemSO`, *Oct 11, 2026*; the field's `_ElementColors` list is the fallback), darker without power (`_UnpoweredBrightness`), brighter under the pointer (`_HoverBrightness`), a bit of `_FrozenColor` mixed in while frozen (`_FrozenBlend`), and the invalid tint while dragged over a bad spot. `_ColorProperty` is the material's color name (`_BaseColor` for HDRP Lit; in the closed **Shader Properties** foldout with `_RangeHighlightProperty` since Oct 28, 2026). `_TintRenderers` picks which renderers are colored (empty = all of them, except the range effect). *Oct 24, 2026:* `ShowRangeHighlight` for the [[#Range Overlay|range overlay]]: `_RangeHighlightProperty` (`_RangeHighlight`) is sent to its renderers, and `_RangeEffect` (or a child named `RangeEffect`) shows while it's above 0.
 
 ### Bridge3DObject
 Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y scale are kept). `_HeightOffset` lifts it off the field. The tear timer is the 2D one (`_PullTearRequiredTime`, `_MaxPullStrength`, `_PullTickTime`, `_PullDampening`), and it runs on real time so it works while the game is paused. *Oct 27, 2026:* `PauseTearing` stops the timer but keeps the pull built up, `ResetTearing` clears it (drag over), and `GetPullBuiltUp` / `SetPullBuiltUp` let the field carry a bridge's tear over to its new object when it rebuilds them.
@@ -209,10 +215,10 @@ Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y sca
 - **Tear:** `_TearProgress`, 0 to 1, how close the tear timer is to snapping it (updated every tick). The shader's `_TearColor` (set on the material) fills the bridge from end A toward end B as it rises
 - **Strain:** `_Strain`, 0 to 1, how far into the field's `_TearSlack` it's pulled before the timer starts, for a tear dead zone look. `SH_NodeBridge` doesn't have it yet, so it's ignored [[Notes for the future]]
 
-The property names are inspector fields (**Shader Properties** header: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`, `_StrainProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
+The property names are inspector fields (closed **Shader Properties** foldout since Oct 28, 2026: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`, `_StrainProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
 
 ### Node3DObject
-The 3D `EvolutionNode`: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor`. `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
+An [[Ability Node]]: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor` (`_ColorProperty` is in the closed Shader Properties foldout). `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
 
 ### Core3DObject
 Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`. *Oct 11, 2026:* also `HasRunesWaiting()` (`RuneField.HasRunesWaitingForPower`: a rune that could have power doesn't; planning runes don't count), for the core shader's bright / normal / dull purple. The shader's property names become inspector fields here once it exists [[Notes for the future]]. *Oct 24, 2026:* `ShowRangeHighlight` for the range overlay, same as `Rune3DObject` (`_RangeHighlightProperty`, `_RangeEffect`).
@@ -308,7 +314,11 @@ The floors are tinted with HDRP **light layers**, not materials, so kit pieces n
 - HDRP has 8 light layers and layer 0 is the default, so the field can have up to 7 zones
 
 ### RuneFieldZonesSO
-Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`. **Changes made while playing stay after stopping.** The code only reads it.
+Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`. **Changes made while playing stay after stopping.** The game only reads it.
+
+**Layout** *(Oct 28, 2026)*: **Zone Look**, **Walls** and **Zone Opening** are open; **Smoke Particles**, **Wall Strip Import**, **Shader Properties** and **Stand-In Look** are closed foldouts. **Rebuild All Borders** is on the asset itself (in Walls, and again in Wall Strip Import), so wall settings and the rebuild are in one place. It rebuilds every open field using this asset.
+
+**Tear material, one place** *(Oct 28, 2026)*: set it in `_TearMaterial`. While it's empty an info box says the walls fall back to the wall strip model's material, and **Use Wall Strip's Material** copies that material in. `FindWallStripMaterial()` lives here now (the borders use it for the fallback).
 
 | Variable | Description |
 | :--- | :--- |
@@ -317,7 +327,7 @@ Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`
 
 | `_WallStrip` / `_CrackStrip` | The strip the walls (and cracks) are built from. Wall empty = a stand-in card (3 m, 0.4 m under to 1 m up, two-sided). Crack empty = the wall strip. Saving over either from Maya rebuilds every border by itself |
 | `_StripScale` / `_FlipLength` / `_FlipDepth` | Fixes for a strip that comes in at the wrong size or turned around. The strip's +Z faces the core by default |
-| `_TearMaterial` / `_SmokeMaterial` | *Oct 13, 2026: two materials the walls swap between (replaced the single `_BorderMaterial`).* Tear = the forward wall and every crack; empty = the strip model's own material (`MAT_ZoneWall_Flame`, found on Rebuild). Smoke = the wall behind; empty = a grey stand-in |
+| `_TearMaterial` / `_SmokeMaterial` | *Oct 13, 2026: two materials the walls swap between (replaced the single `_BorderMaterial`).* Tear = the forward wall and every crack; empty = the strip model's own material (`MAT_ZoneWall_Flame`, found on Rebuild), see **Tear material, one place** above. Smoke = the wall behind; empty = a grey stand-in |
 | `_HeightProperty` / `_HiddenHeight` / `_SwapPoint` | The height value both materials share (`_GradiantHeight`). The code animates it from `_HiddenHeight` (gone) to the material's own value (full). `_SwapPoint` (0.5) is where in the tear → smoke blend the tear wall finishes going out and the smoke wall starts coming in |
 | `_MeshFolder` | Where the baked wall and crack meshes are saved (`Assets/Generated/Rune Field Zones`) |
 | `_RevealProperty` / `_OverchargeProperty` | Optional extra values for the tear material: the light-up sweep (0 to 1, read with the mesh's UV2.x) and the overcharge pulse (always 0 for now) |
@@ -337,7 +347,8 @@ On the field object, next to `RuneField3DObject` (it requires one). Adding it fi
 | :--- | :--- |
 | `_Settings` | `SO_RuneField_Zones` |
 | `_LiveTuning` | Editor play mode only: shows the asset's values every frame, so tuning shows straight away (on by default) |
-| `_StandInSkirtDepth` / `_StandInSegments` / `_StandInMaterial` | The stand-in floors: rock face depth (0.5 m), roundness (128), material (empty = HDRP's default) |
+| `_PreviewOpenZone` | Slider: shows any open zone in edit mode without pressing play (Ctrl+Z works). 4 = every zone open. *Moved up from Tools Oct 28, 2026* |
+| Stand-In Floors foldout | `_StandInSkirtDepth` / `_StandInSegments` / `_StandInMaterial`: rock face depth (0.5 m), roundness (128), material (empty = HDRP's default), and the **Rebuild Stand-In Floors** button |
 | `_Zones` | Every `Zone3DObject`. A warning shows if it's empty, has an empty entry, or two zones share a number |
 | `_Borders` | Every `ZoneBorder3DObject`. **Set Up Borders** makes them and fills this in |
 | `_KeyLight` | The shadowed directional light the zone lights copy. Empty = found by **Set Up Zone Lighting** |
@@ -345,12 +356,11 @@ On the field object, next to `RuneField3DObject` (it requires one). Adding it fi
 
 - **Start:** puts every zone's renderers on its light layer (so kit pieces never need setting by hand), then listens to the field's `OnFieldLoaded` (and catches a field that already loaded)
 - `ShowOpenZone(zone)` snaps every zone and border to its look; `GetZoneState(zone, openZone)` says frozen / open / locked
-- **Tools foldout:**
-  - `_PreviewOpenZone` slider: shows any open zone in edit mode without pressing play (Ctrl+Z works). 4 = every zone open
+- **Rebuild** (open, *Oct 28, 2026*): **Rebuild All Borders** (every ring's wall and cracks; one ring only = Rebuild Ring on that border) and **Match Zone Lights To Key Light** (after moving the key light; the same as pressing Set Up Zone Lighting again)
+- **First-Time Setup** (closed, numbered in order, *Oct 28, 2026*): **1. Name Light Layers**, **2. Set Up Zones**, **3. Set Up Borders**, **4. Set Up Zone Lighting**, then **Fill Zone List**, **Fill Border List** and **Apply Zone Layers**. Every button has a tooltip
   - **Set Up Zones:** makes any missing `Zone 1` to `Zone N` (the field's zone count) under a `Zone Floors` object at the field's center, gives zones with nothing to draw a stand-in floor, fills the list and applies the layers. Safe to press again
   - **Set Up Borders:** presses Set Up Zones first, then makes any missing `Ring k Border` (ring 1 to the last gate ring) under a `Zone Borders` object at the field's center and builds them all. Safe to press again
-  - **Rebuild All Borders**, **Fill Border List**
-  - **Rebuild Stand-In Floors:** remakes them (after a zone width, skirt or material change)
+  - **Rebuild Stand-In Floors** (in the Stand-In Floors foldout): remakes them (after a zone width, skirt or material change)
   - **Set Up Zone Lighting:** gives every zone a light under a `Zone Lights` object (a copy of the key light, see Light layers). Pressing it again keeps them and turns them to match the key light
   - **Name Light Layers:** names Light Layers 1 to 4 "Zone 1" to "Zone 4" in the HDRP Global Settings. Only layers still on their default name are renamed
   - **Apply Zone Layers**, **Fill Zone List**
@@ -393,10 +403,10 @@ Catching up more than one zone plays the steps one after another with `_StepGap`
 | Gate Gaps: `_GapMargin`, `_GapRampWidth`, `_GapRampCurve` | Around each evolution gate on the ring the wall is gone across the gate plus the margin (0.3 m), then slopes back up over the ramp (1.5 m). Gates are found from the field's node list (`RuneField3DObject.GetNodeObjects()`, nodes with an Evolve effect sitting on this ring) |
 | `_WallRenderer` | The `Wall` child. Made by Rebuild Ring |
 | `_CrackRenderer` | `Ring k Cracks`, under zone k + 1 (so it lifts with that floor), with a `ZoneTintSkipObject`. Made by Rebuild Ring |
-| `_Cracks` | This ring's cracks, branches included (**Fill Crack List**) |
+| `_Cracks` | This ring's cracks, branches included (filled by Rebuild Ring and Add Crack) |
 | Runtime Data | `_Radius`, `_StripLength` (should say 4 for Steve's card), `_CopyCount`, `_GateAngles`, `_GateHalfWidth`, `_Look` (tear, smoke, reveal) |
 
-**Rebuild Ring** (Tools, edit mode only; also run by Set Up Borders, Rebuild All Borders, a crack's Rebuild My Ring, and the strip being reimported):
+**Rebuild Ring** (Ring Tools, edit mode only; also run by Set Up Borders, Rebuild All Borders, a crack's Rebuild My Ring, and the strip being reimported):
 1. Reads the strip (`ZoneStripBuilder`). Warns if its end edges don't match (the copies then aren't welded)
 2. Fits a whole number of copies around the ring (stretched a little so the circle closes exactly) and welds each copy's start edge onto the one before. The first and last copy aren't welded, so U can count up all the way round
 3. Bends every vertex onto the circle: along the strip = around the ring, the strip's depth = radius (its +Z faces the core), height stays height, then the noise, spots, gate gaps and lean
@@ -409,7 +419,7 @@ Catching up more than one zone plays the steps one after another with `_StepGap`
 
 **Smoke:** *off unless `_UseSmokeParticles` is ticked.* While smoky (play mode), puffs are emitted at random spots on the ring, less often inside gate gaps, `_SmokePerMeter` × circumference × smoke per second (real time, at most 200 a frame). The emitter is made the first time: an instance of `_SmokePrefab`, or a stand-in particle system (grey opaque squares that rise and shrink).
 
-**Tools:** **Rebuild Ring**, **Fill Crack List**, **Add Crack** (an angle in degrees: makes a 3-point crack heading straight out, under zone k + 1, and selects it). **Gizmos** when selected: the ring (white), gate gaps (red) and their slopes (orange), hand spots' reach (cyan).
+**Ring Tools** (open, *Oct 28, 2026*): **Rebuild Ring**, **Add Crack**. *Fill Crack List stopped being a button: Rebuild Ring and Add Crack already fill it*. **Add Crack** (an angle in degrees: makes a 3-point crack heading straight out, under zone k + 1, and selects it). **Gizmos** when selected: the ring (white), gate gaps (red) and their slopes (orange), hand spots' reach (cyan).
 
 ### ZoneCrackPath
 *Built Oct 12, 2026 (step 3).* One floor crack: the wall's strip laid along a path instead of a circle, tall where it leaves the ring and shrinking to nothing at its tip. Keep crack objects under the zone outside their ring.
@@ -437,9 +447,9 @@ A plain C# helper (like `RuneFieldTint`) shared by the walls and cracks: reads a
 - **Auto rebuild** (`ZoneStripImportWatcher`, an `AssetPostprocessor`): when the zones asset's wall or crack strip is reimported (saved over from Maya), every border in the open scenes rebuilds right after the import (edit mode only)
 
 ### Setup (Steve)
-1. On the `Rune Field` object, add `RuneFieldZonesObject`. *Oct 12, 2026:* if there's no `SO_RuneField_Zones` yet, the Tools buttons, the slider or pressing play make one next to `SO_RuneField_Settings` and fill it in (editor only)
-2. Open **Tools**, press **Set Up Zones**, then **Set Up Zone Lighting**, then **Name Light Layers**, then **Set Up Borders** (Oct 12, 2026)
-2b. Drag `M_ZoneWall_WallEffectCard`'s mesh into the zones asset's `_WallStrip` and press **Rebuild All Borders**. Check a border's `_StripLength` says 4; if not, fix `_StripScale`. Add cracks with a border's **Add Crack**
+1. On the `Rune Field` object, add `RuneFieldZonesObject`. *Oct 12, 2026:* if there's no `SO_RuneField_Zones` yet, the setup buttons, the slider or pressing play make one next to `SO_RuneField_Settings` and fill it in (editor only)
+2. Open **First-Time Setup** and press the numbered buttons in order: **1. Name Light Layers**, **2. Set Up Zones**, **3. Set Up Borders**, **4. Set Up Zone Lighting** (renumbered Oct 28, 2026)
+2b. Drag `M_ZoneWall_WallEffectCard`'s mesh into the zones asset's `_WallStrip` (Wall Strip Import) and press **Rebuild All Borders**. Then press **Use Wall Strip's Material** (Walls) so the tear material is set on the asset. Check a border's `_StripLength` says 4; if not, fix `_StripScale`. Add cracks with a border's **Add Crack**
 3. Move the slider to check each open zone. Then press play and use the test kit
 4. If the zone lights don't tint anything: check the rune field camera's Frame Settings have **Light Layers** on (camera → Rendering → Custom Frame Settings, or the default in HDRP Global Settings → Frame Settings → Camera → Lighting)
 5. Real floors: put them (and kit pieces) under `Zone Floors/Zone N`, top surface at the zone object's height, then delete that zone's `Stand-In Floor`

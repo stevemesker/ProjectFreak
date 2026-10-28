@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//what the inventory list and the shade slot buttons need from a rune field view
-//both the 2D view (RuneFieldManager) and the 3D view (RuneField3DObject) have it, so the same UI works with either
+//what the inventory list and the shade slot buttons need from a rune field view (RuneField3DObject)
+//it kept the UI working with both the 2D and 3D fields during the prototype. The 2D field was removed Oct 28, 2026, so the 3D field is the only one now
 public interface IRuneFieldView
 {
     event System.Action OnDraftChanged; //fires whenever the draft changes or a field loads

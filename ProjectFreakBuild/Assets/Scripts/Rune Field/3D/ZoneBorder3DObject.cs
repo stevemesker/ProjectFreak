@@ -177,10 +177,10 @@ public class ZoneBorder3DObject : MonoBehaviour
         //the zones asset's Tear Material, otherwise the strip model's own material, otherwise the stand-in (with a warning, once)
         if (lookSettings._TearMaterial != null) return lookSettings._TearMaterial;
 #if UNITY_EDITOR
-        if (_StripMaterial == null) _StripMaterial = FindStripMaterial(lookSettings._WallStrip); //editor: picks up a strip set since the last Rebuild
+        if (_StripMaterial == null) _StripMaterial = lookSettings.FindWallStripMaterial(); //editor: picks up a strip set since the last Rebuild
 #endif
         if (_StripMaterial != null) return _StripMaterial;
-        WarnStandIn(ref _warnedTear, "tear", "Set Wall Strip on the zones asset (its model's material is used) and press Rebuild All Borders, or set Tear Material");
+        WarnStandIn(ref _warnedTear, "tear", "Set Tear Material on the zones asset (or press its Use Wall Strip's Material button)");
         return GetDefaultMaterial();
     }
 
@@ -324,7 +324,7 @@ public class ZoneBorder3DObject : MonoBehaviour
     #endregion
 
     #region Building
-    [FoldoutGroup("Tools"), Button("Rebuild Ring"), GUIColor(0.6f, 1f, 0.6f)]
+    [FoldoutGroup("Ring Tools", true, 10), Button("Rebuild Ring"), GUIColor(0.6f, 1f, 0.6f)]
     public void RebuildRing()
     {
         //editor button: rebuilds the wall and this ring's cracks and saves them as mesh assets. Press it after changing any setting, a gate, the zone width, or a crack
@@ -351,7 +351,7 @@ public class ZoneBorder3DObject : MonoBehaviour
         _Radius = fieldSettings.ToMeters(fieldSettings.GetRingRadius(_Ring)) + _RadiusOffset;
         _StripLength = wallStrip._Length;
         _GateHalfWidth = fieldSettings.ToMeters(fieldSettings._RuneSize) * 0.5f; //nodes are rune sized
-        _StripMaterial = FindStripMaterial(lookSettings._WallStrip);
+        _StripMaterial = lookSettings.FindWallStripMaterial();
         FindGates(fieldSettings);
         FillCrackList();
 
@@ -516,23 +516,6 @@ public class ZoneBorder3DObject : MonoBehaviour
         SetMaterial(_CrackRenderer, GetTearMaterial(lookSettings));
     }
 
-    Material FindStripMaterial(Mesh strip)
-    {
-        //editor only: the material the strip model shows its mesh with (set in the model's import settings). Null with no strip, or none found
-        if (strip == null) return null;
-        GameObject model = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(UnityEditor.AssetDatabase.GetAssetPath(strip)); //the FBX loads as a GameObject
-        if (model == null) return null;
-
-        MeshFilter[] filters = model.GetComponentsInChildren<MeshFilter>(true);
-        for (int i = 0; i < filters.Length; i++)
-        {
-            if (filters[i].sharedMesh != strip) continue;
-            MeshRenderer modelRenderer = filters[i].GetComponent<MeshRenderer>();
-            if (modelRenderer != null && modelRenderer.sharedMaterial != null) return modelRenderer.sharedMaterial;
-        }
-        return null;
-    }
-
     MeshRenderer MakeRendererObject(string objectName, Transform parent)
     {
         //an empty child with a mesh filter and renderer, no offset, turn or scale. Shadows off: it's light, not rock
@@ -571,10 +554,9 @@ public class ZoneBorder3DObject : MonoBehaviour
     #endregion
 
     #region Cracks
-    [FoldoutGroup("Tools"), Button("Fill Crack List")]
     public void FillCrackList()
     {
-        //finds every crack that starts on this ring (or branches off one that does) and drops empty entries. Searching is fine here, it's an editor tool
+        //Rebuild Ring and Add Crack call this (it used to be its own button too). Finds every crack that starts on this ring (or branches off one that does) and drops empty entries. Searching is fine here, it's an editor tool
 #if UNITY_EDITOR
         UnityEditor.Undo.RecordObject(this, "Fill Crack List");
 #endif
@@ -586,7 +568,7 @@ public class ZoneBorder3DObject : MonoBehaviour
         }
     }
 
-    [FoldoutGroup("Tools"), Button("Add Crack")]
+    [FoldoutGroup("Ring Tools", true, 10), Button("Add Crack")]
     void AddCrack(float angle = 0f)
     {
         //editor button: makes a new crack leaving this ring at an angle (degrees), heading straight out, under the zone outside the ring. Then drag its points in the scene

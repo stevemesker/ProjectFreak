@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
 
-//an ability node on the 3D rune field (the 3D version of EvolutionNode). RuneField decides if the node is on, this shows it and fires the events
+//an ability node on the 3D rune field. RuneField decides if the node is on, this shows it and fires the events
 //its unlock and lockout lists and its effects are where the rules get the node from when the field builds its node list
 public class Node3DObject : MonoBehaviour
 {
@@ -21,11 +21,12 @@ public class Node3DObject : MonoBehaviour
     List<RuneEffect> _Effects = new List<RuneEffect>();
 
     [Header("Settings")]
-    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
-    [SerializeField] string _ColorProperty = "_BaseColor";
-
     [Tooltip("Tint while the node can't take a rune (outside the open zone, a closed gate, or locked out)")]
     [SerializeField] Color _LockedColor = new Color(0.45f, 0.2f, 0.2f, 1f);
+
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
+    [SerializeField] string _ColorProperty = "_BaseColor";
 
     [Header("References")]
     [Tooltip("Shown while the node is on. Left empty, a child named OnEffect is used if there is one")]

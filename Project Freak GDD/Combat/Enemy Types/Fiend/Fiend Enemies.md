@@ -29,7 +29,7 @@ Strength Speed
 ---
 [[Mini Boss]]
 Strength Defense
-[[Cyclopse]] - 
+[[Cyclopse]] - a massive beast with a single crystal eye. It can charge 
 
 ---
 [[Boss]]

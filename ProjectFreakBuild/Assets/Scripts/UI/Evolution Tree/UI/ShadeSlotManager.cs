@@ -6,7 +6,6 @@ using System.Linq;
 public class ShadeSlotManager : MonoBehaviour
 {
     [SerializeField] List<GameObject> slotList;
-    [SerializeField, Tooltip("The 2D rune field. Left empty, the scene's 3D field is used")] RuneFieldManager _runeField;
 
     private void OnEnable()
     {
@@ -37,20 +36,9 @@ public class ShadeSlotManager : MonoBehaviour
         
         //may need to add some catch for loading a rune field that's already selected
 
-        IRuneFieldView field = _runeField != null ? (IRuneFieldView)_runeField : RuneField3DObject._Field3D; //the 2D field if one is set, otherwise the 3D field
+        IRuneFieldView field = RuneField3DObject._Field3D; //the rune field in this scene
         if (field == null) { Debug.LogError($"Error! No rune field found for {gameObject.name}, can't switch to slot {index}", this); return; }
         field.SelectSlot(index); //asks about unsaved changes before switching
-        /*
-        if (GameManager._GameManager.GetComponent<ShadeManager>().GetShadeSelectionIndex() == index)
-        {
-            //print("already selected this shade...");
-            return;
-        }
-
-        _runeField.ClearRuneField();
-        
-        SelectShadeSlot(index);
-        _runeField.LoadRuneFieldFromPackage(GameManager._GameManager.GetComponent<ShadeManager>()._ShadeSlots[index]);*/
     }
 
     public void SelectShadeSlot(int index)

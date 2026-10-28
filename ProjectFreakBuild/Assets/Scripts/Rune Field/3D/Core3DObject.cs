@@ -9,7 +9,7 @@ using Sirenix.OdinInspector;
 //(bright / normal / dull purple). The shader's property names become inspector fields here once it exists //todo
 public class Core3DObject : MonoBehaviour
 {
-    [Header("Settings")]
+    [FoldoutGroup("Shader Properties")]
     [Tooltip("The shader number the range highlight is sent to (0 = not lit, 1 = a rune being placed would bridge to the core). Sent to the core's renderers and the Range Effect's. Shaders without it ignore it")]
     [SerializeField] string _RangeHighlightProperty = "_RangeHighlight";
 

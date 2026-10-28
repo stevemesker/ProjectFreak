@@ -8,9 +8,6 @@ using Sirenix.OdinInspector;
 public class Rune3DObject : MonoBehaviour
 {
     [Header("Settings")]
-    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
-    [SerializeField] string _ColorProperty = "_BaseColor";
-
     [Tooltip("How bright the rune is while it has no power (0 = black, 1 = full color)")]
     [SerializeField, Range(0f, 1f)] float _UnpoweredBrightness = 0.35f;
 
@@ -23,6 +20,11 @@ public class Rune3DObject : MonoBehaviour
     [Tooltip("How much brighter the rune gets while the pointer is on it (1 = no change)")]
     [SerializeField, Min(1f)] float _HoverBrightness = 1.35f;
 
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
+    [SerializeField] string _ColorProperty = "_BaseColor";
+
+    [FoldoutGroup("Shader Properties")]
     [Tooltip("The shader number the range highlight is sent to (0 = not lit, 1 = a rune being placed would bridge to this one). Sent to the rune's renderers and the Range Effect's. Shaders without it ignore it")]
     [SerializeField] string _RangeHighlightProperty = "_RangeHighlight";
 

@@ -7,61 +7,75 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using Sirenix.OdinInspector;
 
-//the 3D rune field. A view over the RuneField rules, like RuneFieldManager is for the 2D field
+//the 3D rune field. A view over the RuneField rules (it only draws what they say and sends player actions to them)
 //this object is the field's center (0, 0) and its flat plane: field X runs along its right, field Y along its forward, in meters (see RuneFieldSettingsSO._FieldUnitsPerMeter)
 //it opens a slot's field, draws it (core, nodes, runes, bridges), runs mouse dragging through the rules, and the draft / save flow (popups, slot switching, leaving)
 [DefaultExecutionOrder(100)] //runs after the camera each frame, so a dragged rune follows the pointer with the camera already moved
 [RequireComponent(typeof(RuneFieldPointerObject), typeof(RuneFieldLabelsObject))] //the pointer and the labels live on the same object
-public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView: the inventory list and slot buttons talk to this the same way as the 2D field
+public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView: what the inventory list and slot buttons call on the field
 {
     public static RuneField3DObject _Field3D; //the 3D field in this scene (one per scene)
 
-    [Header("Data")]
-    [Tooltip("Fallback rune colors by element, for runes whose element asset has no Palette yet. Elements not in the list use Default Rune Color")]
-    [SerializeField] List<ElementColorEntry> _ElementColors = new List<ElementColorEntry>();
-
-    [Tooltip("Color for runes with no Palette whose element isn't in Element Colors")]
-    [SerializeField] Color _DefaultRuneColor = Color.white;
-
-    [Tooltip("The core's color, used for the core's end of bridges (the bridge shader blends the two end colors)")]
-    [SerializeField] Color _CoreColor = new Color(0.6f, 0.3f, 1f, 1f);
-
-    [Header("Settings")]
+    //inspector layout (rune field clean-up, Oct 28, 2026): day-to-day tuning first and open, then colors and popup text (closed),
+    //the references, and at the bottom the closed First-Time Setup and Test Tools. The placement previews will join Dragging & Placing
+    [FoldoutGroup("Dragging & Placing", expanded: true)]
     [Tooltip("How far past its reach a rune has to be pulled before its bridges start tearing, in field units")]
     [SerializeField, Min(0f)] float _TearSlack = 2f;
 
+    [FoldoutGroup("Dragging & Placing")]
     [Tooltip("How close to the end of its reach a bridge has to be, in field units, to count as holding the dragged rune back. Only bridges holding it back tear, so the direction the player pulls picks which bridges tear")]
     [SerializeField, Min(0f)] float _TautPadding = 2f;
 
-    [Tooltip("Tint for a rune (or inventory button) dragged over a spot it can't go")]
+    [FoldoutGroup("Dragging & Placing")]
+    [Tooltip("Tint for a rune dragged over a spot it can't go (and where no spot nearby works either)")]
     [SerializeField] Color _InvalidColor = new Color(1f, 0.3f, 0.3f, 1f);
 
+    [FoldoutGroup("Dragging & Placing")]
     [Tooltip("How high a dragged rune floats above the field, in meters")]
     [SerializeField, Min(0f)] float _DragLift = 0.3f;
 
+    [FoldoutGroup("Dragging & Placing")]
     [Tooltip("Extra room around a rune that still counts as pointing at it, in field units. Makes runes easier to grab")]
     [SerializeField, Min(0f)] float _PickPadding = 10f;
 
+    [FoldoutGroup("Colors")]
+    [Tooltip("The core's color, used for the core's end of bridges (the bridge shader blends the two end colors)")]
+    [SerializeField] Color _CoreColor = new Color(0.6f, 0.3f, 1f, 1f);
+
+    [FoldoutGroup("Colors")]
+    [Tooltip("Fallback rune colors by element, for runes whose element asset has no Palette yet. Elements not in the list use Default Rune Color")]
+    [SerializeField] List<ElementColorEntry> _ElementColors = new List<ElementColorEntry>();
+
+    [FoldoutGroup("Colors")]
+    [Tooltip("Color for runes with no Palette whose element isn't in Element Colors")]
+    [SerializeField] Color _DefaultRuneColor = Color.white;
+
+    [FoldoutGroup("Popup Text")]
     [Tooltip("Popup title when saving would commit the shade to evolving")]
     [SerializeField] string _EvolveTitle = "Evolve?";
 
+    [FoldoutGroup("Popup Text")]
     [Tooltip("Popup message when the gate already has power, so saving evolves the shade right away. {0} = the form's name, {1} = the zone that locks")]
     [SerializeField, TextArea] string _EvolveNowMessage = "Saving will evolve this shade into {0} right away. Zone {1} freezes for good: its runes can still be moved but never taken off, its bridges can never tear, and runes in its nodes stay there.";
 
+    [FoldoutGroup("Popup Text")]
     [Tooltip("Popup message when the gate doesn't have power yet. {0} = the form's name, {1} = the zone that locks")]
     [SerializeField, TextArea] string _EvolveLaterMessage = "This shade will evolve into {0} as soon as the gate has power, freezing zone {1} for good. Until then you can still take the rune out of the gate.";
 
+    [FoldoutGroup("Popup Text")]
     [Tooltip("Popup title when saving would lock frozen runes into the nodes they were plugged into")]
     [SerializeField] string _LockInTitle = "Lock In Runes?";
 
+    [FoldoutGroup("Popup Text")]
     [Tooltip("Popup message when saving would lock frozen runes into their nodes. {0} = how many runes")]
     [SerializeField, TextArea] string _LockInMessage = "{0} frozen rune(s) will be locked into their nodes permanently. Locked-in runes can never be moved or taken out again.";
 
     [Header("References")]
+    [InfoBox("$GetSetupProblems", InfoMessageType.Warning, "HasSetupProblems")] //"$" shows the text the function returns
     [Tooltip("The core in the scene. It gets moved to this object's position (the field's center) on start")]
     [SerializeField] Core3DObject _Core;
 
-    [Tooltip("Every ability node in the scene. A node's spot in this list is its index, which saved fields point at, so don't reorder it once fields are saved. Fill Node List (Tools) adds the ones under this object")]
+    [Tooltip("Every ability node in the scene. A node's spot in this list is its index, which saved fields point at, so don't reorder it once fields are saved. Fill Node List (First-Time Setup) adds the ones under this object")]
     [SerializeField] List<Node3DObject> _Nodes = new List<Node3DObject>();
 
     [Tooltip("Spawned for every rune on the field (PFB_Rune_3D). Gets a Rune3DObject added if it doesn't have one")]
@@ -300,7 +314,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         OnFieldLoaded?.Invoke();
     }
 
-    [Button("Save Current Field")]
+    [FoldoutGroup("Test Tools", 30), Button("Save Current Field")]
     public void SaveRuneSlot()
     {
         //saves the field onto the open shade slot. Hook the UI save button to this
@@ -376,7 +390,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return string.Format(message, formName, _field.GetOpenZone()); //puts the name where {0} is and the zone where {1} is
     }
 
-    [Button("Discard Changes")]
+    [FoldoutGroup("Test Tools", 30), Button("Discard Changes")]
     public void DiscardChanges()
     {
         //goes back to the slot's saved field. Runes the draft was using are free again, since they never left the inventory
@@ -384,7 +398,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         LoadRuneField(_SlotIndex);
     }
 
-    [Button("Test Clear")]
+    [FoldoutGroup("Test Tools", 30), Button("Test Clear")]
     public void ClearRuneField()
     {
         //empties the field being edited (nothing changes on the slot until the player saves)
@@ -1292,10 +1306,32 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return settings.GetPreviousRingIn(WorldToField(node.position).magnitude);
     }
 
-    [FoldoutGroup("Tools"), Button("Fill Node List")]
+    [FoldoutGroup("First-Time Setup", 20), Button("Set Up Field"), GUIColor(0.6f, 1f, 0.6f)]
+    [InfoBox("Set Up Field fills in whatever is missing: the core and the 3D prefabs (if empty), new nodes under this object, and an Element Colors entry per element. Safe to press again. The buttons under it do one step each")]
+    void SetUpField()
+    {
+        //editor button: does every setup step at once. Only empty references get filled, so anything set by hand is kept
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObject(this, "Set Up Field");
+        if (_Core == null) _Core = GetComponentInChildren<Core3DObject>(true);
+        if (_RunePrefab == null) _RunePrefab = FindPrefab("PFB_Rune_3D");
+        if (_BridgePrefab == null) _BridgePrefab = FindPrefab("PFB_Bridge_3D");
+#endif
+        AddMissingNodes();
+        FillElementColors();
+        if (HasSetupProblems()) Debug.LogWarning($"Warning! {gameObject.name} still needs setting up: {GetSetupProblems()}", this);
+    }
+
+    [FoldoutGroup("First-Time Setup", 20), Button("Fill Node List")]
     void FillNodeList()
     {
         //editor button: adds every Node3DObject under this object that isn't in the list yet, at the end, so existing indexes never change
+        if (AddMissingNodes() == 0) Debug.LogWarning($"Warning! No new nodes found under {gameObject.name}. Nodes need a Node3DObject and to be children of the field...", this);
+    }
+
+    int AddMissingNodes()
+    {
+        //adds nodes under this object that aren't in the list yet, at the end (so existing indexes never change). Returns how many were added
 #if UNITY_EDITOR
         UnityEditor.Undo.RecordObject(this, "Fill Node List");
 #endif
@@ -1307,10 +1343,28 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             _Nodes.Add(found[i]);
             added++;
         }
-        if (added == 0) Debug.LogWarning($"Warning! No new nodes found under {gameObject.name}. Nodes need a Node3DObject and to be children of the field...", this);
+        return added;
     }
 
-    [FoldoutGroup("Tools"), Button("Create Dividers")]
+    bool HasSetupProblems()
+    {
+        return GetSetupProblems() != "";
+    }
+
+    string GetSetupProblems()
+    {
+        //what's missing for the field to work, shown as a warning above the references. Empty when everything's set
+        string problems = "";
+        if (_Core == null) problems += "No core. ";
+        if (_RunePrefab == null) problems += "No rune prefab. ";
+        if (_BridgePrefab == null) problems += "No bridge prefab. ";
+        if (_Nodes.Count == 0) problems += "No nodes in the list. ";
+        if (_Nodes.Contains(null)) problems += "The node list has an empty entry (don't remove it if fields are saved, the indexes would shift). ";
+        if (problems == "") return "";
+        return problems + "Press Set Up Field (First-Time Setup).";
+    }
+
+    [FoldoutGroup("First-Time Setup", 20), Button("Create Dividers")]
     void CreateDividers(string labels = "Divider")
     {
         //editor button: makes a '<===== label =====>' divider under this object for each label, sitting on the field's center. Parent nodes to them to group them
@@ -1338,7 +1392,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         return divider.transform;
     }
 
-    [FoldoutGroup("Tools"), Button("Fill Element Colors")]
+    [FoldoutGroup("First-Time Setup", 20), Button("Fill Element Colors")]
     void FillElementColors()
     {
         //editor button: adds one entry for every element that isn't in Element Colors yet
@@ -1373,7 +1427,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     #endregion
 
     #region Test Tools
-    [FoldoutGroup("Test Tools"), Button("Test Place Rune")]
+    [FoldoutGroup("Test Tools", 30), Button("Test Place Rune")]
     void TestPlaceRune(ElementItemSO element, Vector2 fieldPosition)
     {
         //play mode button for quick tests: places a rune at a spot in field units (a rune is 100 wide, the core sits at 0, 0) and bridges it

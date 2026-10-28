@@ -16,19 +16,6 @@ public class Bridge3DObject : MonoBehaviour
     [Tooltip("How far above the field the bridge sits, in meters. Raise it if it disappears into the field's surface")]
     [SerializeField] float _HeightOffset = 0f;
 
-    [Header("Shader Properties")]
-    [Tooltip("SH_NodeBridge's color at end A, the end closer to the core (where the bridge starts, UV x = 0). Gets the color of what's at that end")]
-    [SerializeField] string _SourceColorProperty = "_SourceColor";
-
-    [Tooltip("SH_NodeBridge's color at end B, the end further from the core (where the bridge points, UV x = 1). Gets the color of what's at that end")]
-    [SerializeField] string _ConnectionColorProperty = "_ConnectionColor";
-
-    [Tooltip("SH_NodeBridge's tear progress, 0 to 1 (how close the tear timer is to snapping it). The tear color moves from end A to end B as it fills. The tear color itself is set on MAT_Bridge")]
-    [SerializeField] string _TearProgressProperty = "_TearProgress";
-
-    [Tooltip("The bridge shader's strain, 0 to 1 (how far into the field's Tear Slack it's pulled, before the tear timer starts). For the tear dead zone look. SH_NodeBridge doesn't have this yet, so it's ignored until it does")]
-    [SerializeField] string _StrainProperty = "_Strain";
-
     [Header("Tearing")]
     [Tooltip("How much pull has to build up before the bridge snaps")]
     [SerializeField, Min(0.01f)] float _PullTearRequiredTime = 10f;
@@ -41,6 +28,22 @@ public class Bridge3DObject : MonoBehaviour
 
     [Tooltip("Bigger = pulling further counts for less. Pull strength is (field units past reach / this)")]
     [SerializeField, Min(0.01f)] float _PullDampening = 150f;
+
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("SH_NodeBridge's color at end A, the end closer to the core (where the bridge starts, UV x = 0). Gets the color of what's at that end")]
+    [SerializeField] string _SourceColorProperty = "_SourceColor";
+
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("SH_NodeBridge's color at end B, the end further from the core (where the bridge points, UV x = 1). Gets the color of what's at that end")]
+    [SerializeField] string _ConnectionColorProperty = "_ConnectionColor";
+
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("SH_NodeBridge's tear progress, 0 to 1 (how close the tear timer is to snapping it). The tear color moves from end A to end B as it fills. The tear color itself is set on MAT_Bridge")]
+    [SerializeField] string _TearProgressProperty = "_TearProgress";
+
+    [FoldoutGroup("Shader Properties")]
+    [Tooltip("The bridge shader's strain, 0 to 1 (how far into the field's Tear Slack it's pulled, before the tear timer starts). For the tear dead zone look. SH_NodeBridge doesn't have this yet, so it's ignored until it does")]
+    [SerializeField] string _StrainProperty = "_Strain";
 
     [Header("Runtime Data")]
     [Tooltip("Rune ID at each end (-1 = the core). X is end A (closer to the core), Y is end B (read only)")]

@@ -67,8 +67,13 @@ Rune Field  (RuneField3DObject + RuneFieldZonesObject)
 ```
 Cracks for ring k sit on **zone k + 1** (the floor outside the ring), so they lift with it.
 
-### The tools are on one component
-Select the `Rune Field` object and open the zones component's **Tools** foldout. Green buttons are the setup ones. Everything is safe to press again.
+### Where the buttons are
+*Reorganized Oct 28, 2026 ([[Rune Field Clean-Up Plan]]).* Select the `Rune Field` object and look at the zones component:
+- **Rebuild** (open): **Rebuild All Borders** and **Match Zone Lights To Key Light**, the ones pressed after a tweak
+- **First-Time Setup** (closed): **1. Name Light Layers**, **2. Set Up Zones**, **3. Set Up Borders**, **4. Set Up Zone Lighting**, plus Fill Zone List, Fill Border List and Apply Zone Layers
+- **Stand-In Floors** (closed): the stand-in floor settings and **Rebuild Stand-In Floors**
+
+The zones asset (`SO_RuneField_Zones`) has its own **Rebuild All Borders** next to the wall settings, so changing a wall setting and rebuilding happens in one place. A single ring: **Rebuild Ring** on that border (Ring Tools). Hover any button for what it does. Everything is safe to press again.
 
 ---
 ## How It Decides What to Show
@@ -84,7 +89,7 @@ Every time a shade slot's field loads (opening the field, switching slots, savin
 | Zone N | Raised | Open | **Tear** |
 | Zones past N | Lowered | Locked | Off |
 
-To see any state without pressing play: move the **Preview Open Zone** slider in Tools.
+To see any state without pressing play: move the **Preview Open Zone** slider (Settings, on the zones component).
 
 ---
 ## Part 1 - Tune the Look
@@ -112,14 +117,14 @@ Drop them anywhere under the right zone (sub-groups are fine). Never set their l
 ### Something that shouldn't be tinted
 Add **`ZoneTintSkipObject`** to it (or to a parent group). Everything under it stays on the default light layer. Use it for glowing crystals, magic bits, anything emissive.
 
-### Stand-in floor settings (zones component)
-`_StandInSkirtDepth` (rock face depth), `_StandInSegments` (roundness), `_StandInMaterial`. Press **Rebuild Stand-In Floors** after changing them.
+### Stand-in floor settings (zones component, Stand-In Floors foldout)
+`_StandInSkirtDepth` (rock face depth), `_StandInSegments` (roundness), `_StandInMaterial`. Press **Rebuild Stand-In Floors** (same foldout) after changing them.
 
 ---
 ## Part 3 - Ring Walls
 ### Use your strip
-1. Select `SO_RuneField_Zones` and drag the strip's **mesh** (expand the FBX in the Project window, drag the mesh inside it) into `_WallStrip`
-2. Press **Rebuild All Borders** on the zones component
+1. Select `SO_RuneField_Zones`, open **Wall Strip Import** and drag the strip's **mesh** (expand the FBX in the Project window, drag the mesh inside it) into `_WallStrip`
+2. Press **Rebuild All Borders** (right there in Wall Strip Import)
 3. Select a border and check **Strip Length** (Runtime Data) says about **4**. If not, change `_StripScale` on the asset and rebuild
 4. If the wall faces the wrong way or runs backwards: `_FlipDepth` / `_FlipLength`, then rebuild
 
@@ -152,7 +157,7 @@ Press **Rebuild All Borders**. Gates are found by looking for nodes with an Evol
 ---
 ## Part 4 - Cracks
 ### Add a crack
-1. Select a border, open **Tools**, type an angle (degrees; 0 = the field's right, 90 = its forward) and press **Add Crack**
+1. Select a border, open **Ring Tools**, type an angle (degrees; 0 = the field's right, 90 = its forward) and press **Add Crack**
 2. The new crack is selected. Drag its pink dots across the floor. The white ring is the start, which sticks to the ring by itself
 3. **Add Point** / **Remove Last Point** for more or fewer points
 4. Press **Rebuild My Ring**
@@ -172,12 +177,12 @@ Press **Rebuild All Borders**. Gates are found by looking for nodes with an Evol
 
 | Look | Material | Cracks |
 | :--- | :--- | :--- |
-| Tear (forward border) | `_TearMaterial`, or if empty the strip model's own material (`MAT_ZoneWall_Flame`) | Shown, same material |
+| Tear (forward border) | `_TearMaterial` (the one place to set it). If empty, the strip model's own material (`MAT_ZoneWall_Flame`), and an info box says so | Shown, same material |
 | Smoke (border behind) | `_SmokeMaterial` | Off |
 
-1. Make sure `_WallStrip` on `SO_RuneField_Zones` has the strip's mesh in it (the tear material is read from that model)
+1. On `SO_RuneField_Zones` (Walls): drag the tear material into `_TearMaterial`, or press **Use Wall Strip's Material** to copy in the strip model's material
 2. Drag the smoke material into `_SmokeMaterial`
-3. Press **Rebuild All Borders** (picks up the strip's material)
+3. Press **Rebuild All Borders** (in Walls)
 4. Both materials need the **same height property** (`_HeightProperty`, `_GradiantHeight` now). Set each material's full height on the material itself; the code animates from `_HiddenHeight` (gone) up to that value. If "gone" isn't 0 for your shader, change `_HiddenHeight`
 5. Optional on the tear material: `_Reveal` (0 to 1, the sweep, read with UV2.x) and `_Overcharge` (later)
 

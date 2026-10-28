@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
 
 //test build tools for the 3D rune field (for sending the test to friends). Odin buttons don't exist in a build, so this makes real ones
 //on start it puts the starting runes into the inventory, then builds a small button panel and a controls panel on the canvas:
 //Level Up / Level Down (to try power and evolving), Reset Slot, Refill Runes and Quit, plus the open slot's name and level
-//temp: only for the 3D test. Delete it (and its object) once the test is over
+//the Toggle Key (` by default) hides and shows the panels
+//temp: a dev tool. It stays until the dev command console exists (spawning items, enemies etc.), where these tools will probably move [Notes for the future]
 public class RuneFieldTestKitObject : MonoBehaviour
 {
     [Header("Data")]
@@ -32,6 +34,9 @@ public class RuneFieldTestKitObject : MonoBehaviour
     [Tooltip("Show the button panel and controls panel")]
     [SerializeField] bool _ShowPanels = true;
 
+    [Tooltip("Keyboard key that hides and shows the panels. Backquote is the ` key (under Esc), Backslash is \\")]
+    [SerializeField] Key _ToggleKey = Key.Backquote;
+
     [Tooltip("Size of the panel text")]
     [SerializeField, Min(1f)] float _FontSize = 20f;
 
@@ -49,6 +54,8 @@ public class RuneFieldTestKitObject : MonoBehaviour
     const float ButtonWidth = 200f;
     const float ButtonHeight = 44f;
     TextMeshProUGUI _slotLabel; //shows the open slot's name and level
+    GameObject _buttonPanel; //the two panels, kept so the Toggle Key can hide and show them
+    GameObject _controlsPanel;
 
     private void Start()
     {
@@ -64,8 +71,11 @@ public class RuneFieldTestKitObject : MonoBehaviour
 
     private void Update()
     {
-        //keeps the slot label current (leveling and evolving change it)
-        if (_slotLabel == null || ShadeManager._ShadeManager == null) return;
+        //the Toggle Key hides and shows the panels, then the slot label is kept current (leveling and evolving change it)
+        //Keyboard.current is the Input System's keyboard, read directly. Fine for a dev tool: no input action to set up (null when there's no keyboard)
+        if (Keyboard.current != null && _ToggleKey != Key.None && Keyboard.current[_ToggleKey].wasPressedThisFrame) TogglePanels();
+
+        if (_slotLabel == null || _slotLabel.gameObject.activeInHierarchy == false || ShadeManager._ShadeManager == null) return;
         int slotIndex = ShadeManager._ShadeManager.GetShadeSelectionIndex();
         ShadeSO slot = ShadeManager._ShadeManager.IsValidSlot(slotIndex) ? ShadeManager._ShadeManager.GetShadeOfIndex(slotIndex) : null;
         if (slot == null) { _slotLabel.text = "No shade slot"; return; }
@@ -125,6 +135,15 @@ public class RuneFieldTestKitObject : MonoBehaviour
         }
     }
 
+    void TogglePanels()
+    {
+        //hides both panels if they're showing, shows them if they're hidden
+        if (_buttonPanel == null && _controlsPanel == null) return; //not built (Show Panels is off, or no canvas)
+        bool show = _buttonPanel != null ? _buttonPanel.activeSelf == false : _controlsPanel.activeSelf == false;
+        if (_buttonPanel != null) _buttonPanel.SetActive(show);
+        if (_controlsPanel != null) _controlsPanel.SetActive(show);
+    }
+
     public void Quit()
     {
         //closes the game, or stops play mode in the editor
@@ -141,6 +160,7 @@ public class RuneFieldTestKitObject : MonoBehaviour
     {
         //the button column in the top-left corner, with the slot label on top
         RectTransform panel = MakePanel("Test Kit Buttons", new Vector2(0f, 1f), new Vector2(16f, -16f));
+        _buttonPanel = panel.gameObject;
         _slotLabel = MakeText(panel, "", TextAlignmentOptions.Left);
 
         MakeButton(panel, "Level Up", LevelUp);
@@ -154,6 +174,7 @@ public class RuneFieldTestKitObject : MonoBehaviour
     {
         //the controls list in the bottom-left corner
         RectTransform panel = MakePanel("Test Kit Controls", new Vector2(0f, 0f), new Vector2(16f, 16f));
+        _controlsPanel = panel.gameObject;
         MakeText(panel, _ControlsText, TextAlignmentOptions.Left);
     }
 

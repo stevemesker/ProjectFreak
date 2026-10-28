@@ -43,14 +43,13 @@ All interfaces currently in the project, grouped by the file they live in.
 
 | Interface        | Description                                                                                  |
 | :--------------- | :------------------------------------------------------------------------------------------- |
-| `IRuneFieldView` | A rune field view the inventory list and shade slot buttons can talk to: draft counts (`GetPendingUse`, `GetAvailable`), placing from the inventory, the invalid tint, `SelectSlot` and `OnDraftChanged`. On `RuneFieldManager` (2D) and `RuneField3DObject` (3D). See [[Rune Field 3D View]] |
+| `IRuneFieldView` | A rune field view the inventory list and shade slot buttons can talk to: draft counts (`GetPendingUse`, `GetAvailable`), placing from the inventory, the invalid tint, `SelectSlot` and `OnDraftChanged`. On `RuneField3DObject` (the 2D `RuneFieldManager` had it too until it was removed Oct 28, 2026). See [[Rune Field 3D View]] |
 
 ---
-**Rune Field / Map Nodes** (`EvolutionInterfaces.cs`)
+**Dungeon Map Nodes** (`EvolutionInterfaces.cs`)
+
+*`IConnectable`, `ICoreNode` and `iEvolutionNode` were removed Oct 28, 2026 with the 2D rune field.*
 
 | Interface        | Description                                                                                  |
 | :--------------- | :------------------------------------------------------------------------------------------- |
-| `IBridgeable`    | Anything that can be linked with a bridge line. Used by [[Rune Field]] nodes and [[Dungeon Map Node]]s |
-| `IConnectable`   | Not used anymore (was [[Rune Field]] nodes passing power, replaced by `RuneField` in Oct 2026) |
-| `ICoreNode`      | Not used anymore (was the [[Core Node]] power source)                                        |
-| `iEvolutionNode` | Not used anymore (was [[Ability Node]]s a rune could plug into)                              |
+| `IBridgeable`    | Anything that can be linked with a line on the dungeon map. Used by [[Dungeon Map Node]]s (the 2D rune field used it too, removed Oct 28, 2026) |
