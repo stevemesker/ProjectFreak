@@ -113,7 +113,7 @@ The scene singleton (`RuneField3DObject._Field3D`). **This object is the field:*
 
 | Variable | Description |
 | :--- | :--- |
-| Dragging & Placing (open) | `_TearSlack`, `_TautPadding`, `_InvalidColor`, `_DragLift`, `_PickPadding` (see **More settings** below). The placement pointer and connection previews get their own component later, and their settings will sit next to these [[Notes for the future]] |
+| Dragging & Placing (open) | `_TearSlack`, `_TautPadding`, `_InvalidColor`, `_DragLift`, `_PickPadding` (see **More settings** below). The placement pointer and connection previews get their own component later ([[Placement preview - pointer line and preview bridges]]), and their settings will sit next to these [[Notes for the future]] |
 | Colors: `_CoreColor` | *Oct 11, 2026.* The core's color, used for the core's end of bridges (purple) |
 | Colors: `_ElementColors` | *Fallback since Oct 11, 2026:* rune color per element, only for element assets with no `_Palette` yet. **Fill Element Colors** (First-Time Setup) adds one entry per element |
 | Colors: `_DefaultRuneColor` | For runes with no palette and no entry in the list |
@@ -213,7 +213,7 @@ Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y sca
 **Shader** *(Oct 23, 2026)*: `MAT_Bridge` uses `SH_NodeBridge` (`Art/Shaders/VFX`). Every bridge sends its own values through `RuneFieldTint`'s `MaterialPropertyBlock`, so all bridges share **one material** (no material per color combo, no copy while tearing). Values a shader doesn't have are ignored:
 - **End colors:** `_SourceColor` (end A, UV x = 0) and `_ConnectionColor` (end B, UV x = 1), the colors of the two things it joins: a rune's element `_Palette` **secondary** color (primary is the rune itself, secondary its bridges; *Oct 23, 2026*), or the field's `_CoreColor` for the core. An element with no palette, or a secondary color left fully see-through, falls back to the rune's own color. The shader blends between them (`_GradientPower`, `_GradiantStrength` on the material)
 - **Tear:** `_TearProgress`, 0 to 1, how close the tear timer is to snapping it (updated every tick). The shader's `_TearColor` (set on the material) fills the bridge from end A toward end B as it rises
-- **Strain:** `_Strain`, 0 to 1, how far into the field's `_TearSlack` it's pulled before the timer starts, for a tear dead zone look. `SH_NodeBridge` doesn't have it yet, so it's ignored [[Notes for the future]]
+- **Strain:** `_Strain`, 0 to 1, how far into the field's `_TearSlack` it's pulled before the timer starts, for a tear dead zone look. `SH_NodeBridge` doesn't have it yet, so it's ignored. *Oct 29, 2026: not needed, the tear color is the strain look. Being removed: [[Remove unused rune field shader values]]* [[Notes for the future]]
 
 The property names are inspector fields (closed **Shader Properties** foldout since Oct 28, 2026: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`, `_StrainProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
 
@@ -386,7 +386,7 @@ One zone: everything under it is that zone's floor (Steve's floor mesh, kit rock
 2. Border N − 1 swaps tear → smoke: its tear wall and cracks animate out, then (past `_SwapPoint`) its smoke wall animates in. Border N − 2's smoke animates out (`_BorderBlendTime`, `_BorderBlendCurve`)
 3. After `_RevealDelay`, border N's tear wall and cracks animate in, and `_Reveal` runs 0 → 1 with them (`_RevealTime`, `_RevealCurve`). The edge ring has no border, so the last zone skips this
 
-Catching up more than one zone plays the steps one after another with `_StepGap` between, then snaps to the end look and saves the seen zone. A save that evolves reloads the field twice; the second load is ignored if the same opening is already playing. *A camera move during it, the bridge break before it and the overcharge pulse are still to come* [[Notes for the future]]
+Catching up more than one zone plays the steps one after another with `_StepGap` between, then snaps to the end look and saves the seen zone. A save that evolves reloads the field twice; the second load is ignored if the same opening is already playing. *The camera move and the overcharge pulse were dropped Oct 29, 2026 (the evolve warning and the evolve animation are enough). The bridge break effect is still to come ([[Spawn bridge break effect]])* [[Notes for the future]]
 
 ### ZoneBorder3DObject
 *Built Oct 12, 2026 (steps 2 and 4).* One gate ring's border: `Zone Borders/Ring k Border`. Holds the **ring wall tool** and shows the border's look.

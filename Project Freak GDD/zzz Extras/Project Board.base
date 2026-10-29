@@ -1,0 +1,41 @@
+filters:
+  and:
+    - file.inFolder("Tasks")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: Task
+  file.folder:
+    displayName: Board
+  note.status:
+    displayName: Status
+  note.chapter:
+    displayName: Chapter
+  note.owner:
+    displayName: Owner
+views:
+  - type: table
+    name: In Progress
+    filters:
+      and:
+        - note.status == "In Progress"
+    groupBy:
+      property: file.folder
+      direction: ASC
+    order:
+      - file.name
+      - chapter
+      - owner
+  - type: table
+    name: By Chapter
+    filters:
+      and:
+        - note.status != "Done"
+    groupBy:
+      property: chapter
+      direction: ASC
+    order:
+      - file.name
+      - file.folder
+      - status
+      - owner

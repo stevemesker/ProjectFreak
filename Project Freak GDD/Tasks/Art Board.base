@@ -1,0 +1,71 @@
+filters:
+  and:
+    - file.inFolder("Tasks/Art")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: Task
+  note.status:
+    displayName: Status
+  note.priority:
+    displayName: Priority
+  note.chapter:
+    displayName: Chapter
+  note.owner:
+    displayName: Owner
+  note.needs:
+    displayName: Needs
+views:
+  - type: kanban
+    name: By Priority
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - To Do
+      - In Progress
+      - Done
+    order:
+      - file.name
+      - priority
+      - chapter
+      - owner
+      - needs
+    sort:
+      - property: priority
+        direction: ASC
+      - property: chapter
+        direction: ASC
+  - type: kanban
+    name: By Chapter
+    groupBy:
+      property: status
+      direction: ASC
+    groupOrder:
+      - To Do
+      - In Progress
+      - Done
+    order:
+      - file.name
+      - chapter
+      - priority
+      - owner
+      - needs
+    sort:
+      - property: chapter
+        direction: ASC
+      - property: priority
+        direction: ASC
+  - type: table
+    name: Chapter Table
+    groupBy:
+      property: chapter
+      direction: ASC
+    order:
+      - file.name
+      - priority
+      - status
+      - owner
+    sort:
+      - property: priority
+        direction: ASC
