@@ -6,7 +6,7 @@
       {
         "id": "8824f9f280853ccd",
         "type": "tabs",
-        "dimension": 43.75611346592761,
+        "dimension": 42.191066188457775,
         "children": [
           {
             "id": "96228a7edd8b3eaa",
@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Tasks/Design/Rune field access points.md",
+                "file": "Shade Info/Shade Stats.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Rune field access points"
+              "title": "Shade Stats"
             }
           }
         ]
@@ -27,70 +27,10 @@
       {
         "id": "eac25e156f0891bc",
         "type": "tabs",
-        "dimension": 39.09357678513205,
+        "dimension": 40.91946527551353,
         "children": [
           {
             "id": "a492a5f394994b7d",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "Tasks/Engineering Board.base",
-                "viewName": "By Priority"
-              },
-              "pinned": true,
-              "icon": "lucide-kanban-square",
-              "title": "Engineering Board"
-            }
-          },
-          {
-            "id": "0ae6046728704ffc",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "Tasks/Art Board.base",
-                "viewName": "By Priority"
-              },
-              "pinned": true,
-              "icon": "lucide-kanban-square",
-              "title": "Art Board"
-            }
-          },
-          {
-            "id": "7e7a7df84bdc1cbb",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "Tasks/Design Board.base",
-                "viewName": "By Priority"
-              },
-              "pinned": true,
-              "icon": "lucide-kanban-square",
-              "title": "Design Board"
-            }
-          },
-          {
-            "id": "aa9014a4351e25ba",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "Tasks/Bugs Board.base",
-                "viewName": "By Priority"
-              },
-              "pinned": true,
-              "icon": "lucide-kanban-square",
-              "title": "Bugs Board"
-            }
-          },
-          {
-            "id": "d7f33ae097bd3394",
             "type": "leaf",
             "state": {
               "type": "graph",
@@ -98,19 +38,32 @@
               "icon": "lucide-git-fork",
               "title": "Graph view"
             }
+          },
+          {
+            "id": "ecc4a37c8f083c41",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Shade Info/Tethered.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Tethered"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       },
       {
         "id": "61347cd08ee47fa1",
         "type": "tabs",
-        "dimension": 17.15030974894033,
+        "dimension": 16.889468536028694,
         "children": [
           {
             "id": "8f34965267559858",
             "type": "leaf",
-            "pinned": true,
             "state": {
               "type": "markdown",
               "state": {
@@ -118,7 +71,6 @@
                 "mode": "source",
                 "source": false
               },
-              "pinned": true,
               "icon": "lucide-file",
               "title": "File Naming Conventions"
             }
@@ -290,49 +242,47 @@
   },
   "active": "96228a7edd8b3eaa",
   "lastOpenFiles": [
-    "Tasks/Design Board.base",
-    "Tasks/Engineering Board.base",
-    "Tasks/Art Board.base",
-    "Tasks/Bugs Board.base",
-    "Tasks/Engineering/Remember the dungeon across a field visit.md",
-    "Tasks/Engineering/3D Rune field.md",
-    "Tasks/Engineering/Spawn bridge break effect.md",
-    "Tasks/Engineering/Shrink animation on dragged list buttons.md",
-    "Tasks/Engineering/Shard tab and slotting.md",
-    "Tasks/Engineering/Send core glow values.md",
-    "Tasks/Engineering/Save slots to disk.md",
-    "Tasks/Engineering/Rune material and effect slots.md",
-    "Tasks/Engineering/Remove unused rune field shader values.md",
-    "Tasks/Engineering/Placement preview - pointer line and preview bridges.md",
-    "Tasks/Engineering/Node state forms and transitions.md",
-    "Tasks/Engineering/Node link tool and display.md",
-    "Tasks/Engineering/Load the rune field from an access point.md",
-    "Tasks/Engineering/Form display names and flavor text.md",
-    "Tasks/Engineering/Camera follow light.md",
-    "Tasks/Design/Rune tiers and their looks.md",
-    "Tasks/Design/Rune field access points.md",
-    "Tasks/Design/Name and describe the shade forms.md",
-    "Tasks/Design/Final evolve confirm window.md",
-    "Tasks/Art/Side panel and rune list art pass.md",
-    "Tasks/Art/Rune tier shaders.md",
-    "Tasks/Art/Rune field lighting and style test.md",
-    "Tasks/Art/Placement pointer and preview bridge art.md",
-    "Tasks/Art/Orbiting shard models.md",
-    "Tasks/Art/Node link textures and shaders.md",
-    "zzz Extras/Project Board.base",
-    "Tasks/Engineering",
-    "Tasks/Design",
-    "Tasks/Bugs",
-    "Tasks/Art",
-    "Tasks",
-    "zzz Extras/Attachments/Ability Node Example.png",
-    "zzz Extras/Attachments/ArcMover Example.png",
-    "zzz Extras/Attachments/Core Node.png",
-    "zzz Extras/Attachments/Element node.png",
+    "Architecture/AI Info/Shade Forms Plan.md",
+    "Architecture/AI Info/Rune Field Overhaul Plan.md",
+    "Architecture/AI Info/Coding Concepts.md",
+    "Architecture/UI/Confirm Popup.md",
+    "Shade Info/Tethered.md",
+    "UI/Rune Field/Rune Field.md",
+    "UI/Rune Field/Element Rune.md",
+    "UI/Rune Field/Core Node.md",
+    "UI/Rune Field/Bridge.md",
+    "UI/Rune Field/Ability Node.md",
+    "Shade Info/Evolution.md",
+    "Architecture/Shades/Tethered Shade.md",
+    "Architecture/Shades/Shade (Runtime).md",
+    "Shade Info/Attached.md",
+    "Character Traits/Main Character Abilities/Return Shade.md",
+    "Character Traits/Main Character Abilities/Release Shade.md",
+    "Character Traits/Main Character Abilities/Tether Shade.md",
+    "Architecture/Shades/Shade Forms Plan.md",
+    "Shade Info/Shade.md",
     "zzz Extras/Attachments/Pasted image 20261007135323.png",
-    "zzz Extras/Attachments/Pasted image 20261010045505.png",
-    "zzz Extras/Attachments/Pasted image 20261012075302.png",
+    "Shade Info/Shade Stats.md",
+    "Shade Info/Evolution Type.md",
+    "Combat/Fail State.md",
+    "Character Traits/Character Stats.md",
+    "Notes for the future.md",
+    "Shade Info/Shade Ability.md",
+    "Dungeons/Bosses.md",
+    "Architecture/AI",
+    "Architecture/Enemies",
+    "Architecture/UI",
+    "Architecture/Shades",
+    "Architecture/Items",
+    "Architecture/AI Info",
+    "Architecture/Player",
+    "Architecture/Dungeons",
+    "Dungeons",
+    "Architecture/Game Management",
+    "zzz Extras/Attachments/ArcMover Example.png",
     "zzz Extras/Attachments/Rune Field AI mockup.png",
-    "zzz Extras/Attachments/Zones - Reference.png"
+    "zzz Extras/Attachments/Ability Node Example.png",
+    "zzz Extras/Attachments/Element node.png",
+    "zzz Extras/Attachments/Core Node.png"
   ]
 }
