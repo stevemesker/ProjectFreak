@@ -105,10 +105,11 @@ Fade screen back in
 | Function | Description |
 | :--- | :--- |
 | `GetSavedRuneField(slot)` | A copy of a slot's saved field for the UI to edit |
-| `SaveRuneField(slot, field)` | Returns whether it saved. **1.** Counts every rune type on the old and new field. **2.** Checks the inventory has enough for every rune the new field adds; if not, logs an error and changes **nothing**. **3.** Takes added runes out of the inventory and gives removed runes back. **4.** Sets the field to the slot's current core power (in case it leveled while the field was open), writes its data, compiled effects and plugged node snapshots onto the slot (`ShadeSO.SaveRuneField`), **evolves** the shade if a gate in its open zone now has power (`TryEvolve`), then rebuilds the slot's runtime entry. With no Inventory Manager it saves without touching the inventory (warning). A draft made before the shade evolved (its rank is out of date) is refused with a warning |
+| `SaveRuneField(slot, field)` | Returns whether it saved. **1.** Counts every rune type on the old and new field. **2.** Checks the inventory has enough for every rune the new field adds; if not, logs an error and changes **nothing**. **3.** Takes added runes out of the inventory and gives removed runes back. **4.** Sets the field to the slot's current core power (in case it leveled while the field was open), locks in frozen runes the draft plugged into nodes (`LockInFrozenPlugs`), cuts bridges crossing the open zone's outer ring (`CutOpenRingBridges`), writes its data, compiled effects and plugged node snapshots onto the slot (`ShadeSO.SaveRuneField`), **evolves** the shade if a gate in its open zone now has power (`TryEvolve`), then rebuilds the slot's runtime entry. With no Inventory Manager it saves without touching the inventory (warning). A draft made before the shade evolved (its rank is out of date) is refused with a warning |
 | `GetSavedRuneCount(slot, element)` | How many of a rune the slot's saved field has (the rune field UI uses it for pending counts) |
-| `GetCorePower(slot)` | The slot's core power: its level + fragment power |
+| `GetCorePower(slot)` | The slot's core power: its level + its slotted shard's power |
 | `GetRank(slot)` | How many times the slot's shade has evolved (Bound = 0) |
+| `GetSeenOpenZone(slot)` / `SetSeenOpenZone(slot, zone)` | *Oct 12, 2026.* The last open zone the player saw on the slot's 3D rune field (0 = never seen), for the zone visuals (see **Zones** in [[Rune Field 3D View]]) |
 | `GetBoundEvolution()` | The shared Bound form |
 | `GetRuneFieldSettings()` | The shared rune field settings |
 | `IsValidSlot(slot)` | Checks a slot index points at a real slot |
@@ -117,7 +118,8 @@ Fade screen back in
 ## Evolving
 *Added Oct 9, 2026 (overhaul step 7).* A shade evolves when a gate (a node with an Evolve effect) in its open zone gets power. See **Zones and Evolving** in [[Rune Field System]].
 
-- **`TryEvolve(slot)`** runs after every save and every level-up. It runs the rules on the slot's saved field with its node snapshots (no field scene, so it works mid-dungeon and mid-fight). If a gate is on, `ShadeSO.Evolve(gate, form)` records the gate in `_GatesTaken` (rank + 1) and swaps `_CurrentEvolution`, then the field runs again so the zone it left counts as frozen (frozen runes get power first)
+- **`TryEvolve(slot)`** runs after every save and every level-up. It runs the rules on the slot's saved field with its node snapshots (no field scene, so it works mid-dungeon and mid-fight). If a gate is on, `ShadeSO.Evolve(gate, form)` records the gate in `_GatesTaken` (rank + 1) and swaps `_CurrentEvolution`, then the field runs again and freezes the zone it left (`RuneField.FreezeClosedZones`: its runes, its bridges and its plugged runes, saved on the field; frozen runes get power first, see [[Rune Field System]]). The new form is marked seen on the active [[Save slot]] (*Oct 11, 2026*)
+- **`IsEvolutionSeen(form)`** *(Oct 11, 2026)*: has the player seen this form? The Bound form always counts, and with no Save Manager or save slot everything counts as seen. Used by the shade info window (see [[Rune Field 3D View]])
 - Then the runtime entry is rebuilt (new base stats; the max HP rule moves current HP with max HP), and **`FinishEvolving`**: if that slot's shade is out, `TetheredShade.RefreshForm()` / `ReleasedShade.RefreshForm()` swap in the new form's art on the spot (and the tethered shade's tether distance and tail point). Then the C# event **`OnShadeEvolved(slotIndex)`** fires; the rune field listens to reload
 - A gate with power but no form set on its Evolve effect logs an error and doesn't evolve
 - *No evolve effect or VFX yet, the art just swaps* [[Notes for the future]]
@@ -133,7 +135,7 @@ Fade screen back in
 | `_LiveStats` | Hard stats + timed effects and equipment (later [[Notes for the future]]). **`_Health` is the shade's current health.** This is what combat should read |
 | `_Abilities` | The evolution's natural abilities and ultimate + every Grant Ability effect, each listed once. Not used yet [[Notes for the future]] |
 
-**`RebuildSlot(slot)`** is the one place an entry is worked out (also on the [[Manager Wrappers|Shade Manager Wrapper]]). It runs at game start, on field save, on level change and on evolving (later also slotting a shard [[Notes for the future]]). It keeps the **same entry object** and fills it in again, so summoned shades pointing at it stay pointed at it. Stats are worked out from scratch, never added or removed bit by bit, so they can't drift. A negative rune can't push a stat below 1 (unless the base was already below 1). No evolution logs a warning and starts from all 0.
+**`RebuildSlot(slot)`** is the one place an entry is worked out (also on the [[Manager Wrappers|Shade Manager Wrapper]]). It runs at game start, on field save, on level change, on evolving and on slotting a shard. It keeps the **same entry object** and fills it in again, so summoned shades pointing at it stay pointed at it. Stats are worked out from scratch, never added or removed bit by bit, so they can't drift. A negative rune can't push a stat below 1 (unless the base was already below 1). No evolution logs a warning and starts from all 0.
 
 **Max HP rule:** when max HP changes, current health moves by the same amount, clamped between 0 and the new max. The first build of the session starts at full health. A shade already at 0 stays at 0 (a stat change doesn't revive it). Dropping to 0 this way only logs a warning for now; falling is the [[Fail State]] work [[Notes for the future]]
 
@@ -144,7 +146,8 @@ Fade screen back in
 | `GetSlotStats(slot)` / `GetCurrentShadeStats()` | A slot's **live** stats |
 | `Heal(slot, amount)` | Never above max. A shade at 0 isn't healed back up (Fail State decides that) |
 | `RefillHealth(slot)` / `RefillAllHealth()` | Back to full. For the hub and rest floor refills. *Nothing calls these on entering the hub yet, there's no "entered the hub" moment in the code* [[Notes for the future]] |
-| `SetSlotLevel(slot, level)` / `AddLevels(slot, amount)` | Changes the slot's level (minimum 1), **re-runs its saved rune field** with the new core power using its node snapshots (no field scene needed, works mid-dungeon), writes the result back to the slot, then evolves the shade if the extra power reached a plugged gate, then rebuilds the entry |
+| `SetSlotLevel(slot, level)` / `AddLevels(slot, amount)` | Changes the slot's level (minimum 1), **re-runs its saved rune field** with the new core power using its node snapshots (no field scene needed, works mid-dungeon), writes the result back to the slot, then evolves the shade if the extra power reached a plugged gate, then rebuilds the entry and fires `OnCorePowerChanged` (*Oct 11, 2026*; the 3D field listens so an open draft gets the new power) |
+| `SlotShard(slot, shard)` | *Oct 11, 2026.* Slots a shard ([[Items & Pickups]], `ShardItemSO`) into the shade's core for good: refused (warning, returns false) if the shade already has one or the inventory has none, otherwise takes one out of the inventory, then does the same as a level change (re-runs the field, may evolve, rebuilds, fires `OnCorePowerChanged`). With no Inventory Manager it slots without taking one (warning). The confirm box comes with the shard page [[Notes for the future]]. Test Tools: **Slot Shard Into Current Slot** |
 
 **Test Tools** (Odin foldout, play mode only): **Level Up Current Slot**, **Hurt Current Slot** (takes health off, to test healing and the max HP rule), **Refill All Health**.
 

@@ -32,6 +32,7 @@ Save slots need to track the player's various data and save it to the save file 
 | Shade Stats            |                       | Planned | [[Notes for the future]] |
 | Rune field data        |                       | Planned | position and activated state of all runes and nodes [[Notes for the future]] |
 | Shade active abilities |                       | Planned | [[Notes for the future]] |
+| Seen evolutions | `_SeenEvolutions` | Yes | *Oct 11, 2026.* Shade forms the player has seen (`MarkEvolutionSeen`, `HasSeenEvolution`). Ones not seen show blacked out in the rune field's shade info window (see [[Rune Field 3D View]]). Added when a shade evolves; later when its evolve cutscene plays [[Notes for the future]]. Cleared by `ResetData()` |
 
 ---
 

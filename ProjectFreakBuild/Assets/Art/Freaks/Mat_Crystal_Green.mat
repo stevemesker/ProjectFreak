@@ -269,15 +269,15 @@ Material:
     - _ZWrite: 1
     - _outline_power: 17.33
     - _outline_strength: 35.5
-    - _smoothness: 0
+    - _smoothness: 0.8
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Caustic_Color_1: {r: 0, g: 1.8119234, b: 22.200483, a: 0}
-    - _Caustic_Color_2: {r: 0.11727782, g: 0, b: 0.74509805, a: 0}
-    - _Colo2: {r: 0.26666668, g: 0.5303853, b: 1.4980392, a: 0}
+    - _Caustic_Color_1: {r: 2.3638284, g: 8.47419, b: 0, a: 0}
+    - _Caustic_Color_2: {r: 0, g: 0.74509805, b: 0.25743386, a: 0}
+    - _Colo2: {r: 0.17761263, g: 0.41509438, b: 0.05678179, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _Color1: {r: 0, g: 9.621264, b: 12.844469, a: 0}
+    - _Color1: {r: 0.48011371, g: 2.7954404, b: 0, a: 0}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
@@ -285,7 +285,7 @@ Material:
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
-    - _Outline: {r: 0, g: 7.319282, b: 311.49716, a: 0}
+    - _Outline: {r: 20.880182, g: 55.06544, b: 0, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}

@@ -24,7 +24,9 @@ The abstract base for all item data.
 | `ItemRarity`       | Rarity                                                                |
 | `itemStackSizeMax` | Max stack (default 99)                                                |
 
-Item types: `WeaponItem` / `WeaponRangedItem` (see [[Weapon usage]]), `IngredientItem`, `ElementItemSO`.
+Item types: `WeaponItem` / `WeaponRangedItem` (see [[Weapon usage]]), `IngredientItem`, `ElementItemSO`, `ShardItemSO`.
+
+**`ShardItemSO`** *(Oct 11, 2026)*: a core fragment ("shard", see Core Fragments in [[Rune Field Overhaul Plan]]). `_Tier` (`ShardType.Tier`: Minor, Basic, Major, Perfect) and `_Power` (core power it adds). One asset per tier, made from **Create → ScriptableObjects → Items → Shard**, so shards stack like any item. Slotted into a shade with `ShadeManager.SlotShard` (see [[Shade Manager]]). Dropping shards when a shade dies or is broken down is part of the [[Fail State]] work [[Notes for the future]]. Shard assets are Steve's to make (Minor 1, Basic 3, Major 7, Perfect 15 to start)
 
 ---
 ## ItemDrop

@@ -20,10 +20,11 @@ One asset per shade slot. Created from **Create → ScriptableObjects → Shades
 | `_Level` | Level (default 1) |
 | `_XP` | Experience. Leveling isn't built yet [[Notes for the future]] |
 | `_Lives` | Times the shade can fall in a dungeon (default 3) |
-| `_FragmentPower` | Core fragment power. 0 = none. **Core power = level + fragment** (`GetCorePower()`) |
+| `_Shard` | *Oct 11, 2026, replaced `_FragmentPower`.* The slotted shard (`ShardItemSO`), empty = none. **Core power = level + shard power** (`GetCorePower()`, `GetShardPower()`). Slotting is permanent: `SlotShard(shard)` refuses a second one (called by `ShadeManager.SlotShard`). Can be set by hand for playtests; Reset Slot clears it |
 | `_RuneField` | The saved [[Rune Field]] (`RuneFieldData`). Was `_StartingRuneField` (kept through `FormerlySerializedAs`) |
 | `_CompiledEffects` | Everything the saved field does, worked out on save (read only). The [[Shade Manager]] builds stats from this |
 | `_PluggedNodes` | Snapshots of every node the saved field has a rune plugged into (read only). Lets the rules run again without the field scene |
+| `_SeenOpenZone` | *Oct 12, 2026.* The last open zone the player actually saw on this slot's 3D rune field (0 = never seen). When the field opens further out than this, the zone opening plays (see **Zones** in [[Rune Field 3D View]]). Set by `SetSeenOpenZone(zone)` through the [[Shade Manager]]. Set it lower by hand to see the opening again; Reset Slot puts it back to 0 |
 
 `SaveRuneField(field, effects, nodes)` replaces all three rune field lists at once (never adds to them) and marks the asset changed so the editor saves it to disk.
 

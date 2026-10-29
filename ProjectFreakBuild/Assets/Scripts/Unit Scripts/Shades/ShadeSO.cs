@@ -28,8 +28,8 @@ public class ShadeSO : ScriptableObject
     [Tooltip("How many times the shade can fall in a dungeon before it's gone")]
     [Min(0)] public int _Lives = 3;
 
-    [Tooltip("Extra core power from a slotted core fragment. 0 = no fragment. Slotting one is permanent (see Core Fragments in the Rune Field Overhaul Plan)")]
-    [Min(0)] public int _FragmentPower = 0;
+    [Tooltip("The shard (core fragment) slotted into this shade's core. Its power adds to the core's. Empty = none. In play, slotting is permanent and goes through ShadeManager.SlotShard (see Core Fragments in the Rune Field Overhaul Plan). Can be set here by hand for playtests")]
+    public ShardItemSO _Shard; //replaced _FragmentPower (a plain number) on Oct 11, 2026
 
     [Header("Rune Field")]
     [Tooltip("The saved rune field: runes, bridges, plugs and active nodes. The field UI edits a copy and writes it back here when the player saves")]
@@ -43,6 +43,9 @@ public class ShadeSO : ScriptableObject
     [Tooltip("A copy of every node the saved field has a rune plugged into, powered or not (read only). Lets the rules run again without the field scene, like on a level-up")]
     [ReadOnly] public List<AbilityNodeEntry> _PluggedNodes = new List<AbilityNodeEntry>();
 
+    [Tooltip("The last open zone the player actually saw on this slot's 3D rune field. 0 = never seen. When the field opens and the real open zone is further out, the zone opening transition plays. Set it lower by hand to see the transition again")]
+    [Min(0)] public int _SeenOpenZone = 0;
+
     #region Getters
     public int GetRank()
     {
@@ -53,8 +56,19 @@ public class ShadeSO : ScriptableObject
 
     public int GetCorePower()
     {
-        //how much power the shade's rune field core has: its level plus its fragment
-        return _Level + _FragmentPower;
+        //how much power the shade's rune field core has: its level plus its shard's power
+        return _Level + GetShardPower();
+    }
+
+    public int GetShardPower()
+    {
+        //how much core power the slotted shard adds, 0 with none
+        return _Shard != null ? _Shard._Power : 0;
+    }
+
+    public bool HasShard()
+    {
+        return _Shard != null;
     }
 
     public RuneFieldData GetRuneFieldCopy()
@@ -84,6 +98,23 @@ public class ShadeSO : ScriptableObject
         MarkChanged();
     }
 
+    public bool SlotShard(ShardItemSO shard)
+    {
+        //function the Shade Manager calls to slot a shard into this shade's core, for good. Refused (false) if there's no shard or one is already slotted
+        //the manager takes it out of the inventory and re-runs the rune field afterwards
+        if (shard == null || HasShard()) return false;
+        _Shard = shard;
+        MarkChanged();
+        return true;
+    }
+
+    public void SetSeenOpenZone(int zone)
+    {
+        //function the Shade Manager calls once the rune field has shown this slot's open zone. Never below 0
+        _SeenOpenZone = Mathf.Max(0, zone);
+        MarkChanged();
+    }
+
     public void Evolve(int gateIndex, ShadeEvolutionSO evolution)
     {
         //function the Shade Manager calls when a gate gets power: records the gate (rank goes up by 1) and swaps to the new form
@@ -96,9 +127,9 @@ public class ShadeSO : ScriptableObject
     }
 
     [Button("Reset Slot (playtests)"), GUIColor(1f, 0.6f, 0.6f)]
-    void ResetSlot()
+    public void ResetSlot() //public so the 3D test kit's Reset Slot button can call it
     {
-        //editor button that starts this shade over: empty field, level 1, no fragment, no gates, back in the Bound form
+        //editor button that starts this shade over: empty field, level 1, no shard, no gates, no seen zone, back in the Bound form
         //the Bound form is set on the Shade Manager, so it only comes back in play mode. Outside play mode the form is left as it is
         ShadeEvolutionSO bound = ShadeManager._ShadeManager != null ? ShadeManager._ShadeManager.GetBoundEvolution() : null;
         if (bound != null) _CurrentEvolution = bound;
@@ -110,7 +141,8 @@ public class ShadeSO : ScriptableObject
         _GatesTaken = new List<int>();
         _Level = 1;
         _XP = 0;
-        _FragmentPower = 0;
+        _Shard = null;
+        _SeenOpenZone = 0; //never seen, so the field snaps to zone 1 next time it opens
         MarkChanged();
 
         if (ShadeManager._ShadeManager != null) ShadeManager._ShadeManager.RebuildSlot(ShadeManager._ShadeManager._ShadeSlots.IndexOf(this)); //in play mode, the stats catch up right away

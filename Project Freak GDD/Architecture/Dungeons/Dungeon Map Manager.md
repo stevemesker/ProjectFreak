@@ -474,7 +474,7 @@ The manager uses:
 
 ### `NodeBridge`
 
-Represents the visual connection between two map nodes.
+Represents the visual connection between two map nodes. *Oct 28, 2026: it used to be the 2D rune field's bridge too. That part (tearing) was removed with the 2D field, so it only draws the map's line now: `BuildConnection` and `UpdatePosition`, unchanged. Keep `NodeBridge.cs` and `P_EvoNode_Bridge`.*
 
 Responsible for constructing and positioning the visual bridge.
 

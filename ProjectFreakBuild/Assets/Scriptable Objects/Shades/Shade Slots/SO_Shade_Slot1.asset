@@ -12,17 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502f0ffe7b80a5947bdaaa346a14c599, type: 3}
   m_Name: SO_Shade_Slot1
   m_EditorClassIdentifier: 
-  _coreStats:
-    _HP: 0
-    _Health: 0
-    _STR: 0
-    _DEF: 0
-    _AGI: 0
-    _INT: 0
-    _SPR: 0
-    _WIS: 0
-    _LVL: 0
-    _Name: 0
-    _XP: 0
-    _DIS: 0
-    _WILD: 0
+  _CurrentEvolution: {fileID: 11400000, guid: cb2773204e6bff4479520fbaa020e985, type: 2}
+  _GatesTaken: 
+  _Level: 3
+  _XP: 0
+  _Lives: 3
+  _Shard: {fileID: 0}
+  _RuneField:
+    _Runes: []
+    _Bridges: []
+    _Plugs: []
+    _ActiveNodes: 
+    _NextRuneID: 0
+    _FrozenRunes: 
+    _FrozenBridges: []
+    _LockedRunes: 
+  _CompiledEffects: []
+  _PluggedNodes: []
+  _SeenOpenZone: 1
+  references:
+    version: 2
+    RefIds: []

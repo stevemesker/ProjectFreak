@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//something lines can be drawn to and from on the dungeon map (DungeonMapNode)
+//the old 2D rune field's interfaces (IConnectable, ICoreNode, iEvolutionNode) were removed with it on Oct 28, 2026
 public interface IBridgeable
 {
     float GetMaxRange();
@@ -11,38 +13,3 @@ public interface IBridgeable
     void LoadReconnect();
     void ConnectNode(GameObject connectTo);
 }
-
-public interface IConnectable
-{
-    void ClearConnection();
-
-    void DisconnectNodeTree();
-
-    void ConsumePower();
-
-    GameObject GetCoreNode();
-
-    bool PowerChecked(bool CoreHide);
-
-    bool SearchCore(GameObject Origin);
-
-    bool TestLength(Vector3 position, Vector3 originPosition);
-}
-
-public interface ICoreNode
-{
-    bool HasPower();
-
-    int CoreNodePowerConsume(int AmountToTake);
-
-    void ReturnPower(int Power);
-}
-
-public interface iEvolutionNode
-{
-    bool IsPlugged();
-    void PlugElement(GameObject ElementToPlug);
-
-    void ResetNode();
-}
-

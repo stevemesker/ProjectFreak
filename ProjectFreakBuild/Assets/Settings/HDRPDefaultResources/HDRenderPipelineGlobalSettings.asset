@@ -70,10 +70,10 @@ MonoBehaviour:
   afterPostProcessCustomPostProcesses: []
   beforeTAACustomPostProcesses: []
   lightLayerName0: Light Layer default
-  lightLayerName1: Light Layer 1
-  lightLayerName2: Light Layer 2
-  lightLayerName3: Light Layer 3
-  lightLayerName4: Light Layer 4
+  lightLayerName1: Zone 1
+  lightLayerName2: Zone 2
+  lightLayerName3: Zone 3
+  lightLayerName4: Zone 4
   lightLayerName5: Light Layer 5
   lightLayerName6: Light Layer 6
   lightLayerName7: Light Layer 7

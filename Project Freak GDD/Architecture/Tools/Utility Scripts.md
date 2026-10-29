@@ -23,6 +23,7 @@ Small general-purpose scripts. Most live in `Scripts/Common`.
 | `NavMeshTools`     | Static helpers for NavMesh users: `IsWaitingOnFloor(unit, out floor)` (is this unit's dungeon floor still building its NavMesh?) and `TryGetNavMeshPoint(position, maxDistance, out point)` and `TryGetRandomPoint(center, radius, out point)` (a random spot on the NavMesh, used by Wander and Seek Fight). Used by `EnemyMovement`, `NavGuideDriver` and the [[Unit Brain]] actions |
 | `SceneReference`   | Lets a scene asset be dragged into the inspector and stores its path. *Doesn't appear to be used yet* [[Notes for the future]] |
 | `RarityType`, `CraftingBenchType`, `ElementMaterialType`, `DamageType` | Enum files |
+| `UIBuildTools` | *Oct 11, 2026.* Static helpers for **Build Default Layout** buttons that make UI from code: `MakeChild`, `Stretch`, `MakeText`. In `Scripts/UI`. Used by [[Confirm Popup]] and the shade info window |
 
 ---
 ## Editor Tools

@@ -1,5 +1,6 @@
 {
   "alwaysUpdateLinks": true,
   "autoConvertHtml": false,
-  "attachmentFolderPath": "zzz Extras/Attachments"
+  "attachmentFolderPath": "zzz Extras/Attachments",
+  "promptDelete": false
 }

@@ -30,6 +30,8 @@ public class RuneFieldLogicTester : MonoBehaviour
         TestExpensiveRuneBlocksChain();
         TestLoopTear();
         TestClampToBridges();
+        TestClampToTwoBridges();
+        TestDropSearch();
         TestNodeLockoutsAndUnlocks();
         TestMaxPowerAndRemoval();
         TestCloneAndCleanUp();
@@ -45,6 +47,17 @@ public class RuneFieldLogicTester : MonoBehaviour
         TestZonePlacement();
         TestFrozen();
         TestFrozenPowerFirst();
+        TestFreezeOnEvolve();
+        TestFrozenLeash();
+        TestLockedIn();
+        TestFrozenPastOpenZone();
+        TestFrozenChainKeepsPower();
+        TestFrozenPowerOrder();
+        TestOldSlotFrozenLists();
+        TestFrozenListsCleanUp();
+        TestPlanningRunes();
+        TestOldZoneRunes();
+        TestCutOnSave();
         TestPlugLockouts();
         TestGateZones();
         TestSetupChecks();
@@ -105,6 +118,7 @@ public class RuneFieldLogicTester : MonoBehaviour
         Check(field.IsRunePowered(a) && field.IsRunePowered(c), "Power priority: both 1 bridge runes are powered");
         Check(field.IsRunePowered(b) == false, "Power priority: the 2 bridge rune is dark even though it was placed before c");
         Check(field.GetPowerUsed() == 2 && field.GetPowerLeft() == 0, "Power priority: 2 of 2 power used");
+        Check(field.HasRunesWaitingForPower(), "Power priority: the field knows a rune is waiting for power (for the core's look)");
     }
 
     void TestExpensiveRuneBlocksChain()
@@ -165,6 +179,60 @@ public class RuneFieldLogicTester : MonoBehaviour
 
         Check(Mathf.Abs(clamped.x - 150f) < 0.01f && Mathf.Abs(clamped.y) < 0.01f, "Clamp: dragging to 400 stops at the 150 reach");
         Check(Mathf.Abs(field.GetBridgeStretch(a, new Vector2(400, 0), RuneField.CoreID) - 250f) < 0.01f, "Clamp: the bridge is stretched 250 past its reach");
+    }
+
+    void TestClampToTwoBridges()
+    {
+        //a rune held by two bridges stops at the closest spot both can reach: the corner where their circles cross when pulled straight out,
+        //and the edge of just one circle when pulled to the side. Only the bridges holding it back count as taut (and tear)
+        RuneFieldSettingsSO settings = MakeSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 200f);
+        RuneField field = new RuneField(new RuneFieldData(), settings, nodes, 10);
+
+        int a = Place(field, element, new Vector2(-150, 500), false);
+        int b = Place(field, element, new Vector2(150, 500), false);
+        int c = Place(field, element, new Vector2(0, 600), false);
+        field.Connect(c, a);
+        field.Connect(c, b);
+        Check(field.AreConnected(c, a) && field.AreConnected(c, b), "Two bridges: the rune is bridged to both");
+
+        Vector2 corner = new Vector2(0f, 500f + Mathf.Sqrt(200f * 200f - 150f * 150f)); //where the two 200 reach circles cross, above them
+        Vector2 clamped = field.ClampToBridges(c, new Vector2(0, 1500));
+        Check(Vector2.Distance(clamped, corner) < 0.1f, "Two bridges: pulling straight out stops at the corner where both reaches meet");
+        Check(field.IsBridgeTaut(c, clamped, a, 2f) && field.IsBridgeTaut(c, clamped, b, 2f), "Two bridges: at the corner both bridges are taut");
+
+        Vector2 side = field.ClampToBridges(c, new Vector2(400, 632));
+        Check(Mathf.Abs(Vector2.Distance(side, field.GetPosition(a)) - 200f) < 0.1f, "Two bridges: pulling to the side stops at the far bridge's reach");
+        Check(field.IsBridgeTaut(c, side, a, 2f) && field.IsBridgeTaut(c, side, b, 2f) == false, "Two bridges: pulling to the side only makes the far bridge taut");
+    }
+
+    void TestDropSearch()
+    {
+        //letting go on a spot the rune can't land on finds the closest spot that works, within its bridges' reach
+        RuneFieldSettingsSO settings = MakeSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 200f);
+        RuneField field = new RuneField(new RuneFieldData(), settings, nodes, 10);
+
+        int rune = Place(field, element, new Vector2(0, 300), false);
+        int other = Place(field, element, new Vector2(0, 500), false);
+        Vector2 onTop = new Vector2(0, 480); //overlaps the other rune
+
+        Check(field.CanDropAt(rune, onTop, out Vector2 refusedSpot, out int refusedNode) == false, "Drop search: the spot on top of another rune is refused");
+        bool found = field.FindDropSpot(rune, onTop, out Vector2 spot, out int nodeIndex);
+        Check(found && field.IsSpotFree(rune, spot), "Drop search: a free spot nearby is found instead");
+        Check(Vector2.Distance(spot, onTop) <= 80f + settings._DropSearchStep * 2f, "Drop search: it's about the closest free spot (the other rune's edge is 80 away, give or take the search step)");
+        Check(field.TryDropRune(rune, spot) && field.GetPosition(rune) == spot, "Drop search: dropping on the found spot works");
+
+        //bridged to a rune off to the left, the closest free spot to the right of the other rune is out of reach, so it has to find one to the left
+        int anchor = Place(field, element, field.GetPosition(rune) + new Vector2(-190, 0), false);
+        Check(field.Connect(rune, anchor), "Drop search: the rune is bridged to an anchor on its left");
+        found = field.FindDropSpot(rune, new Vector2(50, 480), out spot, out nodeIndex);
+        Check(found && Vector2.Distance(spot, field.GetPosition(anchor)) <= field.GetBridgeReach(rune, anchor) + 0.01f, "Drop search: the spot it finds never stretches a bridge");
+
+        settings._DropSearchDistance = 0f;
+        Check(field.FindDropSpot(rune, onTop, out spot, out nodeIndex) == false, "Drop search: a Drop Search Distance of 0 turns the search off");
     }
 
     void TestNodeLockoutsAndUnlocks()
@@ -454,15 +522,16 @@ public class RuneFieldLogicTester : MonoBehaviour
 
     void TestZonePlacement()
     {
-        //runes only go in the open zone (rank + 1). Further out is locked, further in is frozen, past the edge is off the field
+        //runes go in any zone inside the field: closed zones take normal runes again, locked zones take planning runes. Past the edge is off the field
         RuneFieldSettingsSO settings = MakeZoneSettings();
         List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
 
         RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
-        Check(CanDrop(bound, new Vector2(200, 0)) && CanDrop(bound, new Vector2(400, 0)) == false, "Zone placement: a Bound shade can use zone 1 but not zone 2");
+        Check(CanDrop(bound, new Vector2(200, 0)) && CanDrop(bound, new Vector2(400, 0)), "Zone placement: a Bound shade can use zone 1, and zone 2 for planning runes");
+        Check(bound.IsPastOpenZone(new Vector2(400, 0)) && bound.IsPastOpenZone(new Vector2(300, 0)) == false, "Zone placement: zone 2 is past a Bound shade's open zone, the ring itself isn't");
 
         RuneField unbound = new RuneField(new RuneFieldData(), settings, nodes, 10, 1);
-        Check(CanDrop(unbound, new Vector2(200, 0)) == false && CanDrop(unbound, new Vector2(400, 0)), "Zone placement: after evolving once, zone 1 is closed and zone 2 is open");
+        Check(CanDrop(unbound, new Vector2(200, 0)) && CanDrop(unbound, new Vector2(400, 0)), "Zone placement: after evolving once, the closed zone 1 and the open zone 2 both take runes");
 
         RuneField legend = new RuneField(new RuneFieldData(), settings, nodes, 10, 3);
         Check(CanDrop(legend, new Vector2(1150, 0)) && CanDrop(legend, new Vector2(1250, 0)) == false, "Zone placement: the last zone stops at the outer ring");
@@ -470,7 +539,8 @@ public class RuneFieldLogicTester : MonoBehaviour
 
     void TestFrozen()
     {
-        //runes in a zone the shade evolved out of can't move, be removed, or lose their bridges. New runes can still bridge to them
+        //runes in a zone the shade evolved out of can be moved, but can't be removed or lose their bridges. New runes can still bridge to them
+        //(this builds the evolved field straight from the Bound data, so the frozen lists come from the old-slot fill-in, see TestOldSlotFrozenLists)
         RuneFieldSettingsSO settings = MakeZoneSettings();
         List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
         ElementItemSO element = MakeElement(1, 2, 150f);
@@ -482,7 +552,8 @@ public class RuneFieldLogicTester : MonoBehaviour
 
         RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
         Check(field.IsRuneFrozen(a) && field.IsRuneFrozen(b), "Frozen: after evolving, the zone 1 runes are frozen");
-        Check(field.TryDropRune(a, new Vector2(150, 80)) == false && field.GetPosition(a) == new Vector2(100, 0), "Frozen: a frozen rune can't be moved");
+        Check(field.TryDropRune(a, new Vector2(100, 60)) && field.GetPosition(a) == new Vector2(100, 60), "Frozen: a frozen rune can be moved inside its closed zone");
+        Check(field.IsRuneFrozen(a), "Frozen: moving a frozen rune doesn't thaw it");
         Check(field.RemoveRune(b) == false && field.GetRune(b) != null, "Frozen: a frozen rune can't be removed");
 
         field.Disconnect(a, RuneField.CoreID);
@@ -513,6 +584,349 @@ public class RuneFieldLogicTester : MonoBehaviour
         Check(field.AreConnected(c, RuneField.CoreID), "Frozen power: the new rune is bridged straight to the core");
         Check(field.IsRunePowered(a) && field.IsRunePowered(b), "Frozen power: the frozen chain keeps its power");
         Check(field.IsRunePowered(c) == false && field.GetPowerUsed() == 2, "Frozen power: the new rune waits, even though it's closer to the core than b");
+    }
+
+    void TestFreezeOnEvolve()
+    {
+        //evolving freezes the zone it left: its runes, every bridge with both ends frozen at that moment, and frozen runes in nodes (locked in)
+        //a bridge made later between two frozen runes stays normal until the next evolve
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        int node = AddNode(nodes, new Vector2(450, 0)); //zone 2
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int a = Place(bound, element, new Vector2(100, 0));
+        int e = Place(bound, element, new Vector2(0, 100)); //bridges to the core and to a
+        bound.Disconnect(a, e); //torn, so a and e aren't bridged when the shade evolves
+
+        RuneField unbound = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+        unbound.FreezeClosedZones();
+        Check(unbound.IsRuneFrozen(a) && unbound.IsRuneFrozen(e), "Freeze: evolving freezes the zone 1 runes");
+        Check(unbound.IsBridgeFrozen(a, RuneField.CoreID) && unbound.IsBridgeFrozen(e, RuneField.CoreID), "Freeze: their bridges to the core freeze");
+
+        Check(unbound.Connect(a, e) && unbound.IsBridgeFrozen(a, e) == false, "Freeze: a new bridge between two frozen runes stays normal");
+
+        int c = Place(unbound, longReach, new Vector2(360, -100)); //zone 2, bridges to the core
+        int p = Place(unbound, longReach, new Vector2(450, 0));    //zone 2, snaps into the node and bridges to c
+        Check(unbound.GetPluggedNode(p) == node && unbound.IsRuneFrozen(p) == false && unbound.IsRuneLockedIn(p) == false, "Freeze: a zone 2 rune in a node is a normal rune before the next evolve");
+
+        RuneField ascendant = new RuneField(unbound.GetData().Clone(), settings, nodes, 10, 2);
+        Check(ascendant.IsRuneFrozen(c) == false, "Freeze: a field that already has frozen lists isn't filled in from positions");
+
+        ascendant.FreezeClosedZones();
+        Check(ascendant.IsRuneFrozen(c) && ascendant.IsRuneFrozen(p), "Freeze: evolving again freezes the zone 2 runes");
+        Check(ascendant.IsBridgeFrozen(a, e), "Freeze: the newer bridge between the zone 1 runes freezes on the next evolve");
+        Check(ascendant.IsBridgeFrozen(c, RuneField.CoreID) && ascendant.IsBridgeFrozen(p, c), "Freeze: the zone 2 bridges freeze");
+        Check(ascendant.IsRuneLockedIn(p) && ascendant.IsRuneLockedIn(c) == false, "Freeze: the frozen rune in a node is locked in, the one outside a node isn't");
+    }
+
+    void TestFrozenLeash()
+    {
+        //a frozen bridge never tears, so it's a hard leash: a frozen rune can go anywhere its frozen bridges reach, and no further
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int a = Place(bound, longReach, new Vector2(100, 0));
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+
+        Check(field.TryDropRune(a, new Vector2(350, 0)) && field.IsRuneFrozen(a), "Leash: a frozen rune can be moved into the open zone and stays frozen");
+        Check(field.TryDropRune(a, new Vector2(0, -450)) == false && field.GetPosition(a) == new Vector2(350, 0), "Leash: dropping it past its frozen bridge's reach is refused");
+
+        Vector2 clamped = field.ClampToBridges(a, new Vector2(0, -450)); //what dragging there gives: stopped at the 400 reach
+        Check(field.TryDropRune(a, clamped), "Leash: dropping it right at the end of the leash works");
+        Check(field.GetBridgeStretch(a, new Vector2(0, -450), RuneField.CoreID) == 0f, "Leash: pulling past the leash never stretches (tears) a frozen bridge");
+
+        field.Disconnect(a, RuneField.CoreID);
+        Check(field.AreConnected(a, RuneField.CoreID), "Leash: the frozen bridge is still there after being moved");
+    }
+
+    void TestLockedIn()
+    {
+        //rule A: a locked-in rune never moves or unplugs. A frozen rune plugged in during the draft can still come out until the field is saved
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        int zone1Node = AddNode(nodes, new Vector2(200, 0));
+        int zone2Node = AddNode(nodes, new Vector2(0, 350));
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int r = Place(bound, longReach, new Vector2(200, 0));  //plugged into the zone 1 node
+        int q = Place(bound, longReach, new Vector2(-250, 0)); //not in a node
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+
+        Check(field.IsRuneLockedIn(r) && field.IsRuneLockedIn(q) == false, "Locked in: after evolving, the frozen rune in a node is locked in");
+        Check(field.TryDropRune(r, new Vector2(200, 120)) == false && field.GetPosition(r) == new Vector2(200, 0), "Locked in: a locked-in rune can't be moved");
+
+        field.UnplugRune(r);
+        Check(field.GetPluggedNode(r) == zone1Node, "Locked in: a locked-in rune can't be unplugged");
+        Check(field.RemoveRune(r) == false, "Locked in: a locked-in rune can't be removed");
+
+        Check(field.TryDropRune(q, new Vector2(0, 350)) && field.GetPluggedNode(q) == zone2Node, "Locked in: a frozen rune can be plugged into an open zone node in the draft");
+        List<int> toLock = field.GetFrozenRunesToLockIn();
+        Check(field.IsRuneLockedIn(q) == false && toLock.Count == 1 && toLock.Contains(q), "Locked in: it isn't locked in yet, and it's the one rune waiting to be");
+
+        field.UnplugRune(q);
+        Check(field.GetPluggedNode(q) == -1, "Locked in: before saving, it can still come back out");
+
+        field.TryDropRune(q, new Vector2(0, 350));
+        field.LockInFrozenPlugs(); //what saving does
+        Check(field.IsRuneLockedIn(q) && field.TryDropRune(q, new Vector2(-250, 0)) == false, "Locked in: once saved, it's locked in and can't move");
+    }
+
+    void TestFrozenPastOpenZone()
+    {
+        //a frozen rune can be moved past the open zone and keeps its power there, but can't plug into a node out there
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        int zone3Node = AddNode(nodes, new Vector2(700, 0));
+        ElementItemSO veryLongReach = MakeElement(1, 2, 700f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int f = Place(bound, veryLongReach, new Vector2(100, 0));
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+
+        Check(field.TryDropRune(f, new Vector2(650, 100)) && field.GetZone(field.GetPosition(f)) > field.GetOpenZone(), "Past open zone: a frozen rune can be moved into a locked zone");
+        Check(field.IsRunePowered(f), "Past open zone: it keeps its power out there");
+        Check(field.TryDropRune(f, new Vector2(700, 0)) == false && field.GetPluggedNode(f) == -1 && field.GetRuneInNode(zone3Node) == -1, "Past open zone: it can't plug into a node out there");
+
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        int p = Place(field, element, new Vector2(700, 0)); //a planning rune, bridges to f (f's 700 reach covers it)
+        Check(field.GetPluggedNode(p) == zone3Node, "Past open zone: a normal (planning) rune can plug into that node, only frozen runes can't");
+        Check(field.AreConnected(p, f) && field.IsRunePowered(p) == false && field.IsNodeActive(zone3Node) == false, "Past open zone: the frozen rune doesn't power the planning rune bridged to it, so the node stays off");
+    }
+
+    void TestPlanningRunes()
+    {
+        //runes past the open zone are planning runes: they never get power, can snap into nodes (which stay off), and their plugs still lock out rivals
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        int futureNode = AddNode(nodes, new Vector2(450, 0)); //zone 2
+        int gateA = AddGate(nodes, new Vector2(600, 0));      //ring 2
+        int gateB = AddGate(nodes, new Vector2(0, 600));      //ring 2, gateA's rival
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+        ElementItemSO longReach3 = MakeElement(1, 3, 400f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int a = Place(bound, element, new Vector2(100, 0));      //zone 1, on the core
+        int p1 = Place(bound, longReach3, new Vector2(350, 0)); //zone 2, bridges to a and straight to the core
+        int p2 = Place(bound, longReach, new Vector2(450, 0));  //zone 2, snaps into the node, bridges to p1
+        int p3 = Place(bound, longReach, new Vector2(600, 0));  //ring 2, snaps into gateA, bridges to p2
+
+        Check(p1 != RuneField.NoRuneID && bound.AreConnected(p1, RuneField.CoreID) && bound.AreConnected(p1, a), "Planning: a rune can be placed past the open zone and bridges like any rune");
+        Check(bound.IsRunePowered(a) && bound.IsRunePowered(p1) == false && bound.IsRunePowered(p2) == false && bound.IsRunePowered(p3) == false, "Planning: planning runes never get power, even bridged straight to the core");
+        Check(bound.GetPowerUsed() == 1, "Planning: only the zone 1 rune uses power");
+        Check(bound.HasRunesWaitingForPower() == false, "Planning: planning runes don't count as waiting for power");
+        Check(bound.GetPluggedNode(p2) == futureNode && bound.IsNodeActive(futureNode) == false, "Planning: a planning rune snaps into a node past the open zone, but the node stays off");
+
+        Check(bound.GetPluggedNode(p3) == gateA && bound.IsNodeLockedOut(gateB) && CanDrop(bound, new Vector2(0, 600)) == false, "Planning: a planning rune in a future gate locks out its rival");
+        Check(bound.GetPluggedGate() == -1 && bound.GetEvolvingGate() == -1, "Planning: a future gate is never the gate to evolve through");
+
+        bound.RemoveRune(p3);
+        Check(bound.IsNodeLockedOut(gateB) == false, "Planning: taking the planning rune out frees the rival gate");
+    }
+
+    void TestOldZoneRunes()
+    {
+        //after evolving, the closed zone takes normal runes again (and its ability nodes work again), but its gates stay closed
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        int gate0 = AddGate(nodes, new Vector2(300, 0)); //ring 1
+        int gate1 = AddGate(nodes, new Vector2(0, 300)); //ring 1, the rival branch
+        int oldNode = AddNode(nodes, new Vector2(-200, 0)); //zone 1
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        Place(bound, longReach, new Vector2(300, 0)); //the gate the shade evolves through
+        RuneField evolved = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+
+        int n = Place(evolved, longReach, new Vector2(-200, 0));
+        Check(n != RuneField.NoRuneID && evolved.GetPluggedNode(n) == oldNode && evolved.IsNodeActive(oldNode), "Old zone: an ability node in the closed zone takes a rune again and turns on");
+        Check(evolved.IsRuneFrozen(n) == false, "Old zone: a rune placed there is a normal rune");
+
+        int m = Place(evolved, element, new Vector2(0, -150));
+        Check(m != RuneField.NoRuneID && evolved.IsRunePowered(m), "Old zone: a rune can go on a free spot in the closed zone and gets power");
+        Check(evolved.RemoveRune(m), "Old zone: it can be taken off again (it isn't frozen)");
+
+        Check(CanDrop(evolved, new Vector2(0, 300)) == false && evolved.IsNodeBlocked(gate1), "Old zone: the rival gate stays closed, locked out by the taken gate's locked-in rune");
+        Check(evolved.IsNodeActive(gate0) && evolved.GetEvolvingGate() == -1, "Old zone: the taken gate stays on but can't evolve again");
+    }
+
+    void TestCutOnSave()
+    {
+        //saving cuts every normal bridge crossing the open zone's outer ring. Frozen bridges and bridges between two planning runes stay
+        //crossing bridges never carry power across the ring, even from a frozen rune, so cutting them doesn't change power
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+        ElementItemSO longReach3 = MakeElement(1, 3, 400f);
+        ElementItemSO veryLongReach3 = MakeElement(1, 3, 700f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int f = Place(bound, veryLongReach3, new Vector2(100, 0));
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1); //open zone 2, its outer ring is at 600
+        field.TryDropRune(f, new Vector2(650, 0)); //the frozen rune moves past the ring. Its frozen bridge to the core now crosses it
+
+        //bridged by hand, so each bridge is exactly the one being tested
+        int n = Place(field, longReach3, new Vector2(350, 0), false);  //open zone
+        int p = Place(field, longReach, new Vector2(700, 150), false); //past the ring
+        int q = Place(field, longReach, new Vector2(750, 300), false); //past the ring
+        int m = Place(field, element, new Vector2(560, -120), false);  //open zone, just inside the ring
+        field.Connect(n, RuneField.CoreID);
+        field.Connect(n, p); //crosses the ring
+        field.Connect(p, q); //both past the ring
+        field.Connect(f, m); //crosses the ring, from the frozen rune
+
+        Check(field.GetZone(field.GetPosition(f)) == 3 && field.IsRunePowered(f) && field.IsRunePowered(n), "Cut: the frozen rune past the ring and the open zone rune have power");
+        Check(field.AreConnected(f, m) && field.IsRunePowered(m) == false, "Cut: a bridge crossing the ring doesn't carry power across, even from a frozen rune");
+        Check(field.IsRunePowered(p) == false && field.IsRunePowered(q) == false, "Cut: planning runes stay dark, even bridged to a powered rune");
+        Check(field.GetBridgesToCut().Count == 2, "Cut: two bridges are waiting to be cut");
+
+        List<RuneBridgeEntry> reported = null;
+        field.OnBridgesCut += (cutBridges) => reported = cutBridges; //a small inline function that keeps the list the event sends
+        List<RuneBridgeEntry> cut = field.CutOpenRingBridges();
+
+        Check(cut.Count == 2 && field.AreConnected(n, p) == false && field.AreConnected(f, m) == false, "Cut: both normal bridges crossing the ring are cut");
+        Check(field.AreConnected(f, RuneField.CoreID), "Cut: the frozen bridge crossing the ring stays");
+        Check(field.AreConnected(p, q), "Cut: the bridge between two planning runes stays");
+        Check(reported != null && reported.Count == 2, "Cut: OnBridgesCut fires with the cut bridges");
+        Check(field.IsRunePowered(f) && field.IsRunePowered(n) && field.GetPowerUsed() == 2, "Cut: power didn't change");
+        Check(field.CutOpenRingBridges().Count == 0, "Cut: cutting again finds nothing");
+
+        RuneField reloaded = new RuneField(field.GetData().Clone(), settings, nodes, 10, 1);
+        Check(reloaded.GetRune(p) != null && reloaded.GetRune(q) != null && reloaded.AreConnected(p, q), "Cut: loading the saved field keeps the runes and bridges past the open zone");
+    }
+
+    void TestFrozenChainKeepsPower()
+    {
+        //the playtest example, shortened: a 6 rune frozen chain ends in a node. At the next level a new 2 rune chain goes straight to the core
+        //without frozen-first power, the 2 new runes (1 bridge out) would be powered before the far end of the chain and the node would lose power
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        ElementItemSO longReach = MakeElement(1, 2, 400f);
+
+        //the chain: two runes out from the core, then 4 more around a 220 circle, each 120 from the last (a 120 chord on a 220 circle is 2 x asin(60 / 220))
+        List<Vector2> chainSpots = new List<Vector2>();
+        chainSpots.Add(new Vector2(100, 0));
+        chainSpots.Add(new Vector2(220, 0));
+        float step = 2f * Mathf.Asin(60f / 220f); //in radians, which is what Mathf.Cos and Mathf.Sin use
+        for (int i = 1; i <= 4; i++)
+        {
+            chainSpots.Add(new Vector2(Mathf.Cos(step * i), Mathf.Sin(step * i)) * 220f);
+        }
+        int endNode = AddNode(nodes, chainSpots[chainSpots.Count - 1]); //the last rune lands in this node, standing in for the gate
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 6, 0); //level 6: exactly enough for the chain
+        List<int> chain = new List<int>();
+        for (int i = 0; i < chainSpots.Count; i++)
+        {
+            chain.Add(Place(bound, element, chainSpots[i]));
+        }
+        Check(bound.IsNodeActive(endNode), "Frozen chain: the 6 rune chain powers its end node");
+
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 7, 1); //evolved, and one level up
+        int n1 = Place(field, longReach, new Vector2(0, -320));   //zone 2, straight to the core
+        int n2 = Place(field, longReach, new Vector2(110, -380)); //zone 2, to the core and n1
+        Check(field.AreConnected(n1, RuneField.CoreID) && field.AreConnected(n2, RuneField.CoreID), "Frozen chain: both new runes are 1 bridge from the core");
+
+        bool chainPowered = true;
+        for (int i = 0; i < chain.Count; i++)
+        {
+            if (field.IsRunePowered(chain[i]) == false) chainPowered = false;
+        }
+        Check(chainPowered && field.IsNodeActive(endNode), "Frozen chain: the whole frozen chain keeps its power, so its node stays on");
+        Check(field.IsRunePowered(n1) && field.IsRunePowered(n2) == false, "Frozen chain: the new runes share what's left over (1 power)");
+    }
+
+    void TestFrozenPowerOrder()
+    {
+        //rule C: the frozen pass walks frozen bridges only, so a newer bridge between two frozen runes can't change which of them gets power first
+        //chain core - a - b - c, plus d on the core. c was placed before b, so a shortcut a - c would put c ahead of b
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 3, 150f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int a = Place(bound, element, new Vector2(100, 0), false);
+        int c = Place(bound, element, new Vector2(120, 140), false); //141 from a, in reach, but only bridged to b for now
+        int b = Place(bound, element, new Vector2(200, 60), false);
+        int d = Place(bound, element, new Vector2(-100, 0), false);
+        bound.Connect(a, RuneField.CoreID);
+        bound.Connect(a, b);
+        bound.Connect(b, c);
+        bound.Connect(d, RuneField.CoreID);
+
+        RuneField field = new RuneField(bound.GetData().Clone(), settings, nodes, 3, 1); //evolved, but only 3 power (a level down) for 4 frozen runes
+        Check(field.Connect(a, c) && field.IsBridgeFrozen(a, c) == false, "Power order: the shortcut a - c is a normal bridge");
+        Check(field.IsRunePowered(a) && field.IsRunePowered(d) && field.IsRunePowered(b), "Power order: a, d and b get power, the same as before the shortcut");
+        Check(field.IsRunePowered(c) == false, "Power order: c stays dark, the shortcut didn't move it ahead of b");
+    }
+
+    void TestOldSlotFrozenLists()
+    {
+        //fields saved before the frozen lists existed get them filled in once from positions, but only past Bound
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 150f);
+
+        RuneField bound = new RuneField(new RuneFieldData(), settings, nodes, 10, 0);
+        int a = Place(bound, element, new Vector2(100, 0));
+        int b = Place(bound, element, new Vector2(220, 0));
+
+        RuneField stillBound = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 0);
+        Check(stillBound.GetData()._FrozenRunes.Count == 0 && stillBound.GetData()._FrozenBridges.Count == 0, "Old slot: a Bound field with empty lists stays empty");
+
+        RuneField oldSlot = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
+        Check(oldSlot.GetData()._FrozenRunes.Count == 2 && oldSlot.GetData()._FrozenBridges.Count == 2, "Old slot: an evolved field with empty lists gets them filled in from positions");
+        Check(oldSlot.IsBridgeFrozen(a, RuneField.CoreID) && oldSlot.IsBridgeFrozen(a, b), "Old slot: the closed zone's bridges are frozen");
+
+        RuneFieldData missingLists = bound.GetData().Clone();
+        missingLists._FrozenRunes = null; //like data saved before the lists existed
+        missingLists._FrozenBridges = null;
+        missingLists._LockedRunes = null;
+        RuneField missing = new RuneField(missingLists, settings, nodes, 10, 1);
+        Check(missing.IsRuneFrozen(a) && missing.IsRuneFrozen(b), "Old slot: data with the lists missing (null) loads and gets them filled in");
+    }
+
+    void TestFrozenListsCleanUp()
+    {
+        //copies keep the frozen lists separate, and bad entries get cleaned out on load
+        RuneFieldSettingsSO settings = MakeZoneSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 150f);
+
+        RuneFieldData data = new RuneFieldData();
+        data._Runes.Add(MakeRuneEntry(0, element, new Vector2(100, 0)));
+        data._Runes.Add(MakeRuneEntry(1, element, new Vector2(220, 0)));
+        data._Bridges.Add(MakeBridgeEntry(RuneField.CoreID, 0));
+        data._Bridges.Add(MakeBridgeEntry(0, 1));
+        data._NextRuneID = 2;
+
+        data._FrozenRunes.Add(0);
+        data._FrozenRunes.Add(1);
+        data._FrozenRunes.Add(5); //a rune that doesn't exist
+        data._FrozenRunes.Add(0); //listed twice
+        data._FrozenBridges.Add(MakeBridgeEntry(RuneField.CoreID, 0));
+        data._FrozenBridges.Add(MakeBridgeEntry(0, RuneField.CoreID)); //the same bridge the other way round
+        data._FrozenBridges.Add(MakeBridgeEntry(1, RuneField.CoreID)); //no real bridge behind it (logs a warning, that's expected)
+        data._LockedRunes.Add(0); //not plugged into a node
+
+        RuneFieldData copy = data.Clone();
+        copy._FrozenRunes.Add(1);
+        copy._FrozenBridges[0]._A = 1;
+        Check(data._FrozenRunes.Count == 4 && data._FrozenBridges[0]._A == RuneField.CoreID, "Frozen lists: changing a copy's frozen lists doesn't change the original");
+
+        RuneField field = new RuneField(data, settings, nodes, 10, 1);
+        Check(field.GetData()._FrozenRunes.Count == 2 && field.IsRuneFrozen(0) && field.IsRuneFrozen(1), "Frozen lists: a missing rune and a repeat are cleaned out");
+        Check(field.GetData()._FrozenBridges.Count == 1 && field.IsBridgeFrozen(0, RuneField.CoreID), "Frozen lists: a repeated frozen bridge and one with no real bridge are cleaned out");
+        Check(field.GetData()._LockedRunes.Count == 0, "Frozen lists: a locked rune that isn't in a node is cleaned out");
     }
 
     void TestPlugLockouts()
@@ -553,7 +967,7 @@ public class RuneFieldLogicTester : MonoBehaviour
         Place(bound, longReach, new Vector2(300, 0));
         Check(bound.GetPluggedGate() == gate0 && bound.GetEvolvingGate() == gate0, "Gates: a powered rune in a ring 1 gate is ready to evolve");
         Check(Place(bound, longReach, new Vector2(0, 300)) == RuneField.NoRuneID && bound.IsNodeBlocked(gate1), "Gates: the other ring 1 gate is locked out automatically");
-        Check(bound.IsNodeBlocked(gate2), "Gates: the ring 2 gate is in a locked zone");
+        Check(bound.IsNodeBlocked(gate2) == false, "Gates: the ring 2 gate in the locked zone can take a planning rune (it would never get power)");
 
         RuneField evolved = new RuneField(bound.GetData().Clone(), settings, nodes, 10, 1);
         Check(evolved.GetEvolvingGate() == -1 && evolved.IsNodeActive(gate0), "Gates: after evolving, the taken gate stays on but can't evolve again");
@@ -648,6 +1062,25 @@ public class RuneFieldLogicTester : MonoBehaviour
         effect._Stat = stat;
         effect._Amount = amount;
         return effect;
+    }
+
+    PlacedRuneEntry MakeRuneEntry(int id, ElementItemSO element, Vector2 position)
+    {
+        //makes a rune entry for building saved data by hand
+        PlacedRuneEntry rune = new PlacedRuneEntry();
+        rune._ID = id;
+        rune._Element = element;
+        rune._Position = position;
+        return rune;
+    }
+
+    RuneBridgeEntry MakeBridgeEntry(int idA, int idB)
+    {
+        //makes a bridge entry for building saved data by hand
+        RuneBridgeEntry bridge = new RuneBridgeEntry();
+        bridge._A = idA;
+        bridge._B = idB;
+        return bridge;
     }
 
     int Place(RuneField field, ElementItemSO element, Vector2 position, bool connect = true)

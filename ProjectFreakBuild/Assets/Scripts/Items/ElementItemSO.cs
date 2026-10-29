@@ -25,6 +25,13 @@ public class ElementItemSO : ItemSO
     public float connectionDistance = 150;
     public int powerNeeded = 1;
 
+    [Header("Rune Look")]
+    [Tooltip("This rune's colors on the rune field. The 3D field tints the rune with the Primary Color (until the rune shader exists), and its bridges use it too. Empty = the 3D field's temp Element Colors list")]
+    public ColorPaletteSO _Palette;
+
+    [Tooltip("The glyph drawn on the rune. Nothing reads it yet, the rune shader will")]
+    public Texture _Glyph;
+
     //local variables
     string _statBoostProblems; //filled by OnValidate, shown as a warning box in the inspector
 

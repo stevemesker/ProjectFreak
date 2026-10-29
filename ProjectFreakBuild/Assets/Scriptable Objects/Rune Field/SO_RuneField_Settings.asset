@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce9049b034464d45971ac0f3a5621bf3, type: 3}
   m_Name: SO_RuneField_Settings
   m_EditorClassIdentifier: 
-  _CoreReach: 150
+  _CoreReach: 250
   _CoreMaxBridges: 0
-  _FieldRadius: 0
+  _CoreSize: 200
+  _EdgeBleed: 100
   _NodeSnapRadius: 70
-  _ZoneWidth: 300
+  _SnapStretch: 30
+  _ZoneCount: 4
+  _ZoneWidth: 675
   _RuneSize: 100
+  _FieldUnitsPerMeter: 100

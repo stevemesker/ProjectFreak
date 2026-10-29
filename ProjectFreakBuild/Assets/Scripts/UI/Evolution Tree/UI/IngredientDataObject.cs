@@ -12,7 +12,6 @@ public class IngredientDataObject : MonoBehaviour, IDragHandler, IBeginDragHandl
     [Header("<====Pointer Variables=====>")]
     public TextMeshProUGUI IngredientNamePointer;
     public Image IngredientIconPointer;
-    [SerializeField, Tooltip("Old: not used anymore, the rune field spawns runes itself")] private GameObject NodePrefabToSpawn;
 
     [Header("<====Current Data=====>")]
     public IngredientItem Item;

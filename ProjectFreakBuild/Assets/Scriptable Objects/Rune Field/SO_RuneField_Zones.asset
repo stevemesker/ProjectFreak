@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c04326ad067ab644aa49037532365a2b, type: 3}
+  m_Name: SO_RuneField_Zones
+  m_EditorClassIdentifier: 
+  _LiftHeight: 0.25
+  _OpenLight:
+    _Color: {r: 1, g: 0.97, b: 0.92, a: 1}
+    _Intensity: 30000
+  _FrozenLight:
+    _Color: {r: 0.65, g: 0.8, b: 1, a: 1}
+    _Intensity: 30000
+  _LockedLight:
+    _Color: {r: 0.6, g: 0.5, b: 0.8, a: 1}
+    _Intensity: 8000
+  _WallStrip: {fileID: 0}
+  _CrackStrip: {fileID: 0}
+  _StripScale: 1
+  _FlipLength: 0
+  _FlipDepth: 0
+  _MeshFolder: Assets/Generated/Rune Field Zones
+  _TearMaterial: {fileID: 2100000, guid: 6c06e4a05106e23448409fc33d518749, type: 2}
+  _SmokeMaterial: {fileID: 2100000, guid: eb0bfa04ab06b644b9049b90c7fc9bba, type: 2}
+  _HeightProperty: _GradiantHeight
+  _HiddenHeight: 0
+  _SwapPoint: 0.5
+  _RevealProperty: _Reveal
+  _OverchargeProperty: _Overcharge
+  _StandInColorProperty: _BaseColor
+  _StandInTearColor: {r: 0.75, g: 0.45, b: 1, a: 1}
+  _StandInSmokeColor: {r: 0.35, g: 0.35, b: 0.38, a: 1}
+  _UseSmokeParticles: 0
+  _SmokePrefab: {fileID: 0}
+  _SmokePerMeter: 1.5
+  _StandInSmokeLifetime: 2.5
+  _StandInSmokeSize: 0.35
+  _StandInSmokeRise: 0.4
+  _StandInPuffColor: {r: 0.45, g: 0.45, b: 0.5, a: 1}
+  _RiseTime: 1.2
+  _RiseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _BorderBlendTime: 1
+  _BorderBlendCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _RevealDelay: 0.6
+  _RevealTime: 2
+  _RevealCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _StepGap: 0.3
