@@ -6,12 +6,12 @@ evolutions are separated in power by rank. a [[Shade]] can never go back down a 
 
 The list of rank names are as follows:
 
-| Type      | Description                                                                                                                        |
-| :-------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| Bound     | The beginning form of a shade. When a shade dies or a new [[Shade Slot]] is unlocked, this is the form that [[Shade]] will take on |
-| Unbound   | The first level of [[Shade]] the player has a choice on. Usually has some basic attacks and can take on [[Elemental Affinity]]s    |
-| Ascendant | Largest choice section of the evolution tree, usually around 3 options when entering this tier of evolution                        |
-| Legend    | The most powerful form and hardest to unlock                                                                                       |
+| Type   | Description                                                                                                                                                                         |
+| :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Baby   | The beginning form of a shade. When a shade dies or a new [[Shade Slot]] is unlocked, this is the form that [[Shade]] will take on. Narratively this is what the shade "looks like" |
+| Tier 1 | The first level of [[Shade]] the player has a choice on. Usually has some basic attacks and can take on [[Elemental Affinity]]s                                                     |
+| Tier 2 | Largest choice section of the evolution tree, usually around 3 options when entering this tier of evolution                                                                         |
+| Tier 3 | The most powerful form and hardest to unlock                                                                                                                                        |
 
 ---
 **Evolution Stats**
@@ -27,7 +27,7 @@ Each evolution sets the shade's base stats directly, picked by hand for that evo
 *Starting guesses for the usual range of each rank. A single evolution can go well outside them. See [[Damage Balance]].*
 
 ---
-**Evolution Type**
+**[[Evolution Type]]**
 Because all [[Shade]]s can be any [[Elemental Affinity]] type they are organized into [[Evolution Type]]s, typically described by their physical structure. The different [[Evolution Type]]s are as follows:
 
 
@@ -40,3 +40,13 @@ Because all [[Shade]]s can be any [[Elemental Affinity]] type they are organized
 | Ghost     | generally the weakest [[Shade]] when it comes to [[HP]] and [[DEF]] but can walk through some walls and become invisible to detection                                                                 |
 
 ---
+**Evolution Trees**
+These are the tree branches found on the [[Rune Field]]. Typically, unlocking one of these tree locks out all of the others though that is not a hard rule and can possibly be different for some shared trees
+
+| Type                 | Description                                                                                                                                                                                                      |
+| :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tale of the Hero     | Mostly bipedal shades that represent various archetypes in fantasy stories such as knights, wizards, etc. Heroic shades can usually carry and use weapons and operate utilities typically reserved for [[Hazen]] |
+| Creature of the Sea  | Specialize in stealth and hunting. Typically easy to hit but hardy and have the ability to sink into the floor like a fish going under water                                                                     |
+| of the weaver        | Spider like shades that specialize in creating smaller minions and summons to do their bidding                                                                                                                   |
+| Journey of the Sky   |                                                                                                                                                                                                                  |
+| Dread of the Spectre |                                                                                                                                                                                                                  |

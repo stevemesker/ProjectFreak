@@ -14,6 +14,9 @@ done:
 ## What
 A display name and flavor text for every shade form, once [[Form display names and flavor text]] adds the fields.
 
+## Completed Info
+[[Evolution]] will have descriptions and links to the specific qualities of the evolution branch
+
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]
 
