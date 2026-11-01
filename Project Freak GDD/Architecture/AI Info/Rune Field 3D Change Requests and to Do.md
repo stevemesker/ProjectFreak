@@ -79,6 +79,6 @@ Tasks to be done after locking in the final prototype and deciding to go with th
 - Make the tear material easier to find: falling back to the strip model's material (needs Wall Strip set and a rebuild) was confusing on Oct 13. Tear Material is set by hand on `SO_RuneField_Zones` for now. Decide on one obvious place for it
 - Update [[How To - Zone Visuals]] and [[Rune Field 3D View]] after
 
-- [ ] Loading into the real game: Hazen terminal, additive scene, camera blend, pause, input map switch, safe rooms. *Oct 29, 2026: a plain scene swap from access points (hub, before bosses, rare safe rooms), no additive load, blend or pause. See [[Rune Field Finish Plan]]. Cards [[Rune field access points]], [[Load the rune field from an access point]], [[Remember the dungeon across a field visit]], [[Hub lamp and dungeon field kit]]*
+- [ ] Loading into the real game: Hazen terminal, additive scene, camera blend, pause, input map switch, safe rooms. *Oct 29, 2026: a plain scene swap from access points (hub, before bosses, rare safe rooms), no additive load, blend or pause. See [[Rune Field Finish Plan]]. Cards [[Rune field access points]], [[Load the rune field from an access point]], [[Remember the dungeon across a field visit]], [[Hub and dungeon rune field access point]]*
 
 - [ ] Speed and sensitivity options in the settings menu [[Notes for the future]]

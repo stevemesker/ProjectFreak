@@ -1,6 +1,6 @@
 ---
-status: To Do
-priority: 5
+status: In Progress
+priority: 2
 chapter:
   - Chapter 5 Art
   - Chapter 3 Crafting
@@ -13,6 +13,9 @@ done:
 ---
 ## What
 The core's look: glows brighter with spare power (full at 10 spare), the regular look at 0, and dulls with a strobing color while over budget (runes waiting for power).
+
+## Completed Info
+
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]

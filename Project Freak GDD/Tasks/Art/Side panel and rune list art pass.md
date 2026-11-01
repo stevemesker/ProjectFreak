@@ -1,12 +1,12 @@
 ---
-status: To Do
-priority: 5
+status: In Progress
+priority: 4
 chapter:
   - Chapter 5 Art
   - Chapter 3 Crafting
 owner: Steve
 plan: "[[Rune Field Finish Plan]]"
-source: 
+source:
 needs:
 created: 2026-10-29
 done:
@@ -14,6 +14,8 @@ done:
 ## What
 - The rune buttons are hard to read, redo the list and side panel look
 - Decide where the info popup's details panel lives (placeholder: bottom third of the right panel; a 3D pop-out is an option)
+## Completed Info
+
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]

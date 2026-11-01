@@ -8,9 +8,13 @@ source:
 needs:
 created: {{date:YYYY-MM-DD}}
 done:
+archived:
 ---
 ## What
  
+
+## Completed Info
+
 
 ## Notes
 

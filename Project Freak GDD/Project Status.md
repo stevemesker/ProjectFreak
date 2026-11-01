@@ -1,6 +1,7 @@
 Big-picture view of the project. Every card is a note in a subfolder of `Tasks`, and each subfolder has its own board at the top of `Tasks`.
 
 **Boards:** [[Art Board]] · [[Design Board]] · [[Engineering Board]] · [[Bugs Board]]
+**Finished work:** [[Archive]] (every archived card, by month, chapter or board)
 **How to use them:** [[How To - Task Boards]]
 
 ---
@@ -19,7 +20,15 @@ The chapters the work is split into, in order. Each card's `chapter` uses these 
 
 Names start with "Chapter" and the number so they sort in order on the boards. Once there's a Chapter 10, it would sort between 1 and 2, so at that point switch to two digits (Chapter 00, Chapter 01…). Claude can rename them all
 
-**Statuses:** To Do, In Progress, Done. A typo makes a new column.
+**Statuses:** To Do, In Progress, Done, Archived. A typo makes a new column. Archived cards are hidden from the kanban views and live on the [[Archive]] board (and each board's **Archive** tab).
+
+---
+## Weekly review
+Every card in Done, on every board. Go through these on Sundays: read each card's **Completed Info**, turn follow-up work into cards, then set `status` to Archived and `archived` to the date. Then look ahead (below), and write the week's recap. How it works: [[How To - Task Boards#Weekly Review]]
+![[Project Board.base#Weekly Review]]
+
+**Looking ahead:** cards still waiting on another card. Clear what's blocking, then pick the week's cards and write them in the recap.
+![[Project Board.base#Waiting on Something]]
 
 ---
 ## In progress

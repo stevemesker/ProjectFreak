@@ -15,9 +15,16 @@ properties:
     displayName: Owner
   note.needs:
     displayName: Needs
+  note.done:
+    displayName: Done
+  note.archived:
+    displayName: Archived
 views:
   - type: kanban
     name: By Priority
+    filters:
+      and:
+        - note.status != "Archived"
     groupBy:
       property: status
       direction: ASC
@@ -38,6 +45,9 @@ views:
         direction: ASC
   - type: kanban
     name: By Chapter
+    filters:
+      and:
+        - note.status != "Archived"
     groupBy:
       property: status
       direction: ASC
@@ -58,6 +68,9 @@ views:
         direction: ASC
   - type: table
     name: Chapter Table
+    filters:
+      and:
+        - note.status != "Archived"
     groupBy:
       property: chapter
       direction: ASC
@@ -68,4 +81,20 @@ views:
       - owner
     sort:
       - property: priority
+        direction: ASC
+  - type: table
+    name: Archive
+    filters:
+      and:
+        - note.status == "Archived"
+    order:
+      - file.name
+      - chapter
+      - owner
+      - done
+      - archived
+    sort:
+      - property: archived
+        direction: DESC
+      - property: file.name
         direction: ASC

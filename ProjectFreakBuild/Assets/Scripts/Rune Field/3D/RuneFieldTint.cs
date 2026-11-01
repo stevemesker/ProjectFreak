@@ -7,6 +7,8 @@ using UnityEngine;
 //a plain C# class, not a component: each piece makes one with "new RuneFieldTint(...)"
 public class RuneFieldTint
 {
+    const uint LightLayerBits = 0xFF; //a renderer's rendering layer mask: the first 8 bits are HDRP light layers, the next 8 are decal layers
+
     //local variables
     List<Renderer> _renderers = new List<Renderer>();
     MaterialPropertyBlock _block; //a MaterialPropertyBlock changes a value for one renderer only, so every rune can have its own color while sharing one material
@@ -102,6 +104,18 @@ public class RuneFieldTint
             if (deeper != null) return deeper;
         }
         return null;
+    }
+
+    public static void RemoveDecalLayers(List<Renderer> renderers)
+    {
+        //takes these renderers off every decal layer (keeping their light layers), so no decal projector can draw on them
+        //a decal can change a surface's color, normal and smoothness, which is how the range overlay was flattening the runes' highlight
+        if (renderers == null) return;
+        for (int i = 0; i < renderers.Count; i++)
+        {
+            if (renderers[i] == null) continue;
+            renderers[i].renderingLayerMask &= LightLayerBits; //"&=" keeps only the bits that are also in LightLayerBits, so every decal bit is cleared
+        }
     }
 
     public static List<Renderer> FindRenderers(Transform root, Transform skip)

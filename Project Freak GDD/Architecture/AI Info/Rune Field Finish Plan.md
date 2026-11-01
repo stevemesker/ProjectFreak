@@ -14,7 +14,7 @@ Back to [[AA - AI Info]] · [[Rune Field 3D View]] · [[Rune Field 3D Change Req
 
 ### Rune looks by tier
 - `ElementItemSO` gets `_RuneMaterial` (optional, empty = the prefab's material) and `_RuneEffect` (optional prefab, spawned and parented to the rune), next to `_Palette`. Used for runes on the field and the stand-ins dragged out of the list
-- **One rule for every rune shader:** the same property names (`_BaseColor` for color, `_RangeHighlight` for the range glow). Colors go through a property block, so any material with those names works
+- **One rule for every rune shader:** the same property names (`_BaseColor` for color, `_RangeHighlight` for the range glow). Colors go through a property block, so any material with those names works. *Oct 31, 2026: `_RangeHighlight` is optional, the first tier shader doesn't use it. The label mesh on the rune must not get the color ([[Rune tier shaders]])*
 - The effect prefab gets tinted too if its shader has the color property (easy to change)
 - Tiers (basic, elemental, mythical...) are Steve's design work. For now tier is only how good a rune *looks*; whether it changes stats is decided after the first full playtest [[undecided]]
 

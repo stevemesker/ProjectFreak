@@ -16,6 +16,9 @@ done:
 - The preview bridge material (a warped / ghosted variant of the bridge material that straightens out once in range)
 - A red "can't land here" look on the range overlay decal
 
+## Completed Info
+
+
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]
 

@@ -2257,10 +2257,10 @@ RectTransform:
   - {fileID: 526407416}
   m_Father: {fileID: 1868372462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 119.99999}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 36, y: -150}
+  m_SizeDelta: {x: 72, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &390603941
 MonoBehaviour:
@@ -4971,7 +4971,6 @@ MonoBehaviour:
   slotList:
   - {fileID: 1704617390}
   - {fileID: 1163393877}
-  _runeField: {fileID: 0}
 --- !u!114 &675586350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7443,10 +7442,10 @@ RectTransform:
   - {fileID: 1815933894}
   m_Father: {fileID: 1868372462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 119.99999}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 36, y: -280}
+  m_SizeDelta: {x: 72, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1007605997
 MonoBehaviour:
@@ -9667,13 +9666,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc767415ec7548cc9190e258b15a5a7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ElementColors: []
-  _DefaultRuneColor: {r: 1, g: 1, b: 1, a: 1}
-  _CoreColor: {r: 0.6, g: 0.3, b: 1, a: 1}
   _TearSlack: 2
+  _TautPadding: 2
   _InvalidColor: {r: 1, g: 0.3, b: 0.3, a: 1}
   _DragLift: 0.3
   _PickPadding: 10
+  _CoreColor: {r: 0.6, g: 0.3, b: 1, a: 1}
+  _ElementColors: []
+  _DefaultRuneColor: {r: 1, g: 1, b: 1, a: 1}
   _EvolveTitle: Evolve?
   _EvolveNowMessage: 'Saving will evolve this shade into {0} right away. Zone {1}
     locks for good: its runes and bridges can''t be moved, removed or torn anymore.'
@@ -9842,8 +9842,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Settings: {fileID: 11400000, guid: b889386cca47b5145b2f98042a2e2e7a, type: 2}
   _LiveTuning: 1
+  _PreviewOpenZone: 2
   _StandInSkirtDepth: 0.5
   _StandInSegments: 128
+  _StandInMaterial: {fileID: 0}
   _Zones:
   - {fileID: 275895799}
   - {fileID: 1544057780}
@@ -9854,10 +9856,8 @@ MonoBehaviour:
   - {fileID: 770249736}
   - {fileID: 1275389828}
   _KeyLight: {fileID: 157207113}
-  _StandInMaterial: {fileID: 0}
   _ShownOpenZone: 2
   _PlayingOpening: 0
-  _PreviewOpenZone: 2
 --- !u!114 &1378922173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10177,6 +10177,7 @@ MonoBehaviour:
 
     Hold A on the list to drag a rune out'
   _ShowPanels: 1
+  _ToggleKey: 4
   _FontSize: 20
   _PanelColor: {r: 0, g: 0, b: 0, a: 0.6}
   _ButtonColor: {r: 0.25, g: 0.25, b: 0.3, a: 1}
@@ -15062,10 +15063,10 @@ RectTransform:
   - {fileID: 2144830879}
   m_Father: {fileID: 1868372462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 119.99999}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 36, y: -20}
+  m_SizeDelta: {x: 72, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1914121912
 MonoBehaviour:

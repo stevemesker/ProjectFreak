@@ -13,6 +13,10 @@ properties:
     displayName: Chapter
   note.owner:
     displayName: Owner
+  note.done:
+    displayName: Done
+  note.needs:
+    displayName: Needs
 views:
   - type: table
     name: In Progress
@@ -31,6 +35,7 @@ views:
     filters:
       and:
         - note.status != "Done"
+        - note.status != "Archived"
     groupBy:
       property: chapter
       direction: ASC
@@ -38,4 +43,35 @@ views:
       - file.name
       - file.folder
       - status
+      - owner
+  - type: table
+    name: Weekly Review
+    filters:
+      and:
+        - note.status == "Done"
+    groupBy:
+      property: file.folder
+      direction: ASC
+    order:
+      - file.name
+      - chapter
+      - owner
+      - done
+    sort:
+      - property: done
+        direction: ASC
+  - type: table
+    name: Waiting on Something
+    filters:
+      and:
+        - note.status != "Done"
+        - note.status != "Archived"
+        - "!needs.isEmpty()"
+    groupBy:
+      property: file.folder
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - needs
       - owner

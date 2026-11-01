@@ -1,0 +1,63 @@
+filters:
+  and:
+    - file.inFolder("Tasks")
+    - file.ext == "md"
+    - note.status == "Archived"
+formulas:
+  month: if(done, date(done).format("YYYY-MM MMMM"), "No done date")
+properties:
+  file.name:
+    displayName: Task
+  file.folder:
+    displayName: Board
+  note.chapter:
+    displayName: Chapter
+  note.owner:
+    displayName: Owner
+  note.done:
+    displayName: Done
+  note.archived:
+    displayName: Archived
+  formula.month:
+    displayName: Month
+views:
+  - type: table
+    name: By Month
+    groupBy:
+      property: formula.month
+      direction: DESC
+    order:
+      - file.name
+      - file.folder
+      - chapter
+      - owner
+      - done
+    sort:
+      - property: done
+        direction: DESC
+  - type: table
+    name: By Chapter
+    groupBy:
+      property: chapter
+      direction: ASC
+    order:
+      - file.name
+      - file.folder
+      - owner
+      - done
+    sort:
+      - property: done
+        direction: DESC
+  - type: table
+    name: By Board
+    groupBy:
+      property: file.folder
+      direction: ASC
+    order:
+      - file.name
+      - chapter
+      - owner
+      - done
+    sort:
+      - property: done
+        direction: DESC

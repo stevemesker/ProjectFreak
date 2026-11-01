@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MAT_Rune
+  m_Name: MAT_Rune_Simple
   m_Shader: {fileID: -6465566751694194690, guid: 43d1fec16ee5eec4ba162f3086f0fc74,
     type: 3}
   m_Parent: {fileID: 0}
@@ -150,6 +150,7 @@ Material:
     - _AlphaSrcBlend: 1
     - _Anisotropy: 0
     - _BlendMode: 0
+    - _CenterStrength: -840
     - _CoatMask: 0
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 2
@@ -168,8 +169,8 @@ Material:
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 1
     - _DstBlend: 0
-    - _EdgePower: 7.5
-    - _EdgeStrength: 15.2
+    - _EdgePower: 5.7
+    - _EdgeStrength: 14.12
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 1
@@ -213,7 +214,7 @@ Material:
     - _RefractionModel: 0
     - _RenderQueueType: 1
     - _RequireSplitLighting: 0
-    - _Roughness: 0.8
+    - _Roughness: 0.85
     - _Smoothness: 0.5
     - _SmoothnessRemapMax: 1
     - _SmoothnessRemapMin: 0
@@ -255,15 +256,16 @@ Material:
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
     - _ZWrite: 1
-    - _cloudDetail: 0.475
+    - _centerContrast: 0.6
+    - _cloudDetail: 0.563
     m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColor: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _CloudSpeed: {r: 0, g: 0.1, b: 0, a: 0}
-    - _Color: {r: 0.6117647, g: 0.043137264, b: 0.0823811, a: 1}
+    - _Color: {r: 0.6132076, g: 0.6132076, b: 0.6132076, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
-    - _EdgeColor: {r: 1.2248592, g: 1.3400577, b: 1.7908287, a: 0}
+    - _EdgeColor: {r: 1.2184643, g: 1.3330612, b: 1.7814788, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissiveColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}

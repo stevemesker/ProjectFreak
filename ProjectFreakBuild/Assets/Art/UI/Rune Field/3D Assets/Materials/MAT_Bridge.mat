@@ -180,6 +180,8 @@ Material:
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
     - _ExcludeFromTUAndAA: 0
+    - _GlowPower: 7
+    - _GlowStrength: 2.5
     - _GradiantStrength: 1
     - _GradientPower: 1
     - _HeightAmplitude: 0.02

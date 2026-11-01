@@ -10,6 +10,7 @@ Back to [[Architecture Atlas]]
 - [[#How It Works]]
 - [[#Making a Card]]
 - [[#Working a Card]]
+- [[#Weekly Review]]
 - [[#Priority and Sorting]]
 - [[#Linking Cards for a Feature]]
 - [[#Adding a Chapter]]
@@ -25,8 +26,8 @@ Back to [[Architecture Atlas]]
 | :--- | :--- |
 | Card | One note in a `Tasks` subfolder. The note's properties (the box at the top) decide where it shows up |
 | Board | A `.base` file at the top of `Tasks` (Art Board, Design Board, Engineering Board, Bugs Board). Each one shows the cards in its matching folder |
-| View | A tab inside a board, picked from the menu at the board's top left: **By Priority**, **By Chapter**, **Chapter Table** |
-| Column | One value of `status`: To Do, In Progress, Done |
+| View | A tab inside a board, picked from the menu at the board's top left: **By Priority**, **By Chapter**, **Chapter Table**, **Archive** |
+| Column | One value of `status`: To Do, In Progress, Done. Archived cards don't get a column, they're in the **Archive** tab |
 | Chapter | Which part of the game a card belongs to. The list lives on [[Project Status]] |
 
 ### Where things live
@@ -34,21 +35,23 @@ Back to [[Architecture Atlas]]
 | :--- | :--- |
 | The four boards | `Tasks/Art Board`, `Design Board`, `Engineering Board`, `Bugs Board` |
 | The cards | `Tasks/Art`, `Tasks/Design`, `Tasks/Engineering`, `Tasks/Bugs` |
-| Big-picture page | [[Project Status]] (chapter list, what's in progress, open work by chapter) |
-| The data behind Project Status | `zzz Extras/Project Board.base`. Never needs opening, it only feeds the two tables on Project Status |
-| Templates | `zzz Extras/Templates/Task` (a new card) and `Feature Cards` (the live table for a feature note) |
+| Big-picture page | [[Project Status]] (chapter list, weekly review, what's in progress, open work by chapter) |
+| The data behind Project Status | `zzz Extras/Project Board.base`. Never needs opening, it only feeds the tables on Project Status |
+| Archived cards | `Tasks/Archive`: every archived card from every board, by month, chapter or board |
+| Weekly recaps | `Tasks/Recaps`, one note a week (`===== Recap M-D-YY =====`). They show on the Archive with the cards |
+| Templates | `zzz Extras/Templates/Task` (a new card), `Recap` (the weekly recap) and `Feature Cards` (the live table for a feature note) |
 
 ### Card properties
 | Property | Values | What it does |
 | :--- | :--- | :--- |
-| `status` | To Do, In Progress, Done | Which column the card is in. Dragging the card changes it |
+| `status` | To Do, In Progress, Done, Archived | Which column the card is in. Dragging the card changes it. Archived hides it from the kanban views |
 | `priority` | 1 to 10, **1 is most important** | Sort order inside a column. New cards start at 5 |
 | `chapter` | One or more chapter names, e.g. `Chapter 1 Combat` | A list, so a card can be in two chapters |
 | `owner` | Steve, Claude, Both | Who's doing it |
 | `plan` | A link, e.g. `[[Weapons]]` | The feature or plan note the card belongs to |
 | `source` | A link, e.g. `[[Known Issues]]` | Where the task came from |
 | `needs` | Links to other cards | Cards this one waits on |
-| `created` / `done` | Dates | Filled in when made / when finished |
+| `created` / `done` / `archived` | Dates | Filled in when made / when finished / when archived at the weekly review |
 
 ---
 ## How It Works
@@ -59,7 +62,7 @@ card note (Tasks/Art/Hazen Art.md)
         ├──► Art Board (shows everything in Tasks/Art)
         │       columns = status, order = priority (or chapter, then priority)
         │
-        ├──► zzz Extras/Project Board ──► Project Status (in progress + open by chapter, every board)
+        ├──► zzz Extras/Project Board ──► Project Status (weekly review, in progress, open by chapter, every board)
         │
         └──► Feature Cards table on its plan note (any card that links the note)
 ```
@@ -78,9 +81,30 @@ A card is only a note. Every board, table and column is worked out from the card
 ---
 ## Working a Card
 - **Start / finish it:** drag it to In Progress, then Done. Set `done` to the date when it's finished
+- **Write the Completed Info** when it's Done: what was actually built, what changed from the plan, and anything the engineering side (or Claude) needs to know. It's the card's post mortem and gets read at the weekly review
 - **Move it to another board:** drag the note into that board's folder in the file explorer (e.g. a design card that turned into engineering work goes into `Tasks/Engineering`)
 - **Rename it:** rename the note. Links to it update on their own
-- **Delete it:** delete the note. Usually it's better to leave it in Done so the history stays
+- **Delete it:** delete the note. Usually it's better to archive it so the history stays
+
+---
+## Weekly Review
+Done cards get cleared out once a week (Sundays), so the Done column only ever holds what hasn't been gone over yet.
+1. Open [[Project Status]]. The **Weekly review** table lists every Done card on every board
+2. For each card, read its **Completed Info** with Claude. Follow-up work becomes **cards**, not changes made on the spot. Each new card's `source` links the reviewed card
+3. Before making a card, Claude checks it against open cards, plans and the rest of the review. If a later card changes or undoes what a Completed Info says, Claude flags it instead of making the card
+4. Small fixes (a one-line doc edit, a value rename) skip the card. Claude lists them at the end of the review, and makes them once they're OK'd
+5. Claude adds a **Review** line under Completed Info saying where each item went (with links)
+6. Set `status` to **Archived** and `archived` to the date. The card leaves the kanban views and the weekly review table. Claude flags any card with an empty `done` (it gets the review date) or empty Completed Info
+7. **Look ahead:** go over the **Waiting on something** table on [[Project Status]], clear what's blocking, and pick the cards for the week. In Progress cards aren't judged on how long they're taking
+8. **Recap:** Claude writes the week's recap in `Tasks/Recaps` from the **Recap** template, named `===== Recap M-D-YY =====`: what got finished, highlights for progress videos and recaps, the week's picks and what's blocked. It's archived from the start, so it sits at the top of its week on the [[Archive]]. Click it to read it
+
+**Finding an archived card:** the [[Archive]] board in `Tasks`. It's separate from the four working boards and has three tabs:
+- **By Month**: grouped by the month the card was done, newest first. The one for progress videos and recaps
+- **By Chapter**: what's been finished in each part of the game
+- **By Board**: art, design, engineering and bugs work, each on its own
+
+Each working board also has its own **Archive** tab, and search and links still find archived cards like any note.
+**Bringing one back:** set its `status` to To Do (or whichever column), and it's back on the board.
 
 ---
 ## Priority and Sorting
@@ -89,6 +113,7 @@ A card is only a note. Every board, table and column is worked out from the card
   - **By Priority**: each column sorted by priority
   - **By Chapter**: each column sorted by chapter, then by priority inside each chapter
   - **Chapter Table**: a table of the board's cards, grouped by chapter
+  - **Archive**: every archived card on the board, newest first
 - Columns can be narrowed in the view's settings (**Column width**) if they don't fit on screen
 
 ---
@@ -137,6 +162,8 @@ Project Status covers every folder under `Tasks`, so its tables include the new 
 | A new column appeared (e.g. "To do" or "Doing") | A card's `status` is misspelled. Fix the spelling and the column goes away |
 | A card isn't on any board | The note isn't inside one of the `Tasks` subfolders. Move it into the right one |
 | A card is on the board but in the **None** column | Its `status` is empty. Set it or drag the card into a column |
+| An **Archived** column showed up on a kanban view | The view lost its filter. Open the view's **Filter** and add `status` is not `Archived` |
+| An archived card is missing from the Archive tab | Its `status` is misspelled (it must be exactly `Archived`) |
 | A card is missing from By Chapter / Chapter Table groups | Its `chapter` is empty or misspelled. Check it against the list on [[Project Status]] |
 | A chapter shows up twice | Two spellings are in use. Fix the cards so they match the list exactly |
 | The boards look sorted wrong after an edit | Open the view's **Sort** menu and check it's Priority ascending (By Priority) or Chapter then Priority (By Chapter) |

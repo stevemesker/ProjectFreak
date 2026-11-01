@@ -957,7 +957,7 @@
     "m_ObjectId": "32d9d3927a024aae88e41e97b0283d81",
     "m_AffectsMetal": false,
     "m_AffectsAO": false,
-    "m_AffectsSmoothness": true,
+    "m_AffectsSmoothness": false,
     "m_AffectsAlbedo": true,
     "m_AffectsNormal": false,
     "m_AffectsEmission": true,

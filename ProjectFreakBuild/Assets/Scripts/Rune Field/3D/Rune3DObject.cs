@@ -32,6 +32,9 @@ public class Rune3DObject : MonoBehaviour
     [Tooltip("The renderers that get colored. Left empty, every renderer on the rune is used (except the Range Effect's)")]
     [SerializeField] List<Renderer> _TintRenderers = new List<Renderer>();
 
+    [Tooltip("Used when Tint Renderers is empty: renderers whose object name contains any of these words keep their own material and aren't colored (like the Symbol_Label mesh on top of the gem)")]
+    [SerializeField] List<string> _NoTintNames = new List<string> { "Label" };
+
     [Tooltip("Optional. The big magic effect shown while a rune being placed is close (turned on while the highlight is above 0). Left empty, a child named RangeEffect is used if there is one")]
     [SerializeField] GameObject _RangeEffect;
 
@@ -67,7 +70,7 @@ public class Rune3DObject : MonoBehaviour
         if (_RangeEffect == null) _RangeEffect = RuneFieldTint.FindChild(transform, RangeEffectName);
         Transform effect = _RangeEffect != null ? _RangeEffect.transform : null; //the effect keeps its own look, it isn't colored like the rune
 
-        List<Renderer> renderers = _TintRenderers.Count > 0 ? _TintRenderers : RuneFieldTint.FindRenderers(transform, effect);
+        List<Renderer> renderers = _TintRenderers.Count > 0 ? _TintRenderers : RemoveNoTintRenderers(RuneFieldTint.FindRenderers(transform, effect));
         _tint = new RuneFieldTint(renderers, _ColorProperty);
         _rangeHighlightID = Shader.PropertyToID(string.IsNullOrEmpty(_RangeHighlightProperty) ? "_RangeHighlight" : _RangeHighlightProperty);
 
@@ -152,6 +155,33 @@ public class Rune3DObject : MonoBehaviour
         if (_hovered) brightness *= _HoverBrightness;
         color = new Color(color.r * brightness, color.g * brightness, color.b * brightness, color.a);
         _tint.SetColor(color);
+    }
+    #endregion
+
+    #region Tools
+    List<Renderer> RemoveNoTintRenderers(List<Renderer> renderers)
+    {
+        //function that drops the renderers named in No Tint Names, so parts like the label keep their own look
+        if (_NoTintNames == null || _NoTintNames.Count == 0) return renderers;
+
+        List<Renderer> kept = new List<Renderer>();
+        for (int i = 0; i < renderers.Count; i++)
+        {
+            if (renderers[i] == null) continue;
+            if (HasNoTintName(renderers[i].gameObject.name) == false) kept.Add(renderers[i]);
+        }
+        return kept;
+    }
+
+    bool HasNoTintName(string objectName)
+    {
+        //true if the object's name contains one of the No Tint Names words (ignoring upper/lower case)
+        for (int i = 0; i < _NoTintNames.Count; i++)
+        {
+            if (string.IsNullOrEmpty(_NoTintNames[i])) continue; //an empty entry would match every name
+            if (objectName.IndexOf(_NoTintNames[i], System.StringComparison.OrdinalIgnoreCase) >= 0) return true; //IndexOf gives -1 when the word isn't in the name
+        }
+        return false;
     }
     #endregion
 }
