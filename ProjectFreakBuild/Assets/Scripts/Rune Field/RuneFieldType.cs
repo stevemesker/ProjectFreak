@@ -8,4 +8,8 @@ namespace RuneFieldType
 
     //which material a ring border's wall shows: the forward tear, the smoky one behind it, or nothing. Used as RuneFieldType.BorderLook
     public enum BorderLook { Off, Tear, Smoke }
+
+    //which kind of access point opened the rune field. Advanced is the hub labs, Basic is everywhere else (dungeon entrances, before bosses, safe and vault floors)
+    //None means the field scene was opened on its own (testing in the editor), which allows everything. Used as RuneFieldType.Access
+    public enum Access { None, Basic, Advanced }
 }

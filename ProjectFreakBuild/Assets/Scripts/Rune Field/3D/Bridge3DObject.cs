@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 //(the mesh starts at its origin and runs 1 m along +Z, so the Z scale is the length in meters and the tiling material follows it)
 //it also runs the tear timer while a rune pulls it past its reach (used from step 3), and asks the field to remove it when it snaps
 //the tear only pauses when the pull stops, so it keeps what it built up for the rest of the drag. It goes back to 0 when the drag ends (ResetTearing)
-//for the bridge shader (SH_NodeBridge on MAT_Bridge), it hands each bridge its own end colors, tear progress and strain through a MaterialPropertyBlock,
+//for the bridge shader (SH_NodeBridge on MAT_Bridge), it hands each bridge its own end colors and tear progress through a MaterialPropertyBlock,
 //so every bridge shares one material: no material per color combo, and no copy while tearing
 //end A is always the end closer to the core (the field sorts that out before calling Setup), so the shader's Source Color side and the tear start face the core
 public class Bridge3DObject : MonoBehaviour
@@ -41,10 +41,6 @@ public class Bridge3DObject : MonoBehaviour
     [Tooltip("SH_NodeBridge's tear progress, 0 to 1 (how close the tear timer is to snapping it). The tear color moves from end A to end B as it fills. The tear color itself is set on MAT_Bridge")]
     [SerializeField] string _TearProgressProperty = "_TearProgress";
 
-    [FoldoutGroup("Shader Properties")]
-    [Tooltip("The bridge shader's strain, 0 to 1 (how far into the field's Tear Slack it's pulled, before the tear timer starts). For the tear dead zone look. SH_NodeBridge doesn't have this yet, so it's ignored until it does")]
-    [SerializeField] string _StrainProperty = "_Strain";
-
     [Header("Runtime Data")]
     [Tooltip("Rune ID at each end (-1 = the core). X is end A (closer to the core), Y is end B (read only)")]
     [SerializeField, ReadOnly] Vector2Int _Ends;
@@ -61,9 +57,6 @@ public class Bridge3DObject : MonoBehaviour
     [Tooltip("The color of end B, the end further from the core (read only)")]
     [SerializeField, ReadOnly] Color _ColorB = Color.white;
 
-    [Tooltip("How far into the field's Tear Slack the bridge is pulled, 0 to 1 (read only)")]
-    [SerializeField, ReadOnly] float _Strain;
-
     //local variables
     Transform _endA;
     Transform _endB;
@@ -75,7 +68,6 @@ public class Bridge3DObject : MonoBehaviour
     int _sourceColorID; //shader property IDs, worked out once from the names above
     int _connectionColorID;
     int _tearProgressID;
-    int _strainID;
 
     private void Awake()
     {
@@ -84,7 +76,6 @@ public class Bridge3DObject : MonoBehaviour
         _sourceColorID = Shader.PropertyToID(_SourceColorProperty);
         _connectionColorID = Shader.PropertyToID(_ConnectionColorProperty);
         _tearProgressID = Shader.PropertyToID(_TearProgressProperty);
-        _strainID = Shader.PropertyToID(_StrainProperty);
     }
 
     private void OnDisable()
@@ -144,15 +135,6 @@ public class Bridge3DObject : MonoBehaviour
         transform.localScale = new Vector3(_baseScale.x, _baseScale.y, length);
     }
 
-    public void ShowStrain(float strain)
-    {
-        //how far into the field's Tear Slack the bridge is pulled (0 to 1). The field calls this every drag frame for bridges on the dragged rune
-        strain = Mathf.Clamp01(strain);
-        if (Mathf.Approximately(strain, _Strain)) return; //nothing changed, skip updating the look
-        _Strain = strain;
-        ApplyLook();
-    }
-
     public float GetTearAmount()
     {
         //how close the tear timer is to snapping the bridge, 0 to 1
@@ -161,14 +143,13 @@ public class Bridge3DObject : MonoBehaviour
 
     void ApplyLook()
     {
-        //puts every shader value on the bridge at once: both end colors, tear progress and strain
-        //values the material's shader doesn't have are ignored (like strain for now)
+        //puts every shader value on the bridge at once: both end colors and tear progress
+        //values the material's shader doesn't have are ignored
         if (_tint == null) return;
         _tint.StartValues();
         _tint.PutColor(_sourceColorID, _ColorA);
         _tint.PutColor(_connectionColorID, _ColorB);
         _tint.PutFloat(_tearProgressID, GetTearAmount());
-        _tint.PutFloat(_strainID, _Strain);
         _tint.ApplyValues();
     }
     #endregion
@@ -188,11 +169,10 @@ public class Bridge3DObject : MonoBehaviour
     public void PauseTearing()
     {
         //called when the bridge stops being pulled during a drag (the rune moved back in reach, or the player is pulling another way so another bridge holds it)
-        //the tear built up so far stays, so the player can pull another bridge and come back to finish this one. Strain goes back to 0
-        bool changed = _Tearing || _Strain > 0f;
+        //the tear built up so far stays, so the player can pull another bridge and come back to finish this one
+        bool changed = _Tearing;
         _pullStrength = 0f;
         _Tearing = false;
-        _Strain = 0f;
         if (_pullTimer != null) StopCoroutine(_pullTimer);
         _pullTimer = null;
         if (changed) ApplyLook(); //only when something was showing, since this is called every drag frame for bridges that aren't pulled

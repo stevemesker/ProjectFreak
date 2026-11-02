@@ -8,4 +8,4 @@ The bar has some basic amenities like access to basic items and reagents as well
 # [[Cradle]]
 This is the final hub area of the game. It is a small town that attached itself to the [[Pallium]] walls to protect its inhabitants from the [[Fiend]]ish hoards that have taken over the world.
 
-[[Hazen]] reconstructs his lab and makes some upgrades to allow easier/better rune and item syhtesization and new shops are unlocked here.
+[[Hazen]] reconstructs his lab and makes some upgrades to allow easier/better rune and item synthesization and new shops are unlocked here.

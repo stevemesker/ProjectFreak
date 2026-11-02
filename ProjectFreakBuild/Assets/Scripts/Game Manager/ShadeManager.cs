@@ -44,6 +44,9 @@ public class ShadeManager : MonoBehaviour
     [Tooltip("The rune field numbers every slot shares (SO_RuneField_Settings): core reach, snap radius, zone width, rune size. If empty, the defaults are used and a warning is logged")]
     [SerializeField] RuneFieldSettingsSO _RuneFieldSettings;
 
+    [Tooltip("Which kind of access point opened the rune field (read only). Set by RuneFieldAccessWrapper when an access point launches the field. None = the field scene was opened on its own for testing, which allows everything")]
+    [SerializeField, ReadOnly] RuneFieldType.Access _FieldAccess = RuneFieldType.Access.None;
+
     [Tooltip("Each slot's runtime entry (read only): hard stats, live stats (live Health = current health) and abilities. Summoned shades point at these, so health carries over when a shade is put away")]
     [ShowInInspector, ReadOnly] //ShowInInspector shows it without Unity saving it. It's runtime only, and saving it could make Unity swap in copies the shades don't point at
     List<ShadeRuntimeEntry> _RuntimeEntries = new List<ShadeRuntimeEntry>();
@@ -448,6 +451,34 @@ public class ShadeManager : MonoBehaviour
     {
         //the form every shade starts in (null if it isn't set)
         return _BoundEvolution;
+    }
+    #endregion
+
+    #region Rune Field Access
+    //what each kind of access point allows lives here, in code, so changing it later doesn't touch any prefab or timeline
+
+    public void SetFieldAccess(RuneFieldType.Access access)
+    {
+        //function RuneFieldAccessWrapper calls right before the field loads, so the field knows what it's allowed to do
+        _FieldAccess = access;
+    }
+
+    public RuneFieldType.Access GetFieldAccess()
+    {
+        //which kind of access point opened the field (None if it was opened on its own)
+        return _FieldAccess;
+    }
+
+    public bool CanEditAllSlots()
+    {
+        //Advanced (hub labs) can open every shade slot's field. Basic only edits the selected shade's field. None (testing) allows it
+        return _FieldAccess != RuneFieldType.Access.Basic;
+    }
+
+    public bool CanSlotShards()
+    {
+        //every access point can slot shards (decided Nov 1, 2026). The Shards tab checks this once it's built
+        return true;
     }
     #endregion
 

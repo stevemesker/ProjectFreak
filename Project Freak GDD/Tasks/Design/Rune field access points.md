@@ -1,5 +1,5 @@
 ---
-status: Done
+status: Archived
 priority: 3
 chapter:
   - Chapter 0 Game Flow
@@ -9,7 +9,8 @@ plan: "[[Rune Field Finish Plan]]"
 source: "[[Rune Field 3D Change Requests and to Do]]"
 needs:
 created: 2026-10-29
-done:
+done: 2026-11-01
+archived: 2026-11-01
 ---
 ## What
 - Where access points go: the hub lab (it moves halfway through the game), one right before each boss, rare mid-dungeon safe rooms
@@ -19,6 +20,8 @@ done:
 [[Rune Field Access Point]]s will be located in the [[Hub Scene]], [[Dungeon Entrance]]s, before bosses at the end of the dungeon, and [[Safe Floor]]s. The [[Hub Scene]] access point will be the only one that allows the player to edit runes for all shade slots. Rune crafting and all other inventory/equipment mechanics are done via other crafting areas which probably won't be in dungeon level areas. When we add more mechanics specific to runes and shade slots we'll decide if they'll be accessible by all access points or just the hub ones
 
 see design entries linked in this info page. Will need to run through and format it and discuss any changes to the architecture
+
+**Review (Nov 1, 2026):** locations and the Advanced / Basic split went into [[Rune Field Finish Plan]] and [[Load the rune field from an access point]]. Launching is two functions called from the event timeline (one per type), not a profile asset. Shard slotting works at both types. Access point art is done with the level art, so no card
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]

@@ -48,6 +48,13 @@ public class SceneManagerWrapper : MonoBehaviour
         SceneManagerObject._SceneManager.LoadStartScene();
     }
 
+    public void LeaveRuneField()
+    {
+        //goes back to the scene and access point the rune field was opened from. Hook the rune field's On Leave to this
+        if (ManagerTester("LeaveRuneField") == false) return;
+        SceneManagerObject._SceneManager.LeaveRuneField();
+    }
+
     #region Tools
     bool ManagerTester(string type)
     {

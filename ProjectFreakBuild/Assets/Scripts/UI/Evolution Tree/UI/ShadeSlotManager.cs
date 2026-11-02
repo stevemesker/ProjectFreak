@@ -17,14 +17,17 @@ public class ShadeSlotManager : MonoBehaviour
     {
         //function that makes sure the list of enabled slots matches the player's shade slot number
 
+        //Basic access points only edit the selected shade, so only its button shows
+        bool allSlots = ShadeManager._ShadeManager == null || ShadeManager._ShadeManager.CanEditAllSlots();
+        int selected = ShadeManager._ShadeManager != null ? ShadeManager._ShadeManager.GetShadeSelectionIndex() : -1;
+
         List<ShadeSO> temp = GameManager._GameManager.GetShadeList();
         for (int i = 0; i < slotList.Count; i++)
         {
             //check player level to make sure you can click this slot
-            if (i >= GameManager._GameManager.GetPlayerCurrentLevel())
-                slotList[i].SetActive(false);
-            else
-                slotList[i].SetActive(true);
+            bool unlocked = i < GameManager._GameManager.GetPlayerCurrentLevel();
+            bool allowed = allSlots || i == selected;
+            slotList[i].SetActive(unlocked && allowed);
         }
     }
 

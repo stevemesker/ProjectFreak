@@ -7,6 +7,8 @@ owner: Both
 plan: "[[Rune Field Finish Plan]]"
 source: "[[Rune Field 3D Change Requests and to Do]]"
 needs:
+  - "[[Side panel and rune list art pass]]"
+  - "[[Rune Field Stat Symbols]]"
 created: 2026-10-28
 done:
 ---
@@ -21,6 +23,7 @@ The info popup for runes, nodes and the core (merged with this card Oct 29, 2026
 - Shares "selected" with [[Node link tool and display]]. Hooks into the field's `OnHoverChanged`
 
 ## Notes
+- Nov 1, 2026: built with the real UI once the side panel art pass and stat symbols are done, not a placeholder like the temporary level-up UI. The placeholder spot in What is out
 - Steve to retitle in Obsidian: "Info popup for runes, nodes and core"
 - Decisions in [[Rune Field Finish Plan]]
 - Brought over from Trello: https://trello.com/c/ULr1SksJ/32-node-stat-displays

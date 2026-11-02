@@ -28,7 +28,20 @@ Calls the [[Scene Manager]]. Every function checks the manager exists first and 
 | `HudFadeOnOpen(speed)`    | Fade the HUD in after the next scene loads             |
 | `ActiveOpeningScene()`    | Show the loaded opening scene                          |
 | `LoadOpeningScene()`      | Load the opening scene for the current chapter         |
+| `LeaveRuneField()`        | *Nov 1, 2026.* Go back to the scene and access point the rune field was opened from. Hook the field's On Leave to this |
 | `TestSingleton()`         | Odin **Test** button that checks the manager exists    |
+
+## RuneFieldAccessWrapper
+*Added Nov 1, 2026.* Goes on the [[Rune Field Access Point]] prefab. The access point's timeline calls one of its two functions. It tells the [[Shade Manager]] which kind of access point this is, then has the [[Scene Manager]] swap to the field (`TravelToRuneField`). Both functions check the Scene Manager and Shade Manager exist first.
+
+| Function | Description |
+| :--- | :--- |
+| `LaunchAdvancedField()` | Opens the field with everything allowed (hub labs) |
+| `LaunchBasicField()` | Opens the field with the basic tools (dungeon entrances, before bosses, safe and vault floors) |
+
+`_ReturnLocator` (optional): where the player comes back to, and which way they face. Left empty, the wrapper's own object is used. A cyan gizmo shows the spot when the object is selected.
+
+What each kind allows isn't set here, it's in the Shade Manager's Rune Field Access functions, so changing it doesn't touch the prefab or its timelines.
 
 ## HUDWrapper
 Calls the [[HUD Manager]]. `FadeHudIn(speed)` and `FadeHudOut(speed)`.

@@ -7,9 +7,11 @@ Advanced gives access to all mechanics of the [[Rune Field]] and its various too
 
 -Rune Field Editing: Adding, removing, and changing runes in the [[Rune Field]]
 -Shade slot changing: The player can not only change the runes of their active shade slot but all of them
+-Shard slotting
 
 Basic is a far more limited type that is typically located within dungeon floors:
 -Rune Field Editing
+-Shard slotting
 
 *Note: More mechanics may be added to this list later as the game progresses*
 # Access Point Locations

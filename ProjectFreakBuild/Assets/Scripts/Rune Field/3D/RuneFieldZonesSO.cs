@@ -139,10 +139,6 @@ public class RuneFieldZonesSO : ScriptableObject
     [Tooltip("The light-up sweep on the tear material (0 = dark, 1 = fully lit), read with the mesh's reveal order (UV2.x). Optional: the height also rises with it")]
     public string _RevealProperty = "_Reveal";
 
-    [FoldoutGroup("Shader Properties")]
-    [Tooltip("The overcharge pulse (later, always 0 for now)")]
-    public string _OverchargeProperty = "_Overcharge";
-
     [FoldoutGroup("Stand-In Look")]
     [Tooltip("The material color the stand-in tints (_BaseColor for HDRP Lit). Only used where a wall material is empty and HDRP's default material stands in")]
     public string _StandInColorProperty = "_BaseColor";

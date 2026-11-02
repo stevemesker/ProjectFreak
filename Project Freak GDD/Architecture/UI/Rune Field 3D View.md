@@ -173,7 +173,7 @@ Where the player is pointing. Lives on the field object (the field adds it if it
 *Built Oct 10, 2026 (step 4).* The side panel scripts (canvas UI, in `Scripts/UI/Evolution Tree/UI`) talk to the field through `IRuneFieldView` (in `Scripts/Rune Field/RuneFieldInterface.cs`, see [[Interface List]]). Only `RuneField3DObject` has it since the 2D field was removed (Oct 28, 2026).
 - **`IngredientListWindow`**: uses the scene's 3D field. Nothing to assign
 - **`ElementDataObject`**: dragging a button over the 3D field (anywhere the pointer isn't over UI) drops the rune there. While dragged, the button stops blocking clicks so it doesn't count as UI under the pointer. *Oct 11, 2026:* once it leaves the panel the button hides and the field shows a stand-in rune where it would land (red over a bad spot, `RuneField3DObject.UpdateListDrag` / `EndListDrag`); back over the list the button shows again. Works for the mouse and the gamepad's hold-A drag. *The shrink-to-a-circle animation is for a polish pass* [[Notes for the future]]
-- **`ShadeSlotManager`**: uses the scene's 3D field (its old 2D field slot was removed Oct 28, 2026)
+- **`ShadeSlotManager`**: uses the scene's 3D field (its old 2D field slot was removed Oct 28, 2026). *Nov 1, 2026:* when a Basic access point opened the field, only the selected slot's button shows, and `SelectSlot` refuses other slots (see Rune Field Access in [[Shade Manager]])
 - *Oct 28, 2026:* the list buttons' old red tint over a bad spot (`_TintTarget`) only worked on the 2D field and was removed. The stand-in rune on the field shows red instead
 
 ### ShadeInfoWindow
@@ -213,9 +213,9 @@ Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y sca
 **Shader** *(Oct 23, 2026)*: `MAT_Bridge` uses `SH_NodeBridge` (`Art/Shaders/VFX`). Every bridge sends its own values through `RuneFieldTint`'s `MaterialPropertyBlock`, so all bridges share **one material** (no material per color combo, no copy while tearing). Values a shader doesn't have are ignored:
 - **End colors:** `_SourceColor` (end A, UV x = 0) and `_ConnectionColor` (end B, UV x = 1), the colors of the two things it joins: a rune's element `_Palette` **secondary** color (primary is the rune itself, secondary its bridges; *Oct 23, 2026*), or the field's `_CoreColor` for the core. An element with no palette, or a secondary color left fully see-through, falls back to the rune's own color. The shader blends between them (`_GradientPower`, `_GradiantStrength` on the material)
 - **Tear:** `_TearProgress`, 0 to 1, how close the tear timer is to snapping it (updated every tick). The shader's `_TearColor` (set on the material) fills the bridge from end A toward end B as it rises
-- **Strain:** `_Strain`, 0 to 1, how far into the field's `_TearSlack` it's pulled before the timer starts, for a tear dead zone look. `SH_NodeBridge` doesn't have it yet, so it's ignored. *Oct 29, 2026: not needed, the tear color is the strain look. Being removed: [[Remove unused rune field shader values]]* [[Notes for the future]]
+- *Nov 1, 2026:* the old `_Strain` value (and `ShowStrain`) was removed: the tear color is the strain look. `_TearSlack` stays as the gameplay dead zone before the tear timer starts ([[Remove unused rune field shader values]])
 
-The property names are inspector fields (closed **Shader Properties** foldout since Oct 28, 2026: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`, `_StrainProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
+The property names are inspector fields (closed **Shader Properties** foldout since Oct 28, 2026: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
 
 ### Node3DObject
 An [[Ability Node]]: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor` (`_ColorProperty` is in the closed Shader Properties foldout). `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
@@ -263,7 +263,7 @@ Still to come: the placement pole and its ground ring (Steve's model), and the w
 3. Add `RuneField3DObject` to it. The core, nodes and prefabs fill themselves in
 4. Reset the shade slot you test with (saved plugs from the 2D scene point at its node list, not this one)
 5. Under the canvas, add an empty object with `ConfirmPopup`, press **Build Default Layout**, and drag it into the field's `_Popup` [[Notes for the future]]
-6. Add a save button (On Click → `RuneField3DObject.SaveRuneSlot`) and drag it into `_SaveButton`; a close button (On Click → `RuneField3DObject.RequestLeave`) if wanted. `_OnLeave` can stay empty for the test build [[Notes for the future]]
+6. Add a save button (On Click → `RuneField3DObject.SaveRuneSlot`) and drag it into `_SaveButton`; a close button (On Click → `RuneField3DObject.RequestLeave`) if wanted. *Nov 1, 2026:* to leave back to the access point, add a `SceneManagerWrapper` to the field scene and hook `_OnLeave` to `SceneManagerWrapper.LeaveRuneField` (see Rune Field Trips in [[Scene Manager]])
 7. Copy the canvas (without `Navigation Area`) and the EventSystem in from `Evolution_UI_scene`. The inventory list and slot buttons find the 3D field by themselves
 7b. **Swap the EventSystem's input module:** select the EventSystem and press **Replace with InputSystemUIInputModule** on its Standalone Input Module. The old module can't see the new Input System (no virtual mouse, no gamepad navigation). The pointer logs a warning on start while the old one is there
 8. Test build: add an empty object `Test Kit` with `RuneFieldTestKitObject` and fill in Starting Runes. Put `3d_Evolution_UI_scene` in Build Settings [[Notes for the future]]
@@ -295,7 +295,7 @@ RuneField3DObject ──OnFieldLoaded──► RuneFieldZonesObject ──ShowSt
                                         └──ShowLook(tear, smoke, reveal)──► ZoneBorder3DObject (one per gate ring)
                                                                               │ wall (stays put) + cracks (ride the zone outside)
                                                                               ▼
-                                                                         MaterialPropertyBlock: _Tear, _Smoke, _Reveal, _Overcharge
+                                                                         MaterialPropertyBlock: _Tear, _Smoke, _Reveal
 ```
 
 ### The seen zone
@@ -330,7 +330,7 @@ Created from **Create → Rune Field → Zones**, one asset `SO_RuneField_Zones`
 | `_TearMaterial` / `_SmokeMaterial` | *Oct 13, 2026: two materials the walls swap between (replaced the single `_BorderMaterial`).* Tear = the forward wall and every crack; empty = the strip model's own material (`MAT_ZoneWall_Flame`, found on Rebuild), see **Tear material, one place** above. Smoke = the wall behind; empty = a grey stand-in |
 | `_HeightProperty` / `_HiddenHeight` / `_SwapPoint` | The height value both materials share (`_GradiantHeight`). The code animates it from `_HiddenHeight` (gone) to the material's own value (full). `_SwapPoint` (0.5) is where in the tear → smoke blend the tear wall finishes going out and the smoke wall starts coming in |
 | `_MeshFolder` | Where the baked wall and crack meshes are saved (`Assets/Generated/Rune Field Zones`) |
-| `_RevealProperty` / `_OverchargeProperty` | Optional extra values for the tear material: the light-up sweep (0 to 1, read with the mesh's UV2.x) and the overcharge pulse (always 0 for now) |
+| `_RevealProperty` | Optional extra value for the tear material: the light-up sweep (0 to 1, read with the mesh's UV2.x). *The unused `_OverchargeProperty` was removed Nov 1, 2026 (the overcharge pulse was dropped)* |
 | `_StandInColorProperty` / `_StandInTearColor` / `_StandInSmokeColor` | The stand-in tint, only used where a material is empty and HDRP's default material stands in |
 | `_UseSmokeParticles` | *Oct 13, 2026, off by default:* smoke particles on the smoky border. Steve handles the smoke in the shader |
 | `_SmokePrefab` | Steve's smoke particles (Simulation Space World, moves its own particles). Empty = stand-in grey puffs (`_StandInSmokeLifetime`, `_StandInSmokeSize`, `_StandInSmokeRise`, `_StandInPuffColor`) [[Notes for the future]] |
@@ -415,7 +415,7 @@ Catching up more than one zone plays the steps one after another with `_StepGap`
 
 **Baked channels** (match [[Zones - Shader Graph Recipe]]): UV0 = the strip's UVs with U carried on copy to copy; UV2.x = reveal order (0 to 1, distance the sweep travels to get there, divided by the longest on this ring, so walls and cracks light at the same speed); UV2.y = height up the strip (0 bottom, 1 top); UV3.x = gate gap mask (1 normal, 0 in a gap; always 1 on cracks); UV3.y = distance along a crack (0 on walls).
 
-**Look** (`ShowLook(look, height, crackHeight, reveal, settings)`, *changed Oct 13, 2026*): `look` (`RuneFieldType.BorderLook`: Off, Tear, Smoke) picks the wall's material, swapped on `sharedMaterial` (no copies). `height` (0 to 1) is sent as the height value, from `_HiddenHeight` to the material's own value, through `RuneFieldTint`. Cracks show the tear material at `crackHeight` only while the wall is the tear, and are off otherwise. Anything at height 0 or Off has its renderer turned off. `_Reveal` and `_Overcharge` (0) are sent too. Only the stand-in (HDRP's default material) gets tinted.
+**Look** (`ShowLook(look, height, crackHeight, reveal, settings)`, *changed Oct 13, 2026*): `look` (`RuneFieldType.BorderLook`: Off, Tear, Smoke) picks the wall's material, swapped on `sharedMaterial` (no copies). `height` (0 to 1) is sent as the height value, from `_HiddenHeight` to the material's own value, through `RuneFieldTint`. Cracks show the tear material at `crackHeight` only while the wall is the tear, and are off otherwise. Anything at height 0 or Off has its renderer turned off. `_Reveal` is sent too (the unused `_Overcharge` was removed Nov 1, 2026). Only the stand-in (HDRP's default material) gets tinted.
 
 **Smoke:** *off unless `_UseSmokeParticles` is ticked.* While smoky (play mode), puffs are emitted at random spots on the ring, less often inside gate gaps, `_SmokePerMeter` × circumference × smoke per second (real time, at most 200 a frame). The emitter is made the first time: an instance of `_SmokePrefab`, or a stand-in particle system (grey opaque squares that rise and shrink).
 

@@ -56,7 +56,7 @@ public class RuneFieldTint
         }
     }
 
-    //setting several values at once (the bridges use this for their end colors, tear and strain):
+    //setting several values at once (the bridges use this for their end colors and tear):
     //StartValues, then any number of PutColor / PutFloat / PutTint, then ApplyValues. Anything not put goes back to the material's own value
     public void StartValues()
     {

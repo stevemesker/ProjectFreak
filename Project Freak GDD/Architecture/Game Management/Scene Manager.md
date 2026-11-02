@@ -403,6 +403,32 @@ A simpler spawn point. In `Awake()` it moves the player to its own position and 
 
 ---
 
+# Rune Field Trips
+
+*Added Nov 1, 2026.* Access points open the rune field with a plain scene swap: the field replaces the scene, and leaving it loads that scene back with the player at the access point. See [[Rune Field Access Point]] and [[Rune Field Finish Plan]].
+
+| Function | Description |
+| :--- | :--- |
+| `TravelToRuneField(position, rotation)` | Called by `RuneFieldAccessWrapper`. Remembers the current scene and the spot to come back to, puts any shade away, fades to black (skipped if the screen is already black), hides the player and loads `_RuneFieldScene` |
+| `LeaveRuneField()` | Called by the field's On Leave (through `SceneManagerWrapper`). Fades, then loads the scene the player came from and sets the field access back to None. Warns and stays put if the field wasn't opened from an access point |
+
+**Coming back:** when the scene the player left from finishes loading, `OnSceneLoaded()` moves the player to the saved spot and shows them again. `sceneLoaded` runs after the scene's `Awake` and `OnEnable`, so this wins over `PlayerSpawnPointObject`, `SceneLocationObject` and [[Dungeon Door]]s placing the player.
+
+**The player in the field:** the player carries over between scenes (`DontDestroyOnLoad`), so they're turned off (`SetActive(false)`) while in the field instead of being destroyed.
+
+**Dungeons:** coming back loads the same floor scene the player left (by name), but the floor is set up fresh: rooms, chests and pickups aren't remembered yet ([[Remember the dungeon across a field visit]]) [[Notes for the future]]
+
+Inspector (**Rune Field** foldout):
+
+| Field | Description |
+| :--- | :--- |
+| `_RuneFieldScene` | The rune field scene's name (default `3d_Evolution_UI_scene`). Has to be in Build Settings |
+| `_RuneFieldFadeOutTime` | Seconds to fade to black before going to or from the field (default 0.5). 0 = no fade |
+| `_RuneFieldFadeInTime` | Seconds to fade back in once the scene has loaded (default 1) |
+| `_RuneFieldReturnScene` | Read only. The scene the field goes back to |
+
+---
+
 # Known Limitations
 
 * `ChangeScene()` uses a normal (blocking) `LoadScene`, not an async load.

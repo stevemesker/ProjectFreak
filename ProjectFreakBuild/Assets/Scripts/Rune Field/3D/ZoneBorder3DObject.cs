@@ -167,7 +167,6 @@ public class ZoneBorder3DObject : MonoBehaviour
         tint.StartValues();
         tint.PutFloat(heightID, Mathf.Lerp(lookSettings._HiddenHeight, fullHeight, height));
         tint.PutFloat(Shader.PropertyToID(lookSettings._RevealProperty), reveal);
-        tint.PutFloat(Shader.PropertyToID(lookSettings._OverchargeProperty), 0f); //todo: the overcharge pulse before a cut on save [Notes for the future]
         if (material == GetDefaultMaterial()) tint.PutTint(standInColor); //only the stand-in gets tinted, a real material keeps its own colors
         tint.ApplyValues();
     }

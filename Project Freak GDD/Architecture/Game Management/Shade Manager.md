@@ -114,6 +114,15 @@ Fade screen back in
 | `GetRuneFieldSettings()` | The shared rune field settings |
 | `IsValidSlot(slot)` | Checks a slot index points at a real slot |
 
+### Rune Field Access
+*Added Nov 1, 2026.* Which kind of access point opened the rune field, and what each kind allows. The rules are written here in code, so changing who gets what doesn't touch the access point prefab or its timelines. `_FieldAccess` (read only, in the Rune Fields group) holds it: `RuneFieldType.Access.None`, `Basic` or `Advanced`. None means the field scene was opened on its own (testing), which allows everything.
+
+| Function | Description |
+| :--- | :--- |
+| `SetFieldAccess(access)` / `GetFieldAccess()` | Set by `RuneFieldAccessWrapper` before the field loads (see [[Manager Wrappers]]). Set back to None when the player leaves the field |
+| `CanEditAllSlots()` | True unless Basic. Basic only edits the selected shade's field: `RuneField3DObject.SelectSlot` refuses other slots and `ShadeSlotManager` only shows the selected slot's button |
+| `CanSlotShards()` | True for every kind (decided Nov 1, 2026). The Shards tab checks this once it's built [[Notes for the future]] |
+
 ---
 ## Evolving
 *Added Oct 9, 2026 (overhaul step 7).* A shade evolves when a gate (a node with an Evolve effect) in its open zone gets power. See **Zones and Evolving** in [[Rune Field System]].

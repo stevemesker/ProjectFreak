@@ -442,6 +442,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     {
         //function the shade slot buttons call. With unsaved changes it asks Save / Discard / Cancel before switching
         if (index == _SlotIndex) return; //already open
+        if (ShadeManager._ShadeManager != null && ShadeManager._ShadeManager.CanEditAllSlots() == false) return; //Basic access points only edit the selected shade's field
         AskAboutUnsavedChanges(() => LoadRuneField(index)); //"() => ..." stores the switch as a small function to run once the question is answered
     }
 
@@ -1156,7 +1157,6 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         //desiredPosition is the pointer, heldPosition is where the bridges stopped the rune. Only taut bridges (the rune is at the end of their reach) get pulled,
         //so pulling in a direction picks which bridges tear, and how far the pointer is past each one's reach sets how fast
         //a paused bridge keeps the tear it built up until the drag ends, so the player can pull one way, then another, and come back
-        //also tells each one its strain: how far into Tear Slack it's pulled (0 to 1), for the bridge shader's tear dead zone look
         for (int i = 0; i < _bridgeViews.Count; i++)
         {
             Bridge3DObject bridge = _bridgeViews[i];
@@ -1166,10 +1166,8 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             float stretch = 0f;
             if (_field.IsBridgeTaut(runeID, heldPosition, otherID, _TautPadding)) stretch = _field.GetBridgeStretch(runeID, desiredPosition, otherID);
 
-            float strain = _TearSlack > 0f ? stretch / _TearSlack : (stretch > 0f ? 1f : 0f); //no slack: any stretch is full strain
-            if (stretch > _TearSlack) bridge.StartTearing(stretch);
-            else bridge.PauseTearing(); //keeps its tear so far, and puts strain back to 0 (set again just below)
-            bridge.ShowStrain(strain); //clamped to 0 to 1 by the bridge
+            if (stretch > _TearSlack) bridge.StartTearing(stretch); //past Tear Slack (the dead zone): the tear timer runs
+            else bridge.PauseTearing(); //keeps its tear so far
         }
     }
 
