@@ -218,7 +218,24 @@ Sits on end A, points at end B, Z scale = the distance (the prefab's X and Y sca
 The property names are inspector fields (closed **Shader Properties** foldout since Oct 28, 2026: `_SourceColorProperty`, `_ConnectionColorProperty`, `_TearProgressProperty`), already matching `SH_NodeBridge`. The old temp `_TearColor` tint (and `_ColorProperty`) were removed now that the shader shows tearing itself
 
 ### Node3DObject
-An [[Ability Node]]: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned); while it can't take a rune it's tinted `_LockedColor` (`_ColorProperty` is in the closed Shader Properties foldout). `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
+An [[Ability Node]]: `_Unlocks`, `_Lockouts` (other node objects) and `_Effects` (with the same inspector warnings). While on, its `_OnEffect` child shows (a child named `OnEffect` is used if nothing is assigned). Being locked shows only through the cover (below): *Nov 3, 2026:* the old red `_LockedColor` tint (and its `_ColorProperty`) was removed, and `ShowState(active, fireEvents)` no longer takes a locked flag. `_ActivationEvent` / `_DeactivationEvent` fire on changes while editing. **Zone Tools** foldout: **Snap To Next Ring Out**, **Snap To Previous Ring In** (added Oct 10, 2026; warns and does nothing if the node is already on or inside ring 1) and **Snap To Ring**.
+
+**Cover & Shield** *(Nov 3, 2026, [[Node state forms and transitions]])*: Steve's node model (`Mesh_RuneField_Node`) has four parts: Cover, Shield, Tray and Rim. Only the Cover and Shield move, and each answers one question:
+- **Cover** closes while no runes can go in or come out: `RuneField.IsNodeBlocked(i)` (locked out) or `RuneField.IsNodeLockedIn(i)` (holds a locked-in rune, like the gate the shade evolved through). Open otherwise
+- **Shield** is up while the node is on (`IsNodeActive`, a powered rune plugged in), down otherwise, locked or not
+
+`RuneField3DObject.RefreshView` calls `ShowCoverAndShield(coverClosed, shieldUp, animate)` on every node after every change, next to `ShowState`. `animate` is the same flag as the node events: moves play while editing, and also when `LoadRuneField` reloads the slot that's already open (after a save, an evolve, a discard or a clear), so a gate's cover closes on screen when the save locks its rune in. They snap only when a slot is opened fresh or the player switches shades (`StartField(data, animateNodes)`, Nov 5, 2026). A part only starts moving when its target changes, so refreshes mid-drag don't restart it, and a change mid-move blends from where the part is now. Moves use unscaled time, so they play while the game is paused under the field. Turning the node off mid-move puts both parts where they were heading.
+
+The model is built locked (cover closed, shield up), so `Awake` reads each part's model pose as its closed / up pose. Open = that rotation plus `_CoverOpenRotation`, down = that position plus `_ShieldDownOffset`. Setup is automatic: `_Cover` / `_Shield` are found by child name (`_CoverName`, `_ShieldName`, defaulting to `Mesh_RuneField_Node_Cover` / `_Shield`), with a warning if either is missing.
+
+| Knob (**Cover & Shield** foldout) | Default | What it does |
+| :--- | :--- | :--- |
+| `_CoverOpenRotation` | (180, 0, 0) | The cover's turn when open, in degrees on top of the model's rotation. Flip the sign if it opens the wrong way |
+| `_CoverTime` / `_CoverCurve` | 0.4 s, ease in-out | How long the cover takes and the shape of its move (past 1 overshoots) |
+| `_ShieldDownOffset` | (0, −0.1, 0) | Where the shield sits while down, from its model position, in meters |
+| `_ShieldTime` / `_ShieldCurve` | 0.25 s, ease in-out | How long the shield takes and the shape of its move |
+
+Effect hooks: `_CoverClosedEvent` / `_CoverOpenedEvent` fire as the cover starts moving (editing only). The shield uses the existing `_ActivationEvent` / `_DeactivationEvent`, since it follows the node being on. **Test Cover** / **Test Shield** buttons (play mode) flip a part with its animation for tuning; the next field refresh puts it back.
 
 ### Core3DObject
 Holds the core's power (left / total, read only). Its label is drawn by `RuneFieldLabelsObject`. *Oct 11, 2026:* also `HasRunesWaiting()` (`RuneField.HasRunesWaitingForPower`: a rune that could have power doesn't; planning runes don't count), for the core shader's bright / normal / dull purple. The shader's property names become inspector fields here once it exists [[Notes for the future]]. *Oct 24, 2026:* `ShowRangeHighlight` for the range overlay, same as `Rune3DObject` (`_RangeHighlightProperty`, `_RangeEffect`).

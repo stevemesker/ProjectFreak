@@ -286,14 +286,18 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         _settings = ShadeManager._ShadeManager.GetRuneFieldSettings(); //before the nodes, the gate check needs the zone width
         if (_nodeEntries == null) _nodeEntries = BuildNodesFromScene();
 
+        //reloading the slot that's already open (after a save, an evolve or a discard) animates the nodes into their new look, like the gate's cover closing
+        //opening a slot for the first time, or switching to another shade, snaps them into place instead
+        bool sameSlot = _field != null && index == _SlotIndex;
+
         ShadeManager._ShadeManager.SetShadeSelection(index);
         _SlotIndex = index;
-        StartField(ShadeManager._ShadeManager.GetSavedRuneField(index)); //this is a copy, so editing it doesn't change the save until the player saves
+        StartField(ShadeManager._ShadeManager.GetSavedRuneField(index), sameSlot); //this is a copy, so editing it doesn't change the save until the player saves
     }
 
-    void StartField(RuneFieldData data)
+    void StartField(RuneFieldData data, bool animateNodes)
     {
-        //swaps in a new field and redraws everything
+        //swaps in a new field and redraws everything. animateNodes plays node changes (and fires their events) instead of snapping
         if (_field != null)
         {
             _field.OnFieldChanged -= OnFieldChanged;
@@ -309,7 +313,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         _carrying = false;
         EndCarryFromInventory();
         ClearViews();
-        RefreshView(false); //node events don't fire on load, the nodes were already on/off when this field was saved
+        RefreshView(animateNodes); //on a fresh open nothing animates or fires, the nodes were already on/off when this field was saved. On a reload only nodes that actually changed move
         SetUnsavedChanges(false);
         OnFieldLoaded?.Invoke();
     }
@@ -403,7 +407,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
     {
         //empties the field being edited (nothing changes on the slot until the player saves)
         if (_field == null) return;
-        StartField(new RuneFieldData());
+        StartField(new RuneFieldData(), true); //same slot, so nodes animate as they empty out
         SetUnsavedChanges(true);
     }
 
@@ -1050,7 +1054,11 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         {
             if (_Nodes[i] == null) continue;
             bool active = _field.IsNodeActive(i);
-            _Nodes[i].ShowState(active, active == false && _field.IsNodeBlocked(i), fireNodeEvents); //locked look: can't take a rune (locked zone, frozen gate, or locked out)
+            _Nodes[i].ShowState(active, fireNodeEvents);
+
+            //cover closes while no runes can go in or come out (locked out, or holding a locked-in rune). Shield is up while the node is on
+            bool coverClosed = _field.IsNodeBlocked(i) || _field.IsNodeLockedIn(i);
+            _Nodes[i].ShowCoverAndShield(coverClosed, active, fireNodeEvents); //animates while editing or reloading the open slot, snaps when a slot is first opened
         }
 
         if (_Core != null) _Core.ShowPower(_field.GetPowerLeft(), _field.GetMaxPower(), _field.HasRunesWaitingForPower());

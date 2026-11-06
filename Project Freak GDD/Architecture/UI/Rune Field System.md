@@ -77,6 +77,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 | `IsPastOpenZone(position or id)` / `CrossesOpenRing(a, b)` | Past the open zone's outer ring (planning runes) / a bridge with one end on each side of it |
 | `GetBridgesToCut()` / `CutOpenRingBridges()` | Bridges saving would cut / cut them (run on save, fires `OnBridgesCut` with copies of the cut bridges) |
 | `IsRuneFrozen(id)` / `IsBridgeFrozen(a, b)` / `IsRuneLockedIn(id)` | Frozen checks (read from the saved lists) |
+| `IsNodeLockedIn(index)` | The node holds a locked-in rune (its rune can never come out). Used for the node's cover, see [[Rune Field 3D View]] *(Nov 3, 2026)* |
 | `FreezeClosedZones()` | Freezes the closed zones' runes, bridges and plugged runes (run on evolve) |
 | `GetFrozenRunesToLockIn()` / `LockInFrozenPlugs()` | Frozen runes plugged in this draft and not locked yet / lock them in (run on save) |
 | `GetPluggedGate()` / `GetEvolvingGate()` | The open zone's gate with a rune in it / that's on (the shade evolves through it). -1 if none |

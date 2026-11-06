@@ -80,17 +80,81 @@ MonoBehaviour:
   _Unlocks: []
   _Lockouts: []
   _Effects: []
-  _ColorProperty: _BaseColor
   _LockedColor: {r: 0.45, g: 0.2, b: 0.2, a: 1}
+  _ColorProperty: _BaseColor
+  _CoverOpenRotation: {x: 180, y: 0, z: 0}
+  _CoverTime: 0.4
+  _CoverCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _ShieldDownOffset: {x: 0, y: -0.1, z: 0}
+  _ShieldTime: 0.25
+  _ShieldCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _CoverName: Mesh_RuneField_Node_Cover
+  _ShieldName: Mesh_RuneField_Node_Shield
   _OnEffect: {fileID: 0}
+  _Cover: {fileID: 0}
+  _Shield: {fileID: 0}
   _ActivationEvent:
     m_PersistentCalls:
       m_Calls: []
   _DeactivationEvent:
     m_PersistentCalls:
       m_Calls: []
+  _CoverClosedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _CoverOpenedEvent:
+    m_PersistentCalls:
+      m_Calls: []
   _Active: 0
   _Locked: 0
+  _CoverClosed: 1
+  _ShieldUp: 1
   references:
     version: 2
     RefIds: []

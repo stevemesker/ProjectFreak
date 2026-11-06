@@ -347,6 +347,14 @@ public class RuneField
         return _data._LockedRunes.Contains(runeID);
     }
 
+    public bool IsNodeLockedIn(int nodeIndex)
+    {
+        //checks if this node holds a locked-in rune (like the gate a shade evolved through), so its rune can never come out
+        int runeID = GetRuneInNode(nodeIndex);
+        if (runeID < 0) return false; //GetRuneInNode gives -1 for an empty node
+        return IsRuneLockedIn(runeID);
+    }
+
     public void FreezeClosedZones()
     {
         //function the Shade Manager runs right after the shade evolves, so the zone it left (and everything further in) freezes

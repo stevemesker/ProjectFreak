@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 
 //an ability node on the 3D rune field. RuneField decides if the node is on, this shows it and fires the events
 //its unlock and lockout lists and its effects are where the rules get the node from when the field builds its node list
+//the model has two moving parts: the cover closes while no runes can go in or come out, the shield rises while the node is on
 public class Node3DObject : MonoBehaviour
 {
     [Header("Data")]
@@ -21,35 +22,80 @@ public class Node3DObject : MonoBehaviour
     List<RuneEffect> _Effects = new List<RuneEffect>();
 
     [Header("Settings")]
-    [Tooltip("Tint while the node can't take a rune (outside the open zone, a closed gate, or locked out)")]
-    [SerializeField] Color _LockedColor = new Color(0.45f, 0.2f, 0.2f, 1f);
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("How the cover turns to open, in degrees, on top of its model rotation (the model is built closed). Flip the sign if it opens the wrong way")]
+    [SerializeField] Vector3 _CoverOpenRotation = new Vector3(180f, 0f, 0f);
 
-    [FoldoutGroup("Shader Properties")]
-    [Tooltip("The material's color name: _BaseColor for HDRP Lit, _UnlitColor for HDRP Unlit")]
-    [SerializeField] string _ColorProperty = "_BaseColor";
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("How long the cover takes to open or close, in seconds")]
+    [SerializeField, Min(0f)] float _CoverTime = 0.4f;
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("The shape of the cover's move over its time (0 = where it started, 1 = where it's going). Going past 1 gives an overshoot")]
+    [SerializeField] AnimationCurve _CoverCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("Where the shield sits while down, as an offset from its model position in its parent's space, in meters (the model is built with the shield up)")]
+    [SerializeField] Vector3 _ShieldDownOffset = new Vector3(0f, -0.1f, 0f);
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("How long the shield takes to go up or down, in seconds")]
+    [SerializeField, Min(0f)] float _ShieldTime = 0.25f;
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("The shape of the shield's move over its time (0 = where it started, 1 = where it's going). Going past 1 gives an overshoot")]
+    [SerializeField] AnimationCurve _ShieldCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("The child the cover is found by when Cover is left empty")]
+    [SerializeField] string _CoverName = "Mesh_RuneField_Node_Cover";
+
+    [FoldoutGroup("Cover & Shield")]
+    [Tooltip("The child the shield is found by when Shield is left empty")]
+    [SerializeField] string _ShieldName = "Mesh_RuneField_Node_Shield";
 
     [Header("References")]
     [Tooltip("Shown while the node is on. Left empty, a child named OnEffect is used if there is one")]
     [SerializeField] GameObject _OnEffect;
 
+    [Tooltip("The part that closes over the node while no runes can go in or come out (locked out, or a locked-in rune). Left empty, the child named in Cover Name is used")]
+    [SerializeField] Transform _Cover;
+
+    [Tooltip("The part that rises while the node is on (a powered rune plugged in). Left empty, the child named in Shield Name is used")]
+    [SerializeField] Transform _Shield;
+
     [Header("Events")]
-    [Tooltip("Runs when the node turns on while the player is editing the field (not when a saved field loads)")]
+    [Tooltip("Runs when the node turns on while the player is editing the field (not when a saved field loads). The shield starts rising at the same time")]
     [SerializeField] UnityEvent _ActivationEvent;
 
-    [Tooltip("Runs when the node turns off while the player is editing the field (not when a saved field loads)")]
+    [Tooltip("Runs when the node turns off while the player is editing the field (not when a saved field loads). The shield starts lowering at the same time")]
     [SerializeField] UnityEvent _DeactivationEvent;
+
+    [Tooltip("Runs when the cover starts closing while the player is editing the field (not when a saved field loads)")]
+    [SerializeField] UnityEvent _CoverClosedEvent;
+
+    [Tooltip("Runs when the cover starts opening while the player is editing the field (not when a saved field loads)")]
+    [SerializeField] UnityEvent _CoverOpenedEvent;
 
     [Header("Runtime Data")]
     [Tooltip("Is this node on right now (read only, set by the field)")]
     [SerializeField, ReadOnly] bool _Active;
 
-    [Tooltip("Can this node not take a rune right now (read only, set by the field)")]
-    [SerializeField, ReadOnly] bool _Locked;
+    [Tooltip("Is the cover closed, or closing (read only, set by the field)")]
+    [SerializeField, ReadOnly] bool _CoverClosed = true;
+
+    [Tooltip("Is the shield up, or rising (read only, set by the field)")]
+    [SerializeField, ReadOnly] bool _ShieldUp = true;
 
     //local variables
     const string OnEffectName = "OnEffect"; //the child used for On Effect when nothing is assigned
     string _effectProblems; //filled by OnValidate, shown as a warning box in the inspector
-    RuneFieldTint _tint;
+    Quaternion _coverClosedRotation; //the model's own poses (cover closed, shield up), read once in Awake
+    float _coverOpenAmount; //how far open the cover is: 0 closed, 1 fully open (Cover Open Rotation)
+    Vector3 _shieldUpPosition;
+    Vector3 _shieldDownPosition;
+    Coroutine _coverMove;
+    Coroutine _shieldMove;
 
     private void OnValidate()
     {
@@ -60,9 +106,17 @@ public class Node3DObject : MonoBehaviour
     private void Awake()
     {
         if (_OnEffect == null) _OnEffect = RuneFieldTint.FindChild(transform, OnEffectName);
-        Transform skip = _OnEffect != null ? _OnEffect.transform : null; //the OnEffect mesh keeps its own look
-        _tint = new RuneFieldTint(RuneFieldTint.FindRenderers(transform, skip), _ColorProperty);
         if (_OnEffect != null) _OnEffect.SetActive(false);
+        SetupCoverAndShield();
+    }
+
+    private void OnDisable()
+    {
+        //stops any move part way and puts both parts where they were heading, so a node switched off mid-move isn't left half open
+        StopMove(ref _coverMove);
+        StopMove(ref _shieldMove);
+        PlaceCover();
+        PlaceShield();
     }
 
     #region Rules
@@ -84,24 +138,183 @@ public class Node3DObject : MonoBehaviour
     #endregion
 
     #region Display
-    public void ShowState(bool active, bool locked, bool fireEvents)
+    public void ShowState(bool active, bool fireEvents)
     {
-        //function the field calls after every change to show if this node is on or locked
+        //function the field calls after every change to show if this node is on (being locked shows through the cover, see ShowCoverAndShield)
         //events only fire when the state actually changes, and only if fireEvents is true (it's false when a saved field loads)
         bool wasActive = _Active;
         _Active = active;
-        _Locked = locked;
 
         if (_OnEffect != null) _OnEffect.SetActive(active);
-        if (_tint != null)
-        {
-            if (locked) _tint.SetColor(_LockedColor);
-            else _tint.Clear();
-        }
 
         if (fireEvents == false || active == wasActive) return;
         if (active) _ActivationEvent?.Invoke();
         else _DeactivationEvent?.Invoke();
+    }
+
+    public void ShowCoverAndShield(bool coverClosed, bool shieldUp, bool animate)
+    {
+        //function the field calls after every change. The two parts are separate:
+        //the cover closes while no runes can go in or come out, the shield rises while the node is on
+        //animate is false when a saved field loads, so the parts snap into place instead of playing
+        //it's called on every refresh (even mid-drag), so a part only starts moving when its target actually changes
+        bool coverChanged = coverClosed != _CoverClosed;
+        bool shieldChanged = shieldUp != _ShieldUp;
+        _CoverClosed = coverClosed;
+        _ShieldUp = shieldUp;
+
+        if (animate == false)
+        {
+            StopMove(ref _coverMove);
+            StopMove(ref _shieldMove);
+            PlaceCover();
+            PlaceShield();
+            return;
+        }
+
+        if (coverChanged)
+        {
+            MoveCover();
+            if (coverClosed) _CoverClosedEvent?.Invoke();
+            else _CoverOpenedEvent?.Invoke();
+        }
+        if (shieldChanged) MoveShield(); //the shield's events are the Activation / Deactivation events above, since it follows the node being on
+    }
+    #endregion
+
+    #region Cover & Shield
+    void SetupCoverAndShield()
+    {
+        //finds the two moving parts (if not assigned) and reads their model poses. The model is built locked: cover closed, shield up
+        if (_Cover == null)
+        {
+            GameObject found = RuneFieldTint.FindChild(transform, _CoverName);
+            if (found != null) _Cover = found.transform;
+        }
+        if (_Shield == null)
+        {
+            GameObject found = RuneFieldTint.FindChild(transform, _ShieldName);
+            if (found != null) _Shield = found.transform;
+        }
+
+        if (_Cover == null) Debug.LogWarning($"Warning! No cover found on {gameObject.name} (looked for a child named {_CoverName}), it won't open or close...", this);
+        else _coverClosedRotation = _Cover.localRotation;
+
+        if (_Shield == null) Debug.LogWarning($"Warning! No shield found on {gameObject.name} (looked for a child named {_ShieldName}), it won't go up or down...", this);
+        else
+        {
+            _shieldUpPosition = _Shield.localPosition;
+            _shieldDownPosition = _shieldUpPosition + _ShieldDownOffset;
+        }
+
+        //shows whatever the field asked for already (normally the model's own pose, but the field may have refreshed before this ran)
+        PlaceCover();
+        PlaceShield();
+    }
+
+    void MoveCover()
+    {
+        //starts the cover moving toward its target from wherever it is now, so a change mid-move doesn't snap
+        StopMove(ref _coverMove);
+        if (_Cover == null) return;
+        if (isActiveAndEnabled == false || _CoverTime <= 0f) { PlaceCover(); return; } //coroutines can't run on a switched off object
+        _coverMove = StartCoroutine(CoverMove());
+    }
+
+    void MoveShield()
+    {
+        //starts the shield moving toward its target from wherever it is now
+        StopMove(ref _shieldMove);
+        if (_Shield == null) return;
+        if (isActiveAndEnabled == false || _ShieldTime <= 0f) { PlaceShield(); return; }
+        _shieldMove = StartCoroutine(ShieldMove());
+    }
+
+    IEnumerator CoverMove()
+    {
+        //turns the cover from where it is to its target over Cover Time, shaped by Cover Curve
+        //unscaledDeltaTime keeps it moving while the game is paused under the rune field (deltaTime would be 0)
+        //it moves how far open the cover is (a number) rather than blending two rotations, since a 180 degree blend could swing either way
+        float start = _coverOpenAmount;
+        float target = _CoverClosed ? 0f : 1f;
+        float timer = 0f;
+
+        while (timer < _CoverTime)
+        {
+            timer += Time.unscaledDeltaTime;
+            float amount = _CoverCurve.Evaluate(Mathf.Clamp01(timer / _CoverTime));
+            _coverOpenAmount = Mathf.LerpUnclamped(start, target, amount); //Unclamped lets a curve that goes past 1 overshoot
+            TurnCover();
+            yield return null;
+        }
+
+        PlaceCover();
+        _coverMove = null;
+    }
+
+    IEnumerator ShieldMove()
+    {
+        //slides the shield from where it is to its target over Shield Time, shaped by Shield Curve
+        Vector3 start = _Shield.localPosition;
+        Vector3 target = _ShieldUp ? _shieldUpPosition : _shieldDownPosition;
+        float timer = 0f;
+
+        while (timer < _ShieldTime)
+        {
+            timer += Time.unscaledDeltaTime;
+            float amount = _ShieldCurve.Evaluate(Mathf.Clamp01(timer / _ShieldTime));
+            _Shield.localPosition = Vector3.LerpUnclamped(start, target, amount);
+            yield return null;
+        }
+
+        PlaceShield();
+        _shieldMove = null;
+    }
+
+    void PlaceCover()
+    {
+        //puts the cover straight at its target, no animation
+        _coverOpenAmount = _CoverClosed ? 0f : 1f;
+        TurnCover();
+    }
+
+    void TurnCover()
+    {
+        //turns the cover to match how far open it is: the model's rotation plus that share of Cover Open Rotation
+        if (_Cover == null) return;
+        _Cover.localRotation = _coverClosedRotation * Quaternion.Euler(_CoverOpenRotation * _coverOpenAmount); //multiplying quaternions adds the turn on top of the model's rotation
+    }
+
+    void PlaceShield()
+    {
+        //puts the shield straight at its target, no animation
+        if (_Shield == null) return;
+        _Shield.localPosition = _ShieldUp ? _shieldUpPosition : _shieldDownPosition;
+    }
+
+    void StopMove(ref Coroutine move)
+    {
+        //stops a part's move if one is running. "ref" lets this set the caller's field to null, so one helper works for both parts
+        if (move != null) StopCoroutine(move);
+        move = null;
+    }
+    #endregion
+
+    #region Test Tools
+    [FoldoutGroup("Cover & Shield"), Button("Test Cover (Play Mode)")]
+    void TestCover()
+    {
+        //play mode button: flips the cover open / closed with its animation, for tuning the time and curve. The next field refresh puts it back
+        if (Application.isPlaying == false) { Debug.LogWarning("Warning! Test Cover only works in play mode, nothing moved...", this); return; }
+        ShowCoverAndShield(_CoverClosed == false, _ShieldUp, true);
+    }
+
+    [FoldoutGroup("Cover & Shield"), Button("Test Shield (Play Mode)")]
+    void TestShield()
+    {
+        //play mode button: flips the shield up / down with its animation. The next field refresh puts it back
+        if (Application.isPlaying == false) { Debug.LogWarning("Warning! Test Shield only works in play mode, nothing moved...", this); return; }
+        ShowCoverAndShield(_CoverClosed, _ShieldUp == false, true);
     }
     #endregion
 

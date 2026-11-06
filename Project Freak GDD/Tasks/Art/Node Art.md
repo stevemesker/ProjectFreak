@@ -1,5 +1,5 @@
 ---
-status: In Progress
+status: Done
 priority: 1
 chapter:
   - Chapter 5 Art
@@ -17,8 +17,13 @@ Node models with four forms: **idle (open)**, **plugged in**, **locked**, **froz
 **To solve while making it:** does powered look different from plugged in, or is that handled by how runes and bridges look when powered?
 
 ## Completed Info
+![[Pasted image 20261103130727.png]]
 
+![[Pasted image 20261103130756.png]]
 
+Node has been made. It is composed of 4 sub-parts: Cover, Shield, Tray, and Rim. 
+
+By default the node will be in its locked position, so rotations and translations are set to 0. The Tray and the Rim don't move at all. For idle, the cover is turned 180 degrees and the shield is down -0.1 in the y translation. Plugged in moves the shield up to its 0 on translation. For locked and frozen the cover's x rotation goes to 0. The shield is only up (0) when the node has a powered rune; locked or frozen with no power, it stays down (-0.1). How the code uses this: [[Node state forms and transitions]]
 ## Notes
 - Brought over from Trello: https://trello.com/c/WFhvC2Yi/34-node-art
 
