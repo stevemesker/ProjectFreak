@@ -83,7 +83,7 @@ Made with `new RuneField(data, settings, nodes, maxPower, rank)` (rank = how man
 | `GetPluggedGate()` / `GetEvolvingGate()` | The open zone's gate with a rune in it / that's on (the shade evolves through it). -1 if none |
 | `FixOneWayLockouts(nodes)` / `CheckGates(nodes, settings)` (static) | Setup checks. Return the problems as text ("" if none) |
 | `SetMaxPower` | Core power changed (shade level) |
-| `HasRunesWaitingForPower()` | A rune that could have power doesn't (planning runes don't count). For the core's look |
+| `HasRunesWaitingForPower()` | The core can't afford a rune that's bridged to it (`_starvedRunes`, filled by `CalculatePower`). *Nov 7, 2026:* runes with no bridge back to the core and planning runes don't count. For the core's depleted look |
 | `CompileEffects()` | Every effect from powered runes and active nodes, as copies |
 | `GetStatTotals()` | Adds up the stat changes in the compiled list |
 | `GetPluggedNodeSnapshots()` | Copies of every node with a rune plugged in |

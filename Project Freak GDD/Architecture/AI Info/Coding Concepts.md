@@ -281,3 +281,30 @@ Odin draws things in the order they're declared, and a group shows up where its 
 ### Tooltips on buttons and checks in attributes: `PropertyTooltip` and `@`
 `[Tooltip]` only works on fields, so Odin buttons use `[PropertyTooltip("...")]` for their hover text. An Odin attribute value starting with `@` is a tiny bit of C# worked out in the inspector: `[ShowIf("@_TearMaterial == null")]` only shows a button while that field is empty.
 **Used in:** `RuneFieldZonesObject`, `RuneFieldZonesSO`.
+
+### Stepping toward a value at a steady speed: `Mathf.MoveTowards`
+Moves a number toward a target by at most a set amount, and never past it. Called every frame with `speed * deltaTime`, it gets there at a steady speed, and if the target flips half way it turns around from where it is.
+```csharp
+_depletedProgress = Mathf.MoveTowards(_depletedProgress, target, Time.unscaledDeltaTime / rampTime);
+```
+Different from `SmoothDamp` (which eases in and out): the shape comes from running the result through an `AnimationCurve` instead.
+**Used in:** `Core3DObject` (the depleted ramp).
+
+### Taking one set out of another: `HashSet.ExceptWith`
+`a.ExceptWith(b)` removes everything from `a` that's also in `b`, changing `a` in place.
+```csharp
+_starvedRunes.ExceptWith(_poweredRunes); //a rune is never both starved and powered
+```
+**Used in:** `RuneField.CalculatePower`.
+
+### Talking to a VFX Graph from code: `VisualEffect`
+The `VisualEffect` component plays a VFX Graph (`using UnityEngine.VFX;`). Properties marked **Exposed** in the graph's Blackboard can be set from code by name, like a material property. `HasFloat` checks the graph actually has that property first.
+```csharp
+int id = Shader.PropertyToID("DepletedValue");
+if (_OrbVFX.HasFloat(id)) _OrbVFX.SetFloat(id, value);
+```
+**Used in:** `Core3DObject` (sends the depleted value to `OrbVortex`).
+
+### New fields keep their first value until saved
+When a script gets a new `[SerializeField]`, objects already loaded in the editor take its default once and then remember it, even through recompiles. Changing the default in code later doesn't update them until the value is changed by hand (or the object is reset) and the prefab or scene is saved.
+**Seen with:** the core's **Depleted Property**, which kept an old misspelled default.

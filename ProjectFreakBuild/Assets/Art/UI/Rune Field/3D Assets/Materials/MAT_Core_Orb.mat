@@ -22,16 +22,16 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 3002
   stringTagMap:
     MotionVector: User
     RenderType: Transparent
   disabledShaderPasses:
-  - TransparentDepthPrepass
+  - MOTIONVECTORS
   - TransparentDepthPostpass
   - TransparentBackface
   - RayTracingPrepass
-  - MOTIONVECTORS
+  - TransparentDepthPrepass
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -71,14 +71,14 @@ Material:
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 2
     - _CullModeForward: 2
-    - _DepleatedValue: 1
+    - _DepletedValue: 0
     - _DepthOffsetEnable: 0
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
-    - _EdgePower: 1.8
-    - _EdgeStrength: 2.12
+    - _EdgePower: 2.27
+    - _EdgeStrength: 2.03
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 1
     - _ExcludeFromTUAndAA: 0
@@ -108,7 +108,7 @@ Material:
     - _TransparentCullMode: 2
     - _TransparentDepthPostpassEnable: 0
     - _TransparentDepthPrepassEnable: 0
-    - _TransparentSortPriority: 0
+    - _TransparentSortPriority: 2
     - _TransparentWritingMotionVec: 0
     - _TransparentZWrite: 0
     - _UseShadowThreshold: 0
@@ -118,13 +118,13 @@ Material:
     - _ZWrite: 0
     - _clipThreshold: 0
     m_Colors:
-    - _DepleatedInnerColor: {r: 1.781068, g: 0.2325128, b: 0, a: 0}
-    - _DepleatedOuterColor: {r: 3.814152, g: 0, b: 0.2981825, a: 0}
-    - _Direction: {r: 0, g: 0.15, b: 0, a: 0}
+    - _DepletedInnerColor: {r: 1.781068, g: 0.2325128, b: 0, a: 0}
+    - _DepletedOuterColor: {r: 3.814152, g: 0, b: 0.2981825, a: 0}
+    - _Direction: {r: 0, g: 0.01, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _InnerColor: {r: 1.57306, g: 2.318194, b: 0, a: 0}
-    - _LightningDirection: {r: 0.012, g: 0.1, b: 0, a: 0}
+    - _LightningDirection: {r: 0.04, g: 0.05, b: 0, a: 0}
     - _OuterColor: {r: 0.5312784, g: 3.058876, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &4253578931515900933

@@ -204,6 +204,12 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
         //checks references, puts the core at the center, then opens whichever shade slot is selected
         if (_RunePrefab == null) { Debug.LogError($"Error! Rune Prefab not assigned on {gameObject.name}", this); return; }
         if (_BridgePrefab == null) { Debug.LogError($"Error! Bridge Prefab not assigned on {gameObject.name}", this); return; }
+        if (_Core == null)
+        {
+            //the Core slot can come up empty after the core is swapped for a new prefab, so look under the field instead of leaving the core with no power info
+            _Core = GetComponentInChildren<Core3DObject>(true);
+            if (_Core != null) Debug.LogWarning($"Warning! Core not assigned on {gameObject.name}, using {_Core.gameObject.name} found under it. Press Set Up Field to save the reference...", this);
+        }
         if (_Core != null) _Core.transform.position = transform.position;
         if (_SidePanel == null) _SidePanel = FindObjectOfType<SideWindowManager>(true); //one-time search on start, so there's nothing to drag in
         SetUnsavedChanges(false);
@@ -1061,7 +1067,7 @@ public class RuneField3DObject : MonoBehaviour, IRuneFieldView //IRuneFieldView:
             _Nodes[i].ShowCoverAndShield(coverClosed, active, fireNodeEvents); //animates while editing or reloading the open slot, snaps when a slot is first opened
         }
 
-        if (_Core != null) _Core.ShowPower(_field.GetPowerLeft(), _field.GetMaxPower(), _field.HasRunesWaitingForPower());
+        if (_Core != null) _Core.ShowPower(_field.GetPowerLeft(), _field.GetMaxPower(), _field.HasRunesWaitingForPower(), fireNodeEvents); //ramps the depleted look while editing, snaps when a slot is first opened
         OnDraftChanged?.Invoke();
     }
 

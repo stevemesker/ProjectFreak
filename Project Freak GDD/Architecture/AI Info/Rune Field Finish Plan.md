@@ -44,8 +44,8 @@ Back to [[AA - AI Info]] · [[Rune Field 3D View]] · [[Rune Field 3D Change Req
 - Merged with the old **Node stat displays** card
 
 ### Core
-- Glow follows spare power: 0 spare = the regular look, 10 spare (tunable) = full glow, sent as one 0–1 value
-- Over budget (runes waiting for power): an on / off value, blended so it doesn't pop. The shader dulls it and strobes a color
+- Glow follows spare power: 0 spare = the regular look, 10 spare (tunable) = full glow, sent as one 0–1 value. *Nov 7, 2026: on hold until playtesting shows it's needed* [[Notes for the future]]
+- Over budget (runes waiting for power): an on / off value, blended so it doesn't pop. The shader dulls it and strobes a color. *Built Nov 7, 2026 as the depleted value, ramped with a curve, and only counting runes bridged to the core that it can't afford. See [[Rune Field 3D View]], Core3DObject*
 
 ### Bridges
 - **Break effect:** one prefab field on the field. When a bridge tears or a save cuts it, the effect spawns at the bridge's middle, turned along it, and deletes itself (`TimedDelete` or the particle system's Stop Action). Same effect for both

@@ -27,6 +27,7 @@ public class RuneFieldLogicTester : MonoBehaviour
         TestBridgeReach();
         TestMaxBridges();
         TestPowerPriority();
+        TestWaitingOnlyCountsStarved();
         TestExpensiveRuneBlocksChain();
         TestLoopTear();
         TestClampToBridges();
@@ -697,6 +698,26 @@ public class RuneFieldLogicTester : MonoBehaviour
         int p = Place(field, element, new Vector2(700, 0)); //a planning rune, bridges to f (f's 700 reach covers it)
         Check(field.GetPluggedNode(p) == zone3Node, "Past open zone: a normal (planning) rune can plug into that node, only frozen runes can't");
         Check(field.AreConnected(p, f) && field.IsRunePowered(p) == false && field.IsNodeActive(zone3Node) == false, "Past open zone: the frozen rune doesn't power the planning rune bridged to it, so the node stays off");
+    }
+
+    void TestWaitingOnlyCountsStarved()
+    {
+        //the core's depleted look only counts runes bridged to the core that it can't afford. A dark rune with no bridge back to the core doesn't count
+        RuneFieldSettingsSO settings = MakeSettings();
+        List<AbilityNodeEntry> nodes = new List<AbilityNodeEntry>();
+        ElementItemSO element = MakeElement(1, 2, 150f);
+        RuneField field = new RuneField(new RuneFieldData(), settings, nodes, 1);
+
+        int a = Place(field, element, new Vector2(100, 0));             //bridged to the core, takes the only power
+        int loose = Place(field, element, new Vector2(0, 500), false); //not bridged to anything
+        Check(field.IsRunePowered(a) && field.IsRunePowered(loose) == false, "Waiting: the bridged rune is powered, the loose one is dark");
+        Check(field.HasRunesWaitingForPower() == false, "Waiting: a rune with no bridge to the core doesn't count as waiting");
+
+        int extra = Place(field, element, new Vector2(200, 0)); //bridged through a, but there's no power left
+        Check(field.IsRunePowered(extra) == false && field.HasRunesWaitingForPower(), "Waiting: a bridged rune the core can't afford counts as waiting");
+
+        field.RemoveRune(extra);
+        Check(field.HasRunesWaitingForPower() == false, "Waiting: taking the starved rune off clears waiting");
     }
 
     void TestPlanningRunes()

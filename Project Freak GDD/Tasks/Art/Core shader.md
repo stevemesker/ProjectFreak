@@ -1,5 +1,5 @@
 ---
-status: In Progress
+status: Done
 priority: 2
 chapter:
   - Chapter 5 Art
@@ -15,7 +15,7 @@ done:
 The core's look: glows brighter with spare power (full at 10 spare), the regular look at 0, and dulls with a strobing color while over budget (runes waiting for power).
 
 ## Completed Info
-
+Created two shaders: Orb and Vortex. They both use a depleted value to change to the red color to show when there's too many runes for the core
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]

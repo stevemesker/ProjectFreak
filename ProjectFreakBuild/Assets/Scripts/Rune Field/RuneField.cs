@@ -22,6 +22,7 @@ public class RuneField
     int _rank; //how many times the shade has evolved (Bound = 0). Zones up to this are closed, zone rank + 1 is the open zone
     int _powerUsed; //worked out by CalculatePower
     HashSet<int> _poweredRunes = new HashSet<int>(); //IDs of runes that got their power. A HashSet is a list that's fast at "is this in here?" and can't hold duplicates
+    HashSet<int> _starvedRunes = new HashSet<int>(); //IDs of runes bridged to the core that the core couldn't afford. Worked out by CalculatePower, used for the core's depleted look
 
     public event System.Action OnFieldChanged; //fires after every recalculation so the view can redraw
     public event System.Action<List<RuneBridgeEntry>> OnBridgesCut; //fires when saving cuts bridges across the open ring, with copies of the bridges that were cut (for the break effect later)
@@ -95,16 +96,10 @@ public class RuneField
 
     public bool HasRunesWaitingForPower()
     {
-        //true if any rune that could have power doesn't (the core can't afford it, or it isn't bridged to the core). The core's look uses this
-        //planning runes past the open zone don't count, they never get power
-        for (int i = 0; i < _data._Runes.Count; i++)
-        {
-            int runeID = _data._Runes[i]._ID;
-            if (IsRunePowered(runeID)) continue;
-            if (IsRuneFrozen(runeID) == false && IsPastOpenZone(runeID)) continue; //a planning rune
-            return true;
-        }
-        return false;
+        //true if the core can't afford a rune that's bridged to it (too many runes for its power). The core's depleted look uses this
+        //runes that aren't bridged to the core don't count, they're dark because of where they sit, not because of power
+        //planning runes past the open zone don't count either, they never get power
+        return _starvedRunes.Count > 0;
     }
 
     public Vector2 GetPosition(int id)
@@ -1064,11 +1059,13 @@ public class RuneField
         //past the open zone: runes that aren't frozen (planning runes) never get power, and bridges crossing the open ring only carry power if they're frozen,
         //so nothing can power a locked zone early
         _poweredRunes.Clear();
+        _starvedRunes.Clear();
         _powerUsed = 0;
         int powerLeft = _maxPower;
 
         powerLeft = PowerLayers(powerLeft, true);
         PowerLayers(powerLeft, false);
+        _starvedRunes.ExceptWith(_poweredRunes); //safety: takes out anything that did end up powered, so a rune is never both
     }
 
     int PowerLayers(int powerLeft, bool frozenOnly)
@@ -1099,7 +1096,12 @@ public class RuneField
                 if (_poweredRunes.Contains(runeID) == false)
                 {
                     int powerNeeded = GetPowerNeeded(runeID);
-                    if (powerNeeded > powerLeft) continue; //not enough power. Stays dark, and power doesn't flow through it
+                    if (powerNeeded > powerLeft)
+                    {
+                        //not enough power. Stays dark, and power doesn't flow through it. Runes further out on its chain aren't reached, so only this one counts as starved
+                        _starvedRunes.Add(runeID);
+                        continue;
+                    }
 
                     powerLeft -= powerNeeded;
                     _powerUsed += powerNeeded;
