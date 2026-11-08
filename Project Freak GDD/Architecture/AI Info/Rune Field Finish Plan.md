@@ -97,4 +97,8 @@ views:
       - status
       - owner
       - needs
+    sort:
+      - property: status
+        direction: ASC
+
 ```

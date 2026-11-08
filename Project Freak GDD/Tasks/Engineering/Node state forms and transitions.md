@@ -1,5 +1,5 @@
 ---
-status: In Progress
+status: Done
 priority: 4
 chapter:
   - Chapter 3 Crafting

@@ -1,6 +1,6 @@
 ---
-status: To Do
-priority: 1
+status: In Progress
+priority: 2
 chapter:
   - Chapter 5 Art
   - Chapter 3 Crafting

@@ -22,7 +22,7 @@ Names follow the GDD's File Naming Conventions (`Type_Category_Subcategory_Objec
 
 ---
 ## 1. Zone floors (Maya)
-- [ ] `M_RuneField_Zone_Floor_0` to `_3`: zone 1 is a disc, zones 2 to 4 are rings, sizes above
+- [x] `M_RuneField_Zone_Floor_0` to `_3`: zone 1 is a disc, zones 2 to 4 are rings, sizes above
 - Pivot at the field's center (0, 0, 0) for all four, so they line up by just sitting at the origin
 - **Top surface at height 0.** That's the raised (unlocked) level. The code lowers locked zones by the lift height, so runes, which always sit at the same height, line up with raised floors
 - **Outer edge skirt:** each floor needs a rock face going down from its outer edge, since that face shows when the next zone out is lowered. Lift height starts at **0.25 m** (tunable), so give the skirt about **0.5 m** for room. Zone 4's outer edge is the field's edge, so it can go deeper
@@ -47,7 +47,7 @@ Names follow the GDD's File Naming Conventions (`Type_Category_Subcategory_Objec
 - Looks needed: the **bright tear** (forward border), **smoky grey** (border behind), **the reveal** (light sweeping around and out along the cracks), the fade at gate gaps. Later: the **overcharge** pulse before bridges get cut
 
 ## 4. Effects and decals
-- [ ] **Smoke particles** for the smoky border. Claude makes a stand-in particle system that spawns along the ring and skips the gate gaps; the real look is yours
+- [x] **Smoke particles** for the smoky border. Claude makes a stand-in particle system that spawns along the ring and skips the gate gaps; the real look is yours
 - [ ] **Burn decals** along the cracks: HDRP Decal Projectors, placed by hand, parented to the zone floor they sit on so they lift with it. *Decals need to be on in the HDRP settings (HDRP asset and the camera's Frame Settings) if they aren't already*
 
 ## 5. Lighting and colors (pending)

@@ -1,6 +1,6 @@
 ---
 status: In Progress
-priority: 4
+priority: 1
 chapter:
   - Chapter 5 Art
   - Chapter 3 Crafting

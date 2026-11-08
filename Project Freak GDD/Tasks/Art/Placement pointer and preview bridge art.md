@@ -1,5 +1,5 @@
 ---
-status: To Do
+status: In Progress
 priority: 4
 chapter:
   - Chapter 5 Art

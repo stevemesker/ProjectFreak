@@ -1,11 +1,11 @@
 ---
-status: To Do
+status: In Progress
 priority: 6
 chapter:
   - Chapter 4 Shades
 owner: Steve
 plan: "[[Rune Field Finish Plan]]"
-source: 
+source:
 needs:
   - "[[Form display names and flavor text]]"
 created: 2026-10-29

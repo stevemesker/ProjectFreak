@@ -1,12 +1,12 @@
 ---
-status: To Do
+status: In Progress
 priority: 5
 chapter:
   - Chapter 5 Art
   - Chapter 3 Crafting
 owner: Steve
 plan: "[[Rune Field Finish Plan]]"
-source: 
+source:
 needs:
 created: 2026-10-29
 done:
