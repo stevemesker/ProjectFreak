@@ -1,5 +1,5 @@
 ---
-status: Done
+status: Archived
 priority: 5
 chapter:
   - Chapter 3 Crafting
@@ -10,6 +10,7 @@ needs:
   - "[[Core shader]]"
 created: 2026-10-29
 done: 2026-11-07
+archived: 2026-11-08
 ---
 ## What
 The core sends its shader:
@@ -25,6 +26,8 @@ Property names are inspector fields in the core's Shader Properties foldout. The
 - **Found while testing:** the scene's Rune Field had an empty Core slot (emptied when the core was swapped for the new prefab), so the core never got power updates. `RuneField3DObject.Start` now finds the core under the field with a warning to press **Set Up Field**
 - **Watch for:** a new serialized field keeps the value it was first loaded with until the prefab is saved. The core's **Depleted Property** kept the old typo spelling after the default was fixed, until it was changed by hand on `PFB_Core_3D`
 - The orb sphere's sorting against the vortex is fixed with sorting priority for now. Moving it into the VFX Graph is [[Move the core orb into the VFX Graph]]
+
+**Review (Nov 8, 2026):** no new cards. The orb cleanup was already carded ([[Move the core orb into the VFX Graph]]), the glow on hold is tracked in [[Rune Field Finish Plan]], and the serialized field gotcha is in [[Coding Concepts]]
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]

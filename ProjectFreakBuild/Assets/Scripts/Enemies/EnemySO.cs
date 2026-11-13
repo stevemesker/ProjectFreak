@@ -13,13 +13,33 @@ public class EnemySO : ScriptableObject
     [Tooltip("Readable name of this enemy")]
     public string _EnemyName;
 
-    [Tooltip("How important this enemy is. Popcorn through Lieutenant are placed by spawners, MiniBoss and Boss are placed in their arenas")]
+    [Tooltip("How important this enemy is. Popcorn through Elite are placed by spawners, MiniBoss and Boss are placed in their arenas")]
     public EnemyType.Rank _Rank = EnemyType.Rank.Basic;
 
     [Tooltip("How big this enemy is. Decides how far knockback pushes it, using the shared Size Class Rules on the Game Manager")]
     public EnemyType.SizeClass _SizeClass = EnemyType.SizeClass.Medium;
 
-    //todo: stats and loot sections get added here as those systems are built
+    [FoldoutGroup("Stats", false)]
+    [InfoBox("This enemy has no HP set, so it uses the stats on its prefab instead", InfoMessageType.Warning, nameof(HasNoHP))]
+    [InfoBox("Health is filled in from HP when the enemy spawns, so the Health value here doesn't matter. Loot Drops aren't used yet (loot comes with the death and loot pass)")]
+    [Tooltip("This enemy's stats. Every enemy using this SO gets its own copy when it spawns, so damage never changes this asset")]
+    [HideLabel, InlineProperty] //Odin: draws the stats right inside the foldout instead of inside another dropdown
+    public EnemyCoreStats _Stats = new EnemyCoreStats() { _HP = 10, _STR = 1, _DEF = 1, _AGI = 1, _INT = 1, _SPR = 1, _LVL = 1 }; //starting values for a new enemy. Steve balances the real ones
+
+    //todo: a loot section gets added here with the death and loot pass
+
+    [FoldoutGroup("Death", false)]
+    [Tooltip("How long the body stays after dying before it's removed, in seconds")]
+    [Min(0f)] public float _DespawnDelay = 1.5f;
+
+    [FoldoutGroup("Death", false)]
+    [Tooltip("Shrink the body away during the despawn delay. A stand-in until death animations exist")]
+    public bool _ShrinkOnDeath = true; //temp until the animation bridge plays death animations
+
+    [FoldoutGroup("Death", false)]
+    [ShowIf(nameof(_ShrinkOnDeath))]
+    [Tooltip("Size of the body over the despawn delay (0 = the moment it dies, 1 = when it's removed). 1 = full size, 0 = gone")]
+    public AnimationCurve _ShrinkCurve = new AnimationCurve(new Keyframe(0f, 1f, 0f, 0f), new Keyframe(1f, 0f, -2f, -2f)); //holds, then drops off fast
 
     [FoldoutGroup("AI", false)]
     [Tooltip("This enemy's personality: a preset plus any overrides. Its UnitBrain reads this when the game starts")]
@@ -79,6 +99,12 @@ public class EnemySO : ScriptableObject
     [InfoBox("Mini bosses and bosses don't use stagger chance. They stagger once each time their health drops past one of these percentages", InfoMessageType.Info, nameof(IsBossRank))]
     [Tooltip("Health percentages to stagger at, like 66 and 33. Each one only happens once per fight")]
     [Range(0f, 100f)] public List<float> _BossStaggerThresholds = new List<float>() { 66f, 33f }; //Range on a list applies to each entry
+
+    public bool HasNoHP()
+    {
+        //editor check for the warning box: an enemy with no max health would die on the first hit, so EnemyStats falls back to the prefab's stats
+        return _Stats == null || _Stats._HP <= 0;
+    }
 
     public bool IsBossRank()
     {

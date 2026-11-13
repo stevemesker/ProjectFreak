@@ -47,7 +47,7 @@ Open any scene and press **Play**. The game's core systems load automatically, s
 ## Part 1 - Make a New Enemy
 
 An enemy is made of two things:
-- **An enemy SO**, which says *what kind of enemy* it is: name, rank, size, speed, knockback and personality. You'll spend most of your time here.
+- **An enemy SO**, which says *what kind of enemy* it is: name, rank, size, stats, speed, knockback and personality. You'll spend most of your time here.
 - **An enemy prefab**, which is the thing that goes in the level: its model, its collider and the scripts that make it work. It points at its SO.
 
 ```text
@@ -59,7 +59,7 @@ PFB_Enemy_Goblin (the thing in the level)
 ### Step 1 - Plan the enemy
 Before touching Unity, write down answers to these. You'll need them in the next steps.
 - **Name**, like "Goblin".
-- **Rank:** Popcorn (weak crowd enemy), Basic, Lieutenant (tougher, leads groups), MiniBoss or Boss. MiniBosses and Bosses get placed by hand in their own arenas.
+- **Rank:** Popcorn (weak crowd enemy), Basic, Lieutenant (tougher, leads groups), Elite (the strongest regular enemies), MiniBoss or Boss. MiniBosses and Bosses get placed by hand in their own arenas.
 - **Size class:** Small, Medium, Large or Huge. Bigger enemies get knocked back less (Huge isn't knocked back at all). See [[Enemy Movement#Size Class Rules]].
 - **Fights up close or from range?** This decides which actions it gets in Step 6.
 - **Personality:** does it fight to the end, run when hurt, avoid fights, or go berserk? Check the presets in [[Unit Brain#Starter presets]]. If none fit, you'll make one in [[#Make a Personality Preset]].
@@ -73,7 +73,8 @@ Before touching Unity, write down answers to these. You'll need them in the next
 4. Click it. In the Inspector, fill in the always-visible fields:
    - **Enemy Name:** the readable name ("Goblin")
    - **Rank** and **Size Class:** from Step 1
-5. Open the **Movement** foldout and set how it moves. Hover over any field for an explanation.
+5. Open the **Stats** foldout and set its **HP**, **STR**, **DEF**, **AGI**, **INT** and **SPR**, plus any resistances or immunities. Leave **Health** alone: it's filled in from HP when the enemy spawns. See [[Character Stats]] for what each stat does.
+6. Open the **Movement** foldout and set how it moves. Hover over any field for an explanation.
 
    | Field | Default | Tip |
    | :--- | :--- | :--- |
@@ -82,11 +83,11 @@ Before touching Unity, write down answers to these. You'll need them in the next
    | Turn Speed | 720 | Degrees per second |
    | Stopping Distance | 1.5 | How close it walks up to its destination |
 
-6. Open the **Knockback** foldout. The defaults are fine for most enemies. Tick **Knockback Immune** for things that should never budge, like turrets.
+7. Open the **Knockback** foldout. The defaults are fine for most enemies. Tick **Knockback Immune** for things that should never budge, like turrets.
    Then the **Stagger** foldout: the defaults are fine too. Tick **Stagger Immune** for things that should never flinch. Mini bosses and bosses show a **Boss Stagger Thresholds** list instead (health percentages to stagger at, 66 and 33 to start).
-7. Open the **AI** foldout → **Personality** → drag a personality preset from `Assets/Scriptable Objects/AI/` into **Preset**. If you need a new one, do [[#Make a Personality Preset]] first, then come back.
+8. Open the **AI** foldout → **Personality** → drag a personality preset from `Assets/Scriptable Objects/AI/` into **Preset**. If you need a new one, do [[#Make a Personality Preset]] first, then come back.
 
-✅ **When this step is done:** `SO_Enemy_<Name>` exists in `Scriptable Objects/Enemies/`, its name, rank and size class are set, and its AI foldout has a preset in it.
+✅ **When this step is done:** `SO_Enemy_<Name>` exists in `Scriptable Objects/Enemies/`, its name, rank, size class and stats are set, and its AI foldout has a preset in it.
 
 ### Step 3 - Make the enemy prefab
 The quickest way is to copy the test enemy, which already has every script set up and connected.
@@ -97,7 +98,7 @@ The quickest way is to copy the test enemy, which already has every script set u
 4. Double-click the new prefab to open it.
 5. Remove the **Damage Tester** component (click its ⋮ menu → **Remove Component**). It's a testing tool and real enemies don't need it.
 
-✅ **When this step is done:** `PFB_Enemy_<Name>` is in `Assets/Prefab/Enemies/` and opens on its own. Its Inspector lists these components: Enemy Damagable, Enemy Stats, Capsule Collider, Nav Mesh Agent (turned **off**), Enemy Movement, Unit Team, Unit Targeting, Unit Brain and Enemy Stagger. Enemy Stagger's **On Staggered** event is where a hit reaction (flash, sound, animation) gets hooked up.
+✅ **When this step is done:** `PFB_Enemy_<Name>` is in `Assets/Prefab/Enemies/` and opens on its own. Its Inspector lists these components: Enemy Damagable, Enemy Stats, Capsule Collider, Nav Mesh Agent (turned **off**), Enemy Movement, Unit Team, Unit Targeting, Unit Brain and Enemy Stagger. Enemy Death gets added automatically when the game runs; add it yourself if you want to hook effects to its **On Died** event. Enemy Stagger's **On Staggered** event is where a hit reaction (flash, sound, animation) gets hooked up.
 
 ### Step 4 - Give it its look and body
 With the prefab still open:
@@ -111,15 +112,15 @@ With the prefab still open:
 
 ✅ **When this step is done:** the prefab shows your model, the green capsule fits around it, the Nav Mesh Agent is off with a matching size, the layer is Units, and the only collider is the capsule on the top object.
 
-### Step 5 - Connect it to its SO and set its health
+### Step 5 - Connect it to its SO
 Still on the top object:
 1. **Enemy Movement → Enemy Data:** drag in your `SO_Enemy_<Name>` from Step 2.
 2. **Unit Brain:** at the top of its Data section it should now say *"This enemy's personality comes from its EnemySO (AI foldout)"*. That's how you know the connection worked.
-3. **Unit Team:** Team should be **Enemy** and Role should be **Enemy** (already set on the copy).
-4. **Enemy Stats → E Stats:** set **HP** (max health) and **Health** (starting health) to the same number. *Health lives on the prefab for now and will move into the SO in a later stats pass.* [[Notes for the future]]
+3. **Unit Team:** Team should be **Fiend** (or whichever faction it belongs to) and Role should be **Enemy** (already set on the copy).
+4. **Enemy Stats:** it should say *"This enemy's stats come from its EnemySO"* with the stats greyed out. Nothing to set here. *(Nov 9, 2026: stats moved from the prefab into the SO)*
 5. **Enemy Damagable:** its **On Damage** list should have one entry calling `EnemyStats.TakeDamage`. That's what makes hits hurt. Don't remove it.
 
-✅ **When this step is done:** Enemy Data shows your SO, the Unit Brain shows the "comes from its EnemySO" message, Unit Team says Enemy/Enemy, HP and Health are set, and On Damage still calls `EnemyStats.TakeDamage`.
+✅ **When this step is done:** Enemy Data shows your SO, the Unit Brain shows the "comes from its EnemySO" message, Unit Team says Fiend/Enemy, Enemy Stats says its stats come from the EnemySO, and On Damage still calls `EnemyStats.TakeDamage`.
 
 ### Step 6 - Choose its actions
 Actions are the things the brain can choose between (chase, flee, wander...). See [[Unit Brain#Actions]] for what each one does.
@@ -162,7 +163,7 @@ Actions are the things the brain can choose between (chase, flee, wander...). Se
 ✅ **When this step is done:** the enemy feels the way you planned in Step 1, and the final values are saved in its SO and preset.
 
 ### Step 9 - Put it in the game
-- **Popcorn, Basic and Lieutenant enemies:** add the prefab to the dungeon's enemy table (the `DungeonEnemyTableSO` in its `DungeonSO`'s **Enemy Table** slot) and give it a weight. Enemy spawners on the floors place it automatically. Its rank comes from its SO, so there's nothing else to set. See [[Enemy Spawners]].
+- **Popcorn, Basic, Lieutenant and Elite enemies:** add the prefab to the dungeon's enemy table (the `DungeonEnemyTableSO` in its `DungeonSO`'s **Enemy Table** slot) and give it a weight. Enemy spawners on the floors place it automatically. Its rank comes from its SO, so there's nothing else to set. See [[Enemy Spawners]].
 - **Testing on a single floor:** set a **Test Enemy Table** on the floor's enemy spawners (Testing foldout), or drag the prefab in by hand.
 - **MiniBosses and Bosses:** always placed by hand in their arena scenes.
 

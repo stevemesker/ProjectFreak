@@ -15,7 +15,7 @@ WeaponAttackMelee (ITriggerable, on the held weapon prefab)
  └── runs the combo and does the hit checks
 ```
 
-**Scripts:** `Combat/Melee/SwingShapeSO.cs`, `Combat/Melee/MeleeType.cs` (the `SweepMode` enum), `Items/WeaponData/MeleeWeaponItem.cs` (also holds `ComboStepEntry`), `Combat/WeaponAttackMelee.cs`, `Combat/CombatTools.cs` (shared with ranged), `Dev Scripts/SwingShapePreviewObject.cs`.
+**Scripts:** `Combat/Melee/SwingShapeSO.cs`, `Combat/Melee/MeleeType.cs` (the `SweepMode` enum), `Items/WeaponData/MeleeWeaponItem.cs` (also holds `ComboStepEntry`), `Combat/WeaponAttackMelee.cs`, `Combat/MeleeComboRunner.cs` (the shared attack runner), `Combat/CombatType.cs` (the `Phase` enum), `Combat/CombatTools.cs` (shared with ranged), `Dev Scripts/SwingShapePreviewObject.cs`.
 
 ### Decisions (Oct 2026)
 - **Facing locks at the start of a swing.** The swing aims where the wielder was aiming when it started, and the wielder's body holds that facing until the active part ends. They can turn again during recovery
@@ -97,12 +97,20 @@ One hit in the combo.
 **Timing:** every timing is multiplied by `MeleeWeaponItem.GetTimeScale()` = (hits ÷ attack speed) ÷ (sum of every step's wind up + active + recovery). Example: the radiant sword's steps add up to 1.75, it has 3 hits at 1.5 attacks per second, so the combo takes 2 seconds and every timing is ×1.14.
 
 ---
+## Attack Runner
+*Nov 9, 2026 ([[Shared attack runner]]):* everything below (combo flow, facing and speed, hit check) lives in **`MeleeComboRunner`**, a plain C# class, so weapons and abilities swing the same way. `WeaponAttackMelee` owns one and passes presses in; the Melee Combo ability function will own one too ([[Melee Combo and Fire Projectile functions]]). The code moved without changing how it plays.
+
+- **Source:** the runner reads its combo through `IMeleeComboSource` (combo, reach, reset time, time scale, shake, friendly fire, and `BuildHitPackage` for each hit's damage). `MeleeWeaponItem` implements it: damage = `BuildWeaponDamagePackage` with the step's multipliers, plus its stagger power
+- **Owner calls:** `new MeleeComboRunner(this)` (the owner runs its coroutines), `SetUp(source, wielder, stats, hitLayers)`, `Press()`, `Release()`, `IsBusy()`, `Stop()` (on disable), `TearDown()` (on destroy, stops listening to dashes), `DrawGizmos(...)` from the owner's `OnDrawGizmos`
+- **Phases:** `PhaseChanged(phase, comboStep)` C# event fires as each hit goes Wind Up → Active → Recovery, and None when the combo ends or is cancelled (`CombatType.Phase`). Nothing listens yet; the animation bridge will ([[Animation bridge and greybox telegraph]]) [[Notes for the future]]
+- Readouts: `GetComboStep()`, `IsTriggerHeld()`, `IsAttackBuffered()`, `GetPhase()`
+
 ## WeaponAttackMelee
-The melee version of `WeaponAttackRanged`. Lives on the weapon prefab and implements `ITriggerable`.
+The melee version of `WeaponAttackRanged`. Lives on the weapon prefab and implements `ITriggerable`. Hands its `MeleeWeaponItem` to a `MeleeComboRunner`, which does the swinging.
 
 | Function           | What it does |
 | :----------------- | :--- |
-| `SetUpWeapon(...)` | Caches the item, the wielder, its stats, `UnitTeam`, `CharacterMovement`, body collider, and listens to its `UnitDash` |
+| `SetUpWeapon(...)` | Caches the item and sets up its runner, which caches the wielder, its stats, `UnitTeam`, `CharacterMovement`, body collider, and listens to its `UnitDash` |
 | `TriggerAttack()`  | If idle, starts the combo. If a swing is going, buffers the press so the next hit starts right after recovery |
 | `ReleaseAttack()`  | Clears the held flag. Holding the button keeps the combo going |
 | `IsRange()`        | `false`, so melee uses the primary attack stat ([[STR]] for physical) |
@@ -113,10 +121,10 @@ The melee version of `WeaponAttackRanged`. Lives on the weapon prefab and implem
 | `_HitLayers`       | Layers swings and their wall checks can hit (default everything). Triggers are always ignored |
 | `_DrawSwingGizmos` | Draws active swings in the Scene view |
 
-Runtime readouts: `_Wielder`, `_WeaponData`, `_ComboStep`, `_IsTriggerHeld`, `_IsAttackBuffered`. **Test Press Attack / Test Release Attack** buttons work in play mode.
+Runtime readouts: `_Wielder`, `_WeaponData`, and from the runner: Combo Step, Is Trigger Held, Is Attack Buffered, Phase. **Test Press Attack / Test Release Attack** buttons work in play mode.
 
 ### Combo Flow
-Runs in one stored coroutine (`ComboRoutine`):
+Runs in one stored coroutine (`MeleeComboRunner.ComboRoutine`, started on the owner):
 
 ```text
 TriggerAttack

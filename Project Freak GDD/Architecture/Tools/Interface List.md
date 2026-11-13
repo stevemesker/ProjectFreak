@@ -8,7 +8,10 @@ All interfaces currently in the project, grouped by the file they live in.
 | `IDamagable`  | Anything that can be affected by damaging projectiles, weapons, spells, and abilities. `TakeDamage(DamagePackage)`. See [[Damage Receivers & Projectiles]] |
 | `ITriggerable` | Any equipment that can be activated via the trigger function in combat. More details in [[Weapon usage]] |
 | `IUnitHealth` | Anything that can report its health as 0 to 1 (`GetHealthPercent()`). On `EnemyStats`. Used by the [[Unit Brain]] (Flee) |
+| `IKillable` | Anything that can die. `Kill()` and `IsDead()`. On `EnemyDeath`; `EnemyStats` calls `Kill` at 0 health, and `EnemyDamagable` checks `IsDead` to skip reactions on the killing hit. See [[Enemy Movement#EnemyDeath]] |
 | `IUnitData`   | Gives access to a unit's `DangerLevel` settings. Used for camera shake dampening                       |
+| `IMeleeComboSource` | Anything that hands a `MeleeComboRunner` a combo to play: combo steps, reach, reset time, time scale, shake, friendly fire, and `BuildHitPackage` for each hit. On `MeleeWeaponItem`; the Melee Combo ability function later. See [[Melee Weapon System#Attack Runner]] |
+| `IRangedFireSource` | Anything that hands a `RangedPatternFirer` its shot settings (hit scan, distance, pierce, aim, effects, shake). On `WeaponRangedItem`; the Fire Projectile ability function later. See [[Ranged Weapon System#Pattern Firer]] |
 | `IKnockbackable` | Anything that can be pushed back by a hit. `TakeKnockback(DamagePackage)`, called by `EnemyDamagable`. See [[Enemy Movement]] |
 | `IStaggerable` | Anything that can be staggered (interrupted and briefly stunned). `TakeStagger(DamagePackage)`, called by `EnemyDamagable` on every hit after knockback. `IsStaggered()`, asked by health scripts when a hit lands, since staggered units always take a crit. Used by `EnemyStagger`, see [[Melee Weapon System#Stagger]] |
 | `IAggroReceiver` | Anything that wants to know who hit it. `AddAggro(DamagePackage)`, called by `EnemyDamagable`. Used by `UnitTargeting`, see [[Unit Targeting]] |

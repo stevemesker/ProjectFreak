@@ -10,7 +10,7 @@ using Sirenix.OdinInspector;
 ///
 ////////////////////////////////////////////////
 [CreateAssetMenu(fileName = "SO_Weapon_Melee_Name_0", menuName = "Combat/Melee Weapon", order = 0)]
-public class MeleeWeaponItem : WeaponItem
+public class MeleeWeaponItem : WeaponItem, IMeleeComboSource
 {
     [Title("Melee")]
     [Tooltip("Multiplier on every swing shape's reach. A dagger might be 0.7, a greatsword 1.5")]
@@ -80,6 +80,24 @@ public class MeleeWeaponItem : WeaponItem
     }
 
     bool HasComboWarning() { return GetComboWarning() != ""; }
+    #endregion
+
+    #region Melee Combo Source Interface
+    //what the MeleeComboRunner reads to play this weapon's combo. Abilities hand it the same things their own way
+    public List<ComboStepEntry> GetCombo() { return _Combo; }
+    public float GetReach() { return _Reach; }
+    public float GetComboResetTime() { return _ComboResetTime; }
+    public float GetActivationShake() { return _ActivationShake; }
+    public bool HitsAllies() { return _HitsAllies; }
+    public string GetSourceName() { return name; }
+
+    public DamagePackage BuildHitPackage(GameObject wielder, CoreStats stats, ComboStepEntry step)
+    {
+        //function that builds one hit's damage from the wielder's stats right now, the weapon, and the combo step's multipliers
+        DamagePackage package = CombatTools.BuildWeaponDamagePackage(wielder, stats, this, false, step._DamageMultiplier, step._KnockbackMultiplier); //false = not ranged, so it uses the primary attack stat
+        package._StaggerPower = step._StaggerPower; //the target decides if it actually staggers (see EnemyStagger)
+        return package;
+    }
     #endregion
 }
 

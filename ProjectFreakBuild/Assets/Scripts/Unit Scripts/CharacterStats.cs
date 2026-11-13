@@ -125,6 +125,23 @@ public class CoreStats
         }
     }
 
+    protected void CopyListsInto(CoreStats copy)
+    {
+        //function used by Copy functions (like EnemyCoreStats.Copy). MemberwiseClone copies lists as the same list, so each one gets its own new list here
+        //otherwise adding a resistance to one enemy would add it to every enemy sharing the list
+        copy.AttackTypeResistance = CopyList(AttackTypeResistance);
+        copy.ElementTypeResistance = CopyList(ElementTypeResistance);
+        copy.AttackTypeImmunity = CopyList(AttackTypeImmunity);
+        copy.ElementTypeImmunity = CopyList(ElementTypeImmunity);
+    }
+
+    protected static List<T> CopyList<T>(List<T> list)
+    {
+        //function that makes a new list with the same entries. <T> means it works for a list of anything (attack types, elements, items)
+        if (list == null) return new List<T>();
+        return new List<T>(list);
+    }
+
     public float GetAttackResistanceModifier(DamageType.AttackType atk, DamageType.ElementType ele)
     {
         //function for how much of a hit gets through this unit's immunities and resistances. 0 = immune, 0.5 = resisted, 1 = full
@@ -188,6 +205,15 @@ public class EnemyCoreStats : CoreStats
     public int _DropGold;
     [Tooltip("")]
     public List<ItemSO> DropItems;
+
+    public EnemyCoreStats Copy()
+    {
+        //function that makes a separate copy, so an enemy changing its health never changes the EnemySO it came from
+        EnemyCoreStats copy = (EnemyCoreStats)MemberwiseClone(); //copies every number, name and setting in one go
+        CopyListsInto(copy);
+        copy.DropItems = CopyList(DropItems);
+        return copy;
+    }
 }
 
 [Serializable]

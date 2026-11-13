@@ -15,6 +15,28 @@ MonoBehaviour:
   _EnemyName: Chase Test Dummy
   _Rank: 1
   _SizeClass: 0
+  _Stats:
+    _HP: 10
+    _Health: 10
+    _STR: 0
+    _DEF: 1
+    _AGI: 0
+    _INT: 1
+    _SPR: 1
+    _LVL: 0
+    _Name: 
+    PhysicalPrimaryStat: 2
+    PhysicalSecondaryStat: 4
+    MagicalPrimaryStat: 5
+    MagicalSecondaryStat: 5
+    PhysicalDefMod: 3
+    MagicalDefMod: 6
+    AttackTypeResistance: 00000000
+    ElementTypeResistance: 
+    AttackTypeImmunity: 
+    ElementTypeImmunity: 
+    _DropGold: 0
+    DropItems: []
   _Personality:
     _Preset: {fileID: 11400000, guid: 0fa0b366050d4f149a80032a33be5230, type: 2}
     _OverrideAggression: 0

@@ -55,7 +55,8 @@ A `static` **field** works the same way: one value shared by the whole class ins
 
 ### Quick copies: `MemberwiseClone()`
 Makes a new object with the same field values. References inside (like an `AbilitySO`) still point at the same asset, which is what we want for effects.
-**Used in:** `RuneEffect.Clone`.
+**Watch out:** lists inside get shared too (both copies point at the same list), so give the copy its own new lists.
+**Used in:** `RuneEffect.Clone`, `EnemyCoreStats.Copy` (with new lists for resistances and drops).
 
 ### Looking things up by key: `Dictionary`, `TryGetValue`, `HashSet`
 - `Dictionary<key, value>` finds an entry by its key instead of its position, so gaps and order don't matter
@@ -212,7 +213,9 @@ renderer.SetPropertyBlock(block);
 
 ### Plain C# helper classes
 Not everything has to be a component. A class without `MonoBehaviour` is made with `new` and lives inside whatever made it. Good for shared logic that doesn't need to sit on an object.
-**Used in:** `RuneField` (the rules), `RuneFieldTint`.
+**Used in:** `RuneField` (the rules), `RuneFieldTint`, `MeleeComboRunner` and `RangedPatternFirer` (attack code shared by weapons and abilities).
+
+**Coroutines need a component:** only a `MonoBehaviour` can `StartCoroutine`, so `MeleeComboRunner` is handed its owner when it's made (`new MeleeComboRunner(this)`) and runs its coroutines on it. A **constructor** (the function named after the class) is what runs when `new` is called.
 
 ### How far along a direction: `Vector3.Dot`
 `Vector3.Dot(offset, direction)` (with a direction of length 1) says how far `offset` goes along that direction. It's how a world position is turned into field X and Y.
@@ -308,3 +311,7 @@ if (_OrbVFX.HasFloat(id)) _OrbVFX.SetFloat(id, value);
 ### New fields keep their first value until saved
 When a script gets a new `[SerializeField]`, objects already loaded in the editor take its default once and then remember it, even through recompiles. Changing the default in code later doesn't update them until the value is changed by hand (or the object is reset) and the prefab or scene is saved.
 **Seen with:** the core's **Depleted Property**, which kept an old misspelled default.
+
+### One function for any type: generics `<T>`
+`List<T> CopyList<T>(List<T> list)` works for a list of anything. `T` is a stand-in that C# fills in from what you pass: give it a `List<ItemSO>` and `T` becomes `ItemSO`. It saves writing the same function once per type. `List<int>` and `Dictionary<ItemSO, int>` are generics too.
+**Used in:** `CoreStats.CopyList` (copies resistance, immunity and drop lists).

@@ -16,7 +16,7 @@ WeaponAttackRanged (ITriggerable, on the held weapon prefab)
  └── runs warm up → charge → cycle → repeat
 ```
 
-**Scripts:** `Items/WeaponData/WeaponItem.cs`, `Items/WeaponData/WeaponRangedItem.cs` (also holds `FireCycleEntry`), `Combat/WeaponAttackRanged.cs`, `Combat/LaunchPackage.cs`, `Combat/ProjectileObject.cs`, `Combat/HitScanTracerObject.cs`. Rules shared with melee (allies, walls, body colliders, damage packages, activation shake) live in `Combat/CombatTools.cs` (see [[Weapon usage]]).
+**Scripts:** `Items/WeaponData/WeaponItem.cs`, `Items/WeaponData/WeaponRangedItem.cs` (also holds `FireCycleEntry`), `Combat/WeaponAttackRanged.cs`, `Combat/RangedPatternFirer.cs` (fires each volley, shared with abilities), `Combat/LaunchPackage.cs`, `Combat/ProjectileObject.cs`, `Combat/HitScanTracerObject.cs`. Rules shared with melee (allies, walls, body colliders, damage packages, activation shake) live in `Combat/CombatTools.cs` (see [[Weapon usage]]).
 
 ---
 ## Data
@@ -169,6 +169,12 @@ A switch pressed while the weapon is busy isn't thrown away. `Player` stores it 
 - The HUD should show the queued weapon so the delay reads as intentional, not lag [[Notes for the future]]
 
 ---
+## Pattern Firer
+*Nov 9, 2026 ([[Shared attack runner]]):* spawning the pattern and all of hit scan (below) live in **`RangedPatternFirer`**, a plain C# class, so the Fire Projectile ability function can fire the same volleys ([[Melee Combo and Fire Projectile functions]]). `WeaponAttackRanged` keeps the trigger flow (warm up, charge, automatic, finishers, busy time) and calls `FirePattern(source, cycle, package, launch, muzzlePosition, flatForward)` for each volley. The code moved without changing how it plays.
+- The firer reads shot settings through `IRangedFireSource` (hit scan on/off, fire distance, pierce, aim angle and width, ray radius, tracer and impact effects, shake). `WeaponRangedItem` implements it. The pattern itself is a `FireCycleEntry`, which abilities can use as is
+- `SetUp(wielder, hitScanLayers, drawDebugRays, logContext)` once; the weapon passes its `_HitScanLayers` and `_DrawDebugRays`
+- *The ranged weapon doesn't report phases yet (charge = wind up, fire = active, cycle wait = recovery). Added with the animation bridge* [[Notes for the future]]
+
 ## Spawning the Pattern
 For each projectile `i` of `count`, using the wielder's flat forward and right. Projectiles start at the weapon's `_Muzzle` (a Transform on `WeaponAttackRanged`, falls back to the weapon itself) and fly level.
 
@@ -230,7 +236,7 @@ The [[Damage Package]] is built once per cycle at the moment of firing, which fo
 
 *"0 = infinite" fire distance uses `InfiniteFireDistance` (500 m) in code, since a cast needs a length.* A unit without a `UnitTeam` (like an old test dummy) won't be tilted toward, but still gets hit when it's on the level line.
 
-**On `WeaponAttackRanged`** (the weapon prefab):
+**On `WeaponAttackRanged`** (the weapon prefab, handed to its `RangedPatternFirer`):
 
 | Field            | Description |
 | :--------------- | :---------- |

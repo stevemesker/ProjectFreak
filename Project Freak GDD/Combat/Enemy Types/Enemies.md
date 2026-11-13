@@ -36,37 +36,33 @@ Speed - enemies that move quickly and have lots of skills that allow them to mov
 The following section defines how enemies operate in combat. Bosses will always be the exception to most of this as their AI will tend to be more custom
 
 **Temperament**
-Enemies can be defined based on a spectrum from Agressive to Passive that defines how likely they are to fight and even how they fight
+Enemies sit on a spectrum from Aggressive to Passive that decides how likely they are to fight and how they fight. In the game, a temperament is a **personality preset** on the enemy's EnemySO (aggression, fear, roam), so the same AI plays differently for each one. See [[Unit Brain#Personality]]. *Rewritten Nov 9, 2026 to match how the AI is built ([[Fiend Combat Plan]])*
 
-***Aggressive*** - These enemies will attack anything they see that is not part of their faction. They also tend to wander more looking for a fight and prefer up close combat. They will never run from fights and always use their most powerful abilities as soon as they can. [[Popcorn]] enemies tend to fall under this category.
+***Aggressive*** - Attacks anything it sees that isn't part of its faction. Wanders more looking for a fight, prefers up close combat, never runs, and uses its most powerful abilities as soon as it can. [[Popcorn]] enemies tend to be Aggressive. *Preset: high aggression, no fear, wider roam (like Berserker)*
 
-***Cunning*** - These enemies will use a mix of ranges depending on their situation. They won't shy away from up close fights and tend to use their strongest abilities first if they can reach their targets. They never run from fights. The majority of enemies, especially melee focused enemies, fall under this category.
+***Cunning*** - Mixes ranges depending on the situation. Won't shy away from up close fights and uses its strongest abilities first if it can reach its target. Never runs. Most enemies, especially melee ones. *Preset: normal aggression, low fear (like Normal)*
 
-***Timid*** - These enemies can go from up close attacks to ranged abilities when they lose a lot of health. When given the option between ranged and melee attacks they will more likely chose ranged.
+***Timid*** - Fights up close until it loses a lot of health, then switches to ranged abilities. Given the choice, it picks ranged. *Preset: fear that rises with damage taken (like Survivor), and its ranged abilities score higher once it's hurt*
 
-***Passive*** - These enemies will never try to fight and opt for running away and alerting other enemies of threats. They tend to use abilities that turn them invisible or speed them up. Only highly specialized enemies fall under this category.
+***Passive*** - Never tries to fight. Runs away and alerts other enemies, and uses abilities that turn it invisible or speed it up. Only highly specialized enemies. *Preset: almost no aggression, high fear (like Coward), plus an "alert others" action*
 
 **Behavior**
-Enemies operate on behavior trees defined by their particular temperament. 
+There are no behavior trees. Every enemy scores each thing it could do and does the best one, and its temperament is part of every score (see [[Unit Brain]]). The states below are actions it can pick:
 
-Idle - A sit and wait stage. Typically used as a transition state for enemies.
+Idle - A sit and wait stage between other actions *(built)*
 
-Wander - enemies are walking around their location.
+Wander - Walking around its area *(built)*
 
-Alert - Enemies know the player is around so they're easier to agro
+Alert - It knows something is around, so it notices targets from farther away *(planned, [[Alert and Search actions]])*
 
-Searching - Enemies have lost their last hostile target and are looking in the last known location for a short time before going back to alert
+Searching - It lost its target and checks the last place it saw it for a short time before giving up *(planned, [[Alert and Search actions]])*
 
-Combat - Enemies can see a hostile target and are actively fighting
-
-*This behavior section is a WIP and I'm just throwing in some ideas*
+Combat - It can see a hostile target and is fighting: chasing, keeping its distance or fleeing, while picking attacks *(movement built, attacks planned in [[Fiend Combat Plan]])*
 
 **Combat**
 
 ***Attacking***
-Most, if not all, enemies have a basic attack action they can take. It will typically be either a melee attack or a ranged attack (see [[Basic Attack]] for more info) and has a preset attack speed.
+Almost every enemy has a basic attack, melee or ranged (see [[Basic Attack]]). Basic attacks are abilities that use the same swing shapes and combos as the player's weapons, so they follow the same rules. Most don't stop the enemy moving. Basic attacks don't show ground markers, since they happen too often.
 
 ***Abilities***
-Abilities are specialized skills that can do more than just hit something. Some can cast an AOE attack the binds the player to one spot or a tether ability that heals a target but locks the caster in place. 
-
-*-Ideally the abilities will use the same system as the [[Shade Ability]] system.*
+Abilities are skills that do more than just hit something, like an AOE that binds the player in place, or a tether that heals a target but locks the caster in place. Enemies, shades and Hazen all use **the same ability system** ([[Shade Ability]]s and enemy abilities are the same kind of asset), and it works from the player's input or the AI. Almost every ability shows a telegraph marker on the ground while it winds up.

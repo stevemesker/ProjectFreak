@@ -23,9 +23,9 @@ Back to [[AA - AI Info]] · [[Rune Field 3D View]] · [[Rune Field 3D Change Req
 - Waits on Steve's lighting and style test (the ideal look first, then see what holds up)
 
 ### Node states
-- Four forms: **idle (open)**, **plugged in**, **locked**, **frozen**. Several model pieces move / rotate between them; the details come with the final model
+- Four forms: **idle (open)**, **plugged in**, **locked**, **frozen**. Several model pieces move / rotate between them; the details come with the final model. *Nov 3, 2026: built as two parts with one question each. The **cover** closes while the node is locked out or holds a locked-in rune, and the **shield** is up while a powered rune is plugged in ([[Node Art]], [[Node state forms and transitions]])*
 - Frozen and locked-in share a look: the bridged network of runes is what tells a frozen node from a locked-out one
-- Whether **powered** looks different from plugged in is an open art question (it may be handled by how runes and bridges look when powered) [[undecided]]
+- **Powered** only shows through the shield going up; runes and bridges show power their own way. *Settled Nov 3, 2026 ([[Node Art]])*
 - State changes animate with curves, like the zone opening
 
 ### Node links (unlocks / lockouts)

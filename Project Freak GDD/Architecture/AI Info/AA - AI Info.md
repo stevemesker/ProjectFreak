@@ -20,6 +20,7 @@ Plans and to-do lists for upcoming work live here. Once a piece is built, it mov
 [[Rune Field Clean-Up Plan]] - inspector clean-up after the 3D field won, and removing the old 2D field (planned and built Oct 28, 2026)
 [[Rune Field Finish Plan]] - what's left before the 3D field is finished: placement preview, info popup, node states and links, shards, opening the field from access points (planned Oct 29, 2026, cards on the boards)
 [[Save Data Plan]] - what a save file needs to hold (planned Oct 29, 2026, not started)
+[[Fiend Combat Plan]] - Chapter 1 fiends from Popcorn to Elite: enemy attacks, one ability system for every unit, status effects, telegraphs, movers (planned Nov 9, 2026, cards on the boards)
 
 ---
 ## Task board rules
@@ -39,6 +40,8 @@ The full how-to (making cards, linking a feature, adding chapters and boards) is
 - **Claude moves cards too:** when Claude finishes a task, it sets `status` (and `done` with the date when it's Done)
 - **Completed Info** is the card's post mortem, filled in when it's Done: what was actually built, what changed from the plan, and anything the engineering side needs to know
 - **Weekly review (Sundays):** go through every Done card (the **Weekly review** table on [[Project Status]]). For each one, read its Completed Info and:
+  - **Show the card when asking about it:** its name, what it was, and the relevant lines from its What / Completed Info, so Steve has the context without opening it. The same goes for any note a small fix touches
+  - **A card that says it still needs a Unity test** has usually been tested already: ask in one line, and archive once Steve confirms
   - **Default to making cards, not doing the work.** Follow-up work becomes a new card (or a line on an existing card that's already about it), with `source` linking the reviewed card. Nothing in the code or the architecture notes changes during the review
   - **Check for conflicts** before making a card: look at the open cards, plan notes and other Done cards in the same review. If a Completed Info is undone or changed by later work, say so and ask instead of making a card that fights it
   - **Small fixes** (a one-line doc correction, a renamed value, a note to tick off) don't get cards. Collect them and list them at the end of the review for Steve to OK, then make them. Claude decides what counts as small

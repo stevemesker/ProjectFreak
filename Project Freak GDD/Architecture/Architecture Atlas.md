@@ -15,6 +15,7 @@ Starting point for each architecture section. Only the entry notes are linked he
 **AI, Shades & Enemies**
 [[AI Movement & Dungeon Loading Plan]] - unit brain, targeting, enemy movement, shades
 [[Shade Forms Plan]] - tethered / released shade prefabs, tether, release and return abilities *(code built, Unity setup to do)*
+[[Fiend Combat Plan]] - enemy attacks, shared abilities, status effects, telegraphs and the Chapter 1 fiends *(planned Nov 9, 2026)*
 
 **Combat**
 [[Damage Receivers & Projectiles]] - damage package, melee/ranged weapons, dash, traps, popups

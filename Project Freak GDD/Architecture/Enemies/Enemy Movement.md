@@ -7,7 +7,7 @@ Part of step 4 of the [[AI Movement & Dungeon Loading Plan]].
 
 | Piece                 | File                                         | Job                                                        |
 | :-------------------- | :------------------------------------------- | :--------------------------------------------------------- |
-| `EnemySO`             | `Scripts/Enemies/EnemySO.cs`                 | Template for one kind of enemy (rank, size, movement, knockback) |
+| `EnemySO`             | `Scripts/Enemies/EnemySO.cs`                 | Template for one kind of enemy (rank, size, stats, movement, knockback) |
 | `EnemyType`           | `Scripts/Enemies/EnemyType.cs`               | `EnemyType.Rank` and `EnemyType.SizeClass` enums           |
 | `SizeClassRulesSO`    | `Scripts/Enemies/SizeClassRulesSO.cs`        | Shared rules for how each size class reacts to hits        |
 | `EnemyMovement`       | `Scripts/Enemies/EnemyMovement.cs`           | Drives the NavMeshAgent, waits for the floor, handles knockback |
@@ -24,8 +24,16 @@ Always visible:
 | Field         | Description                                                                 |
 | :------------ | :-------------------------------------------------------------------------- |
 | `_EnemyName`  | Readable name                                                               |
-| `_Rank`       | Popcorn, Basic, Lieutenant, MiniBoss, Boss                                  |
+| `_Rank`       | Popcorn, Basic, Lieutenant, Elite, MiniBoss, Boss. Saved as fixed numbers, so Elite (added Nov 2026) is saved as 5 and nothing else shifted |
 | `_SizeClass`  | Small, Medium, Large, Huge. Decides knockback through the size class rules  |
+
+**Stats** foldout (starts closed). *Added Nov 9, 2026 ([[Enemy stats on the EnemySO]])*:
+
+| Field | Description |
+| :--- | :--- |
+| `_Stats` | An `EnemyCoreStats`: HP, STR, DEF, AGI, INT, SPR, LVL, which stats power and defend attacks, resistances, immunities (see [[Stats & Inventory Data]]). New enemies start at HP 10 and 1 in each stat. **Health** here is ignored: it's filled in from HP on spawn. A warning box shows if HP is 0 |
+
+`EnemyStats` gives each enemy its own copy of these stats when it spawns (`EnemyCoreStats.Copy()`), so damage never changes the asset. The stats also include **Loot Drops** (`_DropGold`, `DropItems`), which aren't used until the death and loot pass [[Notes for the future]]
 
 **Movement** foldout (starts closed):
 
@@ -53,17 +61,25 @@ Always visible:
 | `_StaggerImmunityTime`   | 1       | Seconds after a stagger ends before regular hits can stagger it again (stops stunlocks). Starting value, to tune |
 | `_BossStaggerThresholds` | 66, 33  | *MiniBoss and Boss only.* Health percentages it staggers at, once each |
 
+**Death** foldout (starts closed). Read by `EnemyDeath`, *added Nov 9, 2026*:
+
+| Field | Default | Description |
+| :--- | :--- | :--- |
+| `_DespawnDelay` | 1.5 | Seconds the body stays after dying before it's removed |
+| `_ShrinkOnDeath` | on | Shrinks the body away during the delay. Stand-in until death animations [[Notes for the future]] |
+| `_ShrinkCurve` | holds, then drops | Body size over the delay (1 = full, 0 = gone) |
+
 **AI** foldout (starts closed):
 
 | Field          | Description                                                                 |
 | :------------- | :-------------------------------------------------------------------------- |
 | `_Personality` | A personality preset plus optional overrides. The enemy's [[Unit Brain]] builds its personality from this when the game starts. See [[How To - Create Enemies & Shades#Make a Personality Preset]] |
 
-*Stats and loot sections get added as those systems are built.* [[Notes for the future]]
+*A loot section gets added with the death and loot pass.* [[Notes for the future]]
 
 ---
 ## Ranks
-- **Popcorn, Basic, Lieutenant** - spread around floors by [[Enemy Spawners]] (and later, emitters)
+- **Popcorn, Basic, Lieutenant, Elite** - spread around floors by [[Enemy Spawners]] (and later, emitters)
 - **MiniBoss, Boss** - placed by hand in their own arenas (lots of art integration)
 
 Because bosses are placed by hand, movement never depends on a spawner. Spawners only instantiate enemies.
@@ -125,6 +141,27 @@ A new hit during a slide replaces it. **Test Knockback** (Odin button, play mode
 Enemies pick targets with `UnitTargeting` (see [[Unit Targeting]]), and their [[Unit Brain]] decides what to do about it (chase, hold, flee, wander). The shade hitting an enemy pulls it off the player's body. Enemy agents should steer around the shade while it's AI-controlled, since its `NavGuideDriver` agent takes part in avoidance.
 
 Enemy prefabs need a `UnitTeam` (Team: Enemy, Role: Enemy), `UnitTargeting` and `UnitBrain`. `PFB_Enemy_ChaseTest_Dev` already has all three.
+
+---
+## EnemyDeath
+`Scripts/Enemies/EnemyDeath.cs` (`IKillable`). Bare-bones death, *built Nov 9, 2026* ([[Basic enemy death]]). Loot and XP come with the death and loot pass ([[Defeated enemies drop items]]) [[Notes for the future]]
+
+**Setup:** none. `EnemyStats` adds it at runtime to anything with an EnemySO if the prefab doesn't have one. Add it to the prefab by hand to hook up its **On Died** event in the inspector. Units without an EnemySO (the target dummy) don't get one, so they never die.
+
+**`Kill()`** runs once (later calls are ignored). `EnemyStats` calls it at 0 health, and self-destructs can call it directly. It:
+1. Turns off the `UnitBrain`, `UnitTargeting` and `EnemyStagger`, interrupts and turns off the `AbilityInterpreter`, stops and turns off `EnemyMovement` (its OnDisable stops knockback and stun) and the NavMeshAgent
+2. Turns off every collider on the enemy and its children, so weapons and projectiles pass through
+3. Turns off `UnitTeam` last: that takes it out of the `UnitRegistry`, and `UnitTargeting` already drops targets that are turned off, so nothing keeps chasing the corpse
+4. Fires `_OnDied` (UnityEvent, for effects and sounds) and `Died` (C# event, for code like a hive counting its scarabs)
+5. Waits the EnemySO's despawn delay (shrinking if set), then destroys it. *Pooled units will go back to their pool instead, once pooling is built* [[Notes for the future]]
+
+*Status effects get turned off here too once they exist* [[Notes for the future]]
+
+`EnemyDamagable` skips aggro, knockback and stagger on the hit that kills, and `EnemyStats` ignores hits once dead.
+
+**Spawned units:** `MarkAsSpawned(spawnedBy)` flags a unit made during play (like a hatched scarab) so the loot pass can skip it. `WasSpawned()` reads it.
+
+**Test Kill (Play Mode)** button kills it on the spot. Runtime readouts: `_IsDead`, `_WasSpawned`, `_SpawnedBy`.
 
 ---
 ## Layers

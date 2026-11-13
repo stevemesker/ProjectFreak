@@ -75,6 +75,25 @@ Goes on an empty object: that object **is** the focus target. Adding the compone
 
 **Gizmos:** the vertical line (green), each layer (purple), the curve (yellow, faded outside the zoom range), the camera's spot and aim (red), and the edge circle.
 
+### RuneFieldFocusLightObject
+*Built Nov 12, 2026.* The Diablo-style pool of light that follows the camera's focus. Goes on the scene's **Spot Light**, which sits under `Rune Field Camera` (local position (0, 15, 0), pointing straight down), so it moves with the focus with no code. The script only resizes the pool with zoom: zoomed out, the cone widens so the pool covers more of the field.
+
+The pool is set by its **size on the floor**, and the cone angle is worked out from how high the light is above the focus (`angle = 2 × atan(radius / height)`). Moving the light up or down keeps the same pool size, it only changes how soft the falloff looks. The brightness at the center stays the same at every zoom, since the light uses **Lux** at a distance (on its center line), not lumens. The range is set each frame so it always reaches the pool's edge.
+
+| Variable | Description |
+| :--- | :--- |
+| `_PoolSizeZoomedIn` / `_PoolSizeZoomedOut` | How wide the lit pool is on the floor (meters, the whole circle) at zoom 0 and zoom 1. Defaults 17 / 40, a starting guess |
+| `_PoolGrowth` | How the pool grows between the two (X = zoom, 0 in to 1 out; Y = 0 zoomed-in size to 1 zoomed-out size) |
+| `_ExtraRange` | Range past the pool's edge, in meters (5) |
+| `_CameraRig` | Empty = the `RuneFieldCameraObject` it sits under |
+| `_CurrentHeight` / `_CurrentAngle` | Read only |
+| Tools foldout | `_PreviewZoom` slider: edit mode, sets the light for that zoom (Ctrl+Z works) |
+
+- Runs after the camera (`DefaultExecutionOrder(120)`), so it uses this frame's zoom
+- The cone is set with HDRP's `SetSpotAngle`, keeping the light's **Inner Angle %** (the soft edge) as set in the inspector
+- Values on the component reset when play mode stops. Tune with the Preview Zoom slider in edit mode, or copy the values before stopping
+- Turns itself off with an error if the light isn't a spot light, has no HDRP light data, or isn't under a camera rig
+
 ### Input: RuneField action map
 In `PlayerInput.inputactions` (Unity regenerates `PlayerInput.cs` from it).
 
@@ -95,7 +114,8 @@ Scroll notches are counted so Windows (120 per notch) and Linux / Steam Deck (1 
 
 ### Setup
 1. In `3d_Evolution_UI_scene`, add an empty object at the field's center, name it `Rune Field Camera`, and add `RuneFieldCameraObject`. The references fill themselves in
-2. Press play
+2. Focus light: put a spot light under `Rune Field Camera` (above it, pointing down, Lux unit) and add `RuneFieldFocusLightObject`
+3. Press play
 
 ---
 ## The Field

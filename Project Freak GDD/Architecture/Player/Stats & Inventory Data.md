@@ -49,7 +49,8 @@ Adds `_SOUL`, `_SHA` (number of shades allowed), `_CurrentShade`, and `_Shades`.
 Adds `_DIS` and `_WILD`. See [[Shade Stats]].
 
 ## EnemyCoreStats
-Adds `_DropGold` and `DropItems`.
+Adds `_DropGold` and `DropItems`. Lives on each EnemySO's **Stats** foldout (see [[Enemy Movement#EnemySO]]).
+- `Copy()` makes a separate copy for one enemy, with its own lists, so damage never changes the asset. Uses `CoreStats.CopyListsInto` and `CopyList`, which shade or player copies can reuse later
 
 ---
 ## Inventory

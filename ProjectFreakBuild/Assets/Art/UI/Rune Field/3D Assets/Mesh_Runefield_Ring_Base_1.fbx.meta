@@ -3,7 +3,12 @@ guid: 74444454b2101f44f80267ca5c4a843d
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Nat_ZoneGround_Stone
+    second: {fileID: 2100000, guid: 7a85ea85318fc4746bbb35b87ebbd799, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

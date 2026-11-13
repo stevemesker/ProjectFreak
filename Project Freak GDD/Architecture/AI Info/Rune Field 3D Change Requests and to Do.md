@@ -34,7 +34,7 @@ Things to address
 - Need to have a shader that builds up and changes color to show the percentage of the pull tear complete
 - might need a separate particle when the pull is completed for the break or if the system has to sever the connection via zone crossing or whatever
 
-- [ ] Node glowing effect shader for powering on Nodes. *Oct 29, 2026: became four node forms (idle, plugged in, locked, frozen), cards [[Node Art]] and [[Node state forms and transitions]]. Lines showing unlocks / lockouts: [[Node link tool and display]], [[Node link textures and shaders]]*
+- [ ] Node glowing effect shader for powering on Nodes. *Oct 29, 2026: became four node forms (idle, plugged in, locked, frozen), cards [[Node Art]] and [[Node state forms and transitions]]. Lines showing unlocks / lockouts: [[Node link tool and display]], [[Node link textures and shaders]]. Nov 3, 2026: the node forms are built as a cover and a shield ([[Node Art]], [[Node state forms and transitions]]). Still open for the link lines*
 - needs to also have a growth option to lerp when activated/deactivated
 - need to make sure the lerping is performant so we don't have a ton of checks and counters for every single node
 - would be nice in the future to have each ends of the color match the rune color they're attached to
@@ -51,7 +51,7 @@ Things to address
 
 - [ ] Placement preview: pole with a ball that hits the floor (Steve's model), ground ring turning red / green through its material, and a warped version of the bridge material showing the bridges a drop would make (straightens out once in range) [[Notes for the future]]. *Oct 29, 2026: no ground ring, the range overlay tints red instead; only new bridges get a preview. Cards [[Placement preview - pointer line and preview bridges]], [[Placement pointer and preview bridge art]]*
 
-- [ ] Core Node Shader. *Oct 29, 2026: glows brighter with spare power (full at 10), dull and strobing while over budget. Cards [[Core shader]], [[Send core glow values]]*
+- [x] Core Node Shader. *Oct 29, 2026: glows brighter with spare power (full at 10), dull and strobing while over budget. Cards [[Core shader]], [[Send core glow values]]. Nov 7, 2026: over budget built as the depleted value; the spare power glow is on hold until playtesting shows it's needed*
 - needs to dim when out of power
 - not sure if it should dim as you plug in runes or only when there's not enough power for all the chains
 

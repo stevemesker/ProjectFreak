@@ -89,7 +89,7 @@ AI:
 Everything still open from this work, roughly in the order it's likely to come up. [[Notes for the future]]
 
 **Next phases**
-- **Ability overhaul → AI attacks.** Give `AbilitySO` an **AI Use** section (range, role, risk, weight, needs line of sight), per-unit cooldowns using `_AbilityCooldown`, `AbilityInterpreter.IsBusy()`, and a target or aim point handed to abilities. Fix the step Timing bug ([[Known Issues]]). Brains then add a unit's abilities as scored actions, and Engage goes away.
+- **Ability overhaul → AI attacks.** *Planned Nov 9, 2026 in [[Fiend Combat Plan]], cards on the boards.* Give `AbilitySO` an **AI Use** section (range, role, risk, weight, needs line of sight), per-unit cooldowns using `_AbilityCooldown`, `AbilityInterpreter.IsBusy()`, and a target or aim point handed to abilities. Fix the step Timing bug ([[Known Issues]]). Brains then add a unit's abilities as scored actions, and Engage goes away.
 - **Enemy emitters.** A separate system from [[Enemy Spawners]] for enemies that pour out of something (burrow, doorway) during play and fan out to their spots.
 - **Shade overhaul.** New kinds of shades (own look, abilities, commands), training that changes personality during play (Digimon World style), and shade health so its brain can react to being hurt.
 
@@ -99,8 +99,8 @@ Everything still open from this work, roughly in the order it's likely to come u
 - **Attack tokens** (only a few enemies attack the same target at once). Revisit after playtests.
 - **Hazard knockback:** let units be knocked over NavMesh edges into hazards like lava for instant kills. Decide with how hazards are built (NavMesh area type or trigger volume).
 - **Weapons that knock back.** The knockback system works, but no weapon sets a knockback distance yet.
-- **Damage pass:** apply the size class bonus damage (the defense math was fixed in the Oct 2026 damage overhaul, see [[Damage Receivers & Projectiles#Shared Damage Calculation]]). Move enemy health and stats from the prefab into the EnemySO.
-- **Enemy death and loot** (`EnemyStats` On Death does nothing yet).
+- **Damage pass:** apply the size class bonus damage (the defense math was fixed in the Oct 2026 damage overhaul, see [[Damage Receivers & Projectiles#Shared Damage Calculation]]). ~~Move enemy health and stats from the prefab into the EnemySO.~~ *Done Nov 9, 2026 ([[Enemy stats on the EnemySO]])*
+- **Enemy death and loot.** *Death built Nov 9, 2026 ([[Basic enemy death]]); loot and XP are [[Defeated enemies drop items]].*
 - **Facing:** enemies don't turn to face their target while holding still in Engage.
 - **Enemies don't steer around the shade while the player drives it** (its agent is off then).
 - **Dungeon scene setup tool:** one button that sets up a new floor scene (floor prefab, spawn point, door and POI spawners), or checks one and lists what's missing. Design it once the full system is running.

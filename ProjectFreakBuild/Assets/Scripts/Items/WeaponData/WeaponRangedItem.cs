@@ -10,7 +10,7 @@ using Sirenix.OdinInspector;
 ///
 ////////////////////////////////////////////////
 [CreateAssetMenu(fileName = "SO_Weapon_Ranged_Name_0", menuName = "Combat/Ranged Weapon", order = 0)]
-public class WeaponRangedItem : WeaponItem
+public class WeaponRangedItem : WeaponItem, IRangedFireSource
 {
     [Title("Firing")]
     [Tooltip("Holding the trigger keeps firing cycles. Off = one cycle per trigger pull, and pressing again mid cycle does nothing")]
@@ -142,6 +142,21 @@ public class WeaponRangedItem : WeaponItem
         if (_UsesCharge == false || _Cycle == null) return false;
         return _ChargeTime + _Cycle.GetBurstTime() > GetAttackTime();
     }
+    #endregion
+
+    #region Ranged Fire Source Interface
+    //what the RangedPatternFirer reads to fire this weapon's volleys. Abilities hand it the same things their own way
+    public bool IsHitScan() { return _IsHitScan; }
+    public float GetFireDistance() { return _FireDistance; }
+    public int GetHitPierce() { return _HitPierce; }
+    public float GetVerticalAimAngle() { return _VerticalAimAngle; }
+    public float GetAimWidth() { return _AimWidth; }
+    public float GetRayRadius() { return _RayRadius; }
+    public GameObject GetTracerEffect() { return _TracerEffect; }
+    public GameObject GetImpactEffect() { return _ImpactEffect; }
+    public float GetImpactLifeTime() { return _ImpactLifeTime; }
+    public float GetActivationShake() { return _ActivationShake; }
+    public string GetSourceName() { return name; }
     #endregion
 }
 

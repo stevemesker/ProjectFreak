@@ -28,6 +28,9 @@ public class EnemyDamagable : MonoBehaviour, IDamagable
         //special note, functions called here have to recieve a damage package on the first variable of the function. If not use the on hit event instead
         onDamage?.Invoke(dmgPackage);
 
+        //if that hit killed it, skip the reactions below so a corpse doesn't get knocked back, staggered or angry
+        if (TryGetComponent(out IKillable killable) && killable.IsDead()) return true;
+
         //let this unit's AI know who hit it, so it can turn on the attacker
         if (TryGetComponent(out IAggroReceiver aggroReceiver)) aggroReceiver.AddAggro(dmgPackage);
 

@@ -57,11 +57,15 @@ The defense weight (2) and the stat floor (1) are constants at the top of the Da
 ---
 ## EnemyStats
 Health for enemies, hooked to `EnemyDamagable`'s `onDamage` event (`TakeDamage(DamagePackage)`).
+- **Stats come from the EnemySO** (*Nov 9, 2026*): in `Awake` it finds the EnemySO through `EnemyMovement.GetEnemyData()` (like `EnemyStagger`), copies its **Stats** foldout into `eStats` with `EnemyCoreStats.Copy()` and sets Health to HP. On enemies with an EnemySO, `eStats` is greyed out and shows the live copy while playing
+- **No EnemySO** (like `PFB_TargetDummy_Dev`), or an EnemySO with HP 0 (warns), keeps the stats typed on the prefab, still starting at full health
 - Asks its `IStaggerable` (if it has one) whether it's staggered, runs `ResolveHit`, shows the popups, subtracts the total from `eStats._Health`, and fires `onDeath` at 0
 - `Heal(amount)` adds health (capped at max HP) and shows a heal popup. It skips the damage formula. *A real healing system comes later* [[Notes for the future]]
 - `GetHealthPercent()` for the AI (`IUnitHealth`)
 
-*Enemy death and loot don't do anything yet, and the size class bonus damage (`SizeClassRulesSO`) isn't applied yet (see [[AI Movement & Dungeon Loading Plan#To Do]]).* [[Notes for the future]]
+- **At 0 health** it fires `onDeath` and calls `Kill()` on its `IKillable` (`EnemyDeath`, see [[Enemy Movement#EnemyDeath]]). Hits are ignored once it's dead. Anything with an EnemySO gets an `EnemyDeath` added if the prefab is missing one (*Nov 9, 2026*)
+
+*Loot doesn't drop yet, and the size class bonus damage (`SizeClassRulesSO`) isn't applied yet (see [[AI Movement & Dungeon Loading Plan#To Do]]).* [[Notes for the future]]
 
 ---
 ## PlayerDamegable

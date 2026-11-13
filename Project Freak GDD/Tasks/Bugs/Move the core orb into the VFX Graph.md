@@ -6,7 +6,7 @@ chapter:
   - Chapter 3 Crafting
 owner: Steve
 plan: "[[Rune Field Finish Plan]]"
-source:
+source: "[[Send core glow values]]"
 needs:
 created: 2026-11-07
 done:

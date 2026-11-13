@@ -1,5 +1,5 @@
 ---
-status: Done
+status: Archived
 priority: 4
 chapter:
   - Chapter 3 Crafting
@@ -9,7 +9,8 @@ source: "[[Rune Field 3D Change Requests and to Do]]"
 needs:
   - "[[Node Art]]"
 created: 2026-10-29
-done:
+done: 2026-11-03
+archived: 2026-11-08
 ---
 ## What
 Nodes get four forms: **idle (open)**, **plugged in**, **locked**, **frozen** (frozen and locked-in share one look). Several pieces of the model move / rotate between them, animated with curves (timing in the inspector), with a hook for effects on each change.
@@ -36,6 +37,9 @@ Built Nov 3, 2026, waiting on Steve's test in Unity. Details in [[Rune Field 3D 
 - `RuneField.IsNodeLockedIn(index)`: the node holds a locked-in rune
 - Effect hooks: `_CoverClosedEvent` / `_CoverOpenedEvent`, and the existing `_ActivationEvent` / `_DeactivationEvent` for the shield
 - Play mode test buttons: **Test Cover** / **Test Shield**
+- Tested in Unity by Steve. Nov 5, 2026: parts snap only when a slot opens fresh or the shade switches (`StartField(data, animateNodes)`, see [[Rune Field 3D View]])
+
+**Review (Nov 8, 2026):** no new cards. Effects and sounds on `_CoverClosedEvent` / `_CoverOpenedEvent` and the shield wait for the future sound pass
 
 ## Notes
 - From the rune field finish talk, Oct 29, 2026. Decisions in [[Rune Field Finish Plan]]
